@@ -1,31 +1,47 @@
+import { createConnection, getRepository, ManyToMany, JoinTable, ManyToOne } from 'typeorm/browser';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm/browser";
+import {EntitySchema} from "typeorm";
+
+export const PostEntity = new EntitySchema({
+    name: "post",
+    columns: {
+        id: {
+            type: Number,
+            primary: true,
+            generated: true
+        },
+        title: {
+            type: String
+        },
+        text: {
+            type: String
+        }
+    },
+});
+
 export async function runDatabaseTest() {
-    console.log('So...........')
-    var knex = require('react-native-knex').default({
-        dialect: 'sqlite3',
+    await createConnection({
+        type: 'react-native',
+        database: 'test',
+        location: 'default',
+        logging: ['error', 'query', 'schema'],
+        synchronize: true,
+        entities: [
+            PostEntity as any,
+        ]
     });
-    console.log('Yeah...')
     
-    await knex.schema
-        .createTable('users', function(table : any) {
-            table.increments('id');
-            table.string('user_name');
-        })
-        .createTable('accounts', function(table : any) {
-            table.increments('id');
-            table.string('account_name');
-            table.integer('user_id').unsigned().references('users.id');
-        })
+    const postRepository = getRepository(PostEntity as any);
+    const result = await postRepository.save({
+        title: 'Bla',
+        text: 'Body'
+    });
     
-    console.log('Yeah...')
-
-    const rows1 = await knex.insert({user_name: 'Tim'}).into('users')
-    await knex.table('accounts').insert({account_name: 'knex', user_id: rows1[0]})
-
-    const rows2 = await knex('users')
-            .join('accounts', 'users.id', 'accounts.user_id')
-            .select('users.user_name as user', 'accounts.account_name as account');
+    console.log("Post has been saved");
     
-    rows2.map(function(row : any) {
-        console.log(row)
-    })
+    const loadedPost = await postRepository.findOne({where: {}});
+    
+    if (loadedPost) {
+        console.log("Post has been loaded: ", loadedPost);
+    }
 }

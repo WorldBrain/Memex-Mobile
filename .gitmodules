@@ -1,0 +1,6 @@
+[submodule "@worldbrain/storex"]
+	path = external/@worldbrain/storex
+	url = git@github.com:WorldBrain/storex
+[submodule "@worldbrain/storex-backend-typeorm"]
+	path = external/@worldbrain/storex-backend-typeorm
+	url = git@github.com:WorldBrain/storex-backend-typeorm

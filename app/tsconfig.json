@@ -4,11 +4,12 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "isolatedModules": true,
+    "experimentalDecorators": true,
     "jsx": "react",
     "lib": ["es6"],
     "moduleResolution": "node",
     "noEmit": true,
-    "strict": true,
+    "strict": false,
     "target": "esnext",
     "resolveJsonModule": true
   },

@@ -9,5 +9,5 @@ import { runDatabaseTest } from './db-test'
 
 export function main() {
     AppRegistry.registerComponent(appName, () => App)
-    // runDatabaseTest()
+    runDatabaseTest()
 }

@@ -1,0 +1,22 @@
+{
+    "version": "independent",
+    "npmClient": "yarn",
+    "command": {
+        "publish": {
+            "ignoreChanges": [
+                "ignored-file"
+            ],
+            "message": "chore(release): publish"
+        },
+        "bootstrap": {
+            "npmClientArgs": [
+                "--no-package-lock"
+            ]
+        }
+    },
+    "packages": [
+        "external/*",
+        "external/@worldbrain/*",
+        "app/"
+    ]
+}
