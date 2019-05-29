@@ -1,47 +1,25 @@
-import { createConnection, getRepository, ManyToMany, JoinTable, ManyToOne } from 'typeorm/browser';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm/browser";
-import {EntitySchema} from "typeorm";
-
-export const PostEntity = new EntitySchema({
-    name: "post",
-    columns: {
-        id: {
-            type: Number,
-            primary: true,
-            generated: true
-        },
-        title: {
-            type: String
-        },
-        text: {
-            type: String
-        }
-    },
-});
+// import { createConnection, getRepository, ManyToMany, JoinTable, ManyToOne } from 'typeorm/browser';
+// import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm/browser";
+import StorageManager from '@worldbrain/storex'
+import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
 
 export async function runDatabaseTest() {
-    await createConnection({
-        type: 'react-native',
-        database: 'test',
-        location: 'default',
-        logging: ['error', 'query', 'schema'],
-        synchronize: true,
-        entities: [
-            PostEntity as any,
-        ]
-    });
-    
-    const postRepository = getRepository(PostEntity as any);
-    const result = await postRepository.save({
-        title: 'Bla',
-        text: 'Body'
-    });
-    
-    console.log("Post has been saved");
-    
-    const loadedPost = await postRepository.findOne({where: {}});
-    
-    if (loadedPost) {
-        console.log("Post has been loaded: ", loadedPost);
-    }
+    const backend = new TypeORMStorageBackend({ connectionOptions: { type: 'sqlite', database: ':memory:' } })
+    const storageManager = new StorageManager({ backend })
+    storageManager.registry.registerCollections({
+        post: {
+            version: new Date(),
+            fields: {
+                title: { type: 'string' },
+                text: { type: 'string' }
+            }
+        },
+    })
+    await storageManager.finishInitialization()
+
+    const { object } = await storageManager.collection('post').createObject({ title: 'Post title', body: 'Post body' })
+    console.log('Created object', object)
+
+    const loadedPost = await storageManager.collection('post').findObject({ id: object.id })
+    console.log('Found object', loadedPost)
 }

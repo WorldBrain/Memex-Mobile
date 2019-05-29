@@ -1,6 +1,7 @@
 Setting up
 ==========
 
+0. git clone git@github.com:WorldBrain/Memex-Mobile --recursive
 1. Set up an run a device
 2. Got to the `app/` directory
 3. Run `yarn`

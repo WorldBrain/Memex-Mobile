@@ -17,6 +17,6 @@
     "packages": [
         "external/*",
         "external/@worldbrain/*",
-        "app/"
+        "app"
     ]
 }
