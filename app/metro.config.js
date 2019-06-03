@@ -4,8 +4,12 @@
  *
  * @format
  */
+const path = require('path')
 
 module.exports = {
+  watchFolders: [
+    path.join(__dirname, 'external'),
+  ],
   transformer: {
     getTransformOptions: async () => ({
       transform: {
@@ -13,5 +17,5 @@ module.exports = {
         inlineRequires: false,
       },
     }),
-  },
-};
+  }
+}
