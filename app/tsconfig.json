@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -11,7 +12,10 @@
     "noEmit": true,
     "strict": false,
     "target": "esnext",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@worldbrain/*": ["external/@worldbrain/*"]
+    }
   },
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
 }

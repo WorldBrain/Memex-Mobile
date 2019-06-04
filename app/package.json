@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "buffer": "^5.2.1",
+    "pluralize": "^8.0.0",
+    "randombytes": "^2.1.0",
     "react": "16.8.3",
     "react-native": "0.59.8",
     "react-native-knex": "^0.14.5",
