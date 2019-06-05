@@ -14,7 +14,10 @@
     "target": "esnext",
     "resolveJsonModule": true,
     "paths": {
-      "@worldbrain/*": ["external/@worldbrain/*"]
+      "@worldbrain/storex$": ["external/@worldbrain/storex/ts"],
+      "@worldbrain/storex/lib": ["external/@worldbrain/storex/ts"],
+      "@worldbrain/*": ["external/@worldbrain/*/ts"],
+      "@worldbrain/*/lib": ["external/@worldbrain/*/ts"]
     }
   },
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
