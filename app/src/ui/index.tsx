@@ -3,7 +3,6 @@ import {name as appName} from '../../app.json'
 
 import { Storage } from 'src/storage/types';
 import { Services } from 'src/services/types';
-// import AppContainer from './container';
 
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
@@ -59,5 +58,3 @@ export class UI {
         this.setupResolve(options.dependencies)
     }
 }
-
-// export function runUI(options : RunUIOptions) {

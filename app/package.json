@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "react-native": "react-native"
+    "react-native": "react-native",
+    "build:deptree": "depcruise --exclude '^node_modules' --output-type dot ./src | dot -T svg > /tmp/dependencygraph.svg"
   },
   "dependencies": {
     "buffer": "^5.2.1",
@@ -33,6 +34,7 @@
     "babel-jest": "^24.8.0",
     "babel-plugin-module-alias": "^1.6.0",
     "babel-plugin-module-resolver": "^3.2.0",
+    "dependency-cruiser": "^4.21.0",
     "jest": "^24.8.0",
     "metro-react-native-babel-preset": "^0.54.1",
     "react-test-renderer": "16.8.3",
