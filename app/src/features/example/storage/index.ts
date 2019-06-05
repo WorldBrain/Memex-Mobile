@@ -1,0 +1,1 @@
+// Should contain a default export subclass of StorageModule
