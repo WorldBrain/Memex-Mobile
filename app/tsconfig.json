@@ -18,6 +18,12 @@
       "@worldbrain/storex/lib/*": ["external/@worldbrain/storex/ts/*"],
       "@worldbrain/storex-backend-typeorm": ["external/@worldbrain/storex-backend-typeorm/ts"],
       "@worldbrain/storex-backend-typeorm/lib/*": ["external/@worldbrain/storex-backend-typeorm/ts/*"],
+      "@worldbrain/storex-schema-migrations": ["external/@worldbrain/storex-schema-migrations/ts"],
+      "@worldbrain/storex-schema-migrations/lib/*": ["external/@worldbrain/storex-schema-migrations/ts/*"],
+      "@worldbrain/storex-pattern-modules": ["external/@worldbrain/storex-pattern-modules/ts"],
+      "@worldbrain/storex-pattern-modules/lib/*": ["external/@worldbrain/storex-pattern-modules/ts/*"],
+      "user-logic": ["external/user-logic/ts"],
+      "user-logic/lib/*": ["external/user-logic/ts/*"]
     }
   },
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]

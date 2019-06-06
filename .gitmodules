@@ -4,3 +4,12 @@
 [submodule "@worldbrain/storex-backend-typeorm"]
 	path = app/external/@worldbrain/storex-backend-typeorm
 	url = git@github.com:WorldBrain/storex-backend-typeorm
+[submodule "app/external/storex-pattern-modules"]
+	path = app/external/@worldbrain/storex-pattern-modules
+	url = git@github.com:WorldBrain/storex-pattern-modules
+[submodule "app/external/@worldbrain/storex-schema-migrations"]
+	path = app/external/@worldbrain/storex-schema-migrations
+	url = git@github.com:WorldBrain/storex-schema-migrations
+[submodule "app/external/user-logic"]
+	path = app/external/user-logic
+	url = git@github.com:ShishKabab/user-logic

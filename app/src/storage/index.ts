@@ -1,34 +1,35 @@
 import StorageManager from '@worldbrain/storex'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
-import { StorageBackendType, Storage } from "./types";
+import { StorageBackendType, Storage, StorageModules } from "./types";
+import { TodoListStorage } from 'src/features/example/storage';
+import { registerModuleMapCollections, StorageModule } from '@worldbrain/storex-pattern-modules';
 
 export interface CreateStorageOptions {
     backendType : StorageBackendType
+    dbName : string
 }
 
 export async function createStorage(options : CreateStorageOptions) : Promise<Storage> {
-    const backend = new TypeORMStorageBackend({ connectionOptions: { type: 'react-native', location: 'default', database: ':memory:' } })
+    const backend = new TypeORMStorageBackend({ connectionOptions: { type: 'react-native', location: 'default', database: options.dbName } })
     const storageManager = new StorageManager({ backend })
-    // storageManager.registry.registerCollections({
-    //     post: {
-    //         version: new Date(),
-    //         fields: {
-    //             title: { type: 'string' },
-    //             body: { type: 'string' }
-    //         }
-    //     },
-    // })
+
+    const modules : StorageModules = {
+        todoList: new TodoListStorage({ storageManager })
+    }
+
+    registerModuleMapCollections(storageManager.registry, modules as any)
     await storageManager.finishInitialization()
-    // await backend.connection.dropDatabase()
-    // await storageManager.backend.migrate()
 
-    // const { object } = await storageManager.collection('post').createObject({ title: 'Post title', body: 'Post body' })
-    // console.log('Created object', object)
+    await backend.connection.dropDatabase()
+    if (!(await backend.connection.createQueryRunner().getDatabases()).includes(options.dbName)) {
+        await storageManager.backend.migrate()
+    }
 
-    // const loadedPosts = await storageManager.collection('post').findObjects({})
-    // console.log('Found objects', loadedPosts)
+    const list = await modules.todoList.getOrCreateDefaultList({ defaultLabel: 'Default list' })
+    console.log('Default list', list)
 
     return {
-        manager: storageManager
+        manager: storageManager,
+        modules,
     }
 }

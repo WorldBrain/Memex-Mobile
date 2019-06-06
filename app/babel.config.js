@@ -39,7 +39,6 @@ function getAliases() {
     }
   }
 
-  // console.log(aliases)
   return aliases
 }
 

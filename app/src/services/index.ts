@@ -1,8 +1,11 @@
 import { Services } from "./types";
+import { WorldBrainAuthService } from "./auth/wb-auth";
 
 export interface CreateServicesOptions {
 }
 
 export async function createServices(options : CreateServicesOptions) : Promise<Services> {
-    return {}
+    return {
+        auth: new WorldBrainAuthService()
+    }
 }

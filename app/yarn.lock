@@ -4882,6 +4882,11 @@ object-keys@^1.0.12:
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.1.1.tgz#1c47f272df277f3b1daf061677d9c82e2322c60e"
   integrity sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==
 
+object-path@^0.11.4:
+  version "0.11.4"
+  resolved "https://registry.yarnpkg.com/object-path/-/object-path-0.11.4.tgz#370ae752fbf37de3ea70a861c23bba8915691949"
+  integrity sha1-NwrnUvvzfePqcKhhwju6iRVpGUk=
+
 object-visit@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/object-visit/-/object-visit-1.0.1.tgz#f79c4493af0c5377b59fe39d395e41042dd045bb"
@@ -6850,6 +6855,15 @@ use@^3.1.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/use/-/use-3.1.1.tgz#d50c8cac79a19fbc20f2911f56eb973f4e10070f"
   integrity sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==
+
+user-logic@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/user-logic/-/user-logic-0.0.1.tgz#cb3ce06eb46a1d38c0aa0cbf63856ad1b4f7bfa7"
+  integrity sha512-fptFCNu4xhscimigeSZcAY460Vh63dgpPHpKfZ75EJioWdZ9MpWryzINMPX+yNomsYJP3Pedj08vW5yHxoo3BA==
+  dependencies:
+    lodash "^4.17.11"
+    object-path "^0.11.4"
+    source-map-support "^0.4.18"
 
 util-deprecate@1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"
