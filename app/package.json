@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest",
+    "test": "TS_NODE_PROJECT=tsconfig.mocha.json mocha --require ts-node/register 'src/**/*.test.ts'",
+    "test:watch": "TS_NODE_PROJECT=tsconfig.mocha.json mocha --watch --watch-extensions ts --require ts-node/register 'src/**/*.test.ts'",
     "react-native": "react-native",
     "build:deptree": "depcruise --exclude '^node_modules' --output-type dot ./src | dot -T svg > /tmp/dependencygraph.svg"
   },
@@ -15,17 +16,20 @@
     "randombytes": "^2.1.0",
     "react": "16.8.3",
     "react-native": "0.59.8",
+    "react-native-gesture-handler": "^1.3.0",
     "react-native-knex": "^0.14.5",
     "react-native-sqlite-storage": "^3.3.10",
+    "react-navigation": "^3.11.0",
     "sqlite3": "^4.0.8",
     "typeorm": "^0.2.17",
-    "ui-logic-core": "^0.1.1",
-    "ui-logic-react": "^0.1.2",
+    "ui-logic-core": "^0.1.2",
+    "ui-logic-react": "^0.1.3",
     "user-logic": "^0.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
     "@babel/runtime": "^7.4.4",
+    "@types/expect": "^1.20.4",
     "@types/jest": "^24.0.13",
     "@types/node": "^12.0.2",
     "@types/react": "^16.8.18",
@@ -36,9 +40,12 @@
     "babel-plugin-module-alias": "^1.6.0",
     "babel-plugin-module-resolver": "^3.2.0",
     "dependency-cruiser": "^4.21.0",
+    "expect": "^24.8.0",
     "jest": "^24.8.0",
     "metro-react-native-babel-preset": "^0.54.1",
+    "mocha": "^6.1.4",
     "react-test-renderer": "16.8.3",
+    "ts-node": "^8.2.0",
     "typescript": "^3.4.5"
   },
   "jest": {
