@@ -20,13 +20,13 @@ export async function createStorage(options : CreateStorageOptions) : Promise<St
     registerModuleMapCollections(storageManager.registry, modules as any)
     await storageManager.finishInitialization()
 
-    await backend.connection.dropDatabase()
-    if (!(await backend.connection.createQueryRunner().getDatabases()).includes(options.dbName)) {
+    await backend.connection!.dropDatabase()
+    if (!(await backend.connection!.createQueryRunner().getDatabases()).includes(options.dbName)) {
         await storageManager.backend.migrate()
     }
 
-    const list = await modules.todoList.getOrCreateDefaultList({ defaultLabel: 'Default list' })
-    console.log('Default list', list)
+    // const list = await modules.todoList.getOrCreateDefaultList({ defaultLabel: 'Default list' })
+    // console.log('Default list', list)
 
     return {
         manager: storageManager,

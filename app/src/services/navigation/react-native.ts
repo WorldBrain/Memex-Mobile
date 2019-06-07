@@ -1,19 +1,23 @@
 import { NavigationService } from "./types";
 import { NavigationContainerComponent, NavigationActions } from "react-navigation";
 
+export interface ReactNativeNavigationServiceDependencies {
+    navigationContainerComponent : NavigationContainerComponent
+}
+
 export default class ReactNativeNavigationService implements NavigationService {
-    private navigationContainerComponent? : NavigationContainerComponent
+    private dependencies? : ReactNativeNavigationServiceDependencies
     
-    setNavigationContainerComponent(navigationContainerComponent : NavigationContainerComponent) {
-        this.navigationContainerComponent = navigationContainerComponent
+    setDependencies(dependencies : ReactNativeNavigationServiceDependencies) {
+        this.dependencies = dependencies
     }
     
     goTo(routeName : string) {
-        if (!this.navigationContainerComponent) {
-            throw new Error(`Tried to call NavigationService.goTo() before setting initializing React Navigation`)
+        if (!this.dependencies) {
+            throw new Error(`Tried to call NavigationService.goTo() before injecting service dependencies`)
         }
         
-        this.navigationContainerComponent.dispatch(
+        this.dependencies.navigationContainerComponent.dispatch(
             NavigationActions.navigate({
                 routeName,
                 params: {},
