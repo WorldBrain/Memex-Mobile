@@ -1,4 +1,5 @@
 import {AppRegistry} from 'react-native'
+import { createAppContainer } from 'react-navigation';
 import {name as appName} from '../../app.json'
 
 import { Storage } from 'src/storage/types';
@@ -7,7 +8,12 @@ import { Services } from 'src/services/types';
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
+import AppNavigator from './navigator'
+
 import HomeScreen from 'src/features/example/ui/screens/home-screen'
+import ReactNativeNavigationService from 'src/services/navigation/react-native.js';
+
+const AppNavigatorContainer = createAppContainer(AppNavigator)
 
 export interface UIDependencies {
     storage : Storage
@@ -47,7 +53,14 @@ export class UI {
                     )
                 }
 
-                return <HomeScreen />
+                return <AppNavigatorContainer ref={topLevelNavigator => {
+                    if (!topLevelNavigator) {
+                        return
+                    }
+
+                    const navigationService = (this.state.dependencies!.services.navigation as ReactNativeNavigationService)
+                    navigationService.setNavigationContainerComponent(topLevelNavigator)
+                }} />
             }
         }
 
