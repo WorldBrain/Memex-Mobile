@@ -52,6 +52,21 @@
 		530D722222AA53B400E0F8D5 /* libReactNativeShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 530D721722AA530000E0F8D5 /* libReactNativeShareExtension.a */; };
 		530D722322AA565000E0F8D5 /* libReactNativeShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 530D721722AA530000E0F8D5 /* libReactNativeShareExtension.a */; };
 		530D722422AA573400E0F8D5 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
+		5350C0BF22AF53DE00D38729 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5350C0BD22AF53DE00D38729 /* MainInterface.storyboard */; };
+		5350C0C322AF53DE00D38729 /* Memex Quick Index.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5350C0B822AF53DD00D38729 /* Memex Quick Index.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5350C0EF22AF542D00D38729 /* MemexQuickIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 5350C0EE22AF542D00D38729 /* MemexQuickIndex.m */; };
+		5350C0F022AF550E00D38729 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		5350C0F122AF551700D38729 /* libReactNativeShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 530D721722AA530000E0F8D5 /* libReactNativeShareExtension.a */; };
+		5350C0F222AF552E00D38729 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
+		5350C0F322AF552E00D38729 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
+		5350C0F422AF552E00D38729 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302C01ABCB91800DB3ED1 /* libRCTImage.a */; };
+		5350C0F522AF552E00D38729 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
+		5350C0F622AF552E00D38729 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302DC1ABCB9D200DB3ED1 /* libRCTNetwork.a */; };
+		5350C0F722AF552E00D38729 /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
+		5350C0F822AF552E00D38729 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		5350C0F922AF552E00D38729 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
+		5350C0FA22AF552E00D38729 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
+		5350C0FB22AF569D00D38729 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		999492CD9D124478849E5D8D /* libSQLite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78A893EFA88441FF9E6C3C8B /* libSQLite.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
@@ -319,6 +334,13 @@
 			remoteGlobalIDString = 41B5DE301D0B505800949BD5;
 			remoteInfo = ReactNativeShareExtension;
 		};
+		5350C0C122AF53DE00D38729 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5350C0B722AF53DD00D38729;
+			remoteInfo = "Memex Quick Index";
+		};
 		5E9157321DD0AC6500FF2AA8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */;
@@ -363,6 +385,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				5350C0C322AF53DE00D38729 /* Memex Quick Index.appex in Embed App Extensions */,
 				530D720B22AA523900E0F8D5 /* MemexShare.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -398,6 +421,10 @@
 		530D720822AA523900E0F8D5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		530D721022AA529100E0F8D5 /* MemexShare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MemexShare.m; sourceTree = "<group>"; };
 		530D721222AA530000E0F8D5 /* ReactNativeShareExtension.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeShareExtension.xcodeproj; path = "../node_modules/react-native-share-extension/ios/ReactNativeShareExtension.xcodeproj"; sourceTree = "<group>"; };
+		5350C0B822AF53DD00D38729 /* Memex Quick Index.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Memex Quick Index.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5350C0BE22AF53DE00D38729 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		5350C0C022AF53DE00D38729 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5350C0EE22AF542D00D38729 /* MemexQuickIndex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MemexQuickIndex.m; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		78A893EFA88441FF9E6C3C8B /* libSQLite.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libSQLite.a; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
@@ -479,6 +506,25 @@
 				530D721E22AA53A900E0F8D5 /* libRCTText.a in Frameworks */,
 				530D721F22AA53A900E0F8D5 /* libRCTVibration.a in Frameworks */,
 				530D722022AA53A900E0F8D5 /* libRCTWebSocket.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5350C0B522AF53DD00D38729 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5350C0FB22AF569D00D38729 /* JavaScriptCore.framework in Frameworks */,
+				5350C0F222AF552E00D38729 /* libRCTActionSheet.a in Frameworks */,
+				5350C0F322AF552E00D38729 /* libRCTGeolocation.a in Frameworks */,
+				5350C0F422AF552E00D38729 /* libRCTImage.a in Frameworks */,
+				5350C0F522AF552E00D38729 /* libRCTLinking.a in Frameworks */,
+				5350C0F622AF552E00D38729 /* libRCTNetwork.a in Frameworks */,
+				5350C0F722AF552E00D38729 /* libRCTSettings.a in Frameworks */,
+				5350C0F822AF552E00D38729 /* libRCTText.a in Frameworks */,
+				5350C0F922AF552E00D38729 /* libRCTVibration.a in Frameworks */,
+				5350C0FA22AF552E00D38729 /* libRCTWebSocket.a in Frameworks */,
+				5350C0F122AF551700D38729 /* libReactNativeShareExtension.a in Frameworks */,
+				5350C0F022AF550E00D38729 /* libReact.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -645,6 +691,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		5350C0B922AF53DE00D38729 /* Memex Quick Index */ = {
+			isa = PBXGroup;
+			children = (
+				5350C0BD22AF53DE00D38729 /* MainInterface.storyboard */,
+				5350C0C022AF53DE00D38729 /* Info.plist */,
+				5350C0EE22AF542D00D38729 /* MemexQuickIndex.m */,
+			);
+			path = "Memex Quick Index";
+			sourceTree = "<group>";
+		};
 		5E91572E1DD0AC6500FF2AA8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -700,6 +756,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* appTests */,
 				530D720122AA523900E0F8D5 /* MemexShare */,
+				5350C0B922AF53DE00D38729 /* Memex Quick Index */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				530D71C922AA520500E0F8D5 /* Recovered References */,
@@ -717,6 +774,7 @@
 				2D02E47B1E0B4A5D006451C7 /* app-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* app-tvOSTests.xctest */,
 				530D720022AA523900E0F8D5 /* MemexShare.appex */,
+				5350C0B822AF53DD00D38729 /* Memex Quick Index.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -765,6 +823,7 @@
 			);
 			dependencies = (
 				530D720A22AA523900E0F8D5 /* PBXTargetDependency */,
+				5350C0C222AF53DE00D38729 /* PBXTargetDependency */,
 			);
 			name = app;
 			productName = "Hello World";
@@ -824,6 +883,23 @@
 			productReference = 530D720022AA523900E0F8D5 /* MemexShare.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		5350C0B722AF53DD00D38729 /* Memex Quick Index */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5350C0ED22AF53DE00D38729 /* Build configuration list for PBXNativeTarget "Memex Quick Index" */;
+			buildPhases = (
+				5350C0B422AF53DD00D38729 /* Sources */,
+				5350C0B522AF53DD00D38729 /* Frameworks */,
+				5350C0B622AF53DD00D38729 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Memex Quick Index";
+			productName = "Memex Quick Index";
+			productReference = 5350C0B822AF53DD00D38729 /* Memex Quick Index.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -852,6 +928,10 @@
 					530D71FF22AA523900E0F8D5 = {
 						CreatedOnToolsVersion = 10.2.1;
 						DevelopmentTeam = KE43R74MZS;
+						ProvisioningStyle = Automatic;
+					};
+					5350C0B722AF53DD00D38729 = {
+						CreatedOnToolsVersion = 10.2.1;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -933,6 +1013,7 @@
 				2D02E47A1E0B4A5D006451C7 /* app-tvOS */,
 				2D02E48F1E0B4A5D006451C7 /* app-tvOSTests */,
 				530D71FF22AA523900E0F8D5 /* MemexShare */,
+				5350C0B722AF53DD00D38729 /* Memex Quick Index */,
 			);
 		};
 /* End PBXProject section */
@@ -1253,6 +1334,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5350C0B622AF53DD00D38729 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5350C0BF22AF53DE00D38729 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -1329,6 +1418,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5350C0B422AF53DD00D38729 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5350C0EF22AF542D00D38729 /* MemexQuickIndex.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1347,6 +1444,11 @@
 			target = 530D71FF22AA523900E0F8D5 /* MemexShare */;
 			targetProxy = 530D720922AA523900E0F8D5 /* PBXContainerItemProxy */;
 		};
+		5350C0C222AF53DE00D38729 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5350C0B722AF53DD00D38729 /* Memex Quick Index */;
+			targetProxy = 5350C0C122AF53DE00D38729 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -1363,6 +1465,14 @@
 			isa = PBXVariantGroup;
 			children = (
 				530D720622AA523900E0F8D5 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+		5350C0BD22AF53DE00D38729 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5350C0BE22AF53DE00D38729 /* Base */,
 			);
 			name = MainInterface.storyboard;
 			sourceTree = "<group>";
@@ -1674,6 +1784,68 @@
 			};
 			name = Release;
 		};
+		5350C0C422AF53DE00D38729 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native-share-extension/ios/**";
+				INFOPLIST_FILE = "Memex Quick Index/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"-lc++",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.app.Memex-Quick-Index";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5350C0C522AF53DE00D38729 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../node_modules/react-native-share-extension/ios/**";
+				INFOPLIST_FILE = "Memex Quick Index/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"-lc++",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.app.Memex-Quick-Index";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1817,6 +1989,15 @@
 			buildConfigurations = (
 				530D720D22AA523900E0F8D5 /* Debug */,
 				530D720E22AA523900E0F8D5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5350C0ED22AF53DE00D38729 /* Build configuration list for PBXNativeTarget "Memex Quick Index" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5350C0C422AF53DE00D38729 /* Debug */,
+				5350C0C522AF53DE00D38729 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
