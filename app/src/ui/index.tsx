@@ -52,6 +52,7 @@ export class UI {
         }
 
         AppRegistry.registerComponent(appName, () => AppContainer)
+        AppRegistry.registerComponent('MemexShare', () => HomeScreen)
     }
 
     initialize(options : { dependencies : UIDependencies }) {
