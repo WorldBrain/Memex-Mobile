@@ -9,6 +9,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
 import org.pgsqlite.SQLitePluginPackage;
+import com.alinz.parkerdan.shareextension.SharePackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
         new SQLitePluginPackage(),   // register SQLite Plugin here
-        new MainReactPackage()
+        new MainReactPackage(),
+        new SharePackage()  // register `react-native-share-extension` plugin here
       );
     }
 
