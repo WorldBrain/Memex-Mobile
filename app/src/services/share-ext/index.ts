@@ -21,4 +21,6 @@ export class ShareExt {
       return value;
     }
   }
+
+  close = () => this.shareAPI.close()
 }

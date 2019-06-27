@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
 import HomeScreen from 'src/features/example/ui/screens/home-screen'
+import ShareModal from 'src/features/example/ui/screens/share-modal'
 
 export interface UIDependencies {
     storage : Storage
@@ -52,7 +53,7 @@ export class UI {
         }
 
         AppRegistry.registerComponent(appName, () => AppContainer)
-        AppRegistry.registerComponent('MemexShare', () => HomeScreen)
+        AppRegistry.registerComponent('MemexShare', () => ShareModal)
     }
 
     initialize(options : { dependencies : UIDependencies }) {

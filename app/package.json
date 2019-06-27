@@ -16,6 +16,7 @@
     "react": "16.8.3",
     "react-native": "0.59.8",
     "react-native-knex": "^0.14.5",
+    "react-native-modalbox": "^1.7.1",
     "react-native-share-extension": "^2.0.0",
     "react-native-sqlite-storage": "^3.3.10",
     "sqlite3": "^4.0.8",
