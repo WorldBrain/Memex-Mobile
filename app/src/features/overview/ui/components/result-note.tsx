@@ -6,13 +6,15 @@ import Footer, { Props as FooterProps } from './result-footer'
 import { DeleteBtn, EditBtn, StarBtn } from './action-btns'
 import { NativeTouchEventHandler } from '../../types'
 
-export interface Props extends FooterProps, BodyProps {
+export interface Props extends FooterProps, BodyProps {}
+
+export interface InteractionProps {
     onDeletePress: NativeTouchEventHandler
     onEditPress: NativeTouchEventHandler
     onStarPress: NativeTouchEventHandler
 }
 
-const ResultNote: React.StatelessComponent<Props> = props => (
+const ResultNote: React.StatelessComponent<Props & InteractionProps> = props => (
     <Container renderFooter={() => (
         <Footer {...props}>
             <DeleteBtn onPress={props.onDeletePress} />
