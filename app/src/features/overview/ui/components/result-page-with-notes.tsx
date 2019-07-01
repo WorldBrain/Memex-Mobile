@@ -12,7 +12,7 @@ import { NativeTouchEventHandler } from '../../types'
 
 export interface Props extends PageProps, PageInteractionProps {
     notes: NoteProps[]
-    isOpen: boolean
+    isOpen?: boolean
     initNoteDelete: (note: NoteProps) => NativeTouchEventHandler
     initNoteEdit: (note: NoteProps) => NativeTouchEventHandler
     initNoteStar: (note: NoteProps) => NativeTouchEventHandler

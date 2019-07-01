@@ -5,6 +5,7 @@ import { StatefulUIElement } from 'src/ui/types'
 import Logic, { State, Event } from './logic';
 import Menu from 'src/features/overview/ui/components/menu'
 import PagesView from '../pages-view'
+import NotesView from '../notes-view'
 
 interface Props {
 
@@ -21,7 +22,7 @@ export default class OverviewMenu extends StatefulUIElement<Props, State, Event>
     private renderResults() {
       switch (this.state.selectedResultType) {
         case 'notes':
-            return null
+            return <NotesView />
           case 'pages':
             default:
             return <PagesView />
