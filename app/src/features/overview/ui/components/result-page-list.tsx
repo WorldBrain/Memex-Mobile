@@ -3,6 +3,7 @@ import { FlatList, ListRenderItem } from 'react-native'
 
 import ResultPage, { Props as PageProps } from './result-page'
 import { NativeTouchEventHandler } from '../../types'
+import styles from './result-page-list.styles'
 
 export interface Props {
     pages: PageProps[]
@@ -29,6 +30,7 @@ class ResultPageList extends React.PureComponent<Props> {
             <FlatList
                 renderItem={this.renderPage}
                 data={this.props.pages}
+                style={styles.pageList}
             />
         )
     }

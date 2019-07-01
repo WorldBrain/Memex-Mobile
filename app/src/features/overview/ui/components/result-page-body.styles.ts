@@ -5,11 +5,16 @@ export default StyleSheet.create({
 
     },
     title: {
+        flex: 1,
+        flexDirection: 'row',
+        marginBottom: 5,
     },
     titleText: {
-
+        fontWeight: '500',
+        fontSize: 16,
     },
-    link: {
-
+    linkText: {
+        color: '#b0b0b0',
+        fontSize: 13,
     },
 })
