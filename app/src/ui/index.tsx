@@ -7,7 +7,7 @@ import { Services } from 'src/services/types';
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
-import HomeScreen from 'src/features/example/ui/screens/home-screen'
+import Overview from 'src/features/overview/ui/screens/overview'
 import ShareModal from 'src/features/example/ui/screens/share-modal'
 
 export interface UIDependencies {
@@ -48,7 +48,7 @@ export class UI {
                     )
                 }
 
-                return <HomeScreen />
+                return <Overview />
             }
         }
 
