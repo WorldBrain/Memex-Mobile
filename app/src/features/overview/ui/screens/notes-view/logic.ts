@@ -1,12 +1,7 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from "ui-logic-core"
 
-import { Props as PageProps } from '../../components/result-page-with-notes'
 import initTestData from './test-data'
-
-interface NotesSection {
-    title: string
-    data: PageProps[]
-}
+import { NotesSection } from './types'
 
 export interface State {
     sections : NotesSection[]

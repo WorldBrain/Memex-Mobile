@@ -7,4 +7,12 @@ export default StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
+    sectionText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: 20,
+    },
+    pageList: {
+        width: '90%',
+    }
 });
