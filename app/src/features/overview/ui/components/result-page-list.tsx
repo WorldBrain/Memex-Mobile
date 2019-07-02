@@ -31,6 +31,7 @@ class ResultPageList extends React.PureComponent<Props> {
                 renderItem={this.renderPage}
                 data={this.props.pages}
                 style={styles.pageList}
+                keyExtractor={(item, index) => index.toString()}
             />
         )
     }

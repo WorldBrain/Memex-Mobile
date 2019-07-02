@@ -32,6 +32,7 @@ export default class CollectionsView extends StatefulUIElement<Props, State, Eve
               renderItem={this.renderCollection}
               data={this.state.collections}
               style={styles.list}
+              keyExtractor={(item, index) => index.toString()}
              />
           </View>
         );

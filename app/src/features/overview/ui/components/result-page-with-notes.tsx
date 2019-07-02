@@ -41,6 +41,7 @@ class ResultPageWithNotes extends React.PureComponent<Props> {
                     <FlatList
                         renderItem={this.renderNote}
                         data={this.props.notes}
+                        keyExtractor={(item, index) => index.toString()}
                     />}
                 </View>
             </>

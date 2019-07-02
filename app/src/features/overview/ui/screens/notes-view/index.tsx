@@ -38,7 +38,6 @@ export default class NotesView extends StatefulUIElement<Props, State, Event> {
 
 
     render() {
-
         return (
           <View style={styles.container}>
               <SectionList
