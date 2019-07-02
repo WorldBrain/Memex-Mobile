@@ -10,4 +10,10 @@ export default StyleSheet.create({
         marginTop: 15,
         padding: 10,
     },
+    resultNote: {
+        backgroundColor: '#f9f9f8',
+        marginTop: 5,
+        marginLeft: 20,
+        marginHorizontal: 'auto'
+    }
 })

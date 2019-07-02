@@ -9,6 +9,7 @@ export interface State {
 
 export type Event = UIEvent<{
     setSections: { sections : NotesSection[] }
+    toggleNotes : { }
 }>
 
 export default class Logic extends UILogic<State, Event> {

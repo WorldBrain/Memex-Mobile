@@ -10,6 +10,7 @@ export default (): State => ({
           pageUrl: "https://test.com",
           titleText: "This is a test site",
           date: "5 mins ago",
+          isOpen: true,
           notes: [
             {
                 url: '',
@@ -23,6 +24,7 @@ export default (): State => ({
           pageUrl: "https://test.com/route1",
           titleText: "This is a test site - route 1",
           date: "15 mins ago",
+          isOpen: true,
           notes: [
             {
                 url: '',

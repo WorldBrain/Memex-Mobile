@@ -15,7 +15,7 @@ export interface InteractionProps {
 }
 
 const ResultNote: React.StatelessComponent<Props & InteractionProps> = props => (
-    <Container renderFooter={() => (
+    <Container isNote renderFooter={() => (
         <Footer {...props}>
             <DeleteBtn onPress={props.onDeletePress} />
             <EditBtn onPress={props.onEditPress} />

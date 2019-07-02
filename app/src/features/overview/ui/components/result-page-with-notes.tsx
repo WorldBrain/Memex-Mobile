@@ -42,6 +42,7 @@ class ResultPageWithNotes extends React.PureComponent<Props> {
                         renderItem={this.renderNote}
                         data={this.props.notes}
                         keyExtractor={(item, index) => index.toString()}
+                        style={styles.list}
                     />}
                 </View>
             </>

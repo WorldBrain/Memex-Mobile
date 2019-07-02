@@ -4,4 +4,7 @@ export default StyleSheet.create({
     notesDropdown: {
 
     },
+    list: {
+        marginBottom: 20,
+    }
 })

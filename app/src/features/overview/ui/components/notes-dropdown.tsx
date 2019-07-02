@@ -10,7 +10,7 @@ export interface Props {
 
 const NotesDropdown: React.StatelessComponent<Props> = props => (
     <View style={styles.dropdown}>
-        <Text style={styles.resultsCount}>{props.resultsCount} annotation results</Text>
+        <Text style={styles.resultsCount}>{props.resultsCount} results</Text>
         <Text style={styles.toggleIcon}>{props.isOpen ? 'OPEN' : 'CLOSED' }</Text>
     </View>
 )
