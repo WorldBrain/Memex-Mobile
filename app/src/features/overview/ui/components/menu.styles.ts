@@ -4,11 +4,14 @@ export default StyleSheet.create({
     mainContainer: {
         flex: 1,
         flexDirection: 'column',
+        paddingHorizontal: 20,
+        marginTop: 40,
+        maxHeight: 40,
+    },
+    mainContainerBtm: {
         borderBottomWidth: 1.5,
         borderBottomColor: '#f2f2f2',
         maxHeight: 80,
-        marginTop: 40,
-        paddingHorizontal: 20,
     },
     topContainer: {
         flex: 1,
