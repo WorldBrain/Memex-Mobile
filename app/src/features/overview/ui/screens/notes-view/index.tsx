@@ -23,10 +23,13 @@ export default class NotesView extends StatefulUIElement<Props, State, Event> {
 
     private renderPage: ListRenderItem<PageProps> = ({ item, index }) => (
       <ResultPage
+          initNoteDelete={() => console.log(item)}
+          initNoteEdit={() => console.log(item)}
+          initNoteStar={() => console.log(item)}
+          onStarPress={() => console.log(item)}
+          onCommentPress={() => console.log(item)}
           onDeletePress={() => console.log(item)}
           onTagPress={() => console.log(item)}
-          onCommentPress={() => console.log(item)}
-          onStarPress={() => console.log(item)}
           key={index}
           {...item}
       />

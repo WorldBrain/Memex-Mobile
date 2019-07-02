@@ -1,14 +1,13 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from "ui-logic-core"
 
-import { Props as PageProps } from '../../components/result-page'
 import initTestData from './test-data'
+import { Page } from "src/features/overview/types";
 
 export interface State {
-    pages : PageProps[]
+    pages : Page[]
 }
 export type Event = UIEvent<{
-    setPages : { pages : PageProps[] }
-    deletePages : { pages : PageProps[] }
+    setPages : { pages : Page[] }
 }>
 
 export default class Logic extends UILogic<State, Event> {

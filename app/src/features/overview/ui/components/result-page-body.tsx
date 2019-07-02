@@ -4,7 +4,7 @@ import { View, Image, Text, ImageSourcePropType } from "react-native";
 import styles from './result-page-body.styles'
 
 export interface Props {
-    favIcon?: ImageSourcePropType
+    favIcon?: string
     titleText: string
     pageUrl: string
 }
@@ -12,7 +12,7 @@ export interface Props {
 const ResultPageBody: React.StatelessComponent<Props> = props => (
     <>
         <View style={styles.title}>
-            {props.favIcon && <Image style={styles.favIcon} source={props.favIcon} />}
+            {props.favIcon && <Image style={styles.favIcon} source={{ uri: props.favIcon }} />}
             <Text style={styles.titleText}>{props.titleText}</Text>
         </View>
         <Text style={styles.linkText}>{props.pageUrl}</Text>

@@ -7,4 +7,7 @@ export default StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
+    pageList: {
+        width: '90%',
+    },
 });
