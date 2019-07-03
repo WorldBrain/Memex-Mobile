@@ -1,0 +1,14 @@
+{
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/android": true,
+        "**/ios": true,
+        "**/content_Script": true,
+        "yarn.lock": true
+    },
+    "stylelint.enable": true,
+    "eslint.enable": true,
+    "tslint.enable": true,
+    "editor.formatOnSave": true,
+    "typescript.tsdk": "node_modules/typescript/lib"
+}
