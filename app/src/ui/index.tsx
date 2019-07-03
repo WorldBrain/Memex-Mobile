@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
 import Overview from 'src/features/overview/ui/screens/overview'
-import ShareModal from 'src/features/example/ui/screens/share-modal'
+import ShareModal from 'src/features/page-share/ui/screens/share-modal'
 
 export interface UIDependencies {
     storage : Storage
