@@ -1,22 +1,22 @@
-import {AppRegistry} from 'react-native'
-import {name as appName} from '../../app.json'
+import { AppRegistry } from 'react-native'
+import { name as appName } from '../../app.json'
 
-import { Storage } from 'src/storage/types';
-import { Services } from 'src/services/types';
+import { Storage } from 'src/storage/types'
+import { Services } from 'src/services/types'
 
-import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import React, { Component } from 'react'
+import { View, Text } from 'react-native'
 
 import AppNavigator from './navigation'
 import ShareModal from 'src/features/page-share/ui/screens/share-modal'
 
 export interface UIDependencies {
-    storage : Storage
-    services : Services
+    storage: Storage
+    services: Services
 }
 
 export class UI {
-    private setupResolve! : (dependencies : UIDependencies) => void
+    private setupResolve!: (dependencies: UIDependencies) => void
 
     constructor() {
         const setupPromise = new Promise<UIDependencies>((resolve, reject) => {
@@ -24,15 +24,15 @@ export class UI {
         })
 
         interface State {
-            dependencies : UIDependencies | null
+            dependencies: UIDependencies | null
         }
         class AppContainer extends Component<{}, State> {
-            state : State = {
-                dependencies: null
+            state: State = {
+                dependencies: null,
             }
 
             async componentDidMount() {
-                this.setState({ dependencies: await setupPromise})
+                this.setState({ dependencies: await setupPromise })
             }
 
             componentWillUnmount() {
@@ -56,7 +56,7 @@ export class UI {
         AppRegistry.registerComponent('MemexShare', () => ShareModal)
     }
 
-    initialize(options : { dependencies : UIDependencies }) {
+    initialize(options: { dependencies: UIDependencies }) {
         this.setupResolve(options.dependencies)
     }
 }

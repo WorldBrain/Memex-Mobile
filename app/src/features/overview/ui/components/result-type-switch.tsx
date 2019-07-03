@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, TouchableHighlight } from "react-native";
+import React from 'react'
+import { Text, TouchableHighlight } from 'react-native'
 
 import styles from './result-type-switch.styles'
 import { Props as MenuProps } from './menu'
@@ -13,7 +13,7 @@ const ResultTypeSwitch: React.StatelessComponent<Props> = props => (
     <TouchableHighlight
         style={[
             styles.main,
-            props.selected === props.type ? styles.active : null
+            props.selected === props.type ? styles.active : null,
         ]}
     >
         <Text

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, TouchableOpacity, GestureResponderEvent } from "react-native";
+import React from 'react'
+import { Text, TouchableOpacity, GestureResponderEvent } from 'react-native'
 
 import styles from './collection-etnry.styles'
 
@@ -12,10 +12,7 @@ export interface Props {
 const CollectionEntry: React.StatelessComponent<Props> = props => (
     <TouchableOpacity onPress={props.onSelect}>
         <Text
-            style={[
-                styles.mainText,
-                props.isSelected ? styles.active : null
-            ]}
+            style={[styles.mainText, props.isSelected ? styles.active : null]}
         >
             {props.name}
         </Text>

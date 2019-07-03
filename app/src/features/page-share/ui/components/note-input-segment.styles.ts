@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
     container: {
@@ -8,6 +8,5 @@ export default StyleSheet.create({
         borderBottomColor: '#eaeae9',
         padding: 15,
     },
-    textInput: {
-    }
+    textInput: {},
 })

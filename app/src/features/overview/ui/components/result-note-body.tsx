@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text } from "react-native";
+import React from 'react'
+import { Text } from 'react-native'
 
 import styles from './result-note-body.styles'
 
@@ -10,16 +10,19 @@ export interface Props {
 
 const ResultNoteBody: React.StatelessComponent<Props> = props => (
     <>
-        {props.noteText &&
+        {props.noteText && (
             <Text
                 style={[
                     styles.noteText,
-                    props.commentText ? styles.noteSpace : null
+                    props.commentText ? styles.noteSpace : null,
                 ]}
             >
                 {props.noteText}
-            </Text>}
-        {props.commentText && <Text style={styles.commentText}>{props.commentText}</Text>}
+            </Text>
+        )}
+        {props.commentText && (
+            <Text style={styles.commentText}>{props.commentText}</Text>
+        )}
     </>
 )
 

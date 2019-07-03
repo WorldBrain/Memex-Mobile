@@ -7,15 +7,13 @@
 const path = require('path')
 
 module.exports = {
-  watchFolders: [
-    path.join(__dirname, 'external'),
-  ],
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: false,
-        inlineRequires: false,
-      },
-    }),
-  }
+    watchFolders: [path.join(__dirname, 'external')],
+    transformer: {
+        getTransformOptions: async () => ({
+            transform: {
+                experimentalImportSupport: false,
+                inlineRequires: false,
+            },
+        }),
+    },
 }

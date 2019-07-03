@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 import Container from './result-container'
 import Body, { Props as BodyProps } from './result-page-body'
@@ -15,15 +15,19 @@ export interface InteractionProps {
     onStarPress: NativeTouchEventHandler
 }
 
-const ResultPage: React.StatelessComponent<Props & InteractionProps> = props => (
-    <Container renderFooter={() => (
-        <Footer {...props}>
-            <DeleteBtn onPress={props.onDeletePress} />
-            <TagBtn onPress={props.onTagPress} />
-            <CommentBtn onPress={props.onCommentPress} />
-            <StarBtn onPress={props.onStarPress} />
-        </Footer>
-    )}>
+const ResultPage: React.StatelessComponent<
+    Props & InteractionProps
+> = props => (
+    <Container
+        renderFooter={() => (
+            <Footer {...props}>
+                <DeleteBtn onPress={props.onDeletePress} />
+                <TagBtn onPress={props.onTagPress} />
+                <CommentBtn onPress={props.onCommentPress} />
+                <StarBtn onPress={props.onStarPress} />
+            </Footer>
+        )}
+    >
         <Body {...props} />
     </Container>
 )

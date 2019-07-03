@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 import Container from './result-container'
 import Body, { Props as BodyProps } from './result-note-body'
@@ -14,14 +14,19 @@ export interface InteractionProps {
     onStarPress: NativeTouchEventHandler
 }
 
-const ResultNote: React.StatelessComponent<Props & InteractionProps> = props => (
-    <Container isNote renderFooter={() => (
-        <Footer {...props}>
-            <DeleteBtn onPress={props.onDeletePress} />
-            <EditBtn onPress={props.onEditPress} />
-            <StarBtn onPress={props.onStarPress} />
-        </Footer>
-    )}>
+const ResultNote: React.StatelessComponent<
+    Props & InteractionProps
+> = props => (
+    <Container
+        isNote
+        renderFooter={() => (
+            <Footer {...props}>
+                <DeleteBtn onPress={props.onDeletePress} />
+                <EditBtn onPress={props.onEditPress} />
+                <StarBtn onPress={props.onStarPress} />
+            </Footer>
+        )}
+    >
         <Body {...props} />
     </Container>
 )

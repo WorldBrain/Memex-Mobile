@@ -1,20 +1,22 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from "ui-logic-core"
+import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 export interface State {
     isShown: boolean
 }
 export type Event = UIEvent<{
-    setIsShown: { isShown : boolean }
+    setIsShown: { isShown: boolean }
 }>
 
 export default class Logic extends UILogic<State, Event> {
     getInitialState() {
         return {
-            isShown: true
+            isShown: true,
         }
     }
 
-    setSharedText(incoming : IncomingUIEvent<State, Event, 'setIsShown'>) : UIMutation<State> {
+    setSharedText(
+        incoming: IncomingUIEvent<State, Event, 'setIsShown'>,
+    ): UIMutation<State> {
         return { isShown: { $set: incoming.event.isShown } }
     }
 }

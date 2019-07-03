@@ -1,5 +1,11 @@
-import React from 'react';
-import { View, Text, Button, NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
+import React from 'react'
+import {
+    View,
+    Text,
+    Button,
+    NativeSyntheticEvent,
+    NativeTouchEvent,
+} from 'react-native'
 
 import styles from './action-bar-segment.styles'
 

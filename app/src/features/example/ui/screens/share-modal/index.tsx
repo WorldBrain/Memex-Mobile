@@ -1,5 +1,5 @@
-import React from 'react';
-import { TouchableOpacity, Text} from 'react-native'
+import React from 'react'
+import { TouchableOpacity, Text } from 'react-native'
 import Modal from 'react-native-modalbox'
 
 import { ShareExt } from 'src/services/share-ext'
@@ -12,7 +12,7 @@ export interface Props {}
 export default class ShareModal extends StatefulUIElement<Props, State, Event> {
     private shareMenu: ShareExt
 
-    constructor(props : Props) {
+    constructor(props: Props) {
         super(props, { logic: new Logic() })
         this.shareMenu = new ShareExt({})
     }

@@ -1,18 +1,20 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React from 'react'
+import { Text, View } from 'react-native'
 import { ShareExt } from 'src/services/share-ext'
 
 import { StatefulUIElement } from 'src/ui/types'
-import Logic, { State, Event } from './logic';
+import Logic, { State, Event } from './logic'
 
-interface Props {
+interface Props {}
 
-}
-
-export default class ShareOutput extends StatefulUIElement<Props, State, Event> {
+export default class ShareOutput extends StatefulUIElement<
+    Props,
+    State,
+    Event
+> {
     private shareMenu: ShareExt
 
-    constructor(props : Props) {
+    constructor(props: Props) {
         super(props, { logic: new Logic() })
         this.shareMenu = new ShareExt({})
     }
@@ -32,10 +34,10 @@ export default class ShareOutput extends StatefulUIElement<Props, State, Event> 
         }
 
         return (
-          <View>
-            <Text>Received shared text:</Text>
-            <Text>{this.state.sharedText}</Text>
-          </View>
-        );
-      }
+            <View>
+                <Text>Received shared text:</Text>
+                <Text>{this.state.sharedText}</Text>
+            </View>
+        )
+    }
 }

@@ -1,4 +1,4 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from "ui-logic-core"
+import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { MetaPickerType } from '../../../types'
 
@@ -30,19 +30,27 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    setMetaViewType(incoming : IncomingUIEvent<State, Event, 'setMetaViewType'>) : UIMutation<State> {
+    setMetaViewType(
+        incoming: IncomingUIEvent<State, Event, 'setMetaViewType'>,
+    ): UIMutation<State> {
         return { metaViewShown: { $set: incoming.event.type } }
     }
 
-    setModalVisible(incoming : IncomingUIEvent<State, Event, 'setModalVisible'>) : UIMutation<State> {
-        return { isModalShown: { $set: incoming.event.shown }}
+    setModalVisible(
+        incoming: IncomingUIEvent<State, Event, 'setModalVisible'>,
+    ): UIMutation<State> {
+        return { isModalShown: { $set: incoming.event.shown } }
     }
 
-    setNoteText(incoming : IncomingUIEvent<State, Event, 'setNoteText'>) : UIMutation<State> {
+    setNoteText(
+        incoming: IncomingUIEvent<State, Event, 'setNoteText'>,
+    ): UIMutation<State> {
         return { noteText: { $set: incoming.event.value } }
     }
 
-    setPageStar(incoming : IncomingUIEvent<State, Event, 'setPageStar'>) : UIMutation<State> {
+    setPageStar(
+        incoming: IncomingUIEvent<State, Event, 'setPageStar'>,
+    ): UIMutation<State> {
         return { isStarred: { $set: incoming.event.value } }
     }
 }

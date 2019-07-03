@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import { Text, GestureResponderEvent } from 'react-native'
 
 import TouchableSegment from './touchable-segment'

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
 
 import MainLayout from './main-layout'

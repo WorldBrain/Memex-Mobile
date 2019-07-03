@@ -1,5 +1,10 @@
-import React from 'react';
-import { View, Text, NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
+import React from 'react'
+import {
+    View,
+    Text,
+    NativeSyntheticEvent,
+    NativeTouchEvent,
+} from 'react-native'
 
 import Button from 'src/ui/components/memex-btn'
 import styles from './main-layout.styles'

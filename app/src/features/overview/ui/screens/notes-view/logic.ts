@@ -1,15 +1,15 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from "ui-logic-core"
+import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import initTestData from './test-data'
 import { NotesSection } from './types'
 
 export interface State {
-    sections : NotesSection[]
+    sections: NotesSection[]
 }
 
 export type Event = UIEvent<{
-    setSections: { sections : NotesSection[] }
-    toggleNotes : { }
+    setSections: { sections: NotesSection[] }
+    toggleNotes: {}
 }>
 
 export default class Logic extends UILogic<State, Event> {
@@ -17,7 +17,9 @@ export default class Logic extends UILogic<State, Event> {
         return initTestData()
     }
 
-    setText(incoming : IncomingUIEvent<State, Event, 'setSections'>) : UIMutation<State> {
+    setText(
+        incoming: IncomingUIEvent<State, Event, 'setSections'>,
+    ): UIMutation<State> {
         return { sections: { $set: incoming.event.sections } }
     }
 }

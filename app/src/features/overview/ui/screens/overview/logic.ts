@@ -1,13 +1,13 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from "ui-logic-core"
+import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { ResultType } from '../../../types'
 
 export interface State {
-    selectedResultType : ResultType
+    selectedResultType: ResultType
     showCollectionsView: boolean
 }
 export type Event = UIEvent<{
-    setResultType: { resultType : ResultType }
+    setResultType: { resultType: ResultType }
     setShowCollectionsView: { show: boolean }
 }>
 
@@ -19,11 +19,15 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    setResultType(incoming : IncomingUIEvent<State, Event, 'setResultType'>) : UIMutation<State> {
+    setResultType(
+        incoming: IncomingUIEvent<State, Event, 'setResultType'>,
+    ): UIMutation<State> {
         return { selectedResultType: { $set: incoming.event.resultType } }
     }
 
-    setShowCollectionsView(incoming : IncomingUIEvent<State, Event, 'setShowCollectionsView'>) : UIMutation<State> {
+    setShowCollectionsView(
+        incoming: IncomingUIEvent<State, Event, 'setShowCollectionsView'>,
+    ): UIMutation<State> {
         return { showCollectionsView: { $set: incoming.event.show } }
     }
 }

@@ -5,9 +5,12 @@ export interface DefaultProps {
     navigation: NavigationScreenProp<NavigationRoute>
 }
 
-export abstract class StatefulUIElement<Props, State, Event>
-    extends UIElement<Props & DefaultProps, State, Event> {
-        constructor(props, logic) {
-            super(props, logic)
-        }
+export abstract class StatefulUIElement<Props, State, Event> extends UIElement<
+    Props & DefaultProps,
+    State,
+    Event
+> {
+    constructor(props, logic) {
+        super(props, logic)
     }
+}

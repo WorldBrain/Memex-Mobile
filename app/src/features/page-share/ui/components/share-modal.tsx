@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import { View } from 'react-native'
 import Modal from 'react-native-modalbox'
 
@@ -16,9 +16,7 @@ const ShareModal: React.StatelessComponent<Props> = props => (
         onClosed={props.onClosed}
         isOpen={props.isModalShown}
     >
-        <View style={styles.container}>
-            {props.children}
-        </View>
+        <View style={styles.container}>{props.children}</View>
     </Modal>
 )
 

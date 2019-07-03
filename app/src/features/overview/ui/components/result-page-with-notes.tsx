@@ -1,5 +1,5 @@
-import React from 'react';
-import { FlatList, View, ListRenderItem } from 'react-native';
+import React from 'react'
+import { FlatList, View, ListRenderItem } from 'react-native'
 
 import styles from './result-page-with-notes.styles'
 import ResultPage, {
@@ -37,13 +37,14 @@ class ResultPageWithNotes extends React.PureComponent<Props> {
                 <ResultPage {...pageProps} />
                 <View style={styles.notesDropdown}>
                     <Dropdown isOpen={isOpen} resultsCount={notes.length} />
-                    {isOpen &&
-                    <FlatList
-                        renderItem={this.renderNote}
-                        data={this.props.notes}
-                        keyExtractor={(item, index) => index.toString()}
-                        style={styles.list}
-                    />}
+                    {isOpen && (
+                        <FlatList
+                            renderItem={this.renderNote}
+                            data={this.props.notes}
+                            keyExtractor={(item, index) => index.toString()}
+                            style={styles.list}
+                        />
+                    )}
                 </View>
             </>
         )

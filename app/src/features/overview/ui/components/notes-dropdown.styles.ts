@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
     dropdown: {
@@ -11,7 +11,5 @@ export default StyleSheet.create({
         color: '#a2a2a2',
         marginRight: 5,
     },
-    toggleIcon: {
-
-    },
+    toggleIcon: {},
 })

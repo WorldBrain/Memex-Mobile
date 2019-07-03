@@ -1,5 +1,5 @@
-import React from 'react';
-import { View } from "react-native";
+import React from 'react'
+import { View } from 'react-native'
 
 import styles from './result-container.styles'
 
@@ -9,7 +9,7 @@ export interface Props {
 }
 
 const Result: React.StatelessComponent<Props> = props => (
-    <View style={[styles.result, props.isNote ? styles.resultNote : null]} >
+    <View style={[styles.result, props.isNote ? styles.resultNote : null]}>
         {props.children}
         {props.renderFooter()}
     </View>

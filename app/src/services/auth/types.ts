@@ -1,2 +1,1 @@
-export interface AuthService {
-}
+export interface AuthService {}

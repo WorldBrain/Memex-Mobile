@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
     footer: {
@@ -14,6 +14,6 @@ export default StyleSheet.create({
     actionBtns: {
         borderWidth: 0.5,
         borderColor: '#d6d7da',
-        width: 100
+        width: 100,
     },
 })

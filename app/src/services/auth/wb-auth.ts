@@ -1,5 +1,3 @@
-import { AuthService } from "./types";
+import { AuthService } from './types'
 
-export class WorldBrainAuthService implements AuthService {
-
-}
+export class WorldBrainAuthService implements AuthService {}

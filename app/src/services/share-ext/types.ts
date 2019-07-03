@@ -1,9 +1,9 @@
 export interface SharedData {
-  type: string;
-  value: string;
+    type: string
+    value: string
 }
 
 export interface ShareAPI {
-  data(): Promise<SharedData>;
-  close(): Promise<void>;
+    data(): Promise<SharedData>
+    close(): Promise<void>
 }

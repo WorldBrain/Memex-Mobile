@@ -44,5 +44,5 @@ export default (): State => ({
             titleText: 'This is a test site - route 6',
             date: '5 mins ago',
         },
-    ]
+    ],
 })
