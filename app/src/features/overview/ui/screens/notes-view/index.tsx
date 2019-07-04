@@ -13,6 +13,8 @@ import ResultPage, {
 } from '../../components/result-page-with-notes'
 import Logic, { State, Event } from './logic'
 import styles from './styles'
+import { PageWithNotes } from 'src/features/overview/types'
+import { EditorMode } from 'src/features/page-editor/types'
 
 interface Props {}
 
@@ -21,15 +23,18 @@ export default class NotesView extends StatefulUIElement<Props, State, Event> {
         super(props, { logic: new Logic() })
     }
 
-    private renderPage: ListRenderItem<PageProps> = ({ item, index }) => (
+    private navToPageEditor = (mode: EditorMode, page: PageWithNotes) => () =>
+        this.props.navigation.navigate('PageEditor', { page, mode })
+
+    private renderPage: ListRenderItem<PageWithNotes> = ({ item, index }) => (
         <ResultPage
-            initNoteDelete={() => console.log(item)}
-            initNoteEdit={() => console.log(item)}
-            initNoteStar={() => console.log(item)}
+            initNoteDelete={() => () => console.log(item)}
+            initNoteEdit={() => () => console.log()}
+            initNoteStar={() => () => console.log(item)}
             onStarPress={() => console.log(item)}
-            onCommentPress={() => console.log(item)}
+            onCommentPress={this.navToPageEditor('notes', item)}
             onDeletePress={() => console.log(item)}
-            onTagPress={() => console.log(item)}
+            onTagPress={this.navToPageEditor('tags', item)}
             key={index}
             {...item}
         />

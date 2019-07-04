@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+    Text,
     Image,
     ButtonProps,
     TouchableOpacity,
@@ -20,7 +21,8 @@ const ActionBtn: React.StatelessComponent<Props & OwnProps> = props => (
         activeOpacity={0.5}
         onPress={props.onPress}
     >
-        <Image source={props.iconSource} style={styles.icon} />
+        {/* <Image source={props.iconSource} style={styles.icon} /> */}
+        <Text>{props.children}</Text>
     </TouchableOpacity>
 )
 

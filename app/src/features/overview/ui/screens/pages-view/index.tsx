@@ -4,8 +4,9 @@ import { StatefulUIElement } from 'src/ui/types'
 
 import Logic, { State, Event } from './logic'
 import styles from './styles'
-import ResultPage, { Props as PageProps } from '../../components/result-page'
+import ResultPage from '../../components/result-page'
 import { Page } from 'src/features/overview/types'
+import { EditorMode } from 'src/features/page-editor/types'
 
 interface Props {}
 
@@ -14,12 +15,15 @@ export default class PagesView extends StatefulUIElement<Props, State, Event> {
         super(props, { logic: new Logic() })
     }
 
+    private navToPageEditor = (mode: EditorMode, page: Page) => () =>
+        this.props.navigation.navigate('PageEditor', { page, mode })
+
     private renderPage: ListRenderItem<Page> = ({ item, index }) => (
         <ResultPage
-            onCommentPress={() => console.log(item)}
+            onCommentPress={this.navToPageEditor('notes', item)}
             onDeletePress={() => console.log(item)}
             onStarPress={() => console.log(item)}
-            onTagPress={() => console.log(item)}
+            onTagPress={this.navToPageEditor('tags', item)}
             key={index}
             {...item}
         />

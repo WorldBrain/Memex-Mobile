@@ -18,7 +18,7 @@ export default class Logic extends UILogic<State, Event> {
         return {
             showCollectionsView: false,
             showSideMenu: false,
-            selectedResultType: 'notes',
+            selectedResultType: 'pages',
         }
     }
 
