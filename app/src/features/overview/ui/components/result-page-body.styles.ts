@@ -9,10 +9,10 @@ export default StyleSheet.create({
     },
     titleText: {
         fontWeight: '500',
-        fontSize: 16,
+        fontSize: 18,
     },
     linkText: {
         color: '#b0b0b0',
-        fontSize: 13,
+        fontSize: 16,
     },
 })
