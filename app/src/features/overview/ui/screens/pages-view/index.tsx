@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, ListRenderItem, View } from 'react-native'
+import { FlatList, ListRenderItem, View, Alert } from 'react-native'
 import { StatefulUIElement } from 'src/ui/types'
 
 import Logic, { State, Event } from './logic'
@@ -18,10 +18,20 @@ export default class PagesView extends StatefulUIElement<Props, State, Event> {
     private navToPageEditor = (mode: EditorMode, page: Page) => () =>
         this.props.navigation.navigate('PageEditor', { page, mode })
 
+    private handleDeletePress = () =>
+        Alert.alert(
+            'Delete confirm',
+            'Do you really want to delete this page?',
+            [
+                { text: 'Cancel', onPress: () => console.log('cancel') },
+                { text: 'Delete', onPress: () => console.log('delete') },
+            ],
+        )
+
     private renderPage: ListRenderItem<Page> = ({ item, index }) => (
         <ResultPage
             onCommentPress={this.navToPageEditor('notes', item)}
-            onDeletePress={() => console.log(item)}
+            onDeletePress={this.handleDeletePress}
             onStarPress={() => console.log(item)}
             onTagPress={this.navToPageEditor('tags', item)}
             key={index}

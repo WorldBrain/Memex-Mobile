@@ -2,6 +2,7 @@ import React from 'react'
 import {
     Text,
     View,
+    Alert,
     SectionList,
     ListRenderItem,
     SectionListRenderItem,
@@ -26,14 +27,34 @@ export default class NotesView extends StatefulUIElement<Props, State, Event> {
     private navToPageEditor = (mode: EditorMode, page: PageWithNotes) => () =>
         this.props.navigation.navigate('PageEditor', { page, mode })
 
+    private handleDeletePagePress = () =>
+        Alert.alert(
+            'Delete confirm',
+            'Do you really want to delete this page?',
+            [
+                { text: 'Cancel', onPress: () => console.log('cancel') },
+                { text: 'Delete', onPress: () => console.log('delete') },
+            ],
+        )
+
+    private handleDeleteNotePress = () =>
+        Alert.alert(
+            'Delete confirm',
+            'Do you really want to delete this note?',
+            [
+                { text: 'Cancel', onPress: () => console.log('cancel') },
+                { text: 'Delete', onPress: () => console.log('delete') },
+            ],
+        )
+
     private renderPage: ListRenderItem<PageWithNotes> = ({ item, index }) => (
         <ResultPage
-            initNoteDelete={() => () => console.log(item)}
-            initNoteEdit={() => () => console.log()}
+            initNoteEdit={() => () => console.log(item)}
+            initNoteDelete={() => () => this.handleDeleteNotePress()}
             initNoteStar={() => () => console.log(item)}
             onStarPress={() => console.log(item)}
             onCommentPress={this.navToPageEditor('notes', item)}
-            onDeletePress={() => console.log(item)}
+            onDeletePress={this.handleDeletePagePress}
             onTagPress={this.navToPageEditor('tags', item)}
             key={index}
             {...item}
