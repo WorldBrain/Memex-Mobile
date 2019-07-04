@@ -9,6 +9,7 @@ export default StyleSheet.create({
         paddingHorizontal: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
+        maxHeight: 50,
     },
     mainText: {
         fontSize: 18,

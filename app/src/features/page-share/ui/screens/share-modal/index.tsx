@@ -1,5 +1,6 @@
 import React from 'react'
 
+import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { StatefulUIElement } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import { ShareExt } from 'src/services/share-ext'
@@ -9,7 +10,7 @@ import NoteInput from '../../components/note-input-segment'
 import StarPage from '../../components/star-page-segment'
 import AddCollection from '../../components/add-collections-segment'
 import AddTags from '../../components/add-tags-segment'
-import { MetaPickerType } from '../../../types'
+import { MetaType } from 'src/features/meta-picker/types'
 
 interface Props {}
 
@@ -25,7 +26,7 @@ export default class ShareModalScreen extends StatefulUIElement<
         this.shareExt = new ShareExt({})
     }
 
-    private initHandleMetaShow = (type: MetaPickerType) => e =>
+    private initHandleMetaShow = (type: MetaType) => e =>
         this.processEvent('setMetaViewType', { type })
 
     private handleClose = () => {
@@ -34,13 +35,25 @@ export default class ShareModalScreen extends StatefulUIElement<
         this.processEvent('setModalVisible', { shown: false })
     }
 
-    render() {
+    renderMetaPicker() {
         return (
-            <ShareModal
-                isModalShown={this.state.isModalShown}
-                onClosed={this.handleClose}
-            >
+            <>
                 <ActionBar
+                    cancelBtnText="Back"
+                    onCancelPress={() =>
+                        this.processEvent('setMetaViewType', { type: null })
+                    }
+                />
+                <MetaPicker type={this.state.metaViewShown} {...this.props} />
+            </>
+        )
+    }
+
+    renderInputs() {
+        return (
+            <>
+                <ActionBar
+                    cancelBtnText="Undo"
                     onCancelPress={this.handleClose}
                     onConfirmPress={this.handleClose}
                 >
@@ -68,6 +81,20 @@ export default class ShareModalScreen extends StatefulUIElement<
                     onPress={this.initHandleMetaShow('tags')}
                     count={this.state.tagCount}
                 />
+            </>
+        )
+    }
+
+    render() {
+        return (
+            <ShareModal
+                isModalShown={this.state.isModalShown}
+                onClosed={this.handleClose}
+                stretched={!!this.state.metaViewShown}
+            >
+                {this.state.metaViewShown
+                    ? this.renderMetaPicker()
+                    : this.renderInputs()}
             </ShareModal>
         )
     }

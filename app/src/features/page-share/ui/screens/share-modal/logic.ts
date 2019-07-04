@@ -1,6 +1,6 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { MetaPickerType } from '../../../types'
+import { MetaType } from 'src/features/meta-picker/types'
 
 export interface State {
     statusText: string
@@ -9,10 +9,10 @@ export interface State {
     tagCount: number
     isStarred: boolean
     isModalShown: boolean
-    metaViewShown?: MetaPickerType
+    metaViewShown?: MetaType
 }
 export type Event = UIEvent<{
-    setMetaViewType: { type: MetaPickerType }
+    setMetaViewType: { type: MetaType }
     setModalVisible: { shown: boolean }
     setNoteText: { value: string }
     setPageStar: { value: boolean }

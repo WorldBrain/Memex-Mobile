@@ -7,9 +7,12 @@ export default StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'flex-start',
         marginHorizontal: 15,
-        marginTop: 100,
+        marginTop: 80,
         marginBottom: 200,
         borderRadius: 10,
+    },
+    stretched: {
+        marginBottom: 20,
     },
     modal: {
         backgroundColor: 'transparent',
