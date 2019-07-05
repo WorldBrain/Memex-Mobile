@@ -10,21 +10,23 @@ export interface Collection {
     name: string
 }
 
-export interface Page {
+export interface Result {
     url: string
-    pageUrl: string
-    titleText: string
-    favIcon?: string
     date: string
+    isStarred?: boolean
+}
+
+export interface Page extends Result {
+    pageUrl: string
+    favIcon?: string
+    titleText: string
 }
 
 export interface PageWithNotes extends Page {
     notes: Note[]
 }
 
-export interface Note {
-    url: string
+export interface Note extends Result {
     noteText?: string
     commentText?: string
-    date: string
 }

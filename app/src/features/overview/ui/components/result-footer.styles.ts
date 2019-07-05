@@ -4,7 +4,8 @@ export default StyleSheet.create({
     footer: {
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginTop: 15,
     },
     date: {
@@ -15,8 +16,7 @@ export default StyleSheet.create({
     actionBtns: {
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderWidth: 0.5,
-        borderColor: '#d6d7da',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
     },
 })

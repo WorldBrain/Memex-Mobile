@@ -7,6 +7,7 @@ import styles from './styles'
 import ResultPage from '../../components/result-page'
 import { Page } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
+import * as selectors from './selectors'
 
 interface Props {}
 
@@ -15,25 +16,36 @@ export default class PagesView extends StatefulUIElement<Props, State, Event> {
         super(props, { logic: new Logic() })
     }
 
-    private navToPageEditor = (mode: EditorMode, page: Page) => () =>
+    private navToPageEditor = (page: Page, mode: EditorMode) => () =>
         this.props.navigation.navigate('PageEditor', { page, mode })
 
-    private handleDeletePress = () =>
+    private initHandleDeletePress = (page: Page) => () =>
         Alert.alert(
             'Delete confirm',
             'Do you really want to delete this page?',
             [
-                { text: 'Cancel', onPress: () => console.log('cancel') },
-                { text: 'Delete', onPress: () => console.log('delete') },
+                { text: 'Cancel' },
+                {
+                    text: 'Delete',
+                    onPress: this.initHandlePageDelete(page),
+                },
             ],
         )
 
+    private initHandlePageDelete = ({ url }: Page) => () => {
+        this.processEvent('deletePage', { url })
+    }
+
+    private initHandlePageStar = ({ url }: Page) => () => {
+        this.processEvent('togglePageStar', { url })
+    }
+
     private renderPage: ListRenderItem<Page> = ({ item, index }) => (
         <ResultPage
-            onCommentPress={this.navToPageEditor('notes', item)}
-            onDeletePress={this.handleDeletePress}
-            onStarPress={() => console.log(item)}
-            onTagPress={this.navToPageEditor('tags', item)}
+            onDeletePress={this.initHandleDeletePress(item)}
+            onStarPress={this.initHandlePageStar(item)}
+            onCommentPress={this.navToPageEditor(item, 'notes')}
+            onTagPress={this.navToPageEditor(item, 'tags')}
             key={index}
             {...item}
         />
@@ -44,7 +56,7 @@ export default class PagesView extends StatefulUIElement<Props, State, Event> {
             <View style={styles.container}>
                 <FlatList
                     renderItem={this.renderPage}
-                    data={this.state.pages}
+                    data={selectors.results(this.state)}
                     style={styles.pageList}
                     keyExtractor={(item, index) => index.toString()}
                 />

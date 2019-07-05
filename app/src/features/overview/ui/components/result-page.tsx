@@ -3,10 +3,18 @@ import React from 'react'
 import Container from './result-container'
 import Body, { Props as BodyProps } from './result-page-body'
 import Footer, { Props as FooterProps } from './result-footer'
-import { DeleteBtn, TagBtn, CommentBtn, StarBtn } from './action-btns'
+import {
+    DeleteBtn,
+    TagBtn,
+    CommentBtn,
+    StarBtn,
+    FullStarBtn,
+} from './action-btns'
 import { NativeTouchEventHandler } from '../../types'
 
-export interface Props extends FooterProps, BodyProps {}
+export interface Props extends FooterProps, BodyProps {
+    isStarred?: boolean
+}
 
 export interface InteractionProps {
     onDeletePress: NativeTouchEventHandler
@@ -24,7 +32,11 @@ const ResultPage: React.StatelessComponent<
                 <DeleteBtn onPress={props.onDeletePress} />
                 <TagBtn onPress={props.onTagPress} />
                 <CommentBtn onPress={props.onCommentPress} />
-                <StarBtn onPress={props.onStarPress} />
+                {props.isStarred ? (
+                    <FullStarBtn onPress={props.onStarPress} />
+                ) : (
+                    <StarBtn onPress={props.onStarPress} />
+                )}
             </Footer>
         )}
     >

@@ -3,10 +3,12 @@ import React from 'react'
 import Container from './result-container'
 import Body, { Props as BodyProps } from './result-note-body'
 import Footer, { Props as FooterProps } from './result-footer'
-import { DeleteBtn, EditBtn, StarBtn } from './action-btns'
+import { DeleteBtn, EditBtn, StarBtn, FullStarBtn } from './action-btns'
 import { NativeTouchEventHandler } from '../../types'
 
-export interface Props extends FooterProps, BodyProps {}
+export interface Props extends FooterProps, BodyProps {
+    isStarred?: boolean
+}
 
 export interface InteractionProps {
     clearBackground?: boolean
@@ -24,7 +26,11 @@ const ResultNote: React.StatelessComponent<
             <Footer {...props}>
                 <DeleteBtn onPress={props.onDeletePress} />
                 <EditBtn onPress={props.onEditPress} />
-                <StarBtn onPress={props.onStarPress} />
+                {props.isStarred ? (
+                    <FullStarBtn onPress={props.onStarPress} />
+                ) : (
+                    <StarBtn onPress={props.onStarPress} />
+                )}
             </Footer>
         )}
     >
