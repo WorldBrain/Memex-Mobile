@@ -4,6 +4,8 @@ import { StatefulUIElement } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import MainLayout from '../../components/main-layout'
 import Footer from '../../components/footer'
+import NoteAdder from '../../components/note-adder'
+import ExistingNotes from '../../components/existing-notes'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 
@@ -30,7 +32,47 @@ export default class SideMenuScreen extends StatefulUIElement<
         }
     }
 
-    renderMetaPicker(type: MetaType) {
+    private handleNewNoteAdd = () => {
+        this.processEvent('saveNote', { text: this.state.noteAdderInput })
+        this.handleHideNoteAdder()
+    }
+
+    private handleHideNoteAdder = () => {
+        this.processEvent('setShowNoteAdder', { show: false })
+        this.processEvent('setInputText', { text: '' })
+    }
+
+    private renderNoteAdder() {
+        if (!this.state.showNoteAdder) {
+            return null
+        }
+
+        return (
+            <NoteAdder
+                onChange={text => this.processEvent('setInputText', { text })}
+                value={this.state.noteAdderInput}
+                onCancelPress={this.handleHideNoteAdder}
+                onSavePress={this.handleNewNoteAdd}
+            />
+        )
+    }
+
+    private renderNotes() {
+        return (
+            <ExistingNotes
+                noteAdder={this.renderNoteAdder()}
+                initNoteDelete={n => () => console.log(n)}
+                initNoteEdit={n => () => console.log(n)}
+                initNoteStar={n => () => console.log(n)}
+                onAddNotePress={() =>
+                    this.processEvent('setShowNoteAdder', { show: true })
+                }
+                notes={this.state.page.notes}
+            />
+        )
+    }
+
+    private renderMetaPicker(type: MetaType) {
         return (
             <>
                 <MetaPicker type={type} {...this.props} />
@@ -41,11 +83,12 @@ export default class SideMenuScreen extends StatefulUIElement<
 
     renderEditor() {
         switch (this.state.mode) {
+            case 'notes':
+                return this.renderNotes()
             case 'tags':
             case 'collections':
-                return this.renderMetaPicker(this.state.mode)
-            case 'notes':
             default:
+                return this.renderMetaPicker(this.state.mode)
         }
     }
 

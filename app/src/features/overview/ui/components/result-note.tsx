@@ -9,6 +9,7 @@ import { NativeTouchEventHandler } from '../../types'
 export interface Props extends FooterProps, BodyProps {}
 
 export interface InteractionProps {
+    clearBackground?: boolean
     onDeletePress: NativeTouchEventHandler
     onEditPress: NativeTouchEventHandler
     onStarPress: NativeTouchEventHandler
@@ -18,7 +19,7 @@ const ResultNote: React.StatelessComponent<
     Props & InteractionProps
 > = props => (
     <Container
-        isNote
+        isNote={!props.clearBackground}
         renderFooter={() => (
             <Footer {...props}>
                 <DeleteBtn onPress={props.onDeletePress} />

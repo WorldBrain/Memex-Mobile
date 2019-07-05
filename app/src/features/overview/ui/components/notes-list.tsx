@@ -8,6 +8,7 @@ import { Note } from 'src/features/overview/types'
 
 export interface Props {
     notes: Note[]
+    clearBackground?: boolean
     initNoteDelete: (note: Note) => NativeTouchEventHandler
     initNoteEdit: (note: Note) => NativeTouchEventHandler
     initNoteStar: (note: Note) => NativeTouchEventHandler
@@ -19,6 +20,7 @@ class NotesList extends React.PureComponent<Props> {
             onDeletePress={this.props.initNoteDelete(item)}
             onStarPress={this.props.initNoteStar(item)}
             onEditPress={this.props.initNoteEdit(item)}
+            clearBackground={this.props.clearBackground}
             key={index}
             {...item}
         />
