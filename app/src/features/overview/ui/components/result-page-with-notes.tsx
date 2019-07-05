@@ -1,5 +1,5 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, GestureResponderEvent } from 'react-native'
 
 import styles from './result-page-with-notes.styles'
 import ResultPage, {
@@ -11,13 +11,18 @@ import NoteList, { Props as NoteListProps } from './notes-list'
 
 export interface Props extends PageProps, PageInteractionProps, NoteListProps {
     isOpen?: boolean
+    onDropdownPress: (e: GestureResponderEvent) => void
 }
 
 const ResultPageWithNotes: React.StatelessComponent<Props> = props => (
     <>
         <ResultPage {...props} />
         <View style={styles.notesDropdown}>
-            <Dropdown isOpen={props.isOpen} resultsCount={props.notes.length} />
+            <Dropdown
+                isOpen={props.isOpen}
+                resultsCount={props.notes.length}
+                onPress={props.onDropdownPress}
+            />
             {props.isOpen && <NoteList {...props} />}
         </View>
     </>

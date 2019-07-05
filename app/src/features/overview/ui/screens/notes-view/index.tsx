@@ -4,18 +4,17 @@ import {
     View,
     Alert,
     SectionList,
-    ListRenderItem,
     SectionListRenderItem,
 } from 'react-native'
 
 import { StatefulUIElement } from 'src/ui/types'
-import ResultPage, {
-    Props as PageProps,
-} from '../../components/result-page-with-notes'
+import ResultPage from '../../components/result-page-with-notes'
 import Logic, { State, Event } from './logic'
 import styles from './styles'
 import { PageWithNotes } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
+import * as selectors from './selectors'
+import { NotesSection } from './types'
 
 interface Props {}
 
@@ -27,41 +26,80 @@ export default class NotesView extends StatefulUIElement<Props, State, Event> {
     private navToPageEditor = (mode: EditorMode, page: PageWithNotes) => () =>
         this.props.navigation.navigate('PageEditor', { page, mode })
 
-    private handleDeletePagePress = () =>
+    private initHandleDeletePagePress = args => () =>
         Alert.alert(
             'Delete confirm',
             'Do you really want to delete this page?',
             [
-                { text: 'Cancel', onPress: () => console.log('cancel') },
-                { text: 'Delete', onPress: () => console.log('delete') },
+                { text: 'Cancel' },
+                {
+                    text: 'Delete',
+                    onPress: () => this.processEvent('deletePage', args),
+                },
             ],
         )
 
-    private handleDeleteNotePress = () =>
+    private initHandleDeleteNotePress = args => () =>
         Alert.alert(
             'Delete confirm',
             'Do you really want to delete this note?',
             [
-                { text: 'Cancel', onPress: () => console.log('cancel') },
-                { text: 'Delete', onPress: () => console.log('delete') },
+                { text: 'Cancel' },
+                {
+                    text: 'Delete',
+                    onPress: () => this.processEvent('deleteNote', args),
+                },
             ],
         )
 
-    private renderPage: ListRenderItem<PageWithNotes> = ({ item, index }) => (
+    private initHandleToggleNoteStar = args => () =>
+        this.processEvent('toggleNoteStar', args)
+
+    private renderPage: SectionListRenderItem<PageWithNotes> = ({
+        item,
+        index,
+        section,
+    }) => (
         <ResultPage
             initNoteEdit={() => () => console.log(item)}
-            initNoteDelete={() => () => this.handleDeleteNotePress()}
-            initNoteStar={() => () => console.log(item)}
-            onStarPress={() => console.log(item)}
+            initNoteDelete={note =>
+                this.initHandleDeleteNotePress({
+                    section: section.title,
+                    pageUrl: item.url,
+                    noteUrl: note.url,
+                })
+            }
+            initNoteStar={note =>
+                this.initHandleToggleNoteStar({
+                    section: section.title,
+                    pageUrl: item.url,
+                    noteUrl: note.url,
+                })
+            }
+            onStarPress={() =>
+                this.processEvent('togglePageStar', {
+                    section: section.title,
+                    pageUrl: item.url,
+                })
+            }
             onCommentPress={this.navToPageEditor('notes', item)}
-            onDeletePress={this.handleDeletePagePress}
+            onDeletePress={this.initHandleDeletePagePress({
+                section: section.title,
+                pageUrl: item.url,
+            })}
             onTagPress={this.navToPageEditor('tags', item)}
+            onDropdownPress={() =>
+                this.processEvent('toggleShowNotes', {
+                    section: section.title,
+                    pageUrl: item.url,
+                })
+            }
             key={index}
             {...item}
         />
     )
 
-    private renderSection: SectionListRenderItem<PageProps> = ({
+    private renderSection: SectionListRenderItem<NotesSection> = ({
         section: { title },
     }) => <Text style={styles.sectionText}>{title}</Text>
 
@@ -71,7 +109,7 @@ export default class NotesView extends StatefulUIElement<Props, State, Event> {
                 <SectionList
                     renderItem={this.renderPage}
                     renderSectionHeader={this.renderSection}
-                    sections={this.state.sections}
+                    sections={selectors.results(this.state)}
                     style={styles.pageList}
                     keyExtractor={(item, index) => index.toString()}
                 />

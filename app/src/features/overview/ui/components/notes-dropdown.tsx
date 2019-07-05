@@ -1,20 +1,21 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { Text, TouchableOpacity, GestureResponderEvent } from 'react-native'
 
 import styles from './notes-dropdown.styles'
 
 export interface Props {
     isOpen: boolean
     resultsCount: number
+    onPress: (e: GestureResponderEvent) => void
 }
 
 const NotesDropdown: React.StatelessComponent<Props> = props => (
-    <View style={styles.dropdown}>
+    <TouchableOpacity style={styles.dropdown} onPress={props.onPress}>
         <Text style={styles.resultsCount}>{props.resultsCount} results</Text>
         <Text style={styles.toggleIcon}>
             {props.isOpen ? 'OPEN' : 'CLOSED'}
         </Text>
-    </View>
+    </TouchableOpacity>
 )
 
 export default NotesDropdown

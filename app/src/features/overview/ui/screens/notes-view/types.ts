@@ -1,10 +1,14 @@
-import { PageWithNotes } from 'src/features/overview/types'
+import { PageWithNotes, Note } from 'src/features/overview/types'
 
-export interface Page extends PageWithNotes {
+export interface Page extends Omit<PageWithNotes, 'notes'> {
     isOpen?: boolean
+    notes: Map<string, Note>
 }
 
 export interface NotesSection {
     title: string
-    data: Page[]
+    data: PageWithNotes[]
 }
+
+export type Pages = Map<string, Page>
+export type ResultSections = Map<string, Pages>
