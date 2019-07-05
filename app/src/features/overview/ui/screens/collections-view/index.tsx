@@ -6,6 +6,7 @@ import Logic, { State, Event } from './logic'
 import styles from './styles'
 import CollectionEntry from '../../components/collection-entry'
 import { Collection } from 'src/features/overview/types'
+import * as selectors from './selectors'
 
 interface Props {}
 
@@ -24,8 +25,8 @@ export default class CollectionsView extends StatefulUIElement<
         <CollectionEntry
             key={id}
             name={name}
-            isSelected={id === this.state.selectedCollection}
-            onSelect={e => this.processEvent('selectCollection', { id })}
+            isSelected={name === selectors.selected(this.state)}
+            onSelect={e => this.processEvent('selectCollection', { name })}
         />
     )
 
@@ -34,7 +35,7 @@ export default class CollectionsView extends StatefulUIElement<
             <View style={styles.container}>
                 <FlatList
                     renderItem={this.renderCollection}
-                    data={this.state.collections}
+                    data={selectors.collectionsList(this.state)}
                     style={styles.list}
                     keyExtractor={(item, index) => index.toString()}
                 />

@@ -25,6 +25,17 @@ export default StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
+    collectionsBtn: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    collectionsIcon: {
+        height: 25,
+        width: 25,
+        marginRight: 5,
+        opacity: 0.3,
+    },
     collectionsText: {
         fontSize: 16,
         fontWeight: 'bold',

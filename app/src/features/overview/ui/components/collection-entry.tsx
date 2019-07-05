@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, TouchableOpacity, GestureResponderEvent } from 'react-native'
 
-import styles from './collection-etnry.styles'
+import styles from './collection-entry.styles'
 
 export interface Props {
     name: string

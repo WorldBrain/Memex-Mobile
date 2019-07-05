@@ -6,6 +6,6 @@ export default StyleSheet.create({
         flexDirection: 'column',
     },
     list: {
-        marginLeft: 30,
+        marginHorizontal: 30,
     },
 })

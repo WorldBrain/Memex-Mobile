@@ -4,14 +4,13 @@ import { Collection } from 'src/features/overview/types'
 import initTestData from './test-data'
 
 export interface State {
-    selectedCollection?: number
-    collections: Collection[]
+    selectedCollection?: string
+    collections: Set<Collection>
 }
 
 export type Event = UIEvent<{
-    setCollections: { collections: Collection[] }
-    selectCollection: { id: number }
-    clearSelection: {}
+    setCollections: { collections: Set<Collection> }
+    selectCollection: { name: string }
 }>
 
 export default class Logic extends UILogic<State, Event> {
@@ -28,10 +27,6 @@ export default class Logic extends UILogic<State, Event> {
     selectCollection(
         incoming: IncomingUIEvent<State, Event, 'selectCollection'>,
     ): UIMutation<State> {
-        return { selectedCollection: { $set: incoming.event.id } }
-    }
-
-    clearSelection() {
-        return { selectedCollection: { $set: null } }
+        return { selectedCollection: { $set: incoming.event.name } }
     }
 }

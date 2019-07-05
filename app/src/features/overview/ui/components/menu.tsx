@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, Image, TouchableOpacity } from 'react-native'
 
 import styles from './menu.styles'
 import { ResultType } from '../../types'
@@ -21,7 +21,14 @@ const Menu: React.StatelessComponent<Props> = props => (
         ]}
     >
         <View style={styles.topContainer}>
-            <TouchableOpacity onPress={props.toggleCollectionsView}>
+            <TouchableOpacity
+                style={styles.collectionsBtn}
+                onPress={props.toggleCollectionsView}
+            >
+                <Image
+                    style={styles.collectionsIcon}
+                    source={require('../img/collections-full.png')}
+                />
                 <Text style={styles.collectionsText}>All Collections</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={props.toggleMenuView}>
