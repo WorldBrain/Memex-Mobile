@@ -16,13 +16,8 @@ interface OwnProps {
 }
 
 const ActionBtn: React.StatelessComponent<Props & OwnProps> = props => (
-    <TouchableOpacity
-        style={styles.actionBtn}
-        activeOpacity={0.5}
-        onPress={props.onPress}
-    >
-        {/* <Image source={props.iconSource} style={styles.icon} /> */}
-        <Text>{props.children}</Text>
+    <TouchableOpacity style={styles.actionBtn} onPress={props.onPress}>
+        <Image source={props.iconSource} style={styles.icon} />
     </TouchableOpacity>
 )
 

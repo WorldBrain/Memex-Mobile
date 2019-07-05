@@ -4,16 +4,14 @@ import { ImageSourcePropType } from 'react-native'
 import ActionBtn, { Props } from './action-btn'
 
 const createBtn = (
-    name: string,
     icon: ImageSourcePropType,
 ): React.StatelessComponent<Props> => props => (
-    <ActionBtn iconSource={icon} {...props}>
-        {name}
-    </ActionBtn>
+    <ActionBtn iconSource={icon} {...props} />
 )
 
-export const StarBtn = createBtn('Star', { uri: '' })
-export const CommentBtn = createBtn('Note', { uri: '' })
-export const EditBtn = createBtn('Edit', { uri: '' })
-export const DeleteBtn = createBtn('Del', { uri: '' })
-export const TagBtn = createBtn('Tag', { uri: '' })
+export const StarBtn = createBtn(require('../img/star.png'))
+export const FullStarBtn = createBtn(require('../img/star-full.png'))
+export const CommentBtn = createBtn(require('../img/comment.png'))
+export const EditBtn = createBtn(require('../img/edit.png'))
+export const DeleteBtn = createBtn(require('../img/trash.png'))
+export const TagBtn = createBtn(require('../img/tag.png'))

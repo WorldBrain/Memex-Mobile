@@ -1,6 +1,12 @@
 import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
-    actionBtn: {},
-    icon: {},
+    actionBtn: {
+        marginHorizontal: 4,
+    },
+    icon: {
+        width: 16,
+        height: 16,
+        opacity: 0.3,
+    },
 })
