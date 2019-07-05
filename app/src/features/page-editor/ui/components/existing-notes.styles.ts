@@ -20,13 +20,14 @@ export default StyleSheet.create({
         maxHeight: 35,
     },
     countIcon: {
-        flex: 1,
-        width: 25,
-        height: 25,
-        backgroundColor: '#c4c4c4',
+        width: 20,
+        height: 20,
+        opacity: 0.3,
     },
     addIcon: {
-        flex: 1,
+        width: 20,
+        height: 20,
+        opacity: 0.3,
     },
     mainText: {
         flex: 8,

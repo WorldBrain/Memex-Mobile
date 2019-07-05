@@ -1,5 +1,11 @@
 import React from 'react'
-import { View, Text, GestureResponderEvent } from 'react-native'
+import {
+    View,
+    Text,
+    Image,
+    GestureResponderEvent,
+    TouchableOpacity,
+} from 'react-native'
 
 import NoteList, {
     Props as NoteListProps,
@@ -15,11 +21,17 @@ const ExistingNotes: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
         {props.noteAdder}
         <View style={styles.headContainer}>
-            <View style={styles.countIcon} />
+            <Image
+                style={styles.countIcon}
+                source={require('src/features/overview/ui/img/comment-full.png')}
+            />
             <Text style={styles.mainText}>Existing Notes</Text>
-            <Text style={styles.addIcon} onPress={props.onAddNotePress}>
-                +
-            </Text>
+            <TouchableOpacity onPress={props.onAddNotePress}>
+                <Image
+                    style={styles.addIcon}
+                    source={require('src/ui/img/plus.png')}
+                />
+            </TouchableOpacity>
         </View>
         <View style={styles.noteListContainer}>
             <NoteList clearBackground {...props} />

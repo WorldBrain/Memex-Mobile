@@ -15,9 +15,8 @@ export default StyleSheet.create({
         backgroundColor: 'white',
     },
     backIcon: {
-        width: 25,
-        height: 25,
-        backgroundColor: '#c4c4c4',
+        width: 10,
+        height: 20,
         marginVertical: 30,
     },
     item: {

@@ -22,9 +22,8 @@ export default StyleSheet.create({
         fontSize: 18,
     },
     checkmark: {
-        width: 20,
-        height: 20,
-        backgroundColor: '#c4c4c4',
+        width: 25,
+        height: 25,
     },
     checkmarkHidden: {
         display: 'none',

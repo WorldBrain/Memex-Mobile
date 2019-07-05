@@ -19,4 +19,8 @@ export default StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
     },
+    starIcon: {
+        width: 25,
+        height: 25,
+    },
 })

@@ -1,6 +1,7 @@
 import React from 'react'
 import {
     View,
+    Image,
     TouchableOpacity,
     Text,
     GestureResponderEvent,
@@ -26,11 +27,12 @@ const MetaPickerEntry: React.StatelessComponent<Props> = props => (
             <View style={styles.entry}>
                 <Text style={styles.entryText}>{props.text}</Text>
             </View>
-            <View
+            <Image
                 style={[
                     styles.checkmark,
                     props.isChecked ? null : styles.checkmarkHidden,
                 ]}
+                source={require('src/ui/img/tick.png')}
             />
         </View>
     </TouchableOpacity>

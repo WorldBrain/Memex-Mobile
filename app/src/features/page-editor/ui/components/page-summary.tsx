@@ -1,7 +1,7 @@
 import React from 'react'
 import {
     View,
-    Text,
+    Image,
     TouchableOpacity,
     GestureResponderEvent,
 } from 'react-native'
@@ -18,7 +18,10 @@ export interface Props extends PageBodyProps {
 const MainLayout: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
         <TouchableOpacity onPress={props.onBackPress}>
-            <Text style={styles.backIcon}>{'<'}</Text>
+            <Image
+                style={styles.backIcon}
+                source={require('src/ui/img/arrow-prev.png')}
+            />
         </TouchableOpacity>
         <View style={styles.pageBodyContainer}>
             <PageBody {...props} />

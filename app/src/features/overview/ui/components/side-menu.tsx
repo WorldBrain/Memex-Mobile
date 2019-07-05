@@ -1,5 +1,10 @@
 import React from 'react'
-import { View, GestureResponderEvent, TouchableOpacity } from 'react-native'
+import {
+    View,
+    Image,
+    GestureResponderEvent,
+    TouchableOpacity,
+} from 'react-native'
 
 import styles from './side-menu.styles'
 
@@ -10,7 +15,10 @@ export interface Props {
 const SideMenu: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
         <TouchableOpacity onPress={props.onBackPress}>
-            <View style={styles.backIcon} />
+            <Image
+                style={styles.backIcon}
+                source={require('src/ui/img/arrow-next.png')}
+            />
         </TouchableOpacity>
         {props.children}
     </View>
