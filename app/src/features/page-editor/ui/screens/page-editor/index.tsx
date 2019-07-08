@@ -11,7 +11,7 @@ import { MetaType } from 'src/features/meta-picker/types'
 
 interface Props {}
 
-export default class SideMenuScreen extends StatefulUIElement<
+export default class PageEditorScreen extends StatefulUIElement<
     Props,
     State,
     Event
@@ -96,7 +96,7 @@ export default class SideMenuScreen extends StatefulUIElement<
         return (
             <MainLayout
                 {...this.state.page}
-                onBackPress={e => this.props.navigation.goBack()}
+                onBackPress={e => this.props.navigation.navigate('Overview')}
             >
                 {this.renderEditor()}
             </MainLayout>

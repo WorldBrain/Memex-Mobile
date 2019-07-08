@@ -1,6 +1,7 @@
 import {
     createSwitchNavigator,
-    createStackNavigator,
+    // NOTE: Sadly stack navigators seem to stop the share extension working :S
+    // createStackNavigator,
     createAppContainer,
 } from 'react-navigation'
 
@@ -9,18 +10,20 @@ import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
 import Sync from 'src/features/sync/ui/screens/sync'
 import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
 
-const OverviewNavigator = createStackNavigator(
-    {
-        Overview: { screen: Overview },
-        PageEditor: { screen: PageEditor },
-    },
-    { headerMode: 'none' },
-)
+// const OverviewNavigator = createStackNavigator(
+//     {
+//         Overview: { screen: Overview },
+//         PageEditor: { screen: PageEditor },
+//     },
+//     { headerMode: 'none' },
+// )
 
 const MainNavigator = createSwitchNavigator(
     {
         Onboarding: { screen: Onboarding },
-        Overview: OverviewNavigator,
+        // Overview: OverviewNavigator,
+        Overview: { screen: Overview },
+        PageEditor: { screen: PageEditor },
         Sync: { screen: Sync },
     },
     {
