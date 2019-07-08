@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.app">
+  package="io.worldbrain">
 
     <uses-permission android:name="android.permission.INTERNET" />
 

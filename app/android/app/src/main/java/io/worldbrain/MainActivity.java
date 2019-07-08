@@ -1,4 +1,4 @@
-package com.app;
+package io.worldbrain;
 
 import com.facebook.react.ReactActivity;
 

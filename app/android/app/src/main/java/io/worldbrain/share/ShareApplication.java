@@ -1,7 +1,7 @@
 // your package you defined in ShareActivity
-package com.app.share;
+package io.worldbrain.share;
 // import build config
-import com.app.BuildConfig;
+import io.worldbrain.BuildConfig;
 
 import com.alinz.parkerdan.shareextension.SharePackage;
 
