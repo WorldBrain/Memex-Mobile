@@ -6,6 +6,7 @@ import {
     registerModuleMapCollections,
     StorageModule,
 } from '@worldbrain/storex-pattern-modules'
+import { OverviewStorage } from 'src/features/overview/storage'
 
 export interface CreateStorageOptions {
     backendType: StorageBackendType
@@ -26,6 +27,7 @@ export async function createStorage(
 
     const modules: StorageModules = {
         todoList: new TodoListStorage({ storageManager }),
+        overview: new OverviewStorage({ storageManager }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules as any)
