@@ -1,12 +1,11 @@
 import StorageManager from '@worldbrain/storex'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
+import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
+
 import { StorageBackendType, Storage, StorageModules } from './types'
 import { TodoListStorage } from 'src/features/example/storage'
-import {
-    registerModuleMapCollections,
-    StorageModule,
-} from '@worldbrain/storex-pattern-modules'
 import { OverviewStorage } from 'src/features/overview/storage'
+import { MetaPickerStorage } from 'src/features/meta-picker/storage'
 
 export interface CreateStorageOptions {
     backendType: StorageBackendType
@@ -28,6 +27,7 @@ export async function createStorage(
     const modules: StorageModules = {
         todoList: new TodoListStorage({ storageManager }),
         overview: new OverviewStorage({ storageManager }),
+        metaPicker: new MetaPickerStorage({ storageManager }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules as any)
