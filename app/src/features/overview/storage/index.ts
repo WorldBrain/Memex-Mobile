@@ -5,6 +5,8 @@ import {
 
 export class OverviewStorage extends StorageModule {
     static PAGE_COLL = 'pages'
+    static VISIT_COLL = 'visits'
+    static BOOKMARK_COLL = 'bookmarks'
 
     getConfig = (): StorageModuleConfig => ({
         collections: {
@@ -31,6 +33,30 @@ export class OverviewStorage extends StorageModule {
                     { field: 'hostname' },
                 ],
             },
+            [OverviewStorage.VISIT_COLL]: {
+                version: new Date('2019-07-09'),
+                fields: {
+                    url: { type: 'string' },
+                    time: { type: 'timestamp' },
+                    duration: { type: 'int' },
+                    scrollMaxPerc: { type: 'float' },
+                    scrollMaxPx: { type: 'float' },
+                    scrollPerc: { type: 'float' },
+                    scrollPx: { type: 'float' },
+                },
+                indices: [
+                    { field: ['time', 'url'], pk: true },
+                    { field: 'url' },
+                ],
+            },
+            [OverviewStorage.BOOKMARK_COLL]: {
+                version: new Date('2019-07-09'),
+                fields: {
+                    url: { type: 'string' },
+                    time: { type: 'timestamp' },
+                },
+                indices: [{ field: 'url', pk: true }, { field: 'time' }],
+            },
         },
         operations: {
             createPage: {
@@ -47,6 +73,35 @@ export class OverviewStorage extends StorageModule {
             findPage: {
                 operation: 'findObject',
                 collection: OverviewStorage.PAGE_COLL,
+                args: {
+                    url: '$url:string',
+                },
+            },
+            starPage: {
+                operation: 'createObject',
+                collection: OverviewStorage.BOOKMARK_COLL,
+            },
+            unstarPage: {
+                operation: 'deleteObject',
+                collection: OverviewStorage.BOOKMARK_COLL,
+                args: {
+                    url: '$url:string',
+                },
+            },
+            createVisit: {
+                operation: 'createObject',
+                collection: OverviewStorage.VISIT_COLL,
+            },
+            findVisitsForPage: {
+                operation: 'findObjects',
+                collection: OverviewStorage.VISIT_COLL,
+                args: {
+                    url: '$url:string',
+                },
+            },
+            deleteVisitsForPage: {
+                operation: 'deleteObjects',
+                collection: OverviewStorage.VISIT_COLL,
                 args: {
                     url: '$url:string',
                 },
