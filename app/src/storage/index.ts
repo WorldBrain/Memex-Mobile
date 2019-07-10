@@ -6,6 +6,7 @@ import { StorageBackendType, Storage, StorageModules } from './types'
 import { TodoListStorage } from 'src/features/example/storage'
 import { OverviewStorage } from 'src/features/overview/storage'
 import { MetaPickerStorage } from 'src/features/meta-picker/storage'
+import { PageEditorStorage } from 'src/features/page-editor/storage'
 
 export interface CreateStorageOptions {
     backendType: StorageBackendType
@@ -28,6 +29,7 @@ export async function createStorage(
         todoList: new TodoListStorage({ storageManager }),
         overview: new OverviewStorage({ storageManager }),
         metaPicker: new MetaPickerStorage({ storageManager }),
+        pageEditor: new PageEditorStorage({ storageManager }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules as any)

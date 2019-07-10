@@ -6,7 +6,7 @@ import {
 export class MetaPickerStorage extends StorageModule {
     static TAG_COLL = 'tags'
     static LIST_COLL = 'customLists'
-    static ENTRY_COLL = 'pageListEntries'
+    static LIST_ENTRY_COLL = 'pageListEntries'
 
     getConfig = (): StorageModuleConfig => ({
         collections: {
@@ -39,7 +39,7 @@ export class MetaPickerStorage extends StorageModule {
                     { field: 'createdAt' },
                 ],
             },
-            [MetaPickerStorage.ENTRY_COLL]: {
+            [MetaPickerStorage.LIST_ENTRY_COLL]: {
                 version: new Date('2019-07-09'),
                 fields: {
                     listId: { type: 'string' },
@@ -61,7 +61,7 @@ export class MetaPickerStorage extends StorageModule {
             },
             createListEntry: {
                 operation: 'createObject',
-                collection: MetaPickerStorage.ENTRY_COLL,
+                collection: MetaPickerStorage.LIST_ENTRY_COLL,
             },
             createTag: {
                 operation: 'createObject',
@@ -83,14 +83,14 @@ export class MetaPickerStorage extends StorageModule {
             },
             findEntriesForPage: {
                 operation: 'findObjects',
-                collection: MetaPickerStorage.ENTRY_COLL,
+                collection: MetaPickerStorage.LIST_ENTRY_COLL,
                 args: {
                     url: '$url:string',
                 },
             },
             findEntriesForList: {
                 operation: 'findObjects',
-                collection: MetaPickerStorage.ENTRY_COLL,
+                collection: MetaPickerStorage.LIST_ENTRY_COLL,
                 args: {
                     listId: '$listId:number',
                 },
@@ -102,11 +102,25 @@ export class MetaPickerStorage extends StorageModule {
                     listId: '$listId:number',
                 },
             },
-            deleteListEntry: {
+            deletePageFromList: {
                 operation: 'deleteObject',
-                collection: MetaPickerStorage.ENTRY_COLL,
+                collection: MetaPickerStorage.LIST_ENTRY_COLL,
                 args: {
                     listId: '$listId:number',
+                    url: '$url:string',
+                },
+            },
+            deleteEntriesForList: {
+                operation: 'deleteObjects',
+                collection: MetaPickerStorage.LIST_ENTRY_COLL,
+                args: {
+                    listId: '$listId:number',
+                },
+            },
+            deleteEntriesForPage: {
+                operation: 'deleteObjects',
+                collection: MetaPickerStorage.LIST_ENTRY_COLL,
+                args: {
                     url: '$url:string',
                 },
             },
