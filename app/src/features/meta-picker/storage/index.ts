@@ -4,23 +4,54 @@ import {
 } from '@worldbrain/storex-pattern-modules'
 
 export class MetaPickerStorage extends StorageModule {
-    static TAG_COLL = 'tag'
-    static LIST_COLL = 'list'
-    static ENTRY_COLL = 'listPageEntry'
+    static TAG_COLL = 'tags'
+    static LIST_COLL = 'customLists'
+    static ENTRY_COLL = 'pageListEntries'
 
     getConfig = (): StorageModuleConfig => ({
         collections: {
             [MetaPickerStorage.TAG_COLL]: {
                 version: new Date('2019-07-09'),
-                fields: {},
+                fields: {
+                    url: { type: 'string' },
+                    name: { type: 'string' },
+                },
+                indices: [
+                    { field: ['name', 'url'], pk: true },
+                    { field: 'name' },
+                    { field: 'url' },
+                ],
             },
             [MetaPickerStorage.LIST_COLL]: {
                 version: new Date('2019-07-09'),
-                fields: {},
+                fields: {
+                    id: { type: 'string' },
+                    name: { type: 'string' },
+                    isDeletable: { type: 'boolean' },
+                    isNestable: { type: 'boolean' },
+                    createdAt: { type: 'datetime' },
+                },
+                indices: [
+                    { field: 'id', pk: true },
+                    { field: 'name', unique: true },
+                    { field: 'isDeletable' },
+                    { field: 'isNestable' },
+                    { field: 'createdAt' },
+                ],
             },
             [MetaPickerStorage.ENTRY_COLL]: {
                 version: new Date('2019-07-09'),
-                fields: {},
+                fields: {
+                    listId: { type: 'string' },
+                    pageUrl: { type: 'string' },
+                    fullUrl: { type: 'string' },
+                    createdAt: { type: 'datetime' },
+                },
+                indices: [
+                    { field: ['listId', 'pageUrl'], pk: true },
+                    { field: 'listId' },
+                    { field: 'pageUrl' },
+                ],
             },
         },
         operations: {
