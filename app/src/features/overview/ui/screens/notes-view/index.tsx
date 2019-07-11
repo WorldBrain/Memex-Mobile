@@ -11,7 +11,7 @@ import { StatefulUIElement } from 'src/ui/types'
 import ResultPage from '../../components/result-page-with-notes'
 import Logic, { State, Event } from './logic'
 import styles from './styles'
-import { PageWithNotes } from 'src/features/overview/types'
+import { UIPageWithNotes } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 import { NotesSection } from './types'
@@ -23,7 +23,7 @@ export default class NotesView extends StatefulUIElement<Props, State, Event> {
         super(props, { logic: new Logic() })
     }
 
-    private navToPageEditor = (mode: EditorMode, page: PageWithNotes) => () =>
+    private navToPageEditor = (mode: EditorMode, page: UIPageWithNotes) => () =>
         this.props.navigation.navigate('PageEditor', { page, mode })
 
     private initHandleDeletePagePress = args => () =>
@@ -55,7 +55,7 @@ export default class NotesView extends StatefulUIElement<Props, State, Event> {
     private initHandleToggleNoteStar = args => () =>
         this.processEvent('toggleNoteStar', args)
 
-    private renderPage: SectionListRenderItem<PageWithNotes> = ({
+    private renderPage: SectionListRenderItem<UIPageWithNotes> = ({
         item,
         index,
         section,

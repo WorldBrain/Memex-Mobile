@@ -5,3 +5,22 @@ export interface MetaTypeShape {
     name: string
     isChecked: boolean
 }
+
+export interface Tag {
+    url: string
+    name: string
+}
+
+export interface List {
+    id: string
+    name: string
+    isDeletable: boolean
+    isNestable: boolean
+    createdAt: Date
+}
+
+export interface ListEntry {
+    pageUrl: string
+    fullUrl: string
+    createdAt: Date
+}

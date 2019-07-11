@@ -43,7 +43,7 @@ export class PageEditorStorage extends StorageModule {
             [PageEditorStorage.LIST_ENTRY_COLL]: {
                 version: new Date('2019-07-10'),
                 fields: {
-                    listId: { type: 'int' },
+                    listId: { type: 'string' },
                     url: { type: 'string' },
                     createdAt: { type: 'datetime' },
                 },

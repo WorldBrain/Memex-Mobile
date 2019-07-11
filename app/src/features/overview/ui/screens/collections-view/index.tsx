@@ -5,7 +5,7 @@ import { StatefulUIElement } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import styles from './styles'
 import CollectionEntry from '../../components/collection-entry'
-import { Collection } from 'src/features/overview/types'
+import { UICollection } from 'src/features/overview/types'
 import * as selectors from './selectors'
 
 interface Props {}
@@ -19,7 +19,7 @@ export default class CollectionsView extends StatefulUIElement<
         super(props, { logic: new Logic() })
     }
 
-    private renderCollection: ListRenderItem<Collection> = ({
+    private renderCollection: ListRenderItem<UICollection> = ({
         item: { id, name },
     }) => (
         <CollectionEntry

@@ -3,23 +3,24 @@ import { FlatList, ListRenderItem, View, Alert } from 'react-native'
 import { StatefulUIElement } from 'src/ui/types'
 
 import Logic, { State, Event } from './logic'
+import { UIDependencies } from 'src/ui'
 import styles from './styles'
 import ResultPage from '../../components/result-page'
-import { Page } from 'src/features/overview/types'
+import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 
-interface Props {}
+interface Props extends UIDependencies {}
 
 export default class PagesView extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
         super(props, { logic: new Logic() })
     }
 
-    private navToPageEditor = (page: Page, mode: EditorMode) => () =>
+    private navToPageEditor = (page: UIPage, mode: EditorMode) => () =>
         this.props.navigation.navigate('PageEditor', { page, mode })
 
-    private initHandleDeletePress = (page: Page) => () =>
+    private initHandleDeletePress = (page: UIPage) => () =>
         Alert.alert(
             'Delete confirm',
             'Do you really want to delete this page?',
@@ -32,15 +33,15 @@ export default class PagesView extends StatefulUIElement<Props, State, Event> {
             ],
         )
 
-    private initHandlePageDelete = ({ url }: Page) => () => {
+    private initHandlePageDelete = ({ url }: UIPage) => () => {
         this.processEvent('deletePage', { url })
     }
 
-    private initHandlePageStar = ({ url }: Page) => () => {
+    private initHandlePageStar = ({ url }: UIPage) => () => {
         this.processEvent('togglePageStar', { url })
     }
 
-    private renderPage: ListRenderItem<Page> = ({ item, index }) => (
+    private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
         <ResultPage
             onDeletePress={this.initHandleDeletePress(item)}
             onStarPress={this.initHandlePageStar(item)}
