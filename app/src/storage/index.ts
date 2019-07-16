@@ -10,19 +10,21 @@ import { PageEditorStorage } from 'src/features/page-editor/storage'
 
 export interface CreateStorageOptions {
     typeORMConnectionOpts: ConnectionOptions
+    alterModules?: (modules: StorageModules) => StorageModules
 }
 
 export async function createStorage({
     typeORMConnectionOpts: connectionOptions,
+    alterModules = f => f,
 }: CreateStorageOptions): Promise<Storage> {
     const backend = new TypeORMStorageBackend({ connectionOptions })
     const storageManager = new StorageManager({ backend })
 
-    const modules: StorageModules = {
+    const modules: StorageModules = alterModules({
         overview: new OverviewStorage({ storageManager }),
         metaPicker: new MetaPickerStorage({ storageManager }),
         pageEditor: new PageEditorStorage({ storageManager }),
-    }
+    })
 
     registerModuleMapCollections(storageManager.registry, modules as any)
     await storageManager.finishInitialization()
