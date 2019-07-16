@@ -3,6 +3,12 @@ import {
     StorageModuleConfig,
 } from '@worldbrain/storex-pattern-modules'
 
+import { Note } from '../types'
+
+export interface NoteOpArgs {
+    url: string
+}
+
 export class PageEditorStorage extends StorageModule {
     static NOTE_COLL = 'annotations'
     static BOOKMARK_COLL = 'annotBookmarks'
@@ -16,9 +22,9 @@ export class PageEditorStorage extends StorageModule {
                     url: { type: 'string' },
                     pageTitle: { type: 'text' },
                     pageUrl: { type: 'url' },
-                    body: { type: 'text' },
-                    comment: { type: 'text' },
-                    selector: { type: 'json' },
+                    body: { type: 'text', optional: true },
+                    comment: { type: 'text', optional: true },
+                    selector: { type: 'json', optional: true },
                     createdWhen: { type: 'datetime' },
                     lastEdited: { type: 'datetime' },
                 },
@@ -63,7 +69,6 @@ export class PageEditorStorage extends StorageModule {
                 operation: 'createObject',
                 collection: PageEditorStorage.NOTE_COLL,
             },
-
             findNote: {
                 operation: 'findObject',
                 collection: PageEditorStorage.NOTE_COLL,
@@ -99,7 +104,6 @@ export class PageEditorStorage extends StorageModule {
                     url: '$url:string',
                 },
             },
-
             deleteNoteFromList: {
                 operation: 'deleteObject',
                 collection: PageEditorStorage.LIST_ENTRY_COLL,
@@ -122,6 +126,13 @@ export class PageEditorStorage extends StorageModule {
                     url: '$url:string',
                 },
             },
+            findBookmark: {
+                operation: 'findObject',
+                collection: PageEditorStorage.BOOKMARK_COLL,
+                args: {
+                    url: '$url:string',
+                },
+            },
             starNote: {
                 operation: 'createObject',
                 collection: PageEditorStorage.BOOKMARK_COLL,
@@ -135,4 +146,37 @@ export class PageEditorStorage extends StorageModule {
             },
         },
     })
+
+    createNote(note: Note) {
+        const created = new Date()
+
+        return this.operation('createNote', {
+            createdWhen: created,
+            lastEdited: created,
+            ...note,
+        })
+    }
+
+    async findNote({ url }: NoteOpArgs): Promise<Note> {
+        const note = await this.operation('findNote', { url })
+        if (!note) {
+            return null
+        }
+        const bookmark = await this.operation('findBookmark', { url })
+        return {
+            ...note,
+            isStarred: !!bookmark,
+        }
+    }
+
+    starNote({
+        url,
+        createdAt = new Date(),
+    }: NoteOpArgs & { createdAt?: Date }) {
+        return this.operation('starNote', { url, createdAt })
+    }
+
+    unstarNote({ url }: NoteOpArgs) {
+        return this.operation('unstarNote', { url })
+    }
 }
