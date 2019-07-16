@@ -29,6 +29,7 @@ const alterModules = (modules: StorageModules): StorageModules => {
     modules.pageEditor.getConfig = () => {
         pageEditConf.collections['annotations'].fields['selector'] = {
             type: 'string',
+            optional: true,
         }
         return pageEditConf
     }
@@ -56,7 +57,7 @@ export function makeTestFactory() {
                         alterModules,
                         typeORMConnectionOpts: {
                             type: 'sqlite',
-                            database: 'test-db.sqlite',
+                            database: ':memory:',
                             name: `connection-${connIterator++}`,
                         },
                     })
