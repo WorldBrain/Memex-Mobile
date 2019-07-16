@@ -30,6 +30,13 @@ const alterModules = (modules: StorageModules): StorageModules => {
 export function makeTestFactory() {
     type TestContext = Storage
     type TestFunction = (context: TestContext) => Promise<void>
+    /*
+     * Multiple tests throw errors running on the same connection. So give each test a different
+     *  connection name.
+     * Manually calling `this.connection.close()` in the TypeORM backend after the test is run
+     *  does not seem to help.
+     */
+    let connIterator = 0
 
     function factory(description: string, test?: TestFunction): void {
         it(
@@ -41,6 +48,7 @@ export function makeTestFactory() {
                         typeORMConnectionOpts: {
                             type: 'sqlite',
                             database: 'test-db.sqlite',
+                            name: `connection-${connIterator++}`,
                         },
                     })
 
