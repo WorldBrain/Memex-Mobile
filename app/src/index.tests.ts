@@ -1,6 +1,15 @@
 import { createStorage } from 'src/storage'
 import { Storage, StorageModules } from 'src/storage/types'
 
+export async function forEachTestDoc<T>(
+    docs: T[],
+    test: (doc: T) => Promise<void>,
+) {
+    for (const doc of docs) {
+        await test(doc)
+    }
+}
+
 /*
  * SQLite is used as the TypeORM connection in tests, however it doesn't support a number
  *  of our needed field types. Hence change them here for the testing environment.

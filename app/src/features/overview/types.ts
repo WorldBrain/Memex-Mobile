@@ -34,14 +34,15 @@ export interface UINote extends UIResult {
 export interface Page {
     url: string
     text: string
-    lang: string
+    lang?: string
     domain: string
     fullUrl: string
     hostname: string
     fullTitle: string
-    screenshot: string
-    description: string
-    canonicalUrl: string
+    screenshot?: string
+    description?: string
+    canonicalUrl?: string
+    isStarred?: boolean
 }
 
 export interface Visit {

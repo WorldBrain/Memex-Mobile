@@ -2,6 +2,11 @@ import {
     StorageModule,
     StorageModuleConfig,
 } from '@worldbrain/storex-pattern-modules'
+import { Page, Visit } from '../types'
+
+export interface PageOpArgs {
+    url: string
+}
 
 export class OverviewStorage extends StorageModule {
     static PAGE_COLL = 'pages'
@@ -19,10 +24,10 @@ export class OverviewStorage extends StorageModule {
                     text: { type: 'text' },
                     domain: { type: 'string' },
                     hostname: { type: 'string' },
-                    screenshot: { type: 'media' },
-                    lang: { type: 'string' },
-                    canonicalUrl: { type: 'url' },
-                    description: { type: 'text' },
+                    screenshot: { type: 'string', optional: true },
+                    lang: { type: 'string', optional: true },
+                    canonicalUrl: { type: 'url', optional: true },
+                    description: { type: 'text', optional: true },
                 },
                 indices: [
                     { field: 'url', pk: true },
@@ -38,11 +43,11 @@ export class OverviewStorage extends StorageModule {
                 fields: {
                     url: { type: 'string' },
                     time: { type: 'timestamp' },
-                    duration: { type: 'int' },
-                    scrollMaxPerc: { type: 'float' },
-                    scrollMaxPx: { type: 'float' },
-                    scrollPerc: { type: 'float' },
-                    scrollPx: { type: 'float' },
+                    duration: { type: 'int', optional: true },
+                    scrollMaxPerc: { type: 'float', optional: true },
+                    scrollMaxPx: { type: 'float', optional: true },
+                    scrollPerc: { type: 'float', optional: true },
+                    scrollPx: { type: 'float', optional: true },
                 },
                 indices: [
                     { field: ['time', 'url'], pk: true },
@@ -73,6 +78,13 @@ export class OverviewStorage extends StorageModule {
             findPage: {
                 operation: 'findObject',
                 collection: OverviewStorage.PAGE_COLL,
+                args: {
+                    url: '$url:string',
+                },
+            },
+            findBookmark: {
+                operation: 'findObject',
+                collection: OverviewStorage.BOOKMARK_COLL,
                 args: {
                     url: '$url:string',
                 },
@@ -108,4 +120,39 @@ export class OverviewStorage extends StorageModule {
             },
         },
     })
+
+    async findPage({ url }: PageOpArgs): Promise<Page> {
+        const page = await this.operation('findPage', { url })
+        if (!page) {
+            return null
+        }
+        const isStarred = await this.operation('findBookmark', { url })
+        return { ...page, isStarred: !!isStarred }
+    }
+
+    createPage(page: Page) {
+        return this.operation('createPage', page)
+    }
+
+    async deletePage({ url }: PageOpArgs): Promise<void> {
+        // TODO: can we do this in a transaction?
+        await this.operation('deleteVisitsForPage', { url })
+        await this.operation('unstarPage', { url })
+        await this.operation('deletePage', { url })
+    }
+    starPage({ url, time = Date.now() }: PageOpArgs & { time?: number }) {
+        return this.operation('starPage', { url, time })
+    }
+
+    unstarPage({ url }: PageOpArgs) {
+        return this.operation('unstarPage', { url })
+    }
+
+    visitPage({ url, time = Date.now() }: PageOpArgs & { time?: number }) {
+        return this.operation('createVisit', { url, time })
+    }
+
+    findPageVisits({ url }: PageOpArgs): Promise<Visit[]> {
+        return this.operation('findVisitsForPage', { url })
+    }
 }
