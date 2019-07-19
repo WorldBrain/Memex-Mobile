@@ -11,9 +11,8 @@
 1. In one terminal, run `yarn start`
 2. In another terminal, run `yarn react-native run-android`
 
-### Note:
-
-If your Android SDK or AVDs are not configured properly, you may have to manually start an emulator instance for the above commands to work.
+**Note:**
+*If your Android SDK or AVDs are not configured properly, you may have to manually start an emulator instance for the above commands to work.*
 
 ## Running on iOS (requires macOS)
 
@@ -25,9 +24,17 @@ If your Android SDK or AVDs are not configured properly, you may have to manuall
     
 4. Press the "Play" button in the top left
 
-### Note:
 
-Running via `yarn react-native run-ios` successfully starts up an iPhone X simulator running the app, however the share extensions do not work. They only seem to work if you do the more long-winded Xcode way outlined above.
+**Note:**
+*Running via `yarn react-native run-ios` successfully starts up an iPhone X simulator running the app, however the share extensions do not work. They only seem to work if you do the more long-winded Xcode way outlined above.*
+
+### Set up app reload on source code change
+
+*Assumes the above steps have been followed and app is currently running in iOS simulator while `yarn start` is running in a terminal.*
+
+1. In the iOS simulator, press `cmd + D` to open the developer menu
+2. Press "Enable Live Reload"
+3. Change anything in the source code and save and the app should quickly reload with those new changes.
 
 Troubleshooting
 ===============
