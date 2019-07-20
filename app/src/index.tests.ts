@@ -42,26 +42,26 @@ export function makeStorageTestFactory() {
     let connIterator = 0
 
     function factory(description: string, test?: TestFunction): void {
-        it(
-            description,
-            test &&
-                async function() {
-                    const storage = await createStorage({
-                        alterModules,
-                        typeORMConnectionOpts: {
-                            type: 'sqlite',
-                            database: ':memory:',
-                            name: `connection-${connIterator++}`,
-                        },
-                    })
+        if (!test) {
+            it.todo(description)
+            return
+        }
 
-                    const testContext = this
-                    try {
-                        await test.call(testContext, { storage })
-                    } finally {
-                    }
+        it(description, async function() {
+            const storage = await createStorage({
+                alterModules,
+                typeORMConnectionOpts: {
+                    type: 'sqlite',
+                    database: ':memory:',
+                    name: `connection-${connIterator++}`,
                 },
-        )
+            })
+
+            try {
+                await test.call(this, { storage })
+            } finally {
+            }
+        })
     }
 
     return factory
