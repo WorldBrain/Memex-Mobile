@@ -1,10 +1,10 @@
 import expect from 'expect'
 
-import { makeTestFactory, forEachTestDoc } from 'src/index.tests'
+import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
 import { Page } from '../types'
 
-const it = makeTestFactory()
+const it = makeStorageTestFactory()
 
 function testPageEquality(a: Page, b: Page) {
     expect(a.url).toBe(b.url)
@@ -16,14 +16,23 @@ function testPageEquality(a: Page, b: Page) {
 }
 
 describe('overview StorageModule', () => {
-    it('should be able to create new pages', ({ modules: { overview } }) =>
-        forEachTestDoc(data.pages, async page => {
+    it('should be able to create new pages', async ({
+        storage: {
+            modules: { overview },
+        },
+    }) => {
+        for (const page of data.pages) {
             await overview.createPage(page)
             testPageEquality(await overview.findPage(page), page)
-        }))
+        }
+    })
 
-    it('should be able to star pages', ({ modules: { overview } }) =>
-        forEachTestDoc(data.pages, async page => {
+    it('should be able to star pages', async ({
+        storage: {
+            modules: { overview },
+        },
+    }) => {
+        for (const page of data.pages) {
             await overview.createPage(page)
             expect(await overview.findPage(page)).toEqual(
                 expect.objectContaining({ isStarred: false }),
@@ -36,10 +45,15 @@ describe('overview StorageModule', () => {
             expect(await overview.findPage(page)).toEqual(
                 expect.objectContaining({ isStarred: false }),
             )
-        }))
+        }
+    })
 
-    it('should be able to visit pages', ({ modules: { overview } }) =>
-        forEachTestDoc(data.pages, async page => {
+    it('should be able to visit pages', async ({
+        storage: {
+            modules: { overview },
+        },
+    }) => {
+        for (const page of data.pages) {
             await overview.createPage(page)
             for (const time of data.visitTimestamps) {
                 await overview.visitPage({ url: page.url, time })
@@ -47,12 +61,15 @@ describe('overview StorageModule', () => {
             expect(await overview.findPageVisits(page)).toEqual(
                 data.visitTimestamps.map(time => ({ time, url: page.url })),
             )
-        }))
+        }
+    })
 
-    it('should be able to delete pages + associated data', ({
-        modules: { overview },
-    }) =>
-        forEachTestDoc(data.pages, async page => {
+    it('should be able to delete pages + associated data', async ({
+        storage: {
+            modules: { overview },
+        },
+    }) => {
+        for (const page of data.pages) {
             await overview.createPage(page)
             testPageEquality(await overview.findPage(page), page)
 
@@ -67,5 +84,6 @@ describe('overview StorageModule', () => {
             await overview.deletePage(page)
             expect(await overview.findPage(page)).toBeNull()
             expect(await overview.findPageVisits(page)).toEqual([])
-        }))
+        }
+    })
 })
