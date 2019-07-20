@@ -14,12 +14,13 @@ export interface Tag {
 export interface List {
     id: string
     name: string
-    isDeletable: boolean
-    isNestable: boolean
+    isDeletable?: boolean
+    isNestable?: boolean
     createdAt: Date
 }
 
 export interface ListEntry {
+    listId: number
     pageUrl: string
     fullUrl: string
     createdAt: Date
