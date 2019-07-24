@@ -43,7 +43,7 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'togglePageStar'>): UIMutation<State> {
         return {
             pages: state => {
-                const page = state.get(url)
+                const page = state.get(url)!
                 return state.set(url, { ...page, isStarred: !page.isStarred })
             },
         }
