@@ -32,10 +32,11 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'deleteNote'>): UIMutation<State> {
         return {
             sections: state => {
-                state
-                    .get(event.section)
-                    .get(event.pageUrl)
-                    .notes.delete(event.noteUrl)
+                const section = state.get(event.section)!
+                const page = section.get(event.pageUrl)!
+
+                page.notes.delete(event.noteUrl)
+
                 return state
             },
         }
@@ -46,10 +47,14 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'deletePage'>): UIMutation<State> {
         return {
             sections: state => {
-                state.get(event.section).delete(event.pageUrl)
-                if (state.get(event.section).size === 0) {
+                const section = state.get(event.section)!
+
+                section.delete(event.pageUrl)
+
+                if (section.size === 0) {
                     state.delete(event.section)
                 }
+
                 return state
             },
         }
@@ -60,13 +65,15 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'toggleNoteStar'>): UIMutation<State> {
         return {
             sections: state => {
-                const notes = state.get(event.section).get(event.pageUrl).notes
+                const section = state.get(event.section)!
+                const page = section.get(event.pageUrl)!
+                const note = page.notes.get(event.noteUrl)!
 
-                const note = notes.get(event.noteUrl)
-                notes.set(event.noteUrl, {
+                page.notes.set(event.noteUrl, {
                     ...note,
                     isStarred: !note.isStarred,
                 })
+
                 return state
             },
         }
@@ -77,10 +84,14 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'togglePageStar'>): UIMutation<State> {
         return {
             sections: state => {
-                const page = state.get(event.section).get(event.pageUrl)
-                state
-                    .get(event.section)
-                    .set(event.pageUrl, { ...page, isStarred: !page.isStarred })
+                const section = state.get(event.section)!
+                const page = section.get(event.pageUrl)!
+
+                section.set(event.pageUrl, {
+                    ...page,
+                    isStarred: !page.isStarred,
+                })
+
                 return state
             },
         }
@@ -91,10 +102,11 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'toggleShowNotes'>): UIMutation<State> {
         return {
             sections: state => {
-                const page = state.get(event.section).get(event.pageUrl)
-                state
-                    .get(event.section)
-                    .set(event.pageUrl, { ...page, isOpen: !page.isOpen })
+                const section = state.get(event.section)!
+                const page = section.get(event.pageUrl)!
+
+                section.set(event.pageUrl, { ...page, isOpen: !page.isOpen })
+
                 return state
             },
         }
