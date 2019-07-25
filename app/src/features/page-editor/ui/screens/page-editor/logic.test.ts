@@ -79,5 +79,28 @@ describe('page editor UI logic tests', () => {
         expect(newStateA.noteAdderInput).toEqual(testText)
     })
 
-    it.todo('should be able to set save notes')
+    it('should be able to set save notes', () => {
+        const { logic, state } = setup()
+
+        const testText = 'this is a test'
+        const testPage = { ...data.page, notes: [] }
+
+        const newStateA = logic.withMutation(
+            state,
+            logic.setPage({ event: { page: testPage }, previousState: state }),
+        )
+        expect(newStateA.page.notes.length).toBe(0)
+
+        const newStateB = logic.withMutation(
+            state,
+            logic.saveNote({
+                event: { text: testText },
+                previousState: state,
+            }),
+        )
+
+        expect(newStateB.page.notes.length).toBe(1)
+        const note = newStateB.page.notes[newStateB.page.notes.length - 1]
+        expect(note.commentText).toEqual(testText)
+    })
 })
