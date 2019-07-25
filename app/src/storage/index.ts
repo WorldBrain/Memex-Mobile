@@ -20,7 +20,7 @@ export async function createStorage({
     const backend = new TypeORMStorageBackend({ connectionOptions })
     const storageManager = new StorageManager({ backend })
 
-    const modules: StorageModules = alterModules({
+    const modules = alterModules({
         overview: new OverviewStorage({ storageManager }),
         metaPicker: new MetaPickerStorage({ storageManager }),
         pageEditor: new PageEditorStorage({ storageManager }),
@@ -29,14 +29,14 @@ export async function createStorage({
     registerModuleMapCollections(storageManager.registry, modules as any)
     await storageManager.finishInitialization()
 
-    await backend.connection.dropDatabase()
-    if (
-        !(await backend.connection.createQueryRunner().getDatabases()).includes(
-            connectionOptions.database as string,
-        )
-    ) {
-        await storageManager.backend.migrate()
-    }
+    // await backend.connection.dropDatabase()
+    // if (
+    //     !(await backend.connection.createQueryRunner().getDatabases()).includes(
+    //         connectionOptions.database as string,
+    //     )
+    // ) {
+    //     await storageManager.backend.migrate()
+    // }
 
     return {
         manager: storageManager,
