@@ -42,7 +42,8 @@ export class OverviewStorage extends StorageModule {
                 version: new Date('2019-07-09'),
                 fields: {
                     url: { type: 'string' },
-                    time: { type: 'timestamp' },
+                    // TODO: This type differs from corresponding Memex ext type (not supported in react native)
+                    time: { type: 'datetime' },
                     duration: { type: 'int', optional: true },
                     scrollMaxPerc: { type: 'float', optional: true },
                     scrollMaxPx: { type: 'float', optional: true },
@@ -58,7 +59,8 @@ export class OverviewStorage extends StorageModule {
                 version: new Date('2019-07-09'),
                 fields: {
                     url: { type: 'string' },
-                    time: { type: 'timestamp' },
+                    // TODO: This type differs from corresponding Memex ext type (not supported in react native)
+                    time: { type: 'datetime' },
                 },
                 indices: [{ field: 'url', pk: true }, { field: 'time' }],
             },

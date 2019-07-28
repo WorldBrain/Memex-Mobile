@@ -24,7 +24,8 @@ export class PageEditorStorage extends StorageModule {
                     pageUrl: { type: 'url' },
                     body: { type: 'text', optional: true },
                     comment: { type: 'text', optional: true },
-                    selector: { type: 'json', optional: true },
+                    // TODO: This type differs from corresponding Memex ext type (not supported in react native)
+                    selector: { type: 'string', optional: true },
                     createdWhen: { type: 'datetime' },
                     lastEdited: { type: 'datetime' },
                 },

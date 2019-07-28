@@ -10,15 +10,17 @@ const alterModules = (modules: StorageModules): StorageModules => {
     const pageEditConf = modules.pageEditor.getConfig()
 
     modules.overview.getConfig = () => {
-        overviewConf.collections['visits'].fields['time'] = { type: 'datetime' }
-        overviewConf.collections['bookmarks'].fields['time'] = {
+        overviewConf.collections!['visits'].fields['time'] = {
+            type: 'datetime',
+        }
+        overviewConf.collections!['bookmarks'].fields['time'] = {
             type: 'datetime',
         }
         return overviewConf
     }
 
     modules.pageEditor.getConfig = () => {
-        pageEditConf.collections['annotations'].fields['selector'] = {
+        pageEditConf.collections!['annotations'].fields['selector'] = {
             type: 'string',
             optional: true,
         }
