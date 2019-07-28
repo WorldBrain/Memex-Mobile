@@ -31,6 +31,11 @@ export class UI {
                 console.log('unmounting')
             }
 
+            private renderMainNavContainer() {
+                const AppContainer = createApp(this.state.dependencies!)
+                return <AppContainer />
+            }
+
             render() {
                 if (!this.state.dependencies) {
                     return (
@@ -40,7 +45,7 @@ export class UI {
                     )
                 }
 
-                return createApp(this.state.dependencies)
+                return this.renderMainNavContainer()
             }
         }
 
