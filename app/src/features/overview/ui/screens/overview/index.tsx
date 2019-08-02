@@ -29,7 +29,16 @@ export default class OverviewMenu extends NavigationScreen<
 
     private renderResults() {
         if (this.state.showCollectionsView) {
-            return <CollectionsView {...this.props} />
+            return (
+                <CollectionsView
+                    {...this.props}
+                    hideCollectionsView={() =>
+                        this.processEvent('setShowCollectionsView', {
+                            show: false,
+                        })
+                    }
+                />
+            )
         }
 
         switch (this.state.selectedResultType) {

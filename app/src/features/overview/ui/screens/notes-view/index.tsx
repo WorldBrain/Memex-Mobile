@@ -107,10 +107,11 @@ export default class NotesView extends StatefulUIElement<Props, State, Event> {
         return (
             <View style={styles.container}>
                 <SectionList
-                    renderItem={this.renderPage}
-                    renderSectionHeader={this.renderSection}
-                    sections={selectors.results(this.state)}
                     style={styles.pageList}
+                    renderItem={this.renderPage}
+                    showsVerticalScrollIndicator={false}
+                    sections={selectors.results(this.state)}
+                    renderSectionHeader={this.renderSection}
                     keyExtractor={(item, index) => index.toString()}
                 />
             </View>

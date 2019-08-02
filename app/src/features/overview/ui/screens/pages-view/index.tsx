@@ -56,9 +56,10 @@ export default class PagesView extends StatefulUIElement<Props, State, Event> {
         return (
             <View style={styles.container}>
                 <FlatList
+                    style={styles.pageList}
                     renderItem={this.renderPage}
                     data={selectors.results(this.state)}
-                    style={styles.pageList}
+                    showsVerticalScrollIndicator={false}
                     keyExtractor={(item, index) => index.toString()}
                 />
             </View>
