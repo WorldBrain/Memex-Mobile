@@ -4,18 +4,18 @@ import { FlatList, ListRenderItem } from 'react-native'
 import styles from './result-page-with-notes.styles'
 import ResultNote from './result-note'
 import { NativeTouchEventHandler } from '../../types'
-import { Note } from 'src/features/overview/types'
+import { UINote } from 'src/features/overview/types'
 
 export interface Props {
-    notes: Note[]
+    notes: UINote[]
     clearBackground?: boolean
-    initNoteDelete: (note: Note) => NativeTouchEventHandler
-    initNoteEdit: (note: Note) => NativeTouchEventHandler
-    initNoteStar: (note: Note) => NativeTouchEventHandler
+    initNoteDelete: (note: UINote) => NativeTouchEventHandler
+    initNoteEdit: (note: UINote) => NativeTouchEventHandler
+    initNoteStar: (note: UINote) => NativeTouchEventHandler
 }
 
 class NotesList extends React.PureComponent<Props> {
-    private renderNote: ListRenderItem<Note> = ({ item, index }) => (
+    private renderNote: ListRenderItem<UINote> = ({ item, index }) => (
         <ResultNote
             onDeletePress={this.props.initNoteDelete(item)}
             onStarPress={this.props.initNoteStar(item)}

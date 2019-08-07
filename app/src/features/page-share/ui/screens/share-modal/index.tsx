@@ -3,7 +3,7 @@ import React from 'react'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { StatefulUIElement } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
-import { ShareExt } from 'src/services/share-ext'
+import { ShareExtService } from 'src/services/share-ext'
 import ShareModal from '../../components/share-modal'
 import ActionBar from '../../components/action-bar-segment'
 import NoteInput from '../../components/note-input-segment'
@@ -19,11 +19,11 @@ export default class ShareModalScreen extends StatefulUIElement<
     State,
     Event
 > {
-    private shareExt: ShareExt
+    private shareExt: ShareExtService
 
     constructor(props: Props) {
         super(props, { logic: new Logic() })
-        this.shareExt = new ShareExt({})
+        this.shareExt = new ShareExtService({})
     }
 
     private initHandleMetaShow = (type: MetaType) => e =>

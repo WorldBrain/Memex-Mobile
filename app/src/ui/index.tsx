@@ -1,19 +1,10 @@
-import { AppRegistry } from 'react-native'
-import { name as appName } from '../../app.json'
-
-import { Storage } from 'src/storage/types'
-import { Services } from 'src/services/types'
-
 import React, { Component } from 'react'
-import { View, Text } from 'react-native'
+import { AppRegistry, View, Text } from 'react-native'
 
-import AppNavigator from './navigation'
+import { name as appName } from '../../app.json'
+import createApp from './navigation'
 import ShareModal from 'src/features/page-share/ui/screens/share-modal'
-
-export interface UIDependencies {
-    storage: Storage
-    services: Services
-}
+import { UIDependencies } from './types'
 
 export class UI {
     private setupResolve!: (dependencies: UIDependencies) => void
@@ -26,6 +17,7 @@ export class UI {
         interface State {
             dependencies: UIDependencies | null
         }
+
         class AppContainer extends Component<{}, State> {
             state: State = {
                 dependencies: null,
@@ -39,6 +31,11 @@ export class UI {
                 console.log('unmounting')
             }
 
+            private renderMainNavContainer() {
+                const AppContainer = createApp(this.state.dependencies!)
+                return <AppContainer />
+            }
+
             render() {
                 if (!this.state.dependencies) {
                     return (
@@ -48,7 +45,7 @@ export class UI {
                     )
                 }
 
-                return <AppNavigator />
+                return this.renderMainNavContainer()
             }
         }
 

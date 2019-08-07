@@ -1,12 +1,12 @@
 import React from 'react'
 
-import { StatefulUIElement } from 'src/ui/types'
+import { NavigationScreen } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import SavePagesStage from '../../components/save-pages-stage'
 
 interface Props {}
 
-export default class ShareModalScreen extends StatefulUIElement<
+export default class ShareModalScreen extends NavigationScreen<
     Props,
     State,
     Event

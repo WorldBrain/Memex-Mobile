@@ -1,7 +1,6 @@
 import React from 'react'
-import { View } from 'react-native'
 
-import { StatefulUIElement } from 'src/ui/types'
+import { NavigationScreen } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import Filters from 'src/features/overview/ui/components/menu'
 import PagesView from '../pages-view'
@@ -11,7 +10,7 @@ import SideMenuScreen from '../side-menu'
 
 interface Props {}
 
-export default class OverviewMenu extends StatefulUIElement<
+export default class OverviewMenu extends NavigationScreen<
     Props,
     State,
     Event
@@ -30,7 +29,16 @@ export default class OverviewMenu extends StatefulUIElement<
 
     private renderResults() {
         if (this.state.showCollectionsView) {
-            return <CollectionsView {...this.props} />
+            return (
+                <CollectionsView
+                    {...this.props}
+                    hideCollectionsView={() =>
+                        this.processEvent('setShowCollectionsView', {
+                            show: false,
+                        })
+                    }
+                />
+            )
         }
 
         switch (this.state.selectedResultType) {

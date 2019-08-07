@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { StatefulUIElement } from 'src/ui/types'
+import { NavigationScreen } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import MainLayout from '../../components/main-layout'
 import Footer from '../../components/footer'
@@ -11,7 +11,7 @@ import { MetaType } from 'src/features/meta-picker/types'
 
 interface Props {}
 
-export default class PageEditorScreen extends StatefulUIElement<
+export default class PageEditorScreen extends NavigationScreen<
     Props,
     State,
     Event

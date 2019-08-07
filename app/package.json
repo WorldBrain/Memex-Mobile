@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest",
+    "test": "jest --verbose --config=jest.config.js",
+    "test:watch": "jest --watch --config=jest.config.js",
     "react-native": "react-native",
     "build:deptree": "depcruise --exclude '^node_modules' --output-type dot ./src | dot -T svg > /tmp/dependencygraph.svg",
     "format": "prettier --config prettier.config.js --write '**/*.{ts,js,tsx,jsx,css,md}'"

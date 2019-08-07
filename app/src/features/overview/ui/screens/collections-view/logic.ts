@@ -1,15 +1,15 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { Collection } from 'src/features/overview/types'
+import { UICollection } from 'src/features/overview/types'
 import initTestData from './test-data'
 
 export interface State {
     selectedCollection?: string
-    collections: Set<Collection>
+    collections: Set<UICollection>
 }
 
 export type Event = UIEvent<{
-    setCollections: { collections: Set<Collection> }
+    setCollections: { collections: Set<UICollection> }
     selectCollection: { name: string }
 }>
 

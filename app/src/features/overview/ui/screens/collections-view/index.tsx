@@ -1,14 +1,21 @@
 import React from 'react'
-import { View, FlatList, ListRenderItem } from 'react-native'
+import {
+    View,
+    FlatList,
+    ListRenderItem,
+    GestureResponderEvent,
+} from 'react-native'
 import { StatefulUIElement } from 'src/ui/types'
 
 import Logic, { State, Event } from './logic'
 import styles from './styles'
 import CollectionEntry from '../../components/collection-entry'
-import { Collection } from 'src/features/overview/types'
+import { UICollection } from 'src/features/overview/types'
 import * as selectors from './selectors'
 
-interface Props {}
+interface Props {
+    hideCollectionsView: () => void
+}
 
 export default class CollectionsView extends StatefulUIElement<
     Props,
@@ -19,14 +26,21 @@ export default class CollectionsView extends StatefulUIElement<
         super(props, { logic: new Logic() })
     }
 
-    private renderCollection: ListRenderItem<Collection> = ({
+    private handleCollectionSelection = (name: string) => (
+        e: GestureResponderEvent,
+    ) => {
+        this.processEvent('selectCollection', { name })
+        this.props.hideCollectionsView()
+    }
+
+    private renderCollection: ListRenderItem<UICollection> = ({
         item: { id, name },
     }) => (
         <CollectionEntry
             key={id}
             name={name}
             isSelected={name === selectors.selected(this.state)}
-            onSelect={e => this.processEvent('selectCollection', { name })}
+            onSelect={this.handleCollectionSelection(name)}
         />
     )
 

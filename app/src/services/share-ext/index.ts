@@ -6,7 +6,7 @@ export interface Props {
     shareAPI?: ShareAPI
 }
 
-export class ShareExt {
+export class ShareExtService {
     private shareAPI: ShareAPI
 
     constructor({ shareAPI = ShareExtension }: Props) {

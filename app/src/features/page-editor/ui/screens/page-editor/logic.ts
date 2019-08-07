@@ -1,6 +1,6 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { PageWithNotes as Page } from 'src/features/overview/types'
+import { UIPageWithNotes as Page } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import testData from './test-data'
 
@@ -53,7 +53,7 @@ export default class Logic extends UILogic<State, Event> {
     ): UIMutation<State> {
         // TODO: Generate new URL, or get it from storage layer
         return {
-            page: ({ notes, ...page }) => ({
+            page: ({ notes = [], ...page }) => ({
                 ...page,
                 notes: [
                     ...notes,

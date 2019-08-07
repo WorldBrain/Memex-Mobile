@@ -5,28 +5,57 @@ export type NativeTouchEventHandler = (
 ) => void
 export type ResultType = 'pages' | 'notes'
 
-export interface Collection {
+export interface UICollection {
     id: number
     name: string
 }
 
-export interface Result {
+export interface UIResult {
     url: string
     date: string
     isStarred?: boolean
 }
 
-export interface Page extends Result {
+export interface UIPage extends UIResult {
     pageUrl: string
     favIcon?: string
     titleText: string
 }
 
-export interface PageWithNotes extends Page {
-    notes: Note[]
+export interface UIPageWithNotes extends UIPage {
+    notes: UINote[]
 }
 
-export interface Note extends Result {
+export interface UINote extends UIResult {
     noteText?: string
     commentText?: string
+}
+
+export interface Page {
+    url: string
+    text: string
+    lang?: string
+    domain: string
+    fullUrl: string
+    hostname: string
+    fullTitle: string
+    screenshot?: string
+    description?: string
+    canonicalUrl?: string
+    isStarred?: boolean
+}
+
+export interface Visit {
+    url: string
+    time: number
+    duration: number
+    scrollMaxPerc: number
+    scrollMaxPx: number
+    scrollPerc: number
+    scrollPx: number
+}
+
+export interface Bookmark {
+    url: string
+    time: number
 }
