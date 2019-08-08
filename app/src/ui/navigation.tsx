@@ -7,6 +7,7 @@ import {
     NavigationContainer,
 } from 'react-navigation'
 
+import Scanner from 'src/features/qr-code-scanner/ui/screens/scanner'
 import Overview from 'src/features/overview/ui/screens/overview'
 import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
 import Sync from 'src/features/sync/ui/screens/sync'
@@ -28,13 +29,14 @@ export type NavigationContainerCreator = (
 const createMainNavigator: NavigationContainerCreator = deps =>
     createSwitchNavigator(
         {
-            Onboarding: props => <Onboarding {...props} {...deps} />,
-            PageEditor: props => <PageEditor {...props} {...deps} />,
-            Overview: props => <Overview {...props} {...deps} />,
-            Sync: props => <Sync {...props} {...deps} />,
+            // Onboarding: props => <Onboarding {...props} {...deps} />,
+            // PageEditor: props => <PageEditor {...props} {...deps} />,
+            // Overview: props => <Overview {...props} {...deps} />,
+            // Sync: props => <Sync {...props} {...deps} />,
+            Scanner: props => <Scanner {...props} {...deps} />,
         },
         {
-            initialRouteName: 'Overview',
+            initialRouteName: 'Scanner',
         },
     )
 
