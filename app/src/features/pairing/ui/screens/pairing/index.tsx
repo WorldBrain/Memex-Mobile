@@ -7,7 +7,7 @@ import Scanner from '../../components/scanner'
 
 export interface Props {}
 
-export default class ScannerScreen extends NavigationScreen<
+export default class PairingScreen extends NavigationScreen<
     Props,
     State,
     Event

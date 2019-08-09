@@ -7,12 +7,12 @@ import {
     NavigationContainer,
 } from 'react-navigation'
 
-import Scanner from 'src/features/qr-code-scanner/ui/screens/scanner'
-import Overview from 'src/features/overview/ui/screens/overview'
-import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
-import Sync from 'src/features/sync/ui/screens/sync'
-import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
 import { UIDependencies } from './types'
+import Pairing from 'src/features/pairing/ui/screens/pairing'
+// import Overview from 'src/features/overview/ui/screens/overview'
+// import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
+// import Sync from 'src/features/sync/ui/screens/sync'
+// import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
 
 export type NavigationContainerCreator = (
     deps: UIDependencies,
@@ -33,10 +33,10 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             // PageEditor: props => <PageEditor {...props} {...deps} />,
             // Overview: props => <Overview {...props} {...deps} />,
             // Sync: props => <Sync {...props} {...deps} />,
-            Scanner: props => <Scanner {...props} {...deps} />,
+            Pairing: props => <Pairing {...props} {...deps} />,
         },
         {
-            initialRouteName: 'Scanner',
+            initialRouteName: 'Pairing',
         },
     )
 
