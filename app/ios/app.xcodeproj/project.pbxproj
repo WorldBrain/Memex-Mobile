@@ -51,6 +51,7 @@
 		530D722222AA53B400E0F8D5 /* libReactNativeShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 530D721722AA530000E0F8D5 /* libReactNativeShareExtension.a */; };
 		530D722322AA565000E0F8D5 /* libReactNativeShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 530D721722AA530000E0F8D5 /* libReactNativeShareExtension.a */; };
 		530D722422AA573400E0F8D5 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
+		532CDD2B22FD7BF700548299 /* libRNCAsyncStorage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 532CDCC022FC669900548299 /* libRNCAsyncStorage.a */; };
 		53310F3722CC60F400066A7A /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53310F3222CC600200066A7A /* libRCTAnimation.a */; };
 		53310F3822CC610300066A7A /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53310F3222CC600200066A7A /* libRCTAnimation.a */; };
 		778DC85C27E64EE79FB56F1C /* libRNGestureHandler-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B697E347F0EE4B57B3CE357E /* libRNGestureHandler-tvOS.a */; };
@@ -521,6 +522,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				532CDD2B22FD7BF700548299 /* libRNCAsyncStorage.a in Frameworks */,
 				530D722422AA573400E0F8D5 /* JavaScriptCore.framework in Frameworks */,
 				53310F3722CC60F400066A7A /* libRCTAnimation.a in Frameworks */,
 				530D722122AA53B400E0F8D5 /* libReact.a in Frameworks */,
