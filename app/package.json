@@ -30,7 +30,7 @@
     "react-native-modalbox": "^1.7.1",
     "react-native-qrcode-scanner": "^1.2.1",
     "react-native-share-extension": "^2.0.0",
-    "react-native-sqlite-storage": "^3.3.10",
+    "react-native-sqlite-storage": "WorldBrain/react-native-sqlite-storage#shared-group-storage",
     "react-navigation": "^3.11.0",
     "sqlite3": "^4.0.8",
     "typeorm": "^0.2.17",
