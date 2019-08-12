@@ -3,6 +3,7 @@ import StorageManager from '@worldbrain/storex'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
 import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
 
+import defaultConnectionOpts from './default-connection-opts'
 import { Storage, StorageModules } from './types'
 import { OverviewStorage } from 'src/features/overview/storage'
 import { MetaPickerStorage } from 'src/features/meta-picker/storage'
@@ -14,9 +15,14 @@ export interface CreateStorageOptions {
 }
 
 export async function createStorage({
-    typeORMConnectionOpts: connectionOptions,
+    typeORMConnectionOpts,
     alterModules = f => f,
 }: CreateStorageOptions): Promise<Storage> {
+    const connectionOptions = {
+        ...defaultConnectionOpts,
+        ...typeORMConnectionOpts,
+    } as ConnectionOptions
+
     const backend = new TypeORMStorageBackend({ connectionOptions })
     const storageManager = new StorageManager({ backend })
 
