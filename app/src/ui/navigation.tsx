@@ -8,6 +8,7 @@ import {
 } from 'react-navigation'
 
 import { UIDependencies } from './types'
+import ShareModal from 'src/features/page-share/ui/screens/share-modal'
 // import Overview from 'src/features/overview/ui/screens/overview'
 import MVPOverview from 'src/features/overview/ui/screens/mvp-overview'
 import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
@@ -40,6 +41,18 @@ const createMainNavigator: NavigationContainerCreator = deps =>
         },
     )
 
-const createApp: NavigationContainerCreator = deps =>
+const createShareNavigator: NavigationContainerCreator = deps =>
+    createSwitchNavigator(
+        {
+            ShareModal: props => <ShareModal {...props} {...deps} />,
+        },
+        {
+            initialRouteName: 'ShareModal',
+        },
+    )
+
+export const createApp: NavigationContainerCreator = deps =>
     createAppContainer(createMainNavigator(deps))
-export default createApp
+
+export const createShareUI: NavigationContainerCreator = deps =>
+    createAppContainer(createShareNavigator(deps))
