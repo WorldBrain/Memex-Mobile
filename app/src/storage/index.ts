@@ -28,15 +28,7 @@ export async function createStorage({
 
     registerModuleMapCollections(storageManager.registry, modules as any)
     await storageManager.finishInitialization()
-
-    // await backend.connection.dropDatabase()
-    // if (
-    //     !(await backend.connection.createQueryRunner().getDatabases()).includes(
-    //         connectionOptions.database as string,
-    //     )
-    // ) {
-    //     await storageManager.backend.migrate()
-    // }
+    await storageManager.backend.migrate()
 
     return {
         manager: storageManager,
