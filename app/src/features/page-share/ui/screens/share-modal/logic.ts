@@ -9,13 +9,16 @@ export interface State {
     tagCount: number
     isStarred: boolean
     isModalShown: boolean
+    isPageSaving: boolean
     metaViewShown?: MetaType
 }
 export type Event = UIEvent<{
-    setMetaViewType: { type: MetaType }
+    setMetaViewType: { type?: MetaType }
     setModalVisible: { shown: boolean }
     setNoteText: { value: string }
     setPageStar: { value: boolean }
+    setPageSaving: { value: boolean }
+    setStatusText: { value: string }
 }>
 
 export default class Logic extends UILogic<State, Event> {
@@ -23,11 +26,24 @@ export default class Logic extends UILogic<State, Event> {
         return {
             isModalShown: true,
             isStarred: false,
+            isPageSaving: false,
             noteText: '',
             statusText: 'Page Saved!',
             collectionCount: 0,
             tagCount: 0,
         }
+    }
+
+    setStatusText(
+        incoming: IncomingUIEvent<State, Event, 'setStatusText'>,
+    ): UIMutation<State> {
+        return { statusText: { $set: incoming.event.value } }
+    }
+
+    setPageSaving(
+        incoming: IncomingUIEvent<State, Event, 'setPageSaving'>,
+    ): UIMutation<State> {
+        return { isPageSaving: { $set: incoming.event.value } }
     }
 
     setMetaViewType(
