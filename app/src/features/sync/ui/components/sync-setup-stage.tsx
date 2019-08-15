@@ -1,7 +1,7 @@
 import React from 'react'
 import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
 
-import MainLayout from 'src/features/onboarding/ui/components/main-layout'
+import MainLayout from 'src/ui/components/main-layout'
 
 export interface Props {
     onBtnPress: (e: NativeSyntheticEvent<NativeTouchEvent>) => void

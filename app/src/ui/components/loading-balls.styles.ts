@@ -8,6 +8,9 @@ export default StyleSheet.create({
         alignItems: 'center',
         width: 80,
     },
+    ballSelected: {
+        backgroundColor: '#36362f',
+    },
     ball: {
         backgroundColor: '#c4c4c4',
         borderRadius: 25,

@@ -10,8 +10,8 @@ import {
 import { UIDependencies } from './types'
 import Pairing from 'src/features/pairing/ui/screens/pairing'
 // import Overview from 'src/features/overview/ui/screens/overview'
-// import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
-// import Sync from 'src/features/sync/ui/screens/sync'
+import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
+import Sync from 'src/features/sync/ui/screens/sync'
 // import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
 
 export type NavigationContainerCreator = (
@@ -29,14 +29,14 @@ export type NavigationContainerCreator = (
 const createMainNavigator: NavigationContainerCreator = deps =>
     createSwitchNavigator(
         {
-            // Onboarding: props => <Onboarding {...props} {...deps} />,
+            Onboarding: props => <Onboarding {...props} {...deps} />,
             // PageEditor: props => <PageEditor {...props} {...deps} />,
             // Overview: props => <Overview {...props} {...deps} />,
-            // Sync: props => <Sync {...props} {...deps} />,
+            Sync: props => <Sync {...props} {...deps} />,
             Pairing: props => <Pairing {...props} {...deps} />,
         },
         {
-            initialRouteName: 'Pairing',
+            initialRouteName: 'Onboarding',
         },
     )
 

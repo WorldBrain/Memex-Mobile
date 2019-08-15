@@ -17,9 +17,16 @@ export default StyleSheet.create({
         marginHorizontal: 60,
         textAlign: 'center',
     },
-    gif: {
+    comingSoonText: {
+        fontSize: 18,
+        color: 'red',
+        textAlign: 'center',
+        textTransform: 'uppercase',
+    },
+    children: {
         height: 300,
-        width: 300,
-        backgroundColor: '#c4c4c4',
+    },
+    progress: {
+        height: 20,
     },
 })
