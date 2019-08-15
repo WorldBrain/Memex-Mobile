@@ -10,7 +10,7 @@ const SyncLoadingStage: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
         <View style={styles.icon} />
         <LoadingBalls />
-        <Text style={styles.text}>Syncing information from your computer</Text>
+        <Text style={styles.text}>Pairing devices and syncing data</Text>
     </View>
 )
 

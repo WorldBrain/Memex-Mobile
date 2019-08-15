@@ -18,5 +18,6 @@ export default StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         paddingHorizontal: 50,
+        textAlign: 'center',
     },
 })

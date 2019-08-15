@@ -24,5 +24,6 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 15,
         paddingHorizontal: 50,
+        marginBottom: 30,
     },
 })

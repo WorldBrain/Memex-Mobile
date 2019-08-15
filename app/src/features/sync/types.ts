@@ -1,1 +1,6 @@
-export type SyncStatus = 'setup' | 'syncing' | 'success' | 'failure'
+export type SyncStatus =
+    | 'setup'
+    | 'scanning'
+    | 'syncing'
+    | 'success'
+    | 'failure'
