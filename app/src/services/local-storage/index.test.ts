@@ -23,19 +23,42 @@ describe('local storage service tests', () => {
     it('should be able to store and retrieve string values', async () => {
         const { storage } = setup()
 
-        const testStr = 'this is a test'
-        const testObj = { testStr }
+        const test = 'this is a test'
 
-        expect(await storage.get('testA')).toEqual(null)
-        await storage.set('testA', testStr)
-        expect(await storage.get('testA')).toEqual(testStr)
+        expect(await storage.get('test')).toEqual(null)
+        await storage.set('test', test)
+        expect(await storage.get('test')).toEqual(test)
+    })
 
-        expect(await storage.get('testB')).toEqual(null)
-        await storage.set('testB', JSON.stringify(testObj))
-        const testObjSerialized = await storage.get('testB')
-        expect(typeof testObjSerialized).toEqual('string')
-        expect(JSON.parse(testObjSerialized as string)).toEqual(
-            expect.objectContaining(testObj),
-        )
+    it('should be able to store and retrieve number values', async () => {
+        const { storage } = setup()
+        const test = 99
+
+        expect(await storage.get('test')).toEqual(null)
+        await storage.set('test', test)
+        expect(await storage.get('test')).toBe(test)
+    })
+
+    it('should be able to store and retrieve boolean values', async () => {
+        const { storage } = setup()
+        const test = false
+
+        expect(await storage.get('test')).toEqual(null)
+        await storage.set('test', test)
+        expect(await storage.get('test')).toBe(test)
+    })
+
+    it('should be able to store and retrieve object values', async () => {
+        const { storage } = setup()
+
+        const test = {
+            testStr: 'this is a test',
+            testNum: 99,
+            testBool: false,
+        }
+
+        expect(await storage.get('test')).toEqual(null)
+        await storage.set('test', test)
+        expect(await storage.get('test')).toEqual(expect.objectContaining(test))
     })
 })

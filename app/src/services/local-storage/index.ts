@@ -13,12 +13,26 @@ export class LocalStorageService implements LocalStorageAPI {
         this.storageAPI = storageAPI
     }
 
-    async get(keyName: string) {
-        const value = await this.storageAPI.getItem(keyName)
-        return value || null
+    async get<T = any>(keyName: string) {
+        const storedValue = await this.storageAPI.getItem(keyName)
+
+        if (storedValue == null) {
+            return null
+        }
+
+        let returnValue: T
+        try {
+            returnValue = JSON.parse(storedValue)
+        } catch (err) {
+            returnValue = storedValue as any
+        }
+
+        return returnValue
     }
 
-    async set(keyName: string, value: string) {
-        return this.storageAPI.setItem(keyName, value)
+    async set<T = any>(keyName: string, value: T) {
+        const valueToStore = JSON.stringify(value)
+
+        return this.storageAPI.setItem(keyName, valueToStore)
     }
 }

@@ -1,4 +1,4 @@
 export interface LocalStorageAPI {
-    get(keyName: string): Promise<string | null>
-    set(keyName: string, value: string): Promise<void>
+    get<T = any>(keyName: string): Promise<T | null>
+    set<T = any>(keyName: string, value: T): Promise<void>
 }
