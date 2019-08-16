@@ -25,12 +25,14 @@ const MainLayout: React.StatelessComponent<Props> = props => (
     <EmptyLayout>
         <Text style={styles.titleText}>{props.titleText}</Text>
         <Text style={styles.subtitleText}>{props.subtitleText}</Text>
-        {props.isComingSoon && (
-            <Text style={styles.comingSoonText}>Coming soon</Text>
-        )}
+        <View style={styles.comingSoonContainer}>
+            {props.isComingSoon && (
+                <Text style={styles.comingSoonText}>Coming soon</Text>
+            )}
+        </View>
         <View style={styles.children}>{props.children}</View>
         <Button title={props.btnText} onPress={props.onBtnPress} />
-        <View style={styles.progress}>
+        <View style={styles.progressContainer}>
             {props.showScreenProgress && (
                 <ProgressBalls count={3} selectedIndex={props.screenIndex} />
             )}

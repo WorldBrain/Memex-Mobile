@@ -8,7 +8,7 @@ export default StyleSheet.create({
     },
     subtitleText: {
         fontSize: 18,
-        marginHorizontal: 60,
+        marginHorizontal: 50,
         textAlign: 'center',
     },
     comingSoonText: {
@@ -20,7 +20,10 @@ export default StyleSheet.create({
     children: {
         height: 300,
     },
-    progress: {
+    comingSoonContainer: {
+        height: 20,
+    },
+    progressContainer: {
         height: 20,
     },
 })
