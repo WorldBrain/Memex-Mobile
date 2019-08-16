@@ -3,7 +3,7 @@ import { NativeSyntheticEvent, NativeTouchEvent, Text } from 'react-native'
 
 import styles from './sync-setup-stage.styles'
 import sharedStyles from './shared.styles'
-import MainLayout from 'src/ui/components/main-layout'
+import MainLayout from 'src/ui/layouts/main'
 
 export interface Props {
     onBtnPress: (e: NativeSyntheticEvent<NativeTouchEvent>) => void

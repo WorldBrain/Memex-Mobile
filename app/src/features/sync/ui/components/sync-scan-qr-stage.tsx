@@ -3,7 +3,7 @@ import QRCodeScanner, {
     Event as QRReadEvent,
 } from 'react-native-qrcode-scanner'
 
-import MainLayout from 'src/ui/components/main-layout'
+import MainLayout from 'src/ui/layouts/main'
 import E2EEMessage from './e2ee-msg'
 import styles from './sync-scan-qr-stage.styles'
 

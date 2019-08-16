@@ -1,9 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 
-import MainLayout, {
-    Props as MainLayoutProps,
-} from 'src/ui/components/main-layout'
+import MainLayout, { Props as MainLayoutProps } from 'src/ui/layouts/main'
 import styles from './gif-layout.styles'
 
 export interface Props extends MainLayoutProps {}

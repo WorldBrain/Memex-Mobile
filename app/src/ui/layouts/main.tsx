@@ -8,7 +8,8 @@ import {
 
 import ProgressBalls from 'src/ui/components/progress-balls'
 import Button from 'src/ui/components/memex-btn'
-import styles from './main-layout.styles'
+import EmptyLayout from './empty'
+import styles from './main.styles'
 
 export interface Props {
     btnText: string
@@ -21,7 +22,7 @@ export interface Props {
 }
 
 const MainLayout: React.StatelessComponent<Props> = props => (
-    <View style={styles.container}>
+    <EmptyLayout>
         <Text style={styles.titleText}>{props.titleText}</Text>
         <Text style={styles.subtitleText}>{props.subtitleText}</Text>
         {props.isComingSoon && (
@@ -34,7 +35,7 @@ const MainLayout: React.StatelessComponent<Props> = props => (
                 <ProgressBalls count={3} selectedIndex={props.screenIndex} />
             )}
         </View>
-    </View>
+    </EmptyLayout>
 )
 
 export default MainLayout
