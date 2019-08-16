@@ -1,4 +1,9 @@
 {
-  "name": "app",
-  "displayName": "app"
+    "name": "app",
+    "displayName": "app",
+    "version": "0.1",
+    "storageKeys": {
+        "showOnboarding": "@MemexApp_show-onboarding",
+        "syncKey": "@MemexApp_sync-key"
+    }
 }

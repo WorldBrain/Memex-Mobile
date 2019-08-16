@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { storageKeys } from '../../../../../../app.json'
 import { NavigationScreen } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import GifLayout, { Props as GifLayoutProps } from '../../components/gif-layout'
@@ -16,11 +17,20 @@ export default class OnboardingScreen extends NavigationScreen<
         super(props, { logic: new Logic() })
     }
 
+    private async finishOnboarding() {
+        await this.props.services.localStorage.set(
+            storageKeys.showOnboarding,
+            false,
+        )
+
+        return this.props.navigation.navigate('Sync')
+    }
+
     private goToNextStage = () => {
         let value = (this.state.onboardingStage + 1) as OnboardingStage
 
         if (value > 2) {
-            return this.props.navigation.navigate('Sync')
+            return this.finishOnboarding()
         }
 
         this.processEvent('setOnboardingStage', { value })

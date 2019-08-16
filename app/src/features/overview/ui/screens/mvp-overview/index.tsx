@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, Linking } from 'react-native'
 
+import { version, storageKeys } from '../../../../../../app.json'
 import EmptyLayout from 'src/ui/layouts/empty'
 import Button from 'src/ui/components/memex-btn'
 import { NavigationScreen } from 'src/ui/types'
@@ -16,6 +17,20 @@ export default class MVPOverviewMenu extends NavigationScreen<
 > {
     constructor(props: Props) {
         super(props, { logic: new Logic() })
+    }
+
+    componentDidMount() {
+        this.navToOnboardingIfNeeded()
+    }
+
+    private async navToOnboardingIfNeeded() {
+        const showOnboarding = await this.props.services.localStorage.get<
+            boolean
+        >(storageKeys.showOnboarding)
+
+        if (showOnboarding || showOnboarding === null) {
+            this.props.navigation.navigate('Onboarding')
+        }
     }
 
     private handleTutorialPress = () =>
@@ -49,7 +64,7 @@ export default class MVPOverviewMenu extends NavigationScreen<
                         />
                     </View>
                 </View>
-                <Text style={styles.versionText}>Version 0.1</Text>
+                <Text style={styles.versionText}>Version {version}</Text>
             </EmptyLayout>
         )
     }

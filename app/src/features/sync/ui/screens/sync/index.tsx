@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { storageKeys } from '../../../../../../app.json'
 import { NavigationScreen } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import SetupStage from '../../components/sync-setup-stage'
@@ -10,17 +11,38 @@ import ScanQRStage from '../../components/sync-scan-qr-stage'
 interface Props {}
 
 export default class SyncScreen extends NavigationScreen<Props, State, Event> {
+    static TEST_SYNC_KEY = 'this is a test!'
+
     constructor(props: Props) {
         super(props, { logic: new Logic() })
     }
 
-    handleFakeSync = e => {
+    componentDidMount() {
+        this.skipSyncIfNeeded()
+    }
+
+    private async skipSyncIfNeeded() {
+        const syncKey = await this.props.services.localStorage.get<string>(
+            storageKeys.syncKey,
+        )
+
+        if (syncKey != null) {
+            this.props.navigation.navigate('MVPOverview')
+        }
+    }
+
+    private handleSyncSuccess = async () => {
+        await this.props.services.localStorage.set(
+            storageKeys.syncKey,
+            SyncScreen.TEST_SYNC_KEY,
+        )
+        this.processEvent('setSyncStatus', { value: 'success' })
+    }
+
+    private handleFakeSync = e => {
         this.processEvent('setSyncStatus', { value: 'syncing' })
 
-        setTimeout(
-            () => this.processEvent('setSyncStatus', { value: 'success' }),
-            1500,
-        )
+        setTimeout(this.handleSyncSuccess, 1500)
     }
 
     render() {
@@ -28,7 +50,7 @@ export default class SyncScreen extends NavigationScreen<Props, State, Event> {
             case 'scanning':
                 return (
                     <ScanQRStage
-                        onQRRead={console.log}
+                        onQRRead={this.handleFakeSync}
                         onBtnPress={this.handleFakeSync}
                     />
                 )

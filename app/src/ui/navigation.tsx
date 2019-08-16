@@ -36,7 +36,7 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             Sync: props => <Sync {...props} {...deps} />,
         },
         {
-            initialRouteName: 'Onboarding',
+            initialRouteName: 'MVPOverview',
         },
     )
 
