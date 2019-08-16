@@ -38,7 +38,7 @@ export default class SyncScreen extends NavigationScreen<Props, State, Event> {
                 return (
                     <SuccessStage
                         onBtnPress={() =>
-                            this.props.navigation.navigate('Overview')
+                            this.props.navigation.navigate('MVPOverview')
                         }
                     />
                 )

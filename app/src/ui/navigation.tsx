@@ -9,6 +9,7 @@ import {
 
 import { UIDependencies } from './types'
 // import Overview from 'src/features/overview/ui/screens/overview'
+import MVPOverview from 'src/features/overview/ui/screens/mvp-overview'
 import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
 import Sync from 'src/features/sync/ui/screens/sync'
 // import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
@@ -31,6 +32,7 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             Onboarding: props => <Onboarding {...props} {...deps} />,
             // PageEditor: props => <PageEditor {...props} {...deps} />,
             // Overview: props => <Overview {...props} {...deps} />,
+            MVPOverview: props => <MVPOverview {...props} {...deps} />,
             Sync: props => <Sync {...props} {...deps} />,
         },
         {
