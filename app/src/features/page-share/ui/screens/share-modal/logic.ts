@@ -28,7 +28,7 @@ export default class Logic extends UILogic<State, Event> {
             isStarred: false,
             isPageSaving: false,
             noteText: '',
-            statusText: 'Page Saved!',
+            statusText: '',
             collectionCount: 0,
             tagCount: 0,
         }

@@ -35,7 +35,6 @@ export default class ShareModalScreen extends NavigationScreen<
         return (
             <>
                 <ActionBar
-                    cancelBtnText="Back"
                     onCancelPress={() =>
                         this.processEvent('setMetaViewType', {
                             type: undefined,
@@ -50,11 +49,7 @@ export default class ShareModalScreen extends NavigationScreen<
     renderInputs() {
         return (
             <>
-                <ActionBar
-                    cancelBtnText="Undo"
-                    onCancelPress={this.handleClose}
-                    onConfirmPress={this.handleClose}
-                >
+                <ActionBar onConfirmPress={this.handleClose}>
                     {this.state.statusText}
                 </ActionBar>
                 <NoteInput
