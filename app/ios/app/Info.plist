@@ -65,5 +65,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>AppGroupName</key>
+	<string>group.io.worldbrain.memex</string>
 </dict>
 </plist>

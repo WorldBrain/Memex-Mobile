@@ -5766,7 +5766,7 @@ react-native-share-extension@^2.0.0:
 
 react-native-sqlite-storage@WorldBrain/react-native-sqlite-storage#shared-group-storage:
   version "3.3.11"
-  resolved "https://codeload.github.com/WorldBrain/react-native-sqlite-storage/tar.gz/241f8bdb2a1b4bd4e175b433676d9a705037b540"
+  resolved "https://codeload.github.com/WorldBrain/react-native-sqlite-storage/tar.gz/7d6c2fc64f5f48910a33e28dff24b0f286581b2e"
 
 react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
   version "1.4.1"

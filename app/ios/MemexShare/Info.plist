@@ -46,5 +46,7 @@
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.share-services</string>
 	</dict>
+	<key>AppGroupName</key>
+	<string>group.io.worldbrain.memex</string>
 </dict>
 </plist>
