@@ -17,6 +17,7 @@ const ShareModal: React.StatelessComponent<Props> = props => (
         onClosed={props.onClosed}
         isOpen={props.isModalShown}
         backdropPressToClose={false}
+        swipeToClose={false}
     >
         <View
             style={[
