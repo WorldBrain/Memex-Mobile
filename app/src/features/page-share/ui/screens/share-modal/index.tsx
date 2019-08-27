@@ -95,7 +95,7 @@ export default class ShareModalScreen extends NavigationScreen<
         return (
             <ShareModal
                 isModalShown={this.state.isModalShown}
-                onClosed={this.handleSave}
+                onClosed={this.props.services.shareExt.close}
                 stretched={!!this.state.metaViewShown}
             >
                 {this.state.metaViewShown
