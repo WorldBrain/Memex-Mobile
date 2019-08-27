@@ -1,16 +1,17 @@
 import React from 'react'
-import { Text, GestureResponderEvent } from 'react-native'
+import { Text } from 'react-native'
 
-import TouchableSegment from './touchable-segment'
+import TouchableSegment, {
+    Props as TouchableSegmentProps,
+} from './touchable-segment'
 import styles from './add-tags-segment.styles'
 
-export interface Props {
+export interface Props extends Omit<TouchableSegmentProps, 'text'> {
     count: number
-    onPress: (e: GestureResponderEvent) => void
 }
 
 const AddTags: React.StatelessComponent<Props> = props => (
-    <TouchableSegment onPress={props.onPress} text="Add Tags" skipBottomBorder>
+    <TouchableSegment text="Add Tags" {...props} skipBottomBorder>
         <Text style={styles.count}>{props.count}</Text>
     </TouchableSegment>
 )

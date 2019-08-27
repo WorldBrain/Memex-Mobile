@@ -1,7 +1,9 @@
 import React from 'react'
-import { Image, GestureResponderEvent } from 'react-native'
+import { Image } from 'react-native'
 
-import TouchableSegment from './touchable-segment'
+import TouchableSegment, {
+    Props as TouchableSegmentProps,
+} from './touchable-segment'
 import styles from './touchable-segment.styles'
 
 const getIconSource = (props: Props) =>
@@ -9,13 +11,12 @@ const getIconSource = (props: Props) =>
         ? require('src/features/overview/ui/img/star-full.png')
         : require('src/features/overview/ui/img/star.png')
 
-export interface Props {
+export interface Props extends Omit<TouchableSegmentProps, 'text'> {
     isStarred: boolean
-    onPress: (e: GestureResponderEvent) => void
 }
 
 const StarPage: React.StatelessComponent<Props> = props => (
-    <TouchableSegment onPress={props.onPress} text="Star Page">
+    <TouchableSegment text="Star Page" {...props}>
         <Image style={styles.starIcon} source={getIconSource(props)} />
     </TouchableSegment>
 )

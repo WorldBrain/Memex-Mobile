@@ -1,16 +1,17 @@
 import React from 'react'
-import { Text, GestureResponderEvent } from 'react-native'
+import { Text } from 'react-native'
 
-import TouchableSegment from './touchable-segment'
+import TouchableSegment, {
+    Props as TouchableSegmentProps,
+} from './touchable-segment'
 import styles from './add-collections-segment.styles'
 
-export interface Props {
+export interface Props extends Omit<TouchableSegmentProps, 'text'> {
     count: number
-    onPress: (e: GestureResponderEvent) => void
 }
 
 const AddCollections: React.StatelessComponent<Props> = props => (
-    <TouchableSegment onPress={props.onPress} text="Add to Collections">
+    <TouchableSegment text="Add to Collections" {...props}>
         <Text style={styles.count}>{props.count}</Text>
     </TouchableSegment>
 )

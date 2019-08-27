@@ -2,6 +2,7 @@ import React from 'react'
 import {
     Text,
     View,
+    Keyboard,
     TouchableOpacity,
     GestureResponderEvent,
 } from 'react-native'
@@ -11,11 +12,19 @@ import styles from './touchable-segment.styles'
 export interface Props {
     text: string
     skipBottomBorder?: boolean
+    disabled?: boolean
     onPress: (e: GestureResponderEvent) => void
 }
 
 const TouchableSegment: React.StatelessComponent<Props> = props => (
-    <TouchableOpacity style={styles.outter} onPress={props.onPress}>
+    <TouchableOpacity
+        disabled={props.disabled}
+        style={styles.outter}
+        onPress={(e: GestureResponderEvent) => {
+            Keyboard.dismiss()
+            props.onPress(e)
+        }}
+    >
         <View
             style={[
                 styles.container,

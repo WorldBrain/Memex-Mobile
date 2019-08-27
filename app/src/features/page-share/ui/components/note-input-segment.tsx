@@ -5,6 +5,7 @@ import styles from './note-input-segment.styles'
 
 export interface Props {
     value: string
+    disabled?: boolean
     onChange: (text: string) => void
 }
 
@@ -17,6 +18,7 @@ const NoteInput: React.StatelessComponent<Props> = props => (
             textAlignVertical="top"
             placeholder="Add Note"
             multiline
+            editable={!props.disabled}
         />
     </View>
 )
