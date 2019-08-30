@@ -11,6 +11,7 @@ import { UIDependencies } from './types'
 import ShareModal from 'src/features/page-share/ui/screens/share-modal'
 // import Overview from 'src/features/overview/ui/screens/overview'
 import MVPOverview from 'src/features/overview/ui/screens/mvp-overview'
+import Pairing from 'src/features/overview/ui/screens/pairing-screen'
 import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
 import Sync from 'src/features/sync/ui/screens/sync'
 // import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
@@ -35,6 +36,7 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             // Overview: props => <Overview {...props} {...deps} />,
             MVPOverview: props => <MVPOverview {...props} {...deps} />,
             Sync: props => <Sync {...props} {...deps} />,
+            Pairing: props => <Pairing {...props} {...deps} />,
         },
         {
             initialRouteName: 'MVPOverview',

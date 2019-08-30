@@ -33,6 +33,8 @@ export default class MVPOverviewMenu extends NavigationScreen<
         }
     }
 
+    private navToPairingScreen = () => this.props.navigation.navigate('Pairing')
+
     private handleTutorialPress = () =>
         this.props.navigation.navigate('Onboarding')
 
@@ -60,6 +62,11 @@ export default class MVPOverviewMenu extends NavigationScreen<
                         <Button
                             title="Report Bugs"
                             onPress={this.handleBugReportPress}
+                            style={styles.btn}
+                        />
+                        <Button
+                            title="✔ App successfully paired"
+                            onPress={this.navToPairingScreen}
                             style={styles.btn}
                         />
                     </View>
