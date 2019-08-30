@@ -21,6 +21,17 @@ export default class MVPOverviewMenu extends NavigationScreen<
 
     componentDidMount() {
         this.navToOnboardingIfNeeded()
+        this.checkSyncState()
+    }
+
+    private async checkSyncState() {
+        const syncKey = await this.props.services.localStorage.get<string>(
+            storageKeys.syncKey,
+        )
+
+        if (syncKey != null) {
+            this.processEvent('setSyncStatus', { value: true })
+        }
     }
 
     private async navToOnboardingIfNeeded() {
@@ -34,6 +45,7 @@ export default class MVPOverviewMenu extends NavigationScreen<
     }
 
     private navToPairingScreen = () => this.props.navigation.navigate('Pairing')
+    private navToSyncScreen = () => this.props.navigation.navigate('Sync')
 
     private handleTutorialPress = () =>
         this.props.navigation.navigate('Onboarding')
@@ -64,11 +76,19 @@ export default class MVPOverviewMenu extends NavigationScreen<
                             onPress={this.handleBugReportPress}
                             style={styles.btn}
                         />
-                        <Button
-                            title="✔ App successfully paired"
-                            onPress={this.navToPairingScreen}
-                            style={styles.btn}
-                        />
+                        {this.state.isSynced ? (
+                            <Button
+                                title="✔ App successfully paired"
+                                onPress={this.navToPairingScreen}
+                                style={styles.btn}
+                            />
+                        ) : (
+                            <Button
+                                title="Pair app with computer"
+                                onPress={this.navToSyncScreen}
+                                style={styles.btn}
+                            />
+                        )}
                     </View>
                 </View>
                 <Text style={styles.versionText}>Version {version}</Text>
