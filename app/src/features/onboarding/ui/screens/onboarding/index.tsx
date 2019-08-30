@@ -18,6 +18,20 @@ export default class OnboardingScreen extends NavigationScreen<
         super(props, { logic: new Logic() })
     }
 
+    componentDidMount() {
+        this.checkSyncState()
+    }
+
+    private async checkSyncState() {
+        const syncKey = await this.props.services.localStorage.get<string>(
+            storageKeys.syncKey,
+        )
+
+        if (syncKey != null) {
+            this.processEvent('setSyncStatus', { value: true })
+        }
+    }
+
     private async finishOnboarding() {
         await this.props.services.localStorage.set(
             storageKeys.showOnboarding,
@@ -73,7 +87,9 @@ export default class OnboardingScreen extends NavigationScreen<
                     titleText: 'Search your knowledge',
                     subtitleText:
                         'Sync your history & notes between desktop and mobile app',
-                    btnText: 'Continue to Setup',
+                    btnText: this.state.isSynced
+                        ? 'Close Tutorial'
+                        : 'Continue to Setup',
                     isComingSoon: true,
                 })
         }
