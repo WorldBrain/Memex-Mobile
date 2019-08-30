@@ -35,4 +35,8 @@ export class LocalStorageService implements LocalStorageAPI {
 
         return this.storageAPI.setItem(keyName, valueToStore)
     }
+
+    async clear(keyName: string) {
+        return this.storageAPI.removeItem(keyName)
+    }
 }

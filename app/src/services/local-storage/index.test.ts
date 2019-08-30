@@ -10,6 +10,10 @@ class MemoryStorage {
     async setItem(key: string, value: string) {
         this.mem[key] = value
     }
+
+    async removeItem(key: string) {
+        delete this.mem[key]
+    }
 }
 
 describe('local storage service tests', () => {
@@ -60,5 +64,17 @@ describe('local storage service tests', () => {
         expect(await storage.get('test')).toEqual(null)
         await storage.set('test', test)
         expect(await storage.get('test')).toEqual(expect.objectContaining(test))
+    })
+
+    it('should be able to clear set values', async () => {
+        const { storage } = setup()
+
+        const test = 'this is a test'
+
+        expect(await storage.get('test')).toEqual(null)
+        await storage.set('test', test)
+        expect(await storage.get('test')).toEqual(test)
+        await storage.clear('test')
+        expect(await storage.get('test')).toEqual(null)
     })
 })
