@@ -7,7 +7,7 @@ export async function main() {
     const storage = await createStorage({
         typeORMConnectionOpts: {
             type: 'react-native',
-            location: 'default',
+            location: 'Shared',
             database: 'memex',
         },
     })

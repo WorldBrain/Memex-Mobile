@@ -3,40 +3,36 @@ import StorageManager from '@worldbrain/storex'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
 import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
 
-import { Storage, StorageModules } from './types'
+import defaultConnectionOpts from './default-connection-opts'
+import { Storage } from './types'
 import { OverviewStorage } from 'src/features/overview/storage'
 import { MetaPickerStorage } from 'src/features/meta-picker/storage'
 import { PageEditorStorage } from 'src/features/page-editor/storage'
 
 export interface CreateStorageOptions {
     typeORMConnectionOpts: ConnectionOptions
-    alterModules?: (modules: StorageModules) => StorageModules
 }
 
 export async function createStorage({
-    typeORMConnectionOpts: connectionOptions,
-    alterModules = f => f,
+    typeORMConnectionOpts,
 }: CreateStorageOptions): Promise<Storage> {
+    const connectionOptions = {
+        ...defaultConnectionOpts,
+        ...typeORMConnectionOpts,
+    } as ConnectionOptions
+
     const backend = new TypeORMStorageBackend({ connectionOptions })
     const storageManager = new StorageManager({ backend })
 
-    const modules = alterModules({
+    const modules = {
         overview: new OverviewStorage({ storageManager }),
         metaPicker: new MetaPickerStorage({ storageManager }),
         pageEditor: new PageEditorStorage({ storageManager }),
-    })
+    }
 
-    registerModuleMapCollections(storageManager.registry, modules as any)
+    registerModuleMapCollections(storageManager.registry, modules)
     await storageManager.finishInitialization()
-
-    // await backend.connection.dropDatabase()
-    // if (
-    //     !(await backend.connection.createQueryRunner().getDatabases()).includes(
-    //         connectionOptions.database as string,
-    //     )
-    // ) {
-    //     await storageManager.backend.migrate()
-    // }
+    await storageManager.backend.migrate()
 
     return {
         manager: storageManager,

@@ -2,15 +2,14 @@ import React, { Component } from 'react'
 import { AppRegistry, View, Text } from 'react-native'
 
 import { name as appName } from '../../app.json'
-import createApp from './navigation'
-import ShareModal from 'src/features/page-share/ui/screens/share-modal'
+import { createApp, createShareUI } from './navigation'
 import { UIDependencies } from './types'
 
 export class UI {
     private setupResolve!: (dependencies: UIDependencies) => void
 
     constructor() {
-        const setupPromise = new Promise<UIDependencies>((resolve, reject) => {
+        const setupPromise = new Promise<UIDependencies>(resolve => {
             this.setupResolve = resolve
         })
 
@@ -18,24 +17,20 @@ export class UI {
             dependencies: UIDependencies | null
         }
 
-        class AppContainer extends Component<{}, State> {
+        abstract class AbstractContainer extends Component<{}, State> {
             state: State = {
                 dependencies: null,
             }
 
             async componentDidMount() {
-                this.setState({ dependencies: await setupPromise })
+                const dependencies = await setupPromise
+                this.setState(() => ({ dependencies }))
             }
 
-            componentWillUnmount() {
-                console.log('unmounting')
-            }
+            abstract render(): JSX.Element
+        }
 
-            private renderMainNavContainer() {
-                const AppContainer = createApp(this.state.dependencies!)
-                return <AppContainer />
-            }
-
+        class AppContainer extends AbstractContainer {
             render() {
                 if (!this.state.dependencies) {
                     return (
@@ -45,12 +40,28 @@ export class UI {
                     )
                 }
 
-                return this.renderMainNavContainer()
+                const AppContainer = createApp(this.state.dependencies)
+                return <AppContainer />
+            }
+        }
+
+        class ShareContainer extends AbstractContainer {
+            render() {
+                if (!this.state.dependencies) {
+                    return (
+                        <View>
+                            <Text>Loading!?!!</Text>
+                        </View>
+                    )
+                }
+
+                const AppContainer = createShareUI(this.state.dependencies)
+                return <AppContainer />
             }
         }
 
         AppRegistry.registerComponent(appName, () => AppContainer)
-        AppRegistry.registerComponent('MemexShare', () => ShareModal)
+        AppRegistry.registerComponent('MemexShare', () => ShareContainer)
     }
 
     initialize(options: { dependencies: UIDependencies }) {

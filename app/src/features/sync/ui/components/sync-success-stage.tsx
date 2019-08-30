@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity, Button as StdButton } from 'react-native'
 
 import Button from 'src/ui/components/memex-btn'
 import E2EEMessage from './e2ee-msg'
@@ -7,10 +7,17 @@ import styles from './sync-success-stage.styles'
 
 export interface Props {
     onBtnPress: (e: any) => void
+    onBackBtnPress?: (e: any) => void
+    allowRePairing?: boolean
 }
 
 const SyncSuccessStage: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
+        {props.onBackBtnPress && (
+            <TouchableOpacity style={styles.backBtn}>
+                <StdButton title="Back" onPress={props.onBackBtnPress} />
+            </TouchableOpacity>
+        )}
         <View style={styles.textContainer}>
             <View style={styles.icon} />
             <Text style={styles.text}>
@@ -18,7 +25,15 @@ const SyncSuccessStage: React.StatelessComponent<Props> = props => (
             </Text>
             <E2EEMessage />
         </View>
-        <Button title="Get Started" onPress={props.onBtnPress} />
+        {props.allowRePairing ? (
+            <Button
+                title="Pair with new device"
+                onPress={props.onBtnPress}
+                hasWarning
+            />
+        ) : (
+            <Button title="Get Started" onPress={props.onBtnPress} />
+        )}
     </View>
 )
 

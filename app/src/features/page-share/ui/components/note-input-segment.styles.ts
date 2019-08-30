@@ -8,5 +8,7 @@ export default StyleSheet.create({
         borderBottomColor: '#eaeae9',
         padding: 15,
     },
-    textInput: {},
+    textInput: {
+        height: '100%',
+    },
 })

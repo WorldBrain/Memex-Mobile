@@ -210,7 +210,7 @@ export class MetaPickerStorage extends StorageModule {
     }
 
     deletePageEntryFromList(entry: { listId: number; url: string }) {
-        return this.operation('deletePageFromList', { entry })
+        return this.operation('deletePageFromList', entry)
     }
 
     deleteTag(tag: Tag) {

@@ -1,47 +1,54 @@
 import React from 'react'
 
+import { NavigationScreen } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
-import { StatefulUIElement } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
-import { ShareExtService } from 'src/services/share-ext'
+import { MetaType } from 'src/features/meta-picker/types'
+import AddCollection from '../../components/add-collections-segment'
 import ShareModal from '../../components/share-modal'
 import ActionBar from '../../components/action-bar-segment'
 import NoteInput from '../../components/note-input-segment'
 import StarPage from '../../components/star-page-segment'
-import AddCollection from '../../components/add-collections-segment'
 import AddTags from '../../components/add-tags-segment'
-import { MetaType } from 'src/features/meta-picker/types'
+import delay from 'src/utils/delay'
 
 interface Props {}
 
-export default class ShareModalScreen extends StatefulUIElement<
+export default class ShareModalScreen extends NavigationScreen<
     Props,
     State,
     Event
 > {
-    private shareExt: ShareExtService
-
     constructor(props: Props) {
         super(props, { logic: new Logic() })
-        this.shareExt = new ShareExtService({})
     }
 
-    private initHandleMetaShow = (type: MetaType) => e =>
+    private initHandleMetaShow = (type: MetaType) => (e: any) => {
         this.processEvent('setMetaViewType', { type })
-
-    private handleClose = () => {
-        this.shareExt.close()
-
-        this.processEvent('setModalVisible', { shown: false })
     }
 
-    renderMetaPicker() {
+    private handleSave = async () => {
+        this.processEvent('setPageSaving', { value: true })
+        await delay(2000)
+        this.processEvent('setPageSaving', { value: false })
+        this.processEvent('setModalVisible', { shown: false })
+        this.props.services.shareExt.close()
+    }
+
+    private handleStarPress = () => {
+        this.processEvent('setPageStar', {
+            value: !this.state.isStarred,
+        })
+    }
+
+    private renderMetaPicker() {
         return (
             <>
                 <ActionBar
-                    cancelBtnText="Back"
                     onCancelPress={() =>
-                        this.processEvent('setMetaViewType', { type: null })
+                        this.processEvent('setMetaViewType', {
+                            type: undefined,
+                        })
                     }
                 />
                 <MetaPicker type={this.state.metaViewShown} {...this.props} />
@@ -49,13 +56,12 @@ export default class ShareModalScreen extends StatefulUIElement<
         )
     }
 
-    renderInputs() {
+    private renderInputs() {
         return (
             <>
                 <ActionBar
-                    cancelBtnText="Undo"
-                    onCancelPress={this.handleClose}
-                    onConfirmPress={this.handleClose}
+                    onConfirmPress={this.handleSave}
+                    isConfirming={this.state.isPageSaving}
                 >
                     {this.state.statusText}
                 </ActionBar>
@@ -64,22 +70,22 @@ export default class ShareModalScreen extends StatefulUIElement<
                         this.processEvent('setNoteText', { value })
                     }
                     value={this.state.noteText}
+                    disabled={this.state.isPageSaving}
                 />
                 <StarPage
                     isStarred={this.state.isStarred}
-                    onPress={e =>
-                        this.processEvent('setPageStar', {
-                            value: !this.state.isStarred,
-                        })
-                    }
+                    onPress={this.handleStarPress}
+                    disabled={this.state.isPageSaving}
                 />
                 <AddCollection
                     onPress={this.initHandleMetaShow('collections')}
                     count={this.state.collectionCount}
+                    disabled={this.state.isPageSaving}
                 />
                 <AddTags
                     onPress={this.initHandleMetaShow('tags')}
                     count={this.state.tagCount}
+                    disabled={this.state.isPageSaving}
                 />
             </>
         )
@@ -89,7 +95,7 @@ export default class ShareModalScreen extends StatefulUIElement<
         return (
             <ShareModal
                 isModalShown={this.state.isModalShown}
-                onClosed={this.handleClose}
+                onClosed={this.props.services.shareExt.close}
                 stretched={!!this.state.metaViewShown}
             >
                 {this.state.metaViewShown

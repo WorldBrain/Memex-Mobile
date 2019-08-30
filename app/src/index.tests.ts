@@ -1,34 +1,5 @@
 import { createStorage } from 'src/storage'
-import { Storage, StorageModules } from 'src/storage/types'
-
-/*
- * SQLite is used as the TypeORM connection in tests, however it doesn't support a number
- *  of our needed field types. Hence change them here for the testing environment.
- */
-const alterModules = (modules: StorageModules): StorageModules => {
-    const overviewConf = modules.overview.getConfig()
-    const pageEditConf = modules.pageEditor.getConfig()
-
-    modules.overview.getConfig = () => {
-        overviewConf.collections!['visits'].fields['time'] = {
-            type: 'datetime',
-        }
-        overviewConf.collections!['bookmarks'].fields['time'] = {
-            type: 'datetime',
-        }
-        return overviewConf
-    }
-
-    modules.pageEditor.getConfig = () => {
-        pageEditConf.collections!['annotations'].fields['selector'] = {
-            type: 'string',
-            optional: true,
-        }
-        return pageEditConf
-    }
-
-    return modules
-}
+import { Storage } from 'src/storage/types'
 
 export function makeStorageTestFactory() {
     type TestFunction = (context: TestContext) => Promise<void>
@@ -51,7 +22,6 @@ export function makeStorageTestFactory() {
 
         it(description, async function() {
             const storage = await createStorage({
-                alterModules,
                 typeORMConnectionOpts: {
                     type: 'sqlite',
                     database: ':memory:',

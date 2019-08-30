@@ -12,10 +12,12 @@ export interface Props {
 
 const ShareModal: React.StatelessComponent<Props> = props => (
     <Modal
-        position="center"
+        position="top"
         style={styles.modal}
         onClosed={props.onClosed}
         isOpen={props.isModalShown}
+        backdropPressToClose={false}
+        swipeToClose={false}
     >
         <View
             style={[

@@ -4,6 +4,7 @@ import { storageKeys } from '../../../../../../app.json'
 import { NavigationScreen } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import GifLayout, { Props as GifLayoutProps } from '../../components/gif-layout'
+import Welcome from '../../components/welcome'
 import { OnboardingStage } from 'src/features/onboarding/types'
 
 interface Props {}
@@ -15,6 +16,20 @@ export default class OnboardingScreen extends NavigationScreen<
 > {
     constructor(props: Props) {
         super(props, { logic: new Logic() })
+    }
+
+    componentDidMount() {
+        this.checkSyncState()
+    }
+
+    private async checkSyncState() {
+        const syncKey = await this.props.services.localStorage.get<string>(
+            storageKeys.syncKey,
+        )
+
+        if (syncKey != null) {
+            this.processEvent('setSyncStatus', { value: true })
+        }
     }
 
     private async finishOnboarding() {
@@ -29,7 +44,7 @@ export default class OnboardingScreen extends NavigationScreen<
     private goToNextStage = () => {
         let value = (this.state.onboardingStage + 1) as OnboardingStage
 
-        if (value > 2) {
+        if (value > 3) {
             return this.finishOnboarding()
         }
 
@@ -40,7 +55,7 @@ export default class OnboardingScreen extends NavigationScreen<
         return (
             <GifLayout
                 {...props}
-                screenIndex={this.state.onboardingStage}
+                screenIndex={this.state.onboardingStage - 1}
                 onBtnPress={this.goToNextStage}
                 showScreenProgress
             />
@@ -50,13 +65,15 @@ export default class OnboardingScreen extends NavigationScreen<
     render() {
         switch (this.state.onboardingStage) {
             case 0:
+                return <Welcome onGetStartedPress={this.goToNextStage} />
+            case 1:
                 return this.renderOnboardingStage({
                     titleText: 'Save websites on the go',
                     subtitleText:
                         "Easily save websites with your device's sharing features",
                     btnText: 'Next',
                 })
-            case 1:
+            case 2:
                 return this.renderOnboardingStage({
                     titleText: 'Highlight and add notes',
                     subtitleText:
@@ -64,13 +81,15 @@ export default class OnboardingScreen extends NavigationScreen<
                     btnText: 'Next',
                     isComingSoon: true,
                 })
-            case 2:
+            case 3:
             default:
                 return this.renderOnboardingStage({
                     titleText: 'Search your knowledge',
                     subtitleText:
                         'Sync your history & notes between desktop and mobile app',
-                    btnText: 'Continue to Setup',
+                    btnText: this.state.isSynced
+                        ? 'Close Tutorial'
+                        : 'Continue to Setup',
                     isComingSoon: true,
                 })
         }
