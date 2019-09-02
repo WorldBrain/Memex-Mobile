@@ -9,6 +9,22 @@ describe('share modal UI logic tests', () => {
         return { logic, state }
     }
 
+    it('should be able to set page url', () => {
+        const { logic, state } = setup()
+        const testUrl = 'http://www.google.com'
+
+        expect(state.pageUrl).not.toEqual(testUrl)
+        const newState = logic.withMutation(
+            state,
+            logic.setPageUrl({
+                event: { url: testUrl },
+                previousState: state,
+            }),
+        )
+
+        expect(newState.pageUrl).toEqual(testUrl)
+    })
+
     it('should be able to set note text', () => {
         const { logic, state } = setup()
         const testText = 'test'

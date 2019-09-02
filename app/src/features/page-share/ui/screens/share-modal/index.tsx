@@ -23,6 +23,19 @@ export default class ShareModalScreen extends NavigationScreen<
         super(props, { logic: new Logic() })
     }
 
+    componentDidMount() {
+        this.setSharedUrl()
+    }
+
+    private async setSharedUrl() {
+        const url = await this.props.services.shareExt.getShareText()
+        if (url) {
+            this.processEvent('setPageUrl', { url })
+        } else {
+            this.closeModal()
+        }
+    }
+
     private initHandleMetaShow = (type: MetaType) => (e: any) => {
         this.processEvent('setMetaViewType', { type })
     }
@@ -31,6 +44,10 @@ export default class ShareModalScreen extends NavigationScreen<
         this.processEvent('setPageSaving', { value: true })
         await delay(2000)
         this.processEvent('setPageSaving', { value: false })
+        this.closeModal()
+    }
+
+    private closeModal() {
         this.processEvent('setModalVisible', { shown: false })
         this.props.services.shareExt.close()
     }

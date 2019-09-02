@@ -3,6 +3,7 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { MetaType } from 'src/features/meta-picker/types'
 
 export interface State {
+    pageUrl: string
     statusText: string
     noteText: string
     collectionCount: number
@@ -13,6 +14,7 @@ export interface State {
     metaViewShown?: MetaType
 }
 export type Event = UIEvent<{
+    setPageUrl: { url: string }
     setMetaViewType: { type?: MetaType }
     setModalVisible: { shown: boolean }
     setNoteText: { value: string }
@@ -24,6 +26,7 @@ export type Event = UIEvent<{
 export default class Logic extends UILogic<State, Event> {
     getInitialState(): State {
         return {
+            pageUrl: '',
             isModalShown: true,
             isStarred: false,
             isPageSaving: false,
@@ -32,6 +35,12 @@ export default class Logic extends UILogic<State, Event> {
             collectionCount: 0,
             tagCount: 0,
         }
+    }
+
+    setPageUrl(
+        incoming: IncomingUIEvent<State, Event, 'setPageUrl'>,
+    ): UIMutation<State> {
+        return { pageUrl: { $set: incoming.event.url } }
     }
 
     setStatusText(
