@@ -45,25 +45,21 @@ export default class SyncScreen extends NavigationScreen<Props, State, Event> {
         setTimeout(this.handleSyncSuccess, 1500)
     }
 
+    private navToOverview = () => this.props.navigation.navigate('MVPOverview')
+
     render() {
         switch (this.state.status) {
             case 'scanning':
                 return (
                     <ScanQRStage
                         onQRRead={this.handleFakeSync}
-                        onBtnPress={this.handleFakeSync}
+                        onSkipBtnPress={this.navToOverview}
                     />
                 )
             case 'syncing':
                 return <LoadingStage />
             case 'success':
-                return (
-                    <SuccessStage
-                        onBtnPress={() =>
-                            this.props.navigation.navigate('MVPOverview')
-                        }
-                    />
-                )
+                return <SuccessStage onBtnPress={this.navToOverview} />
             default:
             case 'setup':
                 return (
