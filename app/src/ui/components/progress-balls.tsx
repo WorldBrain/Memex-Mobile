@@ -1,14 +1,14 @@
 import React from 'react'
 import { View } from 'react-native'
 
-import styles from './loading-balls.styles'
+import styles from './progress-balls.styles'
 
 export interface Props {
     count?: number
     selectedIndex?: number
 }
 
-const MainLayout: React.StatelessComponent<Props> = ({
+const ProgressBalls: React.StatelessComponent<Props> = ({
     count = 3,
     selectedIndex,
 }) => (
@@ -25,4 +25,4 @@ const MainLayout: React.StatelessComponent<Props> = ({
     </View>
 )
 
-export default MainLayout
+export default ProgressBalls
