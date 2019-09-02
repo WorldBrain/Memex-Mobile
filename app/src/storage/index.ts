@@ -8,6 +8,7 @@ import { Storage } from './types'
 import { OverviewStorage } from 'src/features/overview/storage'
 import { MetaPickerStorage } from 'src/features/meta-picker/storage'
 import { PageEditorStorage } from 'src/features/page-editor/storage'
+import normalizeUrls from 'src/utils/normalize-url'
 
 export interface CreateStorageOptions {
     typeORMConnectionOpts: ConnectionOptions
@@ -25,7 +26,7 @@ export async function createStorage({
     const storageManager = new StorageManager({ backend })
 
     const modules = {
-        overview: new OverviewStorage({ storageManager }),
+        overview: new OverviewStorage({ storageManager, normalizeUrls }),
         metaPicker: new MetaPickerStorage({ storageManager }),
         pageEditor: new PageEditorStorage({ storageManager }),
     }

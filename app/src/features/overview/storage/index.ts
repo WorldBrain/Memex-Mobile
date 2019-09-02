@@ -1,8 +1,15 @@
 import {
     StorageModule,
     StorageModuleConfig,
+    StorageModuleConstructorArgs,
 } from '@worldbrain/storex-pattern-modules'
+
 import { Page, Visit } from '../types'
+import { URLNormalizer } from 'src/utils/normalize-url/types'
+
+export interface Props extends StorageModuleConstructorArgs {
+    normalizeUrls: URLNormalizer
+}
 
 export interface PageOpArgs {
     url: string
@@ -12,6 +19,14 @@ export class OverviewStorage extends StorageModule {
     static PAGE_COLL = 'pages'
     static VISIT_COLL = 'visits'
     static BOOKMARK_COLL = 'bookmarks'
+
+    private normalizeUrl: URLNormalizer
+
+    constructor({ normalizeUrls, ...args }: Props) {
+        super(args)
+
+        this.normalizeUrl = normalizeUrls
+    }
 
     getConfig = (): StorageModuleConfig => ({
         collections: {
@@ -123,7 +138,7 @@ export class OverviewStorage extends StorageModule {
         },
     })
 
-    async findPage({ url }: PageOpArgs): Promise<Page> {
+    async findPage({ url }: PageOpArgs): Promise<Page | null> {
         const page = await this.operation('findPage', { url })
         if (!page) {
             return null
@@ -133,6 +148,7 @@ export class OverviewStorage extends StorageModule {
     }
 
     createPage(page: Page) {
+        page.url = this.normalizeUrl(page.url)
         return this.operation('createPage', page)
     }
 

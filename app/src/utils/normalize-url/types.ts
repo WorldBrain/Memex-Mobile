@@ -11,3 +11,8 @@ export interface NormalizationOptions extends Options {
     skipQueryRules?: boolean
     skipProtocolTrim?: boolean
 }
+
+export type URLNormalizer = (
+    url: string,
+    customOpts?: NormalizationOptions,
+) => string
