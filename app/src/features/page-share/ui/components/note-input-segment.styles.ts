@@ -7,8 +7,10 @@ export default StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
         padding: 15,
+        paddingBottom: 0,
     },
     textInput: {
         height: '100%',
+        width: '100%',
     },
 })
