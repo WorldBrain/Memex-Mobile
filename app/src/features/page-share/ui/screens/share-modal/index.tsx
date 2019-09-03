@@ -32,7 +32,7 @@ export default class ShareModalScreen extends NavigationScreen<
         if (url) {
             this.processEvent('setPageUrl', { url })
         } else {
-            this.closeModal()
+            this.handleModalClose()
         }
     }
 
@@ -44,10 +44,11 @@ export default class ShareModalScreen extends NavigationScreen<
         this.processEvent('setPageSaving', { value: true })
         await delay(2000)
         this.processEvent('setPageSaving', { value: false })
-        this.closeModal()
+        this.handleModalClose()
     }
 
-    private closeModal() {
+
+    private handleModalClose = () => {
         this.processEvent('setModalVisible', { shown: false })
         this.props.services.shareExt.close()
     }
@@ -77,6 +78,7 @@ export default class ShareModalScreen extends NavigationScreen<
         return (
             <>
                 <ActionBar
+                    onCancelPress={this.handleModalClose}
                     onConfirmPress={this.handleSave}
                     isConfirming={this.state.isPageSaving}
                 >
