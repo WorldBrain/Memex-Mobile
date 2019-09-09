@@ -1,7 +1,7 @@
 import React from 'react'
 import { FlatList, ListRenderItem } from 'react-native'
 
-import { StatefulUIElement } from 'src/ui/types'
+import { NavigationScreen } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import MetaPicker from '../../components/meta-picker'
 import MetaPickerEntry from '../../components/meta-picker-entry'
@@ -14,11 +14,12 @@ import {
 } from 'src/features/meta-picker/types'
 
 interface Props {
+    url: string
     type: MetaType
     onEntryPress?: (item: MetaTypeShape) => void
 }
 
-export default class ShareModalScreen extends StatefulUIElement<
+export default class MetaPickerScreen extends NavigationScreen<
     Props,
     State,
     Event
@@ -29,6 +30,29 @@ export default class ShareModalScreen extends StatefulUIElement<
 
     constructor(props: Props) {
         super(props, { logic: new Logic() })
+    }
+
+    componentDidMount() {
+        this.fetchInitEntries()
+    }
+
+    private async fetchInitEntries() {
+        const { metaPicker } = this.props.storage.modules
+        let entries: MetaTypeShape[]
+        this.processEvent('setIsLoading', { value: true })
+
+        if (this.props.type === 'collections') {
+            entries = await metaPicker.findListSuggestions({
+                url: this.props.url,
+            })
+        } else {
+            entries = await metaPicker.findTagSuggestions({
+                url: this.props.url,
+            })
+        }
+
+        this.processEvent('setEntries', { entries })
+        this.processEvent('setIsLoading', { value: false })
     }
 
     private get metaTypeName(): MetaTypeName {

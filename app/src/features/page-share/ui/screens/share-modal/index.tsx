@@ -69,7 +69,11 @@ export default class ShareModalScreen extends NavigationScreen<
                         })
                     }
                 />
-                <MetaPicker type={this.state.metaViewShown} {...this.props} />
+                <MetaPicker
+                    type={this.state.metaViewShown}
+                    url={this.state.pageUrl}
+                    {...this.props}
+                />
             </>
         )
     }
