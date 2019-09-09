@@ -175,7 +175,9 @@ export class MetaPickerStorage extends StorageModule {
         return this.operation('createTag', tag)
     }
 
-    createList(list: Omit<List, 'id' | 'createdAt'>) {
+    createList(
+        list: Omit<List, 'id' | 'createdAt'>,
+    ): Promise<{ object: { id: number } }> {
         return this.operation('createList', {
             id: MetaPickerStorage.generateListId(),
             createdAt: new Date(),

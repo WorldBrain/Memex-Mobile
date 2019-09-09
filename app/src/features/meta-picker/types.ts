@@ -12,7 +12,7 @@ export interface Tag {
 }
 
 export interface List {
-    id: string
+    id: number
     name: string
     isDeletable?: boolean
     isNestable?: boolean

@@ -1,5 +1,12 @@
 import Logic from './logic'
 
+const testEntries = [
+    { name: 'testA', isChecked: false },
+    { name: 'testB', isChecked: false },
+    { name: 'testC', isChecked: true },
+    { name: 'testD', isChecked: false },
+]
+
 describe('meta picker UI logic tests', () => {
     function setup() {
         const logic = new Logic()
@@ -23,16 +30,54 @@ describe('meta picker UI logic tests', () => {
         expect(newState.inputText).toEqual(testText)
     })
 
+    it('should be able to set entries', () => {
+        const { logic, state } = setup()
+        expect(state.entries.size).toBe(0)
+
+        const entries = new Map()
+        testEntries.forEach(e => entries.set(e.name, e))
+
+        const nextStateA = logic.withMutation(
+            state,
+            logic.setEntries({
+                event: { entries: testEntries },
+                previousState: state,
+            }),
+        )
+
+        expect(nextStateA.entries.size).toBe(testEntries.length)
+        expect([...nextStateA.entries.keys()]).toEqual(
+            expect.arrayContaining(testEntries.map(e => e.name)),
+        )
+        expect([...nextStateA.entries.values()]).toEqual(
+            expect.arrayContaining(testEntries),
+        )
+    })
+
     it('should be able to toggle checked entries', () => {
         const { logic, state } = setup()
-        const testEntry = [...state.entries.values()][0]
+        expect(state.entries.size).toBe(0)
+
+        const entries = new Map()
+        testEntries.forEach(e => entries.set(e.name, e))
+
+        const nextStateA = logic.withMutation(
+            state,
+            logic.setEntries({
+                event: { entries: testEntries },
+                previousState: state,
+            }),
+        )
+
+        expect(nextStateA.entries.size).toBe(testEntries.length)
+        const testEntry = [...nextStateA.entries.values()][0]
 
         const toggleState = () =>
             logic.withMutation(
-                state,
+                nextStateA,
                 logic.toggleEntryChecked({
                     event: { name: testEntry.name },
-                    previousState: state,
+                    previousState: nextStateA,
                 }),
             )
 
@@ -46,5 +91,30 @@ describe('meta picker UI logic tests', () => {
         expect(toggleState().entries.get(testEntry.name)).toMatchObject(
             testEntry,
         )
+    })
+
+    it('should be able to set loading state', () => {
+        const { logic, state } = setup()
+        expect(state.isLoading).toBe(false)
+
+        const nextStateA = logic.withMutation(
+            state,
+            logic.setIsLoading({
+                event: { value: true },
+                previousState: state,
+            }),
+        )
+
+        expect(nextStateA.isLoading).toBe(true)
+
+        const nextStateB = logic.withMutation(
+            state,
+            logic.setIsLoading({
+                event: { value: false },
+                previousState: nextStateA,
+            }),
+        )
+
+        expect(nextStateB.isLoading).toBe(false)
     })
 })

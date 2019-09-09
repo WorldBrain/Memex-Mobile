@@ -1,21 +1,38 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { MetaTypeShape } from 'src/features/meta-picker/types'
-import initState from './test-data'
 
 export interface State {
     inputText: string
     entries: Map<string, MetaTypeShape>
+    isLoading: boolean
 }
 
 export type Event = UIEvent<{
+    setEntries: { entries: MetaTypeShape[] }
+    setIsLoading: { value: boolean }
     setInputText: { text: string }
     toggleEntryChecked: { name: string }
 }>
 
 export default class Logic extends UILogic<State, Event> {
     getInitialState(): State {
-        return initState()
+        return { isLoading: false, entries: new Map(), inputText: '' }
+    }
+
+    setEntries(
+        incoming: IncomingUIEvent<State, Event, 'setEntries'>,
+    ): UIMutation<State> {
+        const entries = new Map<string, MetaTypeShape>()
+        incoming.event.entries.forEach(entry => entries.set(entry.name, entry))
+
+        return { entries: { $set: entries } }
+    }
+
+    setIsLoading(
+        incoming: IncomingUIEvent<State, Event, 'setIsLoading'>,
+    ): UIMutation<State> {
+        return { isLoading: { $set: incoming.event.value } }
     }
 
     setInputText(
@@ -29,7 +46,7 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'toggleEntryChecked'>): UIMutation<State> {
         return {
             entries: state => {
-                const oldEntry = state.get(name)
+                const oldEntry = state.get(name)!
                 return state.set(name, {
                     ...oldEntry,
                     isChecked: !oldEntry.isChecked,
