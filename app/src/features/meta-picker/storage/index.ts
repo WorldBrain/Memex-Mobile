@@ -3,12 +3,13 @@ import {
     StorageModuleConfig,
 } from '@worldbrain/storex-pattern-modules'
 
-import { Tag, List, ListEntry } from '../types'
+import { Tag, List, ListEntry, MetaTypeShape } from '../types'
 
 export class MetaPickerStorage extends StorageModule {
     static TAG_COLL = 'tags'
     static LIST_COLL = 'customLists'
     static LIST_ENTRY_COLL = 'pageListEntries'
+    static DEF_SUGGESTION_LIMIT = 7
     /** This exists to mimic behavior implemented in memex WebExt; Storex auto-PK were not used for whatever reason. */
     static generateListId = () => Date.now()
 
@@ -77,6 +78,23 @@ export class MetaPickerStorage extends StorageModule {
                 args: {
                     name: '$name:string',
                 },
+            },
+            findListsByIds: {
+                operation: 'findObjects',
+                collection: MetaPickerStorage.LIST_COLL,
+                args: {
+                    id: { $in: '$listIds:number[]' },
+                },
+            },
+            findListSuggestions: {
+                operation: 'findObjects',
+                collection: MetaPickerStorage.LIST_COLL,
+                args: [{}, { limit: '$limit:int' }],
+            },
+            findTagSuggestions: {
+                operation: 'findObjects',
+                collection: MetaPickerStorage.TAG_COLL,
+                args: [{}, { limit: '$limit:int' }],
             },
             findTagsByPage: {
                 operation: 'findObjects',
@@ -190,6 +208,48 @@ export class MetaPickerStorage extends StorageModule {
 
     findPageListEntriesByPage({ url }: { url: string }): Promise<ListEntry[]> {
         return this.operation('findEntriesByPage', { url })
+    }
+
+    async findListsByPage({ url }: { url: string }): Promise<List[]> {
+        const entries = await this.findPageListEntriesByPage({ url })
+        const listIds = [...new Set(entries.map(e => e.listId))]
+
+        return this.operation('findListsByIds', { listIds })
+    }
+
+    async findListSuggestions({
+        limit = MetaPickerStorage.DEF_SUGGESTION_LIMIT,
+        url,
+    }: {
+        limit?: number
+        url: string
+    }): Promise<MetaTypeShape[]> {
+        const entries = await this.findPageListEntriesByPage({ url })
+
+        const entryListIds = new Set(entries.map(e => e.listId))
+
+        const lists: List[] = await this.operation('findListSuggestions', {
+            limit,
+        })
+
+        return lists.map(list => ({
+            name: list.name,
+            isChecked: entryListIds.has(list.id),
+        }))
+    }
+
+    async findTagSuggestions({
+        limit = MetaPickerStorage.DEF_SUGGESTION_LIMIT,
+        url,
+    }: {
+        limit?: number
+        url: string
+    }): Promise<MetaTypeShape[]> {
+        const tags: Tag[] = await this.operation('findTagSuggestions', {
+            limit,
+        })
+
+        return tags.map(tag => ({ name: tag.name, isChecked: tag.url === url }))
     }
 
     findPageListEntriesByList({

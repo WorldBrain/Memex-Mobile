@@ -197,4 +197,97 @@ describe('meta picker StorageModule', () => {
         metaPicker.deleteTagsByPage({ url: page.url })
         expect(await metaPicker.findTagsByPage({ url: page.url })).toEqual([])
     })
+
+    it('should be able to get tag suggestions', async ({
+        storage: {
+            modules: { metaPicker, overview },
+        },
+    }) => {
+        await overview.createPage(pageData.pages[0])
+        await overview.createPage(pageData.pages[1])
+
+        await metaPicker.createTag({
+            name: data.tags[0],
+            url: pageData.pages[0].url,
+        })
+        await metaPicker.createTag({
+            name: data.tags[1],
+            url: pageData.pages[0].url,
+        })
+        await metaPicker.createTag({
+            name: data.tags[2],
+            url: pageData.pages[1].url,
+        })
+        await metaPicker.createTag({
+            name: data.tags[3],
+            url: pageData.pages[1].url,
+        })
+
+        const tagSuggestions = await metaPicker.findTagSuggestions({
+            url: pageData.pages[0].url,
+        })
+        expect(tagSuggestions.length).toBe(4)
+        expect(tagSuggestions.map(s => s.name)).toEqual(
+            expect.arrayContaining(data.tags),
+        )
+        expect(
+            tagSuggestions.filter(s => s.isChecked).map(s => s.name),
+        ).toEqual(expect.arrayContaining([data.tags[0], data.tags[1]]))
+        expect(
+            tagSuggestions.filter(s => !s.isChecked).map(s => s.name),
+        ).toEqual(expect.arrayContaining([data.tags[2], data.tags[3]]))
+    })
+
+    it('should be able to get list suggestions', async ({
+        storage: {
+            modules: { metaPicker, overview },
+        },
+    }) => {
+        await overview.createPage(pageData.pages[0])
+        await overview.createPage(pageData.pages[1])
+
+        const listIds: number[] = []
+
+        for (const name of data.lists) {
+            const { object } = await metaPicker.createList({ name })
+            listIds.push(object.id)
+        }
+
+        expect(listIds.length).toBe(data.lists.length)
+
+        await metaPicker.createPageListEntry({
+            pageUrl: pageData.pages[0].url,
+            fullUrl: pageData.pages[0].fullUrl,
+            listId: listIds[0],
+        })
+        await metaPicker.createPageListEntry({
+            pageUrl: pageData.pages[0].url,
+            fullUrl: pageData.pages[0].fullUrl,
+            listId: listIds[1],
+        })
+        await metaPicker.createPageListEntry({
+            pageUrl: pageData.pages[1].url,
+            fullUrl: pageData.pages[1].fullUrl,
+            listId: listIds[2],
+        })
+        await metaPicker.createPageListEntry({
+            pageUrl: pageData.pages[1].url,
+            fullUrl: pageData.pages[1].fullUrl,
+            listId: listIds[3],
+        })
+
+        const listSuggestions = await metaPicker.findListSuggestions({
+            url: pageData.pages[0].url,
+        })
+        expect(listSuggestions.length).toBe(4)
+        expect(listSuggestions.map(s => s.name)).toEqual(
+            expect.arrayContaining(data.lists),
+        )
+        expect(
+            listSuggestions.filter(s => s.isChecked).map(s => s.name),
+        ).toEqual(expect.arrayContaining([data.lists[0], data.lists[1]]))
+        expect(
+            listSuggestions.filter(s => !s.isChecked).map(s => s.name),
+        ).toEqual(expect.arrayContaining([data.lists[2], data.lists[3]]))
+    })
 })
