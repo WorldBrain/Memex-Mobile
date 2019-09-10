@@ -21,6 +21,11 @@ export default StyleSheet.create({
     entryText: {
         fontSize: 18,
     },
+    emptyRowText: {
+        width: '100%',
+        textAlign: 'center',
+        fontSize: 18,
+    },
     checkmark: {
         width: 25,
         height: 25,

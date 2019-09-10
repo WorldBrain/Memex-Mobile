@@ -5,6 +5,7 @@ import { NavigationScreen } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import MetaPicker from '../../components/meta-picker'
 import MetaPickerEntry from '../../components/meta-picker-entry'
+import MetaPickerEmptyRow from '../../components/meta-picker-empty'
 import SearchAddInput from '../../components/search-add-input'
 import * as selectors from './selectors'
 import {
@@ -92,6 +93,9 @@ export default class MetaPickerScreen extends NavigationScreen<
                     renderItem={this.renderPickerEntry}
                     data={selectors.pickerEntries(this.state)}
                     keyExtractor={(item, index) => index.toString()}
+                    ListEmptyComponent={
+                        <MetaPickerEmptyRow type={this.props.type} />
+                    }
                 />
             </MetaPicker>
         )
