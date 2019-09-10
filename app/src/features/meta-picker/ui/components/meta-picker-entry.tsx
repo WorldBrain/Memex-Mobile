@@ -11,6 +11,7 @@ import styles from './meta-picker-entry.styles'
 
 export interface Props {
     text: string
+    canAdd?: boolean
     isChecked?: boolean
     skipBottomBorder?: boolean
     onPress: (e: GestureResponderEvent) => void
@@ -24,6 +25,7 @@ const MetaPickerEntry: React.StatelessComponent<Props> = props => (
                 props.skipBottomBorder ? null : styles.containerBorder,
             ]}
         >
+            {props.canAdd && <Text style={styles.addText}>Add new:</Text>}
             <View style={styles.entry}>
                 <Text style={styles.entryText}>{props.text}</Text>
             </View>

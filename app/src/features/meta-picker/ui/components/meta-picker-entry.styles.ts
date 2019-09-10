@@ -26,6 +26,10 @@ export default StyleSheet.create({
         textAlign: 'center',
         fontSize: 18,
     },
+    addText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
     checkmark: {
         width: 25,
         height: 25,

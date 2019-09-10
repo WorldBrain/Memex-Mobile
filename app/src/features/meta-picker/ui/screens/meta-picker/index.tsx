@@ -60,11 +60,19 @@ export default class MetaPickerScreen extends NavigationScreen<
         return this.props.type === 'collections' ? 'Collections' : 'Tags'
     }
 
-    private initHandleEntryPress = (item: MetaTypeShape) => e => {
+    private initHandleEntryPress = ({
+        canAdd,
+        ...item
+    }: MetaTypeShape) => e => {
         this.props.onEntryPress(item)
-        this.processEvent('toggleEntryChecked', {
-            name: item.name,
-        })
+
+        if (canAdd) {
+            this.processEvent('addEntry', { entry: item })
+        } else {
+            this.processEvent('toggleEntryChecked', {
+                name: item.name,
+            })
+        }
     }
 
     private renderPickerEntry: ListRenderItem<MetaTypeShape> = ({
@@ -75,6 +83,7 @@ export default class MetaPickerScreen extends NavigationScreen<
             key={index}
             onPress={this.initHandleEntryPress(item)}
             text={item.name}
+            canAdd={item.canAdd}
             isChecked={item.isChecked}
         />
     )
