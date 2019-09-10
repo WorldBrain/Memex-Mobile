@@ -102,12 +102,12 @@ export default class ShareModalScreen extends NavigationScreen<
                 />
                 <AddCollection
                     onPress={this.initHandleMetaShow('collections')}
-                    count={this.state.collectionCount}
+                    count={this.state.collectionsToAdd.length}
                     disabled={this.state.isPageSaving}
                 />
                 <AddTags
                     onPress={this.initHandleMetaShow('tags')}
-                    count={this.state.tagCount}
+                    count={this.state.tagsToAdd.length}
                     disabled={this.state.isPageSaving}
                 />
             </>

@@ -97,4 +97,53 @@ describe('share modal UI logic tests', () => {
 
         expect(newState.isStarred).toBe(true)
     })
+
+    it('should be able to toggle tags to add/remove', () => {
+        const { logic, state } = setup()
+        const testTag = 'test tag'
+
+        expect(state.tagsToAdd.length).toBe(0)
+        const nextStateA = logic.withMutation(
+            state,
+            logic.toggleTag({ event: { name: testTag }, previousState: state }),
+        )
+
+        expect(nextStateA.tagsToAdd.length).toBe(1)
+        expect(nextStateA.tagsToAdd[0]).toEqual(testTag)
+
+        const nextStateB = logic.withMutation(
+            nextStateA,
+            logic.toggleTag({
+                event: { name: testTag },
+                previousState: nextStateA,
+            }),
+        )
+        expect(nextStateB.tagsToAdd.length).toBe(0)
+    })
+
+    it('should be able to toggle collections to add/remove', () => {
+        const { logic, state } = setup()
+        const testCollection = 'test coll'
+
+        expect(state.collectionsToAdd.length).toBe(0)
+        const nextStateA = logic.withMutation(
+            state,
+            logic.toggleCollection({
+                event: { name: testCollection },
+                previousState: state,
+            }),
+        )
+
+        expect(nextStateA.collectionsToAdd.length).toBe(1)
+        expect(nextStateA.collectionsToAdd[0]).toEqual(testCollection)
+
+        const nextStateB = logic.withMutation(
+            nextStateA,
+            logic.toggleCollection({
+                event: { name: testCollection },
+                previousState: nextStateA,
+            }),
+        )
+        expect(nextStateB.collectionsToAdd.length).toBe(0)
+    })
 })

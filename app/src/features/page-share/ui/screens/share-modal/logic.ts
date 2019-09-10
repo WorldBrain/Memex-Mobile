@@ -6,14 +6,16 @@ export interface State {
     pageUrl: string
     statusText: string
     noteText: string
-    collectionCount: number
-    tagCount: number
+    tagsToAdd: string[]
+    collectionsToAdd: string[]
     isStarred: boolean
     isModalShown: boolean
     isPageSaving: boolean
     metaViewShown?: MetaType
 }
 export type Event = UIEvent<{
+    toggleTag: { name: string }
+    toggleCollection: { name: string }
     setPageUrl: { url: string }
     setMetaViewType: { type?: MetaType }
     setModalVisible: { shown: boolean }
@@ -30,10 +32,10 @@ export default class Logic extends UILogic<State, Event> {
             isModalShown: true,
             isStarred: false,
             isPageSaving: false,
+            tagsToAdd: [],
+            collectionsToAdd: [],
             noteText: '',
             statusText: '',
-            collectionCount: 0,
-            tagCount: 0,
         }
     }
 
@@ -77,5 +79,37 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'setPageStar'>,
     ): UIMutation<State> {
         return { isStarred: { $set: incoming.event.value } }
+    }
+
+    toggleTag(
+        incoming: IncomingUIEvent<State, Event, 'toggleTag'>,
+    ): UIMutation<State> {
+        return {
+            tagsToAdd: state => {
+                const index = state.indexOf(incoming.event.name)
+
+                if (index !== -1) {
+                    return [...state.slice(0, index), ...state.slice(index + 1)]
+                }
+
+                return [...state, incoming.event.name]
+            },
+        }
+    }
+
+    toggleCollection(
+        incoming: IncomingUIEvent<State, Event, 'toggleCollection'>,
+    ): UIMutation<State> {
+        return {
+            collectionsToAdd: state => {
+                const index = state.indexOf(incoming.event.name)
+
+                if (index !== -1) {
+                    return [...state.slice(0, index), ...state.slice(index + 1)]
+                }
+
+                return [...state, incoming.event.name]
+            },
+        }
     }
 }
