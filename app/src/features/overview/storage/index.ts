@@ -6,9 +6,11 @@ import {
 
 import { Page, Visit } from '../types'
 import { URLNormalizer } from 'src/utils/normalize-url/types'
+import { URLPartsDeriver } from 'src/utils/derive-url-parts/types'
 
 export interface Props extends StorageModuleConstructorArgs {
     normalizeUrls: URLNormalizer
+    deriveUrlParts: URLPartsDeriver
 }
 
 export interface PageOpArgs {
@@ -21,11 +23,13 @@ export class OverviewStorage extends StorageModule {
     static BOOKMARK_COLL = 'bookmarks'
 
     private normalizeUrl: URLNormalizer
+    private deriveUrlParts: URLPartsDeriver
 
-    constructor({ normalizeUrls, ...args }: Props) {
+    constructor({ normalizeUrls, deriveUrlParts, ...args }: Props) {
         super(args)
 
         this.normalizeUrl = normalizeUrls
+        this.deriveUrlParts = deriveUrlParts
     }
 
     getConfig = (): StorageModuleConfig => ({
@@ -147,8 +151,16 @@ export class OverviewStorage extends StorageModule {
         return { ...page, isStarred: !!isStarred }
     }
 
-    createPage(page: Page) {
-        page.url = this.normalizeUrl(page.url)
+    createPage(inputPage: Omit<Page, 'domain' | 'hostname'>) {
+        const { domain, hostname } = this.deriveUrlParts(inputPage.url)
+
+        const page: Page = {
+            ...inputPage,
+            url: this.normalizeUrl(inputPage.url),
+            domain,
+            hostname,
+        }
+
         return this.operation('createPage', page)
     }
 

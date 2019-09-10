@@ -3,16 +3,22 @@ import expect from 'expect'
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
 import { Page } from '../types'
+import deriveUrlParts from 'src/utils/derive-url-parts'
 
 const it = makeStorageTestFactory()
 
-function testPageEquality(a: Page, b: Page) {
-    expect(a.url).toBe(b.url)
-    expect(a.text).toBe(b.text)
-    expect(a.domain).toBe(b.domain)
-    expect(a.fullUrl).toBe(b.fullUrl)
-    expect(a.hostname).toBe(b.hostname)
-    expect(a.fullTitle).toBe(b.fullTitle)
+function testPageEquality(
+    dbPage: Page,
+    testPage: Omit<Page, 'domain' | 'hostname'>,
+) {
+    expect(dbPage.url).toBe(testPage.url)
+    expect(dbPage.text).toBe(testPage.text)
+    expect(dbPage.fullUrl).toBe(testPage.fullUrl)
+    expect(dbPage.fullTitle).toBe(testPage.fullTitle)
+
+    const urlParts = deriveUrlParts(testPage.url)
+    expect(dbPage.domain).toBe(urlParts.domain)
+    expect(dbPage.hostname).toBe(urlParts.hostname)
 }
 
 describe('overview StorageModule', () => {
@@ -23,7 +29,9 @@ describe('overview StorageModule', () => {
     }) => {
         for (const page of data.pages) {
             await overview.createPage(page)
-            testPageEquality(await overview.findPage(page), page)
+            const foundPage = await overview.findPage(page)
+            expect(foundPage).not.toBeNull()
+            testPageEquality(foundPage!, page)
         }
     })
 
@@ -71,7 +79,9 @@ describe('overview StorageModule', () => {
     }) => {
         for (const page of data.pages) {
             await overview.createPage(page)
-            testPageEquality(await overview.findPage(page), page)
+            const foundPage = await overview.findPage(page)
+            expect(foundPage).not.toBeNull()
+            testPageEquality(foundPage!, page)
 
             await overview.starPage(page)
             for (const time of data.visitTimestamps) {
