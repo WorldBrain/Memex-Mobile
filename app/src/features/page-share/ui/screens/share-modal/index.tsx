@@ -3,7 +3,7 @@ import React from 'react'
 import { NavigationScreen } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import Logic, { State, Event } from './logic'
-import { MetaType } from 'src/features/meta-picker/types'
+import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
 import AddCollection from '../../components/add-collections-segment'
 import ShareModal from '../../components/share-modal'
 import ActionBar from '../../components/action-bar-segment'
@@ -59,6 +59,16 @@ export default class ShareModalScreen extends NavigationScreen<
         })
     }
 
+    private handleMetaPickerEntryPress = (type: MetaType) => async (
+        entry: MetaTypeShape,
+    ) => {
+        if (type === 'tags') {
+            this.processEvent('toggleTag', { name: entry.name })
+        } else {
+            this.processEvent('toggleCollection', { name: entry.name })
+        }
+    }
+
     private renderMetaPicker() {
         return (
             <>
@@ -72,6 +82,14 @@ export default class ShareModalScreen extends NavigationScreen<
                 <MetaPicker
                     type={this.state.metaViewShown}
                     url={this.state.pageUrl}
+                    onEntryPress={this.handleMetaPickerEntryPress(
+                        this.state.metaViewShown!,
+                    )}
+                    initEntries={
+                        this.state.metaViewShown === 'collections'
+                            ? this.state.collectionsToAdd
+                            : this.state.tagsToAdd
+                    }
                     {...this.props}
                 />
             </>

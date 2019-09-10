@@ -17,7 +17,8 @@ import {
 interface Props {
     url: string
     type: MetaType
-    onEntryPress?: (item: MetaTypeShape) => void
+    initEntries: string[]
+    onEntryPress: (item: MetaTypeShape) => void
 }
 
 export default class MetaPickerScreen extends NavigationScreen<
@@ -26,7 +27,7 @@ export default class MetaPickerScreen extends NavigationScreen<
     Event
 > {
     static defaultProps: Partial<Props> = {
-        onEntryPress: console.log,
+        onEntryPress: (item: MetaTypeShape) => undefined,
     }
 
     constructor(props: Props) {
@@ -51,6 +52,12 @@ export default class MetaPickerScreen extends NavigationScreen<
                 url: this.props.url,
             })
         }
+
+        // Add any entries passed from parent
+        entries = [
+            ...this.props.initEntries.map(name => ({ name, isChecked: true })),
+            ...entries,
+        ]
 
         this.processEvent('setEntries', { entries })
         this.processEvent('setIsLoading', { value: false })
