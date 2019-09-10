@@ -9,6 +9,7 @@ export interface State {
 }
 
 export type Event = UIEvent<{
+    addEntry: { entry: MetaTypeShape }
     setEntries: { entries: MetaTypeShape[] }
     setIsLoading: { value: boolean }
     setInputText: { text: string }
@@ -27,6 +28,21 @@ export default class Logic extends UILogic<State, Event> {
         incoming.event.entries.forEach(entry => entries.set(entry.name, entry))
 
         return { entries: { $set: entries } }
+    }
+
+    addEntry(
+        incoming: IncomingUIEvent<State, Event, 'addEntry'>,
+    ): UIMutation<State> {
+        const { entry } = incoming.event
+
+        return {
+            inputText: { $set: '' },
+            entries: state =>
+                state.set(entry.name, {
+                    name: entry.name,
+                    isChecked: true,
+                }),
+        }
     }
 
     setIsLoading(

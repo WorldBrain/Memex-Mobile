@@ -4,6 +4,7 @@ export type MetaTypeName = 'Tags' | 'Collections'
 export interface MetaTypeShape {
     name: string
     isChecked: boolean
+    canAdd?: boolean
 }
 
 export interface Tag {

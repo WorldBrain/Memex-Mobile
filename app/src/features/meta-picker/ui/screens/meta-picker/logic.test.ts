@@ -54,6 +54,28 @@ describe('meta picker UI logic tests', () => {
         )
     })
 
+    it('should be able to add new checked entries', () => {
+        const { logic, state } = setup()
+        expect(state.entries.size).toBe(0)
+        const testEntry = 'test entry'
+
+        const nextStateA = logic.withMutation(
+            state,
+            logic.addEntry({
+                event: { entry: { isChecked: false, name: testEntry } },
+                previousState: state,
+            }),
+        )
+
+        expect(nextStateA.entries.size).toBe(1)
+        expect([...nextStateA.entries.keys()]).toEqual(
+            expect.arrayContaining([testEntry]),
+        )
+        expect([...nextStateA.entries.values()]).toEqual(
+            expect.arrayContaining([{ isChecked: true, name: testEntry }]),
+        )
+    })
+
     it('should be able to toggle checked entries', () => {
         const { logic, state } = setup()
         expect(state.entries.size).toBe(0)
