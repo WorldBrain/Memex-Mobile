@@ -33,7 +33,7 @@ export async function createStorage({
             deriveUrlParts,
         }),
         metaPicker: new MetaPickerStorage({ storageManager }),
-        pageEditor: new PageEditorStorage({ storageManager }),
+        pageEditor: new PageEditorStorage({ storageManager, normalizeUrls }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules)

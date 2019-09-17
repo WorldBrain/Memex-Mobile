@@ -1,18 +1,32 @@
 import {
     StorageModule,
     StorageModuleConfig,
+    StorageModuleConstructorArgs,
 } from '@worldbrain/storex-pattern-modules'
 
 import { Note } from '../types'
+import { URLNormalizer } from 'src/utils/normalize-url/types'
 
 export interface NoteOpArgs {
     url: string
+}
+
+export interface Props extends StorageModuleConstructorArgs {
+    normalizeUrls: URLNormalizer
 }
 
 export class PageEditorStorage extends StorageModule {
     static NOTE_COLL = 'annotations'
     static BOOKMARK_COLL = 'annotBookmarks'
     static LIST_ENTRY_COLL = 'annotListEntries'
+
+    private normalizeUrl: URLNormalizer
+
+    constructor({ normalizeUrls, ...args }: Props) {
+        super(args)
+
+        this.normalizeUrl = normalizeUrls
+    }
 
     getConfig = (): StorageModuleConfig => ({
         collections: {
@@ -148,21 +162,39 @@ export class PageEditorStorage extends StorageModule {
         },
     })
 
-    createNote(note: Note) {
+    private createAnnotationUrl = ({
+        pageUrl,
+        timestamp = Date.now(),
+    }: {
+        pageUrl: string
+        timestamp?: number
+    }) =>
+        this.normalizeUrl(`${pageUrl}/#${timestamp}`, {
+            stripHash: false,
+            removeTrailingSlash: false,
+        })
+
+    createNote(note: Omit<Note, 'url'>, customTimestamp = Date.now()) {
         const created = new Date()
 
         return this.operation('createNote', {
             createdWhen: created,
             lastEdited: created,
             ...note,
+            url: this.createAnnotationUrl({
+                pageUrl: note.pageUrl,
+                timestamp: customTimestamp,
+            }),
+            pageUrl: this.normalizeUrl(note.pageUrl),
         })
     }
 
-    async findNote({ url }: NoteOpArgs): Promise<Note> {
+    async findNote({ url }: NoteOpArgs): Promise<Note | null> {
         const note = await this.operation('findNote', { url })
         if (!note) {
             return null
         }
+
         const bookmark = await this.operation('findBookmark', { url })
         return {
             ...note,
