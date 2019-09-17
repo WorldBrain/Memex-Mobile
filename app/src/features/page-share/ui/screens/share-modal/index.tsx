@@ -10,7 +10,6 @@ import ActionBar from '../../components/action-bar-segment'
 import NoteInput from '../../components/note-input-segment'
 import StarPage from '../../components/star-page-segment'
 import AddTags from '../../components/add-tags-segment'
-import delay from 'src/utils/delay'
 
 interface Props {}
 
@@ -42,11 +41,43 @@ export default class ShareModalScreen extends NavigationScreen<
 
     private handleSave = async () => {
         this.processEvent('setPageSaving', { value: true })
-        await delay(2000)
+        await this.storePage()
         this.processEvent('setPageSaving', { value: false })
         this.handleModalClose()
     }
 
+    private async storePage() {
+        const { overview, metaPicker, pageEditor } = this.props.storage.modules
+
+        await overview.createPage({
+            url: this.state.pageUrl,
+            fullUrl: this.state.pageUrl,
+            text: '',
+            fullTitle: '',
+        })
+
+        await metaPicker.setPageLists({
+            url: this.state.pageUrl,
+            lists: this.state.collectionsToAdd,
+        })
+        await metaPicker.setPageTags({
+            url: this.state.pageUrl,
+            tags: this.state.tagsToAdd,
+        })
+
+        await overview.setPageStar({
+            url: this.state.pageUrl,
+            isStarred: this.state.isStarred,
+        })
+
+        if (this.state.noteText.trim().length > 0) {
+            await pageEditor.createNote({
+                comment: this.state.noteText.trim(),
+                pageUrl: this.state.pageUrl,
+                pageTitle: '',
+            })
+        }
+    }
 
     private handleModalClose = () => {
         this.processEvent('setModalVisible', { shown: false })
