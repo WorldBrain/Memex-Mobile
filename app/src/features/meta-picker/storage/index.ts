@@ -30,7 +30,7 @@ export class MetaPickerStorage extends StorageModule {
             [MetaPickerStorage.LIST_COLL]: {
                 version: new Date('2019-07-09'),
                 fields: {
-                    id: { type: 'string' },
+                    id: { type: 'int' },
                     name: { type: 'string' },
                     isDeletable: { type: 'boolean', optional: true },
                     isNestable: { type: 'boolean', optional: true },
@@ -47,7 +47,7 @@ export class MetaPickerStorage extends StorageModule {
             [MetaPickerStorage.LIST_ENTRY_COLL]: {
                 version: new Date('2019-07-09'),
                 fields: {
-                    listId: { type: 'string' },
+                    listId: { type: 'int' },
                     pageUrl: { type: 'string' },
                     fullUrl: { type: 'string' },
                     createdAt: { type: 'datetime' },
@@ -72,11 +72,11 @@ export class MetaPickerStorage extends StorageModule {
                 operation: 'createObject',
                 collection: MetaPickerStorage.TAG_COLL,
             },
-            findListsByName: {
+            findListsByNames: {
                 operation: 'findObjects',
                 collection: MetaPickerStorage.LIST_COLL,
                 args: {
-                    name: '$name:string',
+                    name: { $in: '$names:string[]' },
                 },
             },
             findListsByIds: {
@@ -185,13 +185,10 @@ export class MetaPickerStorage extends StorageModule {
         })
     }
 
-    createPageListEntry(entry: {
-        fullUrl: string
-        pageUrl: string
-        listId: number
-    }) {
+    createPageListEntry(entry: { pageUrl: string; listId: number }) {
         return this.operation('createListEntry', {
             createdAt: new Date(),
+            fullUrl: entry.pageUrl,
             ...entry,
         })
     }
@@ -204,8 +201,8 @@ export class MetaPickerStorage extends StorageModule {
         return this.operation('findTagsByName', { name })
     }
 
-    findListsByName({ name }: { name: string }): Promise<List[]> {
-        return this.operation('findListsByName', { name })
+    findListsByNames({ names }: { names: string[] }): Promise<List[]> {
+        return this.operation('findListsByNames', { names })
     }
 
     findPageListEntriesByPage({ url }: { url: string }): Promise<ListEntry[]> {
@@ -260,6 +257,71 @@ export class MetaPickerStorage extends StorageModule {
         listId: number
     }): Promise<ListEntry[]> {
         return this.operation('findEntriesByList', { listId })
+    }
+
+    /**
+     * Should go through input `tags` and ensure only these tags exist for a given page.
+     */
+    async setPageTags({ tags, url }: { tags: string[]; url: string }) {
+        const existingTags = await this.findTagsByPage({ url })
+
+        // Find any existing tags that are not in input list
+        const inputTagsSet = new Set(tags)
+        const toRemove = existingTags
+            .map(tag => tag.name)
+            .filter(name => !inputTagsSet.has(name))
+
+        // Find any input tags that are not existing
+        const existingTagsSet = new Set(existingTags.map(t => t.name))
+        const toAdd = tags.filter(name => !existingTagsSet.has(name))
+
+        await Promise.all(toAdd.map(name => this.createTag({ name, url })))
+        await Promise.all(toRemove.map(name => this.deleteTag({ name, url })))
+    }
+
+    /**
+     * Should go through input `lists`, make sure any new lists exist, then ensure entries for
+     * only these lists exist for a given page.
+     */
+    async setPageLists({ lists, url }: { lists: string[]; url: string }) {
+        const existingLists = await this.findListsByNames({ names: lists })
+        const existingListsSet = new Set(existingLists.map(list => list.name))
+
+        const missingLists = lists.filter(list => !existingListsSet.has(list))
+        // Create any missing lists
+        const newListResults = await Promise.all(
+            missingLists.map(name => this.createList({ name })),
+        )
+        const newListIds = [...newListResults.map(res => res.object.id)]
+
+        const existingEntries = await this.findPageListEntriesByPage({ url })
+
+        // Find any existing entries that are not in input lists
+        const inputListIds = [
+            ...newListIds,
+            ...existingLists.map(list => list.id),
+        ]
+        const inputListIdsSet = new Set(inputListIds)
+        const toRemove = existingEntries
+            .map(entry => entry.listId)
+            .filter(id => !inputListIdsSet.has(id))
+
+        // Find any input entries that are not existing
+        const existingEntryIdSet = new Set(
+            existingEntries.map(entry => entry.listId),
+        )
+        const toAdd = inputListIds.filter(id => !existingEntryIdSet.has(id))
+
+        await Promise.all(
+            toAdd.map(listId =>
+                this.createPageListEntry({ listId, pageUrl: url }),
+            ),
+        )
+        await Promise.all(
+            toRemove.map(listId =>
+                this.deletePageEntryFromList({ listId, url }),
+            ),
+        )
     }
 
     async deleteList({ listId }: { listId: number }) {

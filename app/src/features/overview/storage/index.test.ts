@@ -56,6 +56,27 @@ describe('overview StorageModule', () => {
         }
     })
 
+    it('should be able to set page star state', async ({
+        storage: {
+            modules: { overview },
+        },
+    }) => {
+        for (const page of data.pages) {
+            await overview.createPage(page)
+            expect(await overview.findPage(page)).toEqual(
+                expect.objectContaining({ isStarred: false }),
+            )
+            await overview.setPageStar({ url: page.url, isStarred: true })
+            expect(await overview.findPage(page)).toEqual(
+                expect.objectContaining({ isStarred: true }),
+            )
+            await overview.setPageStar({ url: page.url, isStarred: false })
+            expect(await overview.findPage(page)).toEqual(
+                expect.objectContaining({ isStarred: false }),
+            )
+        }
+    })
+
     it('should be able to visit pages', async ({
         storage: {
             modules: { overview },

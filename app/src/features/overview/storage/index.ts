@@ -178,6 +178,18 @@ export class OverviewStorage extends StorageModule {
         return this.operation('unstarPage', { url })
     }
 
+    async setPageStar({ url, isStarred }: PageOpArgs & { isStarred: boolean }) {
+        const bookmark = await this.operation('findBookmark', { url })
+
+        if (bookmark == null && isStarred) {
+            return this.operation('starPage', { url, time: Date.now() })
+        } else if (bookmark != null && !isStarred) {
+            return this.operation('unstarPage', { url })
+        } else {
+            return
+        }
+    }
+
     visitPage({ url, time = Date.now() }: PageOpArgs & { time?: number }) {
         return this.operation('createVisit', { url, time })
     }
