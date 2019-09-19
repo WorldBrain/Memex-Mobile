@@ -1,5 +1,4 @@
 import { UIElement } from 'ui-logic-react'
-import { UILogic } from 'ui-logic-core'
 import { NavigationScreenProp, NavigationRoute } from 'react-navigation'
 
 import { Storage } from 'src/storage/types'
@@ -19,8 +18,8 @@ export abstract class StatefulUIElement<Props, State, Event> extends UIElement<
     State,
     Event
 > {
-    constructor(props: Props, logic: UILogic<State, Event>) {
-        super(props, { logic })
+    constructor(props, logic) {
+        super(props, logic)
     }
 }
 
