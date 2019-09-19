@@ -37,6 +37,7 @@
     "typeorm": "^0.2.17",
     "ui-logic-core": "^0.1.1",
     "ui-logic-react": "^0.1.2",
+    "url": "^0.11.0",
     "user-logic": "^0.0.1"
   },
   "devDependencies": {

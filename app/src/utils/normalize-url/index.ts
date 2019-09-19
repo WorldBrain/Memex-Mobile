@@ -1,4 +1,4 @@
-import { URL } from 'url'
+import { parse as parseUrl } from 'url'
 import normalizeUrl from 'normalize-url'
 
 import { defaultNormalizationOpts } from './defaults'
@@ -12,8 +12,8 @@ export const PROTOCOL_PATTERN = /^\w+:\/\//
  * but specific params from the query string.
  */
 function applyQueryParamsRules(url: string): string {
-    const parsed = new URL(url)
-    const rulesObj = queryParamRules.get(parsed.hostname)
+    const parsed = parseUrl(url, true)
+    const rulesObj = queryParamRules.get(parsed.hostname!)
 
     // Base case; domain doesn't have any special normalization rules
     if (!rulesObj) {
@@ -23,14 +23,14 @@ function applyQueryParamsRules(url: string): string {
     // Remove all query params that don't appear in special rules
     const rulesSet = new Set(rulesObj.rules)
     const rulesType = rulesObj.type
-    for (const param of [...parsed.searchParams.keys()]) {
+    for (const param of [...Object.keys(parsed.query)]) {
         const shouldDelete =
             rulesType === 'keep' ? !rulesSet.has(param) : rulesSet.has(param)
         if (shouldDelete) {
-            parsed.searchParams.delete(param)
+            delete parsed.query[param]
         }
     }
-    return parsed.href
+    return parsed.href!
 }
 
 export default function normalize(

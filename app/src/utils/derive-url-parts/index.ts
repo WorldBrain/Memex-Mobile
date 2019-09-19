@@ -1,5 +1,5 @@
 /* This module's contents was taken from the Memex project's `src/search/pipeline` module. */
-import { URL } from 'url'
+import { parse as parseUrl } from 'url'
 import normalizeUrl from '../normalize-url'
 import { URLParts } from './types'
 
@@ -13,12 +13,15 @@ export default function deriveUrlParts(url: string): URLParts {
     }
 
     try {
-        const parsed = new URL(normalized)
+        const parsed = parseUrl(normalized)
+        if (parsed.href == null) {
+            throw new Error('Cannot parse URL')
+        }
 
         return {
-            hostname: parsed.hostname,
-            pathname: parsed.pathname,
-            domain: extractRootDomain(parsed.hostname),
+            hostname: parsed.hostname!,
+            pathname: parsed.pathname!,
+            domain: extractRootDomain(parsed.hostname!),
         }
     } catch (error) {
         console.error(`cannot parse URL: ${normalized}`)
