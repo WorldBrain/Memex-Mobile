@@ -275,8 +275,13 @@ export class MetaPickerStorage extends StorageModule {
         const existingTagsSet = new Set(existingTags.map(t => t.name))
         const toAdd = tags.filter(name => !existingTagsSet.has(name))
 
-        await Promise.all(toAdd.map(name => this.createTag({ name, url })))
-        await Promise.all(toRemove.map(name => this.deleteTag({ name, url })))
+        for (const name of toAdd) {
+            await this.createTag({ name, url })
+        }
+
+        for (const name of toRemove) {
+            await this.deleteTag({ name, url })
+        }
     }
 
     /**
@@ -287,12 +292,13 @@ export class MetaPickerStorage extends StorageModule {
         const existingLists = await this.findListsByNames({ names: lists })
         const existingListsSet = new Set(existingLists.map(list => list.name))
 
-        const missingLists = lists.filter(list => !existingListsSet.has(list))
         // Create any missing lists
-        const newListResults = await Promise.all(
-            missingLists.map(name => this.createList({ name })),
-        )
-        const newListIds = [...newListResults.map(res => res.object.id)]
+        let newListIds: number[] = []
+        const missingLists = lists.filter(list => !existingListsSet.has(list))
+        for (const name of missingLists) {
+            const result = await this.createList({ name })
+            newListIds.push(result.object.id)
+        }
 
         const existingEntries = await this.findPageListEntriesByPage({ url })
 
@@ -312,16 +318,13 @@ export class MetaPickerStorage extends StorageModule {
         )
         const toAdd = inputListIds.filter(id => !existingEntryIdSet.has(id))
 
-        await Promise.all(
-            toAdd.map(listId =>
-                this.createPageListEntry({ listId, pageUrl: url }),
-            ),
-        )
-        await Promise.all(
-            toRemove.map(listId =>
-                this.deletePageEntryFromList({ listId, url }),
-            ),
-        )
+        for (const listId of toAdd) {
+            await this.createPageListEntry({ listId, pageUrl: url })
+        }
+
+        for (const listId of toRemove) {
+            await this.deletePageEntryFromList({ listId, url })
+        }
     }
 
     async deleteList({ listId }: { listId: number }) {
