@@ -23,6 +23,8 @@ export type Event = UIEvent<{
     setPageStar: { value: boolean }
     setPageSaving: { value: boolean }
     setStatusText: { value: string }
+    setTagsToAdd: { values: string[] }
+    setCollectionsToAdd: { values: string[] }
 }>
 
 export default class Logic extends UILogic<State, Event> {
@@ -79,6 +81,18 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'setPageStar'>,
     ): UIMutation<State> {
         return { isStarred: { $set: incoming.event.value } }
+    }
+
+    setTagsToAdd(
+        incoming: IncomingUIEvent<State, Event, 'setTagsToAdd'>,
+    ): UIMutation<State> {
+        return { tagsToAdd: { $set: incoming.event.values } }
+    }
+
+    setCollectionsToAdd(
+        incoming: IncomingUIEvent<State, Event, 'setCollectionsToAdd'>,
+    ): UIMutation<State> {
+        return { collectionsToAdd: { $set: incoming.event.values } }
     }
 
     toggleTag(

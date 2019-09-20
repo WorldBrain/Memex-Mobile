@@ -151,6 +151,11 @@ export class OverviewStorage extends StorageModule {
         return { ...page, isStarred: !!isStarred }
     }
 
+    async isPageStarred({ url }: PageOpArgs): Promise<boolean> {
+        const bookmark = await this.operation('findBookmark', { url })
+        return !!bookmark
+    }
+
     createPage(inputPage: Omit<Page, 'domain' | 'hostname'>) {
         const { domain, hostname } = this.deriveUrlParts(inputPage.url)
 
@@ -170,6 +175,7 @@ export class OverviewStorage extends StorageModule {
         await this.operation('unstarPage', { url })
         await this.operation('deletePage', { url })
     }
+
     starPage({ url, time = Date.now() }: PageOpArgs & { time?: number }) {
         return this.operation('starPage', { url, time })
     }

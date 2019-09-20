@@ -77,6 +77,20 @@ describe('overview StorageModule', () => {
         }
     })
 
+    it('should be able to determine page starred status', async ({
+        storage: {
+            modules: { overview },
+        },
+    }) => {
+        for (const page of data.pages) {
+            await overview.createPage(page)
+            await overview.setPageStar({ url: page.url, isStarred: true })
+            expect(await overview.isPageStarred(page)).toBe(true)
+            await overview.setPageStar({ url: page.url, isStarred: false })
+            expect(await overview.isPageStarred(page)).toBe(false)
+        }
+    })
+
     it('should be able to visit pages', async ({
         storage: {
             modules: { overview },

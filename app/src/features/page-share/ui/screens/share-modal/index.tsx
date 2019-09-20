@@ -22,8 +22,9 @@ export default class ShareModalScreen extends NavigationScreen<
         super(props, { logic: new Logic() })
     }
 
-    componentDidMount() {
-        this.setSharedUrl()
+    async componentDidMount() {
+        await this.setSharedUrl()
+        await this.setStoredStates()
     }
 
     private async setSharedUrl() {
@@ -35,7 +36,21 @@ export default class ShareModalScreen extends NavigationScreen<
         }
     }
 
-    private initHandleMetaShow = (type: MetaType) => (e: any) => {
+    private async setStoredStates() {
+        const { overview, metaPicker } = this.props.storage.modules
+        const { pageUrl: url } = this.state
+
+        const isStarred = await overview.isPageStarred({ url })
+        const tags = await metaPicker.findTagsByPage({ url })
+        const collections = await metaPicker.findListsByPage({ url })
+        this.processEvent('setPageStar', { value: isStarred })
+        this.processEvent('setTagsToAdd', { values: tags.map(t => t.name) })
+        this.processEvent('setCollectionsToAdd', {
+            values: collections.map(c => c.name),
+        })
+    }
+
+    private initHandleMetaShow = (type?: MetaType) => (e: any) => {
         this.processEvent('setMetaViewType', { type })
     }
 
@@ -90,10 +105,8 @@ export default class ShareModalScreen extends NavigationScreen<
         })
     }
 
-    private handleMetaPickerEntryPress = (type: MetaType) => async (
-        entry: MetaTypeShape,
-    ) => {
-        if (type === 'tags') {
+    private handleMetaPickerEntryPress = async (entry: MetaTypeShape) => {
+        if (this.state.metaViewShown === 'tags') {
             this.processEvent('toggleTag', { name: entry.name })
         } else {
             this.processEvent('toggleCollection', { name: entry.name })
@@ -101,26 +114,19 @@ export default class ShareModalScreen extends NavigationScreen<
     }
 
     private renderMetaPicker() {
+        const initEntries =
+            this.state.metaViewShown === 'collections'
+                ? this.state.collectionsToAdd
+                : this.state.tagsToAdd
+
         return (
             <>
-                <ActionBar
-                    onCancelPress={() =>
-                        this.processEvent('setMetaViewType', {
-                            type: undefined,
-                        })
-                    }
-                />
+                <ActionBar onCancelPress={this.initHandleMetaShow(undefined)} />
                 <MetaPicker
                     type={this.state.metaViewShown}
                     url={this.state.pageUrl}
-                    onEntryPress={this.handleMetaPickerEntryPress(
-                        this.state.metaViewShown!,
-                    )}
-                    initEntries={
-                        this.state.metaViewShown === 'collections'
-                            ? this.state.collectionsToAdd
-                            : this.state.tagsToAdd
-                    }
+                    onEntryPress={this.handleMetaPickerEntryPress}
+                    initEntries={initEntries}
                     {...this.props}
                 />
             </>
