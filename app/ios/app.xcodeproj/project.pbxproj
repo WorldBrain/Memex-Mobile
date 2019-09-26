@@ -1905,7 +1905,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.worldbrain.memex.MemexShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1951,7 +1951,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.worldbrain.memex.MemexShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
