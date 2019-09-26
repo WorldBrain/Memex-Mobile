@@ -2,16 +2,18 @@ import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
     button: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: '#8fffd7',
         borderRadius: 5,
         width: '85%',
-        height: 50,
+        maxHeight: 50,
     },
     buttonWarn: {
         backgroundColor: '#ff000f',
     },
     text: {
-        paddingVertical: '5%',
         color: 'black',
         textAlign: 'center',
         fontWeight: 'bold',

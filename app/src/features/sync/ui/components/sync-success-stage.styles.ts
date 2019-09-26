@@ -25,6 +25,7 @@ export default StyleSheet.create({
         marginTop: 15,
         paddingHorizontal: 50,
         marginBottom: 30,
+        textAlign: 'center',
     },
     backBtn: {
         position: 'absolute',
