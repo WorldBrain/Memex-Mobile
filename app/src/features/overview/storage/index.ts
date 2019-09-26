@@ -197,7 +197,12 @@ export class OverviewStorage extends StorageModule {
     }
 
     visitPage({ url, time = Date.now() }: PageOpArgs & { time?: number }) {
-        return this.operation('createVisit', { url, time })
+        const visit: Visit = {
+            url: this.normalizeUrl(url),
+            time,
+        }
+
+        return this.operation('createVisit', visit)
     }
 
     findPageVisits({ url }: PageOpArgs): Promise<Visit[]> {

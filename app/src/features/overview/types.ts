@@ -48,11 +48,11 @@ export interface Page {
 export interface Visit {
     url: string
     time: number
-    duration: number
-    scrollMaxPerc: number
-    scrollMaxPx: number
-    scrollPerc: number
-    scrollPx: number
+    duration?: number
+    scrollMaxPerc?: number
+    scrollMaxPx?: number
+    scrollPerc?: number
+    scrollPx?: number
 }
 
 export interface Bookmark {

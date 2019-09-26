@@ -70,6 +70,11 @@ export default class ShareModalScreen extends NavigationScreen<
             text: '',
             fullTitle: '',
         })
+        await overview.visitPage({ url: this.state.pageUrl })
+        await overview.setPageStar({
+            url: this.state.pageUrl,
+            isStarred: this.state.isStarred,
+        })
 
         await metaPicker.setPageLists({
             url: this.state.pageUrl,
@@ -78,11 +83,6 @@ export default class ShareModalScreen extends NavigationScreen<
         await metaPicker.setPageTags({
             url: this.state.pageUrl,
             tags: this.state.tagsToAdd,
-        })
-
-        await overview.setPageStar({
-            url: this.state.pageUrl,
-            isStarred: this.state.isStarred,
         })
 
         if (this.state.noteText.trim().length > 0) {
