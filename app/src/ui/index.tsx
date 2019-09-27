@@ -1,10 +1,18 @@
 import React, { Component } from 'react'
 import { AppRegistry, View, Text } from 'react-native'
 
-import { name as appName } from '../../app.json'
-import { createApp, createShareUI } from './navigation'
+import { name as appName, shareExtName } from '../../app.json'
+import {
+    createApp,
+    createShareUI,
+    NavigationContainerCreator,
+} from './navigation'
 import { UIDependencies } from './types'
 import LoadingScreen from './components/loading-screen'
+
+interface State {
+    dependencies?: UIDependencies
+}
 
 export class UI {
     private setupResolve!: (dependencies: UIDependencies) => void
@@ -14,51 +22,38 @@ export class UI {
             this.setupResolve = resolve
         })
 
-        interface State {
-            dependencies: UIDependencies | null
-        }
+        const setupContainerComponent = (
+            containerCreator: NavigationContainerCreator,
+        ) => () =>
+            class AbstractContainer extends Component<{}, State> {
+                state: State = {}
 
-        abstract class AbstractContainer extends Component<{}, State> {
-            state: State = {
-                dependencies: null,
-            }
-
-            async componentDidMount() {
-                const dependencies = await setupPromise
-                this.setState(() => ({ dependencies }))
-            }
-
-            protected renderLoading() {
-                return <LoadingScreen />
-            }
-
-            abstract render(): JSX.Element
-        }
-
-        class AppContainer extends AbstractContainer {
-            render() {
-                if (!this.state.dependencies) {
-                    return this.renderLoading()
+                async componentDidMount() {
+                    const dependencies = await setupPromise
+                    this.setState(() => ({ dependencies }))
                 }
 
-                const AppContainer = createApp(this.state.dependencies)
-                return <AppContainer />
-            }
-        }
+                render() {
+                    if (!this.state.dependencies) {
+                        return <LoadingScreen />
+                    }
 
-        class ShareContainer extends AbstractContainer {
-            render() {
-                if (!this.state.dependencies) {
-                    return this.renderLoading()
+                    const AppContainer = containerCreator(
+                        this.state.dependencies,
+                    )
+                    return <AppContainer />
                 }
-
-                const AppContainer = createShareUI(this.state.dependencies)
-                return <AppContainer />
             }
-        }
 
-        AppRegistry.registerComponent(appName, () => AppContainer)
-        AppRegistry.registerComponent('MemexShare', () => ShareContainer)
+        AppRegistry.registerComponent(
+            appName,
+            setupContainerComponent(createApp),
+        )
+
+        AppRegistry.registerComponent(
+            shareExtName,
+            setupContainerComponent(createShareUI),
+        )
     }
 
     initialize(options: { dependencies: UIDependencies }) {

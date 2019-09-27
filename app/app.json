@@ -1,6 +1,7 @@
 {
     "name": "Memex",
     "displayName": "Memex",
+    "shareExtName": "MemexShare",
     "version": "0.1",
     "storageKeys": {
         "showOnboarding": "@MemexApp_show-onboarding",
