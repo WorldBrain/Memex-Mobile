@@ -34,6 +34,12 @@
             "@worldbrain/storex-pattern-modules/lib/*": [
                 "external/@worldbrain/storex-pattern-modules/ts/*"
             ],
+            "@worldbrain/memex-storage": [
+                "external/@worldbrain/memex-storage/ts"
+            ],
+            "@worldbrain/memex-storage/lib/*": [
+                "external/@worldbrain/memex-storage/ts/*"
+            ],
             "user-logic": ["external/user-logic/ts"],
             "user-logic/lib/*": ["external/user-logic/ts/*"]
         }

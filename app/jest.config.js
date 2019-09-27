@@ -16,5 +16,7 @@ module.exports = {
             '<rootDir>/external/@worldbrain/storex-pattern-modules/ts',
         '^@worldbrain/storex-schema-migrations$':
             '<rootDir>/external/@worldbrain/storex-schema-migrations/ts',
+        '^@worldbrain/memex-storage$':
+            '<rootDir>/external/@worldbrain/memex-storage/ts',
     },
 }

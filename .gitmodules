@@ -13,3 +13,6 @@
 [submodule "app/external/user-logic"]
 	path = app/external/user-logic
 	url = git@github.com:ShishKabab/user-logic
+[submodule "app/external/@worldbrain/memex-storage"]
+	path = app/external/@worldbrain/memex-storage
+	url = https://github.com/WorldBrain/memex-storage.git
