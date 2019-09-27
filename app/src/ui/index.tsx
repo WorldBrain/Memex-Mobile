@@ -4,6 +4,7 @@ import { AppRegistry, View, Text } from 'react-native'
 import { name as appName } from '../../app.json'
 import { createApp, createShareUI } from './navigation'
 import { UIDependencies } from './types'
+import LoadingScreen from './components/loading-screen'
 
 export class UI {
     private setupResolve!: (dependencies: UIDependencies) => void
@@ -27,17 +28,17 @@ export class UI {
                 this.setState(() => ({ dependencies }))
             }
 
+            protected renderLoading() {
+                return <LoadingScreen />
+            }
+
             abstract render(): JSX.Element
         }
 
         class AppContainer extends AbstractContainer {
             render() {
                 if (!this.state.dependencies) {
-                    return (
-                        <View>
-                            <Text>Loading!?!!</Text>
-                        </View>
-                    )
+                    return this.renderLoading()
                 }
 
                 const AppContainer = createApp(this.state.dependencies)
@@ -48,11 +49,7 @@ export class UI {
         class ShareContainer extends AbstractContainer {
             render() {
                 if (!this.state.dependencies) {
-                    return (
-                        <View>
-                            <Text>Loading!?!!</Text>
-                        </View>
-                    )
+                    return this.renderLoading()
                 }
 
                 const AppContainer = createShareUI(this.state.dependencies)

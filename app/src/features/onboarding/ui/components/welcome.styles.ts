@@ -14,5 +14,6 @@ export default StyleSheet.create({
     btn: {
         position: 'absolute',
         bottom: 35,
+        height: 50,
     },
 })
