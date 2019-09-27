@@ -3,6 +3,10 @@ import {
     StorageModuleConfig,
     StorageModuleConstructorArgs,
 } from '@worldbrain/storex-pattern-modules'
+import {
+    COLLECTION_DEFINITIONS,
+    COLLECTION_NAMES,
+} from '@worldbrain/memex-storage/lib/pages/constants'
 
 import { Page, Visit } from '../types'
 import { URLNormalizer } from 'src/utils/normalize-url/types'
@@ -18,9 +22,10 @@ export interface PageOpArgs {
 }
 
 export class OverviewStorage extends StorageModule {
-    static PAGE_COLL = 'pages'
-    static VISIT_COLL = 'visits'
-    static BOOKMARK_COLL = 'bookmarks'
+    static PAGE_COLL = COLLECTION_NAMES.page
+    static VISIT_COLL = COLLECTION_NAMES.visit
+    static BOOKMARK_COLL = COLLECTION_NAMES.bookmark
+    static FAVICON_COLL = COLLECTION_NAMES.favIcon
 
     private normalizeUrl: URLNormalizer
     private deriveUrlParts: URLPartsDeriver
@@ -32,115 +37,85 @@ export class OverviewStorage extends StorageModule {
         this.deriveUrlParts = deriveUrlParts
     }
 
-    getConfig = (): StorageModuleConfig => ({
-        collections: {
-            [OverviewStorage.PAGE_COLL]: {
-                version: new Date('2019-07-09'),
-                fields: {
-                    url: { type: 'string' },
-                    fullUrl: { type: 'text' },
-                    fullTitle: { type: 'text' },
-                    text: { type: 'text' },
-                    domain: { type: 'string' },
-                    hostname: { type: 'string' },
-                    screenshot: { type: 'string', optional: true },
-                    lang: { type: 'string', optional: true },
-                    canonicalUrl: { type: 'url', optional: true },
-                    description: { type: 'text', optional: true },
+    getConfig = (): StorageModuleConfig => {
+        // TODO: These types differ from corresponding Memex ext type (not supported in react native)
+        //  TYPE: 'media' => 'string'
+        COLLECTION_DEFINITIONS[
+            OverviewStorage.PAGE_COLL
+        ].fields.screenshot.type = 'string'
+        //  TYPE: 'media' => 'string'
+        COLLECTION_DEFINITIONS[
+            OverviewStorage.FAVICON_COLL
+        ].fields.favIcon.type = 'string'
+        //  TYPE: 'timestamp' => 'datetime'
+        COLLECTION_DEFINITIONS[OverviewStorage.VISIT_COLL].fields.time.type =
+            'datetime'
+        //  TYPE: 'timestamp' => 'datetime'
+        COLLECTION_DEFINITIONS[OverviewStorage.BOOKMARK_COLL].fields.time.type =
+            'datetime'
+
+        return {
+            collections: {
+                ...COLLECTION_DEFINITIONS,
+            },
+            operations: {
+                createPage: {
+                    operation: 'createObject',
+                    collection: OverviewStorage.PAGE_COLL,
                 },
-                indices: [
-                    { field: 'url', pk: true },
-                    { field: 'text', fullTextIndexName: 'terms' },
-                    { field: 'fullTitle', fullTextIndexName: 'titleTerms' },
-                    { field: 'fullUrl', fullTextIndexName: 'urlTerms' },
-                    { field: 'domain' },
-                    { field: 'hostname' },
-                ],
-            },
-            [OverviewStorage.VISIT_COLL]: {
-                version: new Date('2019-07-09'),
-                fields: {
-                    url: { type: 'string' },
-                    // TODO: This type differs from corresponding Memex ext type (not supported in react native)
-                    time: { type: 'datetime' },
-                    duration: { type: 'int', optional: true },
-                    scrollMaxPerc: { type: 'float', optional: true },
-                    scrollMaxPx: { type: 'float', optional: true },
-                    scrollPerc: { type: 'float', optional: true },
-                    scrollPx: { type: 'float', optional: true },
+                deletePage: {
+                    operation: 'deleteObject',
+                    collection: OverviewStorage.PAGE_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
                 },
-                indices: [
-                    { field: ['time', 'url'], pk: true },
-                    { field: 'url' },
-                ],
-            },
-            [OverviewStorage.BOOKMARK_COLL]: {
-                version: new Date('2019-07-09'),
-                fields: {
-                    url: { type: 'string' },
-                    // TODO: This type differs from corresponding Memex ext type (not supported in react native)
-                    time: { type: 'datetime' },
+                findPage: {
+                    operation: 'findObject',
+                    collection: OverviewStorage.PAGE_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
                 },
-                indices: [{ field: 'url', pk: true }, { field: 'time' }],
-            },
-        },
-        operations: {
-            createPage: {
-                operation: 'createObject',
-                collection: OverviewStorage.PAGE_COLL,
-            },
-            deletePage: {
-                operation: 'deleteObject',
-                collection: OverviewStorage.PAGE_COLL,
-                args: {
-                    url: '$url:string',
+                findBookmark: {
+                    operation: 'findObject',
+                    collection: OverviewStorage.BOOKMARK_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
                 },
-            },
-            findPage: {
-                operation: 'findObject',
-                collection: OverviewStorage.PAGE_COLL,
-                args: {
-                    url: '$url:string',
+                starPage: {
+                    operation: 'createObject',
+                    collection: OverviewStorage.BOOKMARK_COLL,
                 },
-            },
-            findBookmark: {
-                operation: 'findObject',
-                collection: OverviewStorage.BOOKMARK_COLL,
-                args: {
-                    url: '$url:string',
+                unstarPage: {
+                    operation: 'deleteObject',
+                    collection: OverviewStorage.BOOKMARK_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
                 },
-            },
-            starPage: {
-                operation: 'createObject',
-                collection: OverviewStorage.BOOKMARK_COLL,
-            },
-            unstarPage: {
-                operation: 'deleteObject',
-                collection: OverviewStorage.BOOKMARK_COLL,
-                args: {
-                    url: '$url:string',
+                createVisit: {
+                    operation: 'createObject',
+                    collection: OverviewStorage.VISIT_COLL,
+                },
+                findVisitsForPage: {
+                    operation: 'findObjects',
+                    collection: OverviewStorage.VISIT_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
+                },
+                deleteVisitsForPage: {
+                    operation: 'deleteObjects',
+                    collection: OverviewStorage.VISIT_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
                 },
             },
-            createVisit: {
-                operation: 'createObject',
-                collection: OverviewStorage.VISIT_COLL,
-            },
-            findVisitsForPage: {
-                operation: 'findObjects',
-                collection: OverviewStorage.VISIT_COLL,
-                args: {
-                    url: '$url:string',
-                },
-            },
-            deleteVisitsForPage: {
-                operation: 'deleteObjects',
-                collection: OverviewStorage.VISIT_COLL,
-                args: {
-                    url: '$url:string',
-                },
-            },
-        },
-    })
+        }
+    }
 
     async findPage({ url }: PageOpArgs): Promise<Page | null> {
         const page = await this.operation('findPage', { url })

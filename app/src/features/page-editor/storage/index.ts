@@ -3,6 +3,10 @@ import {
     StorageModuleConfig,
     StorageModuleConstructorArgs,
 } from '@worldbrain/storex-pattern-modules'
+import {
+    COLLECTION_DEFINITIONS,
+    COLLECTION_NAMES,
+} from '@worldbrain/memex-storage/lib/annotations/constants'
 
 import { Note } from '../types'
 import { URLNormalizer } from 'src/utils/normalize-url/types'
@@ -16,9 +20,9 @@ export interface Props extends StorageModuleConstructorArgs {
 }
 
 export class PageEditorStorage extends StorageModule {
-    static NOTE_COLL = 'annotations'
-    static BOOKMARK_COLL = 'annotBookmarks'
-    static LIST_ENTRY_COLL = 'annotListEntries'
+    static NOTE_COLL = COLLECTION_NAMES.annotation
+    static BOOKMARK_COLL = COLLECTION_NAMES.bookmark
+    static LIST_ENTRY_COLL = COLLECTION_NAMES.listEntry
 
     private normalizeUrl: URLNormalizer
 
@@ -28,139 +32,104 @@ export class PageEditorStorage extends StorageModule {
         this.normalizeUrl = normalizeUrls
     }
 
-    getConfig = (): StorageModuleConfig => ({
-        collections: {
-            [PageEditorStorage.NOTE_COLL]: {
-                version: new Date('2019-07-09'),
-                fields: {
-                    url: { type: 'string' },
-                    pageTitle: { type: 'text' },
-                    pageUrl: { type: 'url' },
-                    body: { type: 'text', optional: true },
-                    comment: { type: 'text', optional: true },
-                    // TODO: This type differs from corresponding Memex ext type (not supported in react native)
-                    selector: { type: 'string', optional: true },
-                    createdWhen: { type: 'datetime' },
-                    lastEdited: { type: 'datetime' },
+    getConfig = (): StorageModuleConfig => {
+        // TODO: This type differs from corresponding Memex ext type (not supported in react native)
+        //  TYPE: 'json' => 'string'
+        COLLECTION_DEFINITIONS[
+            PageEditorStorage.NOTE_COLL
+        ].fields.selector.type = 'string'
+
+        return {
+            collections: {
+                ...COLLECTION_DEFINITIONS,
+            },
+            operations: {
+                addNoteToList: {
+                    operation: 'createObject',
+                    collection: PageEditorStorage.LIST_ENTRY_COLL,
                 },
-                indices: [
-                    { field: 'url', pk: true },
-                    { field: 'pageUrl' },
-                    { field: 'pageTitle' },
-                    { field: 'body' },
-                    { field: 'createdWhen' },
-                    { field: 'lastEdited' },
-                    { field: 'comment' },
-                ],
-            },
-            [PageEditorStorage.BOOKMARK_COLL]: {
-                version: new Date('2019-07-09'),
-                fields: {
-                    url: { type: 'string' },
-                    createdAt: { type: 'datetime' },
+                createNote: {
+                    operation: 'createObject',
+                    collection: PageEditorStorage.NOTE_COLL,
                 },
-                indices: [{ field: 'url', pk: true }, { field: 'createdAt' }],
-            },
-            [PageEditorStorage.LIST_ENTRY_COLL]: {
-                version: new Date('2019-07-10'),
-                fields: {
-                    listId: { type: 'string' },
-                    url: { type: 'string' },
-                    createdAt: { type: 'datetime' },
+                findNote: {
+                    operation: 'findObject',
+                    collection: PageEditorStorage.NOTE_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
                 },
-                indices: [
-                    { field: ['listId', 'url'], pk: true },
-                    { field: 'listId' },
-                    { field: 'url' },
-                ],
-            },
-        },
-        operations: {
-            addNoteToList: {
-                operation: 'createObject',
-                collection: PageEditorStorage.LIST_ENTRY_COLL,
-            },
-            createNote: {
-                operation: 'createObject',
-                collection: PageEditorStorage.NOTE_COLL,
-            },
-            findNote: {
-                operation: 'findObject',
-                collection: PageEditorStorage.NOTE_COLL,
-                args: {
-                    url: '$url:string',
+                findNotesForPage: {
+                    operation: 'findObjects',
+                    collection: PageEditorStorage.NOTE_COLL,
+                    args: {
+                        pageUrl: '$url:string',
+                    },
                 },
-            },
-            findNotesForPage: {
-                operation: 'findObjects',
-                collection: PageEditorStorage.NOTE_COLL,
-                args: {
-                    pageUrl: '$url:string',
+                findEntriesForList: {
+                    operation: 'findObjects',
+                    collection: PageEditorStorage.LIST_ENTRY_COLL,
+                    args: {
+                        listId: '$listId:number',
+                    },
                 },
-            },
-            findEntriesForList: {
-                operation: 'findObjects',
-                collection: PageEditorStorage.LIST_ENTRY_COLL,
-                args: {
-                    listId: '$listId:number',
+                findEntriesForNote: {
+                    operation: 'findObjects',
+                    collection: PageEditorStorage.LIST_ENTRY_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
                 },
-            },
-            findEntriesForNote: {
-                operation: 'findObjects',
-                collection: PageEditorStorage.LIST_ENTRY_COLL,
-                args: {
-                    url: '$url:string',
+                deleteNote: {
+                    operation: 'deleteObject',
+                    collection: PageEditorStorage.NOTE_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
                 },
-            },
-            deleteNote: {
-                operation: 'deleteObject',
-                collection: PageEditorStorage.NOTE_COLL,
-                args: {
-                    url: '$url:string',
+                deleteNoteFromList: {
+                    operation: 'deleteObject',
+                    collection: PageEditorStorage.LIST_ENTRY_COLL,
+                    args: {
+                        url: '$url:string',
+                        listId: '$listId:number',
+                    },
                 },
-            },
-            deleteNoteFromList: {
-                operation: 'deleteObject',
-                collection: PageEditorStorage.LIST_ENTRY_COLL,
-                args: {
-                    url: '$url:string',
-                    listId: '$listId:number',
+                deleteEntriesForList: {
+                    operation: 'deleteObjects',
+                    collection: PageEditorStorage.LIST_ENTRY_COLL,
+                    args: {
+                        listId: '$listId:number',
+                    },
+                },
+                deleteEntriesForNote: {
+                    operation: 'deleteObjects',
+                    collection: PageEditorStorage.LIST_ENTRY_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
+                },
+                findBookmark: {
+                    operation: 'findObject',
+                    collection: PageEditorStorage.BOOKMARK_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
+                },
+                starNote: {
+                    operation: 'createObject',
+                    collection: PageEditorStorage.BOOKMARK_COLL,
+                },
+                unstarNote: {
+                    operation: 'deleteObject',
+                    collection: PageEditorStorage.BOOKMARK_COLL,
+                    args: {
+                        url: '$url:string',
+                    },
                 },
             },
-            deleteEntriesForList: {
-                operation: 'deleteObjects',
-                collection: PageEditorStorage.LIST_ENTRY_COLL,
-                args: {
-                    listId: '$listId:number',
-                },
-            },
-            deleteEntriesForNote: {
-                operation: 'deleteObjects',
-                collection: PageEditorStorage.LIST_ENTRY_COLL,
-                args: {
-                    url: '$url:string',
-                },
-            },
-            findBookmark: {
-                operation: 'findObject',
-                collection: PageEditorStorage.BOOKMARK_COLL,
-                args: {
-                    url: '$url:string',
-                },
-            },
-            starNote: {
-                operation: 'createObject',
-                collection: PageEditorStorage.BOOKMARK_COLL,
-            },
-            unstarNote: {
-                operation: 'deleteObject',
-                collection: PageEditorStorage.BOOKMARK_COLL,
-                args: {
-                    url: '$url:string',
-                },
-            },
-        },
-    })
+        }
+    }
 
     private createAnnotationUrl = ({
         pageUrl,

@@ -2,62 +2,29 @@ import {
     StorageModule,
     StorageModuleConfig,
 } from '@worldbrain/storex-pattern-modules'
+import {
+    COLLECTION_DEFINITIONS as TAG_COLL_DEFINITIONS,
+    COLLECTION_NAMES as TAG_COLL_NAMES,
+} from '@worldbrain/memex-storage/lib/tags/constants'
+import {
+    COLLECTION_DEFINITIONS as LIST_COLL_DEFINITIONS,
+    COLLECTION_NAMES as LIST_COLL_NAMES,
+} from '@worldbrain/memex-storage/lib/lists/constants'
 
 import { Tag, List, ListEntry, MetaTypeShape } from '../types'
 
 export class MetaPickerStorage extends StorageModule {
-    static TAG_COLL = 'tags'
-    static LIST_COLL = 'customLists'
-    static LIST_ENTRY_COLL = 'pageListEntries'
+    static TAG_COLL = TAG_COLL_NAMES.tag
+    static LIST_COLL = LIST_COLL_NAMES.list
+    static LIST_ENTRY_COLL = LIST_COLL_NAMES.listEntry
     static DEF_SUGGESTION_LIMIT = 7
     /** This exists to mimic behavior implemented in memex WebExt; Storex auto-PK were not used for whatever reason. */
     static generateListId = () => Date.now()
 
     getConfig = (): StorageModuleConfig => ({
         collections: {
-            [MetaPickerStorage.TAG_COLL]: {
-                version: new Date('2019-07-09'),
-                fields: {
-                    url: { type: 'string' },
-                    name: { type: 'string' },
-                },
-                indices: [
-                    { field: ['name', 'url'], pk: true },
-                    { field: 'name' },
-                    { field: 'url' },
-                ],
-            },
-            [MetaPickerStorage.LIST_COLL]: {
-                version: new Date('2019-07-09'),
-                fields: {
-                    id: { type: 'int' },
-                    name: { type: 'string' },
-                    isDeletable: { type: 'boolean', optional: true },
-                    isNestable: { type: 'boolean', optional: true },
-                    createdAt: { type: 'datetime' },
-                },
-                indices: [
-                    { field: 'id', pk: true },
-                    { field: 'name', unique: true },
-                    { field: 'isDeletable' },
-                    { field: 'isNestable' },
-                    { field: 'createdAt' },
-                ],
-            },
-            [MetaPickerStorage.LIST_ENTRY_COLL]: {
-                version: new Date('2019-07-09'),
-                fields: {
-                    listId: { type: 'int' },
-                    pageUrl: { type: 'string' },
-                    fullUrl: { type: 'string' },
-                    createdAt: { type: 'datetime' },
-                },
-                indices: [
-                    { field: ['listId', 'pageUrl'], pk: true },
-                    { field: 'listId' },
-                    { field: 'pageUrl' },
-                ],
-            },
+            ...TAG_COLL_DEFINITIONS,
+            ...LIST_COLL_DEFINITIONS,
         },
         operations: {
             createList: {
