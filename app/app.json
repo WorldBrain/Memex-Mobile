@@ -1,6 +1,6 @@
 {
-    "name": "app",
-    "displayName": "app",
+    "name": "Memex",
+    "displayName": "Memex",
     "version": "0.1",
     "storageKeys": {
         "showOnboarding": "@MemexApp_show-onboarding",
