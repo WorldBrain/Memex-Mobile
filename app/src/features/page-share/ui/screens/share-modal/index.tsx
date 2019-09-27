@@ -96,7 +96,8 @@ export default class ShareModalScreen extends NavigationScreen<
 
     private handleModalClose = () => {
         this.processEvent('setModalVisible', { shown: false })
-        this.props.services.shareExt.close()
+        // For whatever reason, calling this seems to result in a crash. Though it still closes as expected without calling it...
+        // this.props.services.shareExt.close()
     }
 
     private handleStarPress = () => {
