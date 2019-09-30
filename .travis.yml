@@ -1,0 +1,19 @@
+language: node_js
+node_js:
+  - "lts/*"
+before_install:
+  - cd app/
+install:
+  - git submodule update --init --recursive
+  - yarn install --frozen-lockfile
+before_script:
+  - cd app/
+script:
+  - npm run test
+  - npm run lint
+cache:
+  yarn: true
+  directories:
+    - node_modules
+notifications:
+  email: false

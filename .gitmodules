@@ -1,18 +1,18 @@
 [submodule "@worldbrain/storex"]
 	path = app/external/@worldbrain/storex
-	url = git@github.com:WorldBrain/storex
+	url = https://github.com/WorldBrain/storex
 [submodule "@worldbrain/storex-backend-typeorm"]
 	path = app/external/@worldbrain/storex-backend-typeorm
-	url = git@github.com:WorldBrain/storex-backend-typeorm
+	url = https://github.com/WorldBrain/storex-backend-typeorm
 [submodule "app/external/storex-pattern-modules"]
 	path = app/external/@worldbrain/storex-pattern-modules
-	url = git@github.com:WorldBrain/storex-pattern-modules
+	url = https://github.com/WorldBrain/storex-pattern-modules
 [submodule "app/external/@worldbrain/storex-schema-migrations"]
 	path = app/external/@worldbrain/storex-schema-migrations
-	url = git@github.com:WorldBrain/storex-schema-migrations
+	url = https://github.com/WorldBrain/storex-schema-migrations
 [submodule "app/external/user-logic"]
 	path = app/external/user-logic
-	url = git@github.com:ShishKabab/user-logic
+	url = https://github.com/ShishKabab/user-logic
 [submodule "app/external/@worldbrain/memex-storage"]
 	path = app/external/@worldbrain/memex-storage
 	url = https://github.com/WorldBrain/memex-storage.git
