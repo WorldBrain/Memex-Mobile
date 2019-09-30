@@ -42,7 +42,7 @@ export default class OnboardingScreen extends NavigationScreen<
     }
 
     private goToNextStage = () => {
-        let value = (this.state.onboardingStage + 1) as OnboardingStage
+        const value = (this.state.onboardingStage + 1) as OnboardingStage
 
         if (value > 3) {
             return this.finishOnboarding()

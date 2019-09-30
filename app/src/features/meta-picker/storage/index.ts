@@ -260,7 +260,7 @@ export class MetaPickerStorage extends StorageModule {
         const existingListsSet = new Set(existingLists.map(list => list.name))
 
         // Create any missing lists
-        let newListIds: number[] = []
+        const newListIds: number[] = []
         const missingLists = lists.filter(list => !existingListsSet.has(list))
         for (const name of missingLists) {
             const result = await this.createList({ name })

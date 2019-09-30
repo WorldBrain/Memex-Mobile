@@ -61,6 +61,7 @@ export default class NotesView extends StatefulUIElement<Props, State, Event> {
         section,
     }) => (
         <ResultPage
+            // tslint:disable-next-line
             initNoteEdit={() => () => console.log(item)}
             initNoteDelete={note =>
                 this.initHandleDeleteNotePress({

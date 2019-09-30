@@ -61,8 +61,11 @@ export default class PageEditorScreen extends NavigationScreen<
         return (
             <ExistingNotes
                 noteAdder={this.renderNoteAdder()}
+                // tslint:disable-next-line
                 initNoteDelete={n => () => console.log(n)}
+                // tslint:disable-next-line
                 initNoteEdit={n => () => console.log(n)}
+                // tslint:disable-next-line
                 initNoteStar={n => () => console.log(n)}
                 onAddNotePress={() =>
                     this.processEvent('setShowNoteAdder', { show: true })
