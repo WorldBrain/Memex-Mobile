@@ -1,9 +1,9 @@
 import expect from 'expect'
+import { extractUrlParts } from '@worldbrain/memex-url-utils'
 
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
 import { Page } from '../types'
-import deriveUrlParts from 'src/utils/derive-url-parts'
 
 const it = makeStorageTestFactory()
 
@@ -16,7 +16,7 @@ function testPageEquality(
     expect(dbPage.fullUrl).toBe(testPage.fullUrl)
     expect(dbPage.fullTitle).toBe(testPage.fullTitle)
 
-    const urlParts = deriveUrlParts(testPage.url)
+    const urlParts = extractUrlParts(testPage.url)
     expect(dbPage.domain).toBe(urlParts.domain)
     expect(dbPage.hostname).toBe(urlParts.hostname)
 }

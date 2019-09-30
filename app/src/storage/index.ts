@@ -2,14 +2,13 @@ import { ConnectionOptions } from 'typeorm'
 import StorageManager from '@worldbrain/storex'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
 import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
+import { extractUrlParts, normalizeUrl } from '@worldbrain/memex-url-utils'
 
 import defaultConnectionOpts from './default-connection-opts'
 import { Storage } from './types'
 import { OverviewStorage } from 'src/features/overview/storage'
 import { MetaPickerStorage } from 'src/features/meta-picker/storage'
 import { PageEditorStorage } from 'src/features/page-editor/storage'
-import normalizeUrls from 'src/utils/normalize-url'
-import deriveUrlParts from 'src/utils/derive-url-parts'
 
 export interface CreateStorageOptions {
     typeORMConnectionOpts: ConnectionOptions
@@ -29,11 +28,11 @@ export async function createStorage({
     const modules = {
         overview: new OverviewStorage({
             storageManager,
-            normalizeUrls,
-            deriveUrlParts,
+            normalizeUrl,
+            extractUrlParts,
         }),
         metaPicker: new MetaPickerStorage({ storageManager }),
-        pageEditor: new PageEditorStorage({ storageManager, normalizeUrls }),
+        pageEditor: new PageEditorStorage({ storageManager, normalizeUrl }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules)

@@ -7,16 +7,16 @@ import {
     COLLECTION_DEFINITIONS,
     COLLECTION_NAMES,
 } from '@worldbrain/memex-storage/lib/annotations/constants'
+import { URLNormalizer } from '@worldbrain/memex-url-utils'
 
 import { Note } from '../types'
-import { URLNormalizer } from 'src/utils/normalize-url/types'
 
 export interface NoteOpArgs {
     url: string
 }
 
 export interface Props extends StorageModuleConstructorArgs {
-    normalizeUrls: URLNormalizer
+    normalizeUrl: URLNormalizer
 }
 
 export class PageEditorStorage extends StorageModule {
@@ -26,10 +26,10 @@ export class PageEditorStorage extends StorageModule {
 
     private normalizeUrl: URLNormalizer
 
-    constructor({ normalizeUrls, ...args }: Props) {
+    constructor({ normalizeUrl, ...args }: Props) {
         super(args)
 
-        this.normalizeUrl = normalizeUrls
+        this.normalizeUrl = normalizeUrl
     }
 
     getConfig = (): StorageModuleConfig => {

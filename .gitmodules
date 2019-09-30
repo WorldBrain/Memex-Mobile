@@ -16,3 +16,6 @@
 [submodule "app/external/@worldbrain/memex-storage"]
 	path = app/external/@worldbrain/memex-storage
 	url = https://github.com/WorldBrain/memex-storage.git
+[submodule "app/external/@worldbrain/memex-url-utils"]
+	path = app/external/@worldbrain/memex-url-utils
+	url = https://github.com/WorldBrain/memex-url-utils.git

@@ -21,7 +21,7 @@
     "@types/react-native-modalbox": "^1.4.8",
     "buffer": "^5.2.1",
     "immutability-helper": "^3.0.0",
-    "normalize-url": "^4.3.0",
+    "normalize-url": "^4.5.0",
     "pluralize": "^8.0.0",
     "randombytes": "^2.1.0",
     "react": "16.8.3",

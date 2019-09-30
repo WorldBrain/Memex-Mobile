@@ -1,8 +1,8 @@
 import expect from 'expect'
+import { normalizeUrl } from '@worldbrain/memex-url-utils'
 
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
-import normalizeUrl from 'src/utils/normalize-url'
 import { Note } from '../types'
 
 const it = makeStorageTestFactory()

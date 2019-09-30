@@ -7,14 +7,13 @@ import {
     COLLECTION_DEFINITIONS,
     COLLECTION_NAMES,
 } from '@worldbrain/memex-storage/lib/pages/constants'
+import { URLPartsExtractor, URLNormalizer } from '@worldbrain/memex-url-utils'
 
 import { Page, Visit } from '../types'
-import { URLNormalizer } from 'src/utils/normalize-url/types'
-import { URLPartsDeriver } from 'src/utils/derive-url-parts/types'
 
 export interface Props extends StorageModuleConstructorArgs {
-    normalizeUrls: URLNormalizer
-    deriveUrlParts: URLPartsDeriver
+    normalizeUrl: URLNormalizer
+    extractUrlParts: URLPartsExtractor
 }
 
 export interface PageOpArgs {
@@ -28,13 +27,13 @@ export class OverviewStorage extends StorageModule {
     static FAVICON_COLL = COLLECTION_NAMES.favIcon
 
     private normalizeUrl: URLNormalizer
-    private deriveUrlParts: URLPartsDeriver
+    private extractUrlParts: URLPartsExtractor
 
-    constructor({ normalizeUrls, deriveUrlParts, ...args }: Props) {
+    constructor({ normalizeUrl, extractUrlParts, ...args }: Props) {
         super(args)
 
-        this.normalizeUrl = normalizeUrls
-        this.deriveUrlParts = deriveUrlParts
+        this.normalizeUrl = normalizeUrl
+        this.extractUrlParts = extractUrlParts
     }
 
     getConfig = (): StorageModuleConfig => {
@@ -132,7 +131,7 @@ export class OverviewStorage extends StorageModule {
     }
 
     createPage(inputPage: Omit<Page, 'domain' | 'hostname'>) {
-        const { domain, hostname } = this.deriveUrlParts(inputPage.url)
+        const { domain, hostname } = this.extractUrlParts(inputPage.url)
 
         const page: Page = {
             ...inputPage,

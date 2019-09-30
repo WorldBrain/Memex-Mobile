@@ -40,6 +40,9 @@
             "@worldbrain/memex-storage/lib/*": [
                 "external/@worldbrain/memex-storage/ts/*"
             ],
+            "@worldbrain/memex-url-utils": [
+                "external/@worldbrain/memex-url-utils/ts"
+            ],
             "user-logic": ["external/user-logic/ts"],
             "user-logic/lib/*": ["external/user-logic/ts/*"]
         }
