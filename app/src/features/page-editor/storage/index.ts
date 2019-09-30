@@ -38,6 +38,9 @@ export class PageEditorStorage extends StorageModule {
         COLLECTION_DEFINITIONS[
             PageEditorStorage.NOTE_COLL
         ].fields.selector.type = 'string'
+        COLLECTION_DEFINITIONS[
+            PageEditorStorage.NOTE_COLL
+        ].history![0].fields.selector.type = 'string'
 
         return {
             collections: {
