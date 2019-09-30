@@ -1,9 +1,9 @@
 {
-  "name": "app",
+  "name": "memex-mobile",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "start": "react-native start",
     "test": "jest --verbose --config=jest.config.js",
     "test:watch": "jest --watch --config=jest.config.js",
     "lint": "tslint --project . --format stylish",
