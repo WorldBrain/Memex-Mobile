@@ -6,8 +6,6 @@ before_install:
 install:
   - git submodule update --init --recursive
   - yarn install --frozen-lockfile
-before_script:
-  - cd app/
 script:
   - npm run test
   - npm run lint
