@@ -13,10 +13,12 @@ export default StyleSheet.create({
         borderBottomColor: '#eaeae9',
     },
     entry: {
-        backgroundColor: '#83c9f4',
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 5,
+    },
+    entryBackground: {
+        backgroundColor: '#83c9f4',
     },
     entryText: {
         fontSize: 18,

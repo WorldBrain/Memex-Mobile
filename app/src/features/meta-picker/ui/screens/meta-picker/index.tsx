@@ -70,7 +70,7 @@ export default class MetaPickerScreen extends NavigationScreen<
     private initHandleEntryPress = ({
         canAdd,
         ...item
-    }: MetaTypeShape) => e => {
+    }: MetaTypeShape) => () => {
         this.props.onEntryPress(item)
 
         if (canAdd) {
@@ -88,10 +88,11 @@ export default class MetaPickerScreen extends NavigationScreen<
     }) => (
         <MetaPickerEntry
             key={index}
-            onPress={this.initHandleEntryPress(item)}
             text={item.name}
             canAdd={item.canAdd}
             isChecked={item.isChecked}
+            onPress={this.initHandleEntryPress(item)}
+            showTextBackground={this.props.type === 'tags'}
         />
     )
 

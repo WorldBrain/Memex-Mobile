@@ -14,6 +14,7 @@ export interface Props {
     canAdd?: boolean
     isChecked?: boolean
     skipBottomBorder?: boolean
+    showTextBackground?: boolean
     onPress: (e: GestureResponderEvent) => void
 }
 
@@ -26,7 +27,12 @@ const MetaPickerEntry: React.StatelessComponent<Props> = props => (
             ]}
         >
             {props.canAdd && <Text style={styles.addText}>Add new:</Text>}
-            <View style={styles.entry}>
+            <View
+                style={[
+                    styles.entry,
+                    props.showTextBackground ? styles.entryBackground : null,
+                ]}
+            >
                 <Text style={styles.entryText}>{props.text}</Text>
             </View>
             <Image
