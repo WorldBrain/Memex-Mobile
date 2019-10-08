@@ -60,6 +60,9 @@ such a requirement seem to contain these instructions) to get the relevant lib a
 Running `yarn react-native run-android` will sometimes result in errors during compilation, such as `error: package android.support.v4.util does not exist`. If this occurs, run `node_modules/.bin/jetify` to migrate all node_modules to AndroidX
 then try to run again.
 
+**Note:**
+This should now automatically be run on `postinstall` when running `yarn` while setting up the repo.
+
 The reason this happens (from my limited understanding) is because certain deps will be using native Java code that isn't updated
 to AndroidX yet while the main app assumes AndroidX. Running `jetify` updates those deps. **This may need to be run each time you refresh your deps by running `yarn`.** More info in the `jetifier` NPM package:
 https://www.npmjs.com/package/jetifier

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
+    "postinstall": "jetify",
     "test": "jest --verbose --config=jest.config.js",
     "test:watch": "jest --watch --config=jest.config.js",
     "lint": "tslint --project . --format stylish",
