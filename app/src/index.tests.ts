@@ -1,14 +1,35 @@
 const wrtc = require('wrtc')
-import { MemorySignalTransportManager } from 'simple-signalling/lib/memory'
+const MockAsyncStorage = require('mock-async-storage').default
 import StorageManager from '@worldbrain/storex'
 import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
 import { SharedSyncLogStorage } from '@worldbrain/storex-sync/lib/shared-sync-log/storex'
 import { DexieStorageBackend } from '@worldbrain/storex-backend-dexie'
 import inMemory from '@worldbrain/storex-backend-dexie/lib/in-memory'
-import { createStorage } from 'src/storage'
+import { MemorySignalTransportManager } from 'simple-signalling/lib/memory'
+import { createStorage, setStorageMiddleware } from 'src/storage'
 import { Storage } from 'src/storage/types'
 import { createServices } from './services'
 import { Services } from './services/types'
+import { MemoryAuthService } from './services/auth/memory'
+import { LocalStorageService } from './services/local-storage'
+
+export type MultiDeviceTestFunction = (
+    context: MultiDeviceTestContext,
+) => Promise<void>
+export interface MultiDeviceTestContext {
+    createDevice(options?: {
+        debugSql?: boolean
+    }): Promise<{
+        storage: Storage
+        services: Services
+        auth: MemoryAuthService
+    }>
+}
+export interface MultiDeviceTestDevice {
+    storage: Storage
+    services: Services
+    auth: MemoryAuthService
+}
 
 /*
  * Multiple tests throw errors running on the same TypeORM connection. So give each test a different
@@ -50,15 +71,10 @@ export function makeStorageTestFactory() {
 }
 
 export function makeMultiDeviceTestFactory() {
-    type TestFunction = (context: TestContext) => Promise<void>
-    interface TestContext {
-        createDevice(): Promise<{
-            storage: Storage
-            services: Services
-        }>
-    }
-
-    function factory(description: string, test?: TestFunction): void {
+    function factory(
+        description: string,
+        test?: MultiDeviceTestFunction,
+    ): void {
         if (!test) {
             it.todo(description)
             return
@@ -70,22 +86,36 @@ export function makeMultiDeviceTestFactory() {
                 storage: Storage
                 services: Services
             }> = []
-            const createDevice = async () => {
+            const sharedSyncLog = await createMemorySharedSyncLog()
+
+            const createDevice = async (options?: { debugSql?: boolean }) => {
                 const storage = await createStorage({
                     typeORMConnectionOpts: {
                         type: 'sqlite',
                         database: ':memory:',
                         name: `connection-${connIterator++}`,
+                        logging: !!(options && options.debugSql),
                     },
                 })
 
+                const auth = new MemoryAuthService()
+                const localStorage = new LocalStorageService({
+                    storageAPI: new MockAsyncStorage(),
+                })
                 const services = await createServices({
-                    storageManager: storage.manager,
+                    auth,
+                    storage,
                     signalTransportFactory,
+                    sharedSyncLog,
+                    localStorage,
+                })
+                await setStorageMiddleware({
+                    services,
+                    storage,
                 })
                 services.sync.initialSync.wrtc = wrtc
 
-                const device = { storage, services }
+                const device = { storage, services, auth }
                 createdDevices.push(device)
                 return device
             }

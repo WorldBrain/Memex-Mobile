@@ -5,6 +5,11 @@ import { COLLECTION_NAMES as LISTS_COLLECTION_NAMES } from '@worldbrain/memex-st
 import { COLLECTION_NAMES as ANNOTATIONS_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/annotations/constants'
 import ContinousSync from './continuous-sync'
 import InitialSync, { SignalTransportFactory } from './initial-sync'
+import { LocalStorageService } from '../local-storage'
+import { AuthService } from '../auth/types'
+import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
+import { SyncLoggingMiddleware } from '@worldbrain/storex-sync/lib/logging-middleware'
+import { MemexClientSyncLogStorage } from 'src/features/sync/storage'
 
 export default class SyncService {
     readonly syncedCollections: string[] = [
@@ -19,21 +24,54 @@ export default class SyncService {
         ANNOTATIONS_COLLECTION_NAMES.bookmark,
     ]
 
-    public initialSync: InitialSync
-    public continousSync: ContinousSync
+    initialSync: InitialSync
+    continousSync: ContinousSync
+    syncLoggingMiddleware?: SyncLoggingMiddleware
 
-    constructor(options: {
-        // auth: AuthBackground
-        storageManager: StorageManager
-        signalTransportFactory: SignalTransportFactory
-        // sharedSyncLog: SharedSyncLog
-        // browserAPIs: Pick<Browser, 'storage'>
-    }) {
+    constructor(
+        private options: {
+            auth: AuthService
+            storageManager: StorageManager
+            signalTransportFactory: SignalTransportFactory
+            localStorage: LocalStorageService
+            clientSyncLog: MemexClientSyncLogStorage
+            sharedSyncLog: SharedSyncLog
+        },
+    ) {
         this.initialSync = new InitialSync({
             storageManager: options.storageManager,
             signalTransportFactory: options.signalTransportFactory,
             syncedCollections: this.syncedCollections,
         })
-        this.continousSync = new ContinousSync()
+        this.continousSync = new ContinousSync({
+            auth: options.auth,
+            storageManager: options.storageManager,
+            clientSyncLog: this.options.clientSyncLog,
+            sharedSyncLog: options.sharedSyncLog,
+            settingStore: {
+                storeSetting: (key, value) =>
+                    options.localStorage.set(key, value),
+                retrieveSetting: key => options.localStorage.get(key),
+            },
+            toggleSyncLogging: (enabed: boolean) => {
+                if (this.syncLoggingMiddleware) {
+                    this.syncLoggingMiddleware.enabled = enabed
+                } else {
+                    throw new Error(
+                        `Tried to toggle sync logging before logging middleware was created`,
+                    )
+                }
+            },
+        })
+    }
+
+    async createSyncLoggingMiddleware() {
+        this.syncLoggingMiddleware = new SyncLoggingMiddleware({
+            storageManager: this.options.storageManager,
+            clientSyncLog: this.options.clientSyncLog,
+            includeCollections: this.syncedCollections,
+        })
+        this.syncLoggingMiddleware.enabled = false
+        return this.syncLoggingMiddleware
     }
 }

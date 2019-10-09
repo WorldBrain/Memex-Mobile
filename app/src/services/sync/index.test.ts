@@ -1,6 +1,9 @@
 import mapValues from 'lodash/mapValues'
 import { Page } from 'src/features/overview/types'
-import { makeMultiDeviceTestFactory } from 'src/index.tests'
+import {
+    makeMultiDeviceTestFactory,
+    MultiDeviceTestDevice,
+} from 'src/index.tests'
 import { Storage } from 'src/storage/types'
 
 const DATA: {
@@ -26,7 +29,7 @@ const DATA: {
 describe('SyncService', () => {
     const it = makeMultiDeviceTestFactory()
 
-    async function insertTestData(device: { storage: Storage }) {
+    async function insertTestData(device: MultiDeviceTestDevice) {
         await device.storage.modules.overview.createPage(DATA.pages[0])
         for (const tag of DATA.tags) {
             await device.storage.modules.metaPicker.createTag({
@@ -52,33 +55,18 @@ describe('SyncService', () => {
         })
     }
 
-    it('should be able to do an initial sync', async ({ createDevice }) => {
-        const devices = [await createDevice(), await createDevice()]
-
-        await insertTestData(devices[0])
-
-        const {
-            initialMessage,
-        } = await devices[0].services.sync.initialSync.requestInitialSync()
-        await devices[1].services.sync.initialSync.answerInitialSync({
-            initialMessage,
-        })
-
-        await Promise.all(
-            devices.map(device =>
-                device.services.sync.initialSync.waitForInitialSync(),
-            ),
-        )
-
+    async function checkTestData(device: MultiDeviceTestDevice) {
         const storedData: { [collection: string]: any[] } = {}
         for (const collectionName of Object.keys(
-            devices[1].storage.manager.registry.collections,
+            device.storage.manager.registry.collections,
         )) {
-            storedData[
-                collectionName
-            ] = await devices[1].storage.manager
-                .collection(collectionName)
-                .findObjects({})
+            if (collectionName !== 'clientSyncLogEntry') {
+                storedData[
+                    collectionName
+                ] = await device.storage.manager
+                    .collection(collectionName)
+                    .findObjects({})
+            }
         }
         expect(storedData).toEqual({
             pages: [
@@ -139,5 +127,45 @@ describe('SyncService', () => {
             annotBookmarks: [],
             annotListEntries: [],
         })
+    }
+
+    it('should be able to do an initial sync', async ({ createDevice }) => {
+        const devices = [await createDevice(), await createDevice()]
+
+        await insertTestData(devices[0])
+
+        const {
+            initialMessage,
+        } = await devices[0].services.sync.initialSync.requestInitialSync()
+        await devices[1].services.sync.initialSync.answerInitialSync({
+            initialMessage,
+        })
+
+        await Promise.all(
+            devices.map(device =>
+                device.services.sync.initialSync.waitForInitialSync(),
+            ),
+        )
+
+        await checkTestData(devices[1])
+    })
+
+    it('should be able to do an incremental sync', async ({ createDevice }) => {
+        const devices = [await createDevice(), await createDevice()]
+
+        devices[0].auth.setUser({ id: 666 })
+        devices[1].auth.setUser({ id: 666 })
+
+        await devices[0].services.sync.continousSync.initDevice()
+        await devices[1].services.sync.continousSync.initDevice()
+
+        await devices[0].services.sync.continousSync.enableContinuousSync()
+        await devices[1].services.sync.continousSync.enableContinuousSync()
+
+        await insertTestData(devices[0])
+        await devices[0].services.sync.continousSync.forceIncrementalSync()
+
+        await devices[1].services.sync.continousSync.forceIncrementalSync()
+        await checkTestData(devices[1])
     })
 })
