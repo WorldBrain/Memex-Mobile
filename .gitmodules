@@ -19,3 +19,15 @@
 [submodule "app/external/@worldbrain/memex-url-utils"]
 	path = app/external/@worldbrain/memex-url-utils
 	url = https://github.com/WorldBrain/memex-url-utils.git
+[submodule "app/external/@worldbrain/storex-backend-firestore"]
+	path = app/external/@worldbrain/storex-backend-firestore
+	url = https://github.com/WorldBrain/storex-backend-firestore.git
+[submodule "app/external/@worldbrain/storex-sync"]
+	path = app/external/@worldbrain/storex-sync
+	url = https://github.com/WorldBrain/storex-sync.git
+[submodule "app/external/@worldbrain/storex-backend-dexie"]
+	path = app/external/@worldbrain/storex-backend-dexie
+	url = https://github.com/WorldBrain/storex-backend-dexie.git
+[submodule "app/external/simple-signalling"]
+	path = app/external/simple-signalling
+	url = https://github.com/WorldBrain/simple-signalling.git

@@ -16,11 +16,27 @@
         "paths": {
             "@worldbrain/storex": ["external/@worldbrain/storex/ts"],
             "@worldbrain/storex/lib/*": ["external/@worldbrain/storex/ts/*"],
+            "@worldbrain/storex-backend-dexie": [
+                "external/@worldbrain/storex-backend-dexie/ts"
+            ],
+            "@worldbrain/storex-backend-dexie/lib/*": [
+                "external/@worldbrain/storex-backend-dexie/ts/*"
+            ],
             "@worldbrain/storex-backend-typeorm": [
                 "external/@worldbrain/storex-backend-typeorm/ts"
             ],
             "@worldbrain/storex-backend-typeorm/lib/*": [
                 "external/@worldbrain/storex-backend-typeorm/ts/*"
+            ],
+            "@worldbrain/storex-backend-firestore": [
+                "external/@worldbrain/storex-backend-firestore/ts"
+            ],
+            "@worldbrain/storex-backend-firestore/lib/*": [
+                "external/@worldbrain/storex-backend-firestore/ts/*"
+            ],
+            "@worldbrain/storex-sync": ["external/@worldbrain/storex-sync/ts"],
+            "@worldbrain/storex-sync/lib/*": [
+                "external/@worldbrain/storex-sync/ts/*"
             ],
             "@worldbrain/storex-schema-migrations": [
                 "external/@worldbrain/storex-schema-migrations/ts"
@@ -44,7 +60,9 @@
                 "external/@worldbrain/memex-url-utils/ts"
             ],
             "user-logic": ["external/user-logic/ts"],
-            "user-logic/lib/*": ["external/user-logic/ts/*"]
+            "user-logic/lib/*": ["external/user-logic/ts/*"],
+            "simple-signalling": ["external/simple-signalling/ts"],
+            "simple-signalling/lib/*": ["external/simple-signalling/ts/*"]
         }
     },
     "exclude": [
