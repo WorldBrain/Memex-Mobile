@@ -7,6 +7,7 @@ import { createServices } from './services'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { WorldBrainAuthService } from './services/auth/wb-auth'
+import { createSelfTests } from './self-tests'
 
 export async function main() {
     const ui = new UI()
@@ -33,5 +34,6 @@ export async function main() {
     Object.assign(global, {
         services,
         storage,
+        selfTests: await createSelfTests({ storage, services }),
     })
 }
