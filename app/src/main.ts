@@ -31,7 +31,7 @@ export async function main() {
         storage,
     })
     ui.initialize({ dependencies: { storage, services } })
-    Object.assign(global, {
+    Object.assign(globalThis, {
         services,
         storage,
         selfTests: await createSelfTests({ storage, services }),
