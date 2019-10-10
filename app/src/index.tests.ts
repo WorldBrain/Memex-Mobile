@@ -19,11 +19,7 @@ export type MultiDeviceTestFunction = (
 export interface MultiDeviceTestContext {
     createDevice(options?: {
         debugSql?: boolean
-    }): Promise<{
-        storage: Storage
-        services: Services
-        auth: MemoryAuthService
-    }>
+    }): Promise<MultiDeviceTestDevice>
 }
 export interface MultiDeviceTestDevice {
     storage: Storage
@@ -51,7 +47,7 @@ export function makeStorageTestFactory() {
             return
         }
 
-        it(description, async function() {
+        it(description, async function(this: any) {
             const storage = await createStorage({
                 typeORMConnectionOpts: {
                     type: 'sqlite',
@@ -61,7 +57,7 @@ export function makeStorageTestFactory() {
             })
 
             try {
-                await test.call(this as any, { storage })
+                await test.call(this, { storage })
             } finally {
             }
         })
@@ -80,7 +76,7 @@ export function makeMultiDeviceTestFactory() {
             return
         }
 
-        it(description, async function() {
+        it(description, async function(this: any) {
             const signalTransportFactory = lazyMemorySignalTransportFactory()
             const createdDevices: Array<{
                 storage: Storage
