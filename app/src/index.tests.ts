@@ -36,12 +36,30 @@ export interface MultiDeviceTestDevice {
 let connIterator = 0
 
 export function makeStorageTestFactory() {
+    interface TestOptions {
+        debugSql?: boolean
+    }
     type TestFunction = (context: TestContext) => Promise<void>
     interface TestContext {
         storage: Storage
     }
 
-    function factory(description: string, test?: TestFunction): void {
+    function factory(description: string, test?: TestFunction): void
+    function factory(
+        description: string,
+        options: TestOptions,
+        test: TestFunction,
+    ): void
+    function factory(
+        description: string,
+        testOrOptions?: TestOptions | TestFunction,
+        maybeTest?: TestFunction,
+    ): void {
+        const test =
+            typeof testOrOptions === 'function' ? testOrOptions : maybeTest
+        const options =
+            typeof testOrOptions !== 'function' ? testOrOptions || {} : {}
+
         if (!test) {
             it.todo(description)
             return
@@ -53,6 +71,7 @@ export function makeStorageTestFactory() {
                     type: 'sqlite',
                     database: ':memory:',
                     name: `connection-${connIterator++}`,
+                    logging: options.debugSql,
                 },
             })
 
