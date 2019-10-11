@@ -20,10 +20,7 @@
   "dependencies": {
     "@josephg/resolvable": "^1.0.0",
     "@react-native-community/async-storage": "^1.6.1",
-    "@react-native-firebase/app": "^6.0.1",
     "@react-native-firebase/auth": "^6.0.1",
-    "@react-native-firebase/database": "^6.0.1",
-    "@react-native-firebase/firestore": "^6.0.1",
     "@types/react-native-modalbox": "^1.4.8",
     "buffer": "^5.2.1",
     "firebase": "^7.1.0",

@@ -108,6 +108,7 @@ android {
         versionCode 1
         versionName "1.0"
         missingDimensionStrategy 'react-native-camera', 'general'
+        multiDexEnabled true
     }
     splits {
         abi {
@@ -153,6 +154,7 @@ dependencies {
     // Firebase dependencies
     implementation "com.google.android.gms:play-services-base:16.1.0"
     implementation "com.google.firebase:firebase-core:16.0.9"
+    implementation "com.google.firebase:firebase-firestore:19.0.0"
 }
 
 // Run this once to be able to run the application with BUCK

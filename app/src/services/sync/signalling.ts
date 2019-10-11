@@ -1,4 +1,4 @@
-import { firebase } from '@react-native-firebase/database'
+import firebase from 'react-native-firebase'
 import { SignalTransport } from 'simple-signalling/lib/types'
 import { FirebaseSignalTransport } from 'simple-signalling/lib/firebase'
 

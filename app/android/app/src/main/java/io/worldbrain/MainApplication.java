@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import io.invertase.firebase.RNFirebasePackage;
-// import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
@@ -33,6 +33,7 @@ public class MainApplication extends Application implements ReactApplication {
         new SQLitePluginPackage(),   // register SQLite Plugin here
         new MainReactPackage(),
         new RNFirebasePackage(),
+        new RNFirebaseFirestorePackage(),
         // new ReactNativeFirebaseAppPackage(),
         new AsyncStoragePackage(),
         new RNCameraPackage(),
