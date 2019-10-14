@@ -15,8 +15,11 @@ export function createSelfTests(dependencies: {
             return services.sync.initialSync.requestInitialSync()
         },
         initialSyncReceive: async (options: { initialMessage: string }) => {
+            console.log('receive start')
             await clearDb(storage.manager)
+            console.log('receive cleared')
             await services.sync.initialSync.answerInitialSync(options)
+            console.log('receive answered')
             await services.sync.initialSync.waitForInitialSync()
             console['log'](
                 'After initial Sync, got these lists',
