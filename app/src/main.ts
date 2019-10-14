@@ -9,6 +9,10 @@ import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { WorldBrainAuthService } from './services/auth/wb-auth'
 import { createSelfTests } from './self-tests'
 
+if (!process.nextTick) {
+    process.nextTick = setImmediate
+}
+
 export async function main() {
     const ui = new UI()
     const storage = await createStorage({

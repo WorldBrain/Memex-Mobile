@@ -1,4 +1,5 @@
-import firebase from 'react-native-firebase'
+import firebase from '@react-native-firebase/app'
+import '@react-native-firebase/firestore'
 import StorageManager from '@worldbrain/storex'
 import { FirestoreStorageBackend } from '@worldbrain/storex-backend-firestore'
 

@@ -140,7 +140,11 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-firebase')
+    implementation project(':react-native-webrtc')
+    implementation project(':@react-native-firebase_firestore')
+    implementation project(':@react-native-firebase_database')
+    implementation project(':@react-native-firebase_auth')
+    implementation project(':@react-native-firebase_app')
     implementation project(':@react-native-community_async-storage')
     implementation project(':react-native-camera')
     implementation project(':react-native-gesture-handler')
@@ -150,12 +154,6 @@ dependencies {
     implementation project(':react-native-sqlite-storage')
     implementation project(':react-native-share-extension')
     implementation "com.facebook.react:react-native:+"
-
-    // Firebase dependencies
-    implementation "com.google.android.gms:play-services-base:16.1.0"
-    implementation "com.google.firebase:firebase-core:16.0.9"
-    implementation "com.google.firebase:firebase-database:19.1.0"
-    implementation "com.google.firebase:firebase-firestore:19.0.0"
 }
 
 // Run this once to be able to run the application with BUCK

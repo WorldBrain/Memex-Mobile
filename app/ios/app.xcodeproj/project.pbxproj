@@ -64,6 +64,11 @@
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
 		F0DC2BD7757C4B8F8ECB097F /* libRNCAsyncStorage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEEB6B6DB54C443F82C03E45 /* libRNCAsyncStorage.a */; };
 		94E8DC2118FA4AC8B1BEE25D /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0203D2B19F9140C9A3B2D199 /* libRNFirebase.a */; };
+		8F52EEBB447944F397FF1B46 /* libRNFBApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 063FC2263B134A6186DB4B9F /* libRNFBApp.a */; };
+		D2C940420AD54B92A8CE9F8C /* libRNFBAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 122390EEC6D0432AA5219F21 /* libRNFBAuth.a */; };
+		C7A593539FDB42A3AC5BEEBE /* libRNFBDatabase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 354FEE7B6A0042A19508A4F1 /* libRNFBDatabase.a */; };
+		696939FF75AE48F5B0E3CA54 /* libRNFBFirestore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F04C274F118424E8BBD19D1 /* libRNFBFirestore.a */; };
+		E632199E210B41AB8C8B4B39 /* libRCTWebRTC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 607FF05AB4E2488EBF2651BD /* libRCTWebRTC.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -461,6 +466,16 @@
 		FEEB6B6DB54C443F82C03E45 /* libRNCAsyncStorage.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNCAsyncStorage.a; sourceTree = "<group>"; };
 		952CD8B3C9024DB8830BA6E1 /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; name = "RNFirebase.xcodeproj"; path = "../node_modules/react-native-firebase/ios/RNFirebase.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		0203D2B19F9140C9A3B2D199 /* libRNFirebase.a */ = {isa = PBXFileReference; name = "libRNFirebase.a"; path = "libRNFirebase.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		70FD6D55C9BC4B97A38AAE0B /* RNFBApp.xcodeproj */ = {isa = PBXFileReference; name = "RNFBApp.xcodeproj"; path = "../node_modules/@react-native-firebase/app/ios/RNFBApp.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		063FC2263B134A6186DB4B9F /* libRNFBApp.a */ = {isa = PBXFileReference; name = "libRNFBApp.a"; path = "libRNFBApp.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		D326E41F45E4482199611824 /* RNFBAuth.xcodeproj */ = {isa = PBXFileReference; name = "RNFBAuth.xcodeproj"; path = "../node_modules/@react-native-firebase/auth/ios/RNFBAuth.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		122390EEC6D0432AA5219F21 /* libRNFBAuth.a */ = {isa = PBXFileReference; name = "libRNFBAuth.a"; path = "libRNFBAuth.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		FB302AD69A774AD88B4E36A2 /* RNFBDatabase.xcodeproj */ = {isa = PBXFileReference; name = "RNFBDatabase.xcodeproj"; path = "../node_modules/@react-native-firebase/database/ios/RNFBDatabase.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		354FEE7B6A0042A19508A4F1 /* libRNFBDatabase.a */ = {isa = PBXFileReference; name = "libRNFBDatabase.a"; path = "libRNFBDatabase.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		BF8396A858F04DD8B93B19F3 /* RNFBFirestore.xcodeproj */ = {isa = PBXFileReference; name = "RNFBFirestore.xcodeproj"; path = "../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		7F04C274F118424E8BBD19D1 /* libRNFBFirestore.a */ = {isa = PBXFileReference; name = "libRNFBFirestore.a"; path = "libRNFBFirestore.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		9686DADF7BD444CE972528B9 /* RCTWebRTC.xcodeproj */ = {isa = PBXFileReference; name = "RCTWebRTC.xcodeproj"; path = "../node_modules/react-native-webrtc/ios/RCTWebRTC.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		607FF05AB4E2488EBF2651BD /* libRCTWebRTC.a */ = {isa = PBXFileReference; name = "libRCTWebRTC.a"; path = "libRCTWebRTC.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -496,6 +511,11 @@
 				3BDD35FF2BEF4E1BBD7FC88B /* libReactNativePermissions.a in Frameworks */,
 				F0DC2BD7757C4B8F8ECB097F /* libRNCAsyncStorage.a in Frameworks */,
 				94E8DC2118FA4AC8B1BEE25D /* libRNFirebase.a in Frameworks */,
+				8F52EEBB447944F397FF1B46 /* libRNFBApp.a in Frameworks */,
+				D2C940420AD54B92A8CE9F8C /* libRNFBAuth.a in Frameworks */,
+				C7A593539FDB42A3AC5BEEBE /* libRNFBDatabase.a in Frameworks */,
+				696939FF75AE48F5B0E3CA54 /* libRNFBFirestore.a in Frameworks */,
+				E632199E210B41AB8C8B4B39 /* libRCTWebRTC.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -788,6 +808,11 @@
 				24A367A9637646C7BCD45381 /* ReactNativePermissions.xcodeproj */,
 				3E5BFC6663C94976B2AD3003 /* RNCAsyncStorage.xcodeproj */,
 				952CD8B3C9024DB8830BA6E1 /* RNFirebase.xcodeproj */,
+				70FD6D55C9BC4B97A38AAE0B /* RNFBApp.xcodeproj */,
+				D326E41F45E4482199611824 /* RNFBAuth.xcodeproj */,
+				FB302AD69A774AD88B4E36A2 /* RNFBDatabase.xcodeproj */,
+				BF8396A858F04DD8B93B19F3 /* RNFBFirestore.xcodeproj */,
+				9686DADF7BD444CE972528B9 /* RCTWebRTC.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1577,12 +1602,22 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/@react-native-community/async-storage/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/app/ios/RNFBApp",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/auth/ios/RNFBAuth",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/database/ios/RNFBDatabase",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/ios/RCTWebRTC/**",
 				);
 				INFOPLIST_FILE = appTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1614,12 +1649,22 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/@react-native-community/async-storage/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/app/ios/RNFBApp",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/auth/ios/RNFBAuth",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/database/ios/RNFBDatabase",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/ios/RCTWebRTC/**",
 				);
 				INFOPLIST_FILE = appTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1656,6 +1701,11 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/@react-native-community/async-storage/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/app/ios/RNFBApp",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/auth/ios/RNFBAuth",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/database/ios/RNFBDatabase",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/ios/RCTWebRTC/**",
 				);
 				INFOPLIST_FILE = app/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1688,6 +1738,11 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/@react-native-community/async-storage/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/app/ios/RNFBApp",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/auth/ios/RNFBAuth",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/database/ios/RNFBDatabase",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/ios/RCTWebRTC/**",
 				);
 				INFOPLIST_FILE = app/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1723,11 +1778,21 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/@react-native-community/async-storage/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/app/ios/RNFBApp",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/auth/ios/RNFBAuth",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/database/ios/RNFBDatabase",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/ios/RCTWebRTC/**",
 				);
 				INFOPLIST_FILE = "app-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1768,11 +1833,21 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/@react-native-community/async-storage/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/app/ios/RNFBApp",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/auth/ios/RNFBAuth",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/database/ios/RNFBDatabase",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/ios/RCTWebRTC/**",
 				);
 				INFOPLIST_FILE = "app-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1812,11 +1887,21 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/@react-native-community/async-storage/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/app/ios/RNFBApp",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/auth/ios/RNFBAuth",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/database/ios/RNFBDatabase",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/ios/RCTWebRTC/**",
 				);
 				INFOPLIST_FILE = "app-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1856,11 +1941,21 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/@react-native-community/async-storage/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/app/ios/RNFBApp",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/auth/ios/RNFBAuth",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/database/ios/RNFBDatabase",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/ios/RCTWebRTC/**",
 				);
 				INFOPLIST_FILE = "app-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1903,12 +1998,22 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/@react-native-community/async-storage/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/app/ios/RNFBApp",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/auth/ios/RNFBAuth",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/database/ios/RNFBDatabase",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/ios/RCTWebRTC/**",
 				);
 				INFOPLIST_FILE = MemexShare/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1952,12 +2057,22 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/@react-native-community/async-storage/ios",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/app/ios/RNFBApp",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/auth/ios/RNFBAuth",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/database/ios/RNFBDatabase",
+					"$(SRCROOT)/../node_modules/@react-native-firebase/firestore/ios/RNFBFirestore",
+					"$(SRCROOT)/../node_modules/react-native-webrtc/ios/RCTWebRTC/**",
 				);
 				INFOPLIST_FILE = MemexShare/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",

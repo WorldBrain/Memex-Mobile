@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "840601505816",
-    "firebase_url": "https://worldbrain-staging.firebaseio.com",
-    "project_id": "worldbrain-staging",
-    "storage_bucket": "worldbrain-staging.appspot.com"
+    "project_number": "455172385517",
+    "firebase_url": "https://worldbrain-1057.firebaseio.com",
+    "project_id": "worldbrain-1057",
+    "storage_bucket": "worldbrain-1057.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:840601505816:android:ceaa0f06503c8ea49fb36d",
+        "mobilesdk_app_id": "1:455172385517:android:dac1cde35fd57bb90c3ae4",
         "android_client_info": {
           "package_name": "io.worldbrain"
         }
       },
       "oauth_client": [
         {
-          "client_id": "840601505816-hakc2t8dv5to18koj1j99jknt9vke0kf.apps.googleusercontent.com",
+          "client_id": "455172385517-dctnft2hrh4iqpbjqn7rbmn94ge2p3n4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCxIsefSx9idSSP4Pm6odBKzf4fSvxI9qY"
+          "current_key": "AIzaSyCYerBpoWebHf8NDIC5Ilk7y-XTy5P7mUQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "840601505816-hakc2t8dv5to18koj1j99jknt9vke0kf.apps.googleusercontent.com",
+              "client_id": "455172385517-c3sedam8odb713i3v9kig0ioe553skpq.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
