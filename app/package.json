@@ -44,7 +44,7 @@
         "react-native-sqlite-storage": "WorldBrain/react-native-sqlite-storage#shared-group-storage",
         "react-native-webrtc": "^1.75.0",
         "react-navigation": "^3.11.0",
-        "simple-peer": "^9.6.0",
+        "simple-peer": "github:WorldBrain/simple-peer",
         "sqlite3": "^4.0.8",
         "typed-emitter": "^0.1.0",
         "typeorm": "^0.2.17",
