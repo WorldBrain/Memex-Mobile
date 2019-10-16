@@ -25,7 +25,7 @@ export default class SyncService {
     ]
 
     initialSync: InitialSync
-    continousSync: ContinousSync
+    continuousSync: ContinousSync
     syncLoggingMiddleware?: SyncLoggingMiddleware
 
     constructor(
@@ -43,7 +43,7 @@ export default class SyncService {
             signalTransportFactory: options.signalTransportFactory,
             syncedCollections: this.syncedCollections,
         })
-        this.continousSync = new ContinousSync({
+        this.continuousSync = new ContinousSync({
             auth: options.auth,
             storageManager: options.storageManager,
             clientSyncLog: this.options.clientSyncLog,

@@ -7,6 +7,7 @@ import { createServices } from './services'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { WorldBrainAuthService } from './services/auth/wb-auth'
+import { MemoryAuthService } from './services/auth/memory'
 import { createSelfTests } from './self-tests'
 
 if (!process.nextTick) {
@@ -25,7 +26,7 @@ export async function main() {
     const serverStorage = await createServerStorage()
 
     const services = await createServices({
-        auth: new WorldBrainAuthService(),
+        auth: new MemoryAuthService(),
         storage,
         signalTransportFactory: createFirebaseSignalTransport,
         sharedSyncLog: serverStorage.modules.sharedSyncLog,

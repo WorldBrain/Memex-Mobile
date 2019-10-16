@@ -22,7 +22,7 @@ export default class ContinuousSync {
     public enabled = false
 
     constructor(
-        private options: {
+        public options: {
             auth: AuthService
             storageManager: StorageManager
             clientSyncLog: ClientSyncLogStorage

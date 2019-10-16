@@ -34,16 +34,16 @@ describe('SyncService', () => {
         devices[0].auth.setUser({ id: 666 })
         devices[1].auth.setUser({ id: 666 })
 
-        await devices[0].services.sync.continousSync.initDevice()
-        await devices[1].services.sync.continousSync.initDevice()
+        await devices[0].services.sync.continuousSync.initDevice()
+        await devices[1].services.sync.continuousSync.initDevice()
 
-        await devices[0].services.sync.continousSync.enableContinuousSync()
-        await devices[1].services.sync.continousSync.enableContinuousSync()
+        await devices[0].services.sync.continuousSync.enableContinuousSync()
+        await devices[1].services.sync.continuousSync.enableContinuousSync()
 
         await insertIntegrationTestData(devices[0])
-        await devices[0].services.sync.continousSync.forceIncrementalSync()
+        await devices[0].services.sync.continuousSync.forceIncrementalSync()
 
-        await devices[1].services.sync.continousSync.forceIncrementalSync()
+        await devices[1].services.sync.continuousSync.forceIncrementalSync()
         await checkIntegrationTestData(devices[1])
     })
 })
