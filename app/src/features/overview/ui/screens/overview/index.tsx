@@ -1,14 +1,15 @@
 import React from 'react'
 
-import { NavigationScreen } from 'src/ui/types'
+import { NavigationScreen, NavigationProps } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import Filters from 'src/features/overview/ui/components/menu'
 import PagesView from '../pages-view'
 import NotesView from '../notes-view'
 import CollectionsView from '../collections-view'
 import SideMenuScreen from '../side-menu'
+import { ResultType } from 'src/features/overview/types'
 
-interface Props {}
+interface Props extends NavigationProps {}
 
 export default class OverviewMenu extends NavigationScreen<
     Props,
@@ -19,7 +20,7 @@ export default class OverviewMenu extends NavigationScreen<
         super(props, { logic: new Logic() })
     }
 
-    private setResultType = resultType =>
+    private setResultType = (resultType: ResultType) =>
         this.processEvent('setResultType', { resultType })
 
     private toggleCollectionsView = () =>

@@ -7,7 +7,11 @@ import {
     SectionListRenderItem,
 } from 'react-native'
 
-import { StatefulUIElement } from 'src/ui/types'
+import {
+    StatefulUIElement,
+    NavigationScreen,
+    NavigationProps,
+} from 'src/ui/types'
 import ResultPage from '../../components/result-page-with-notes'
 import Logic, { State, Event } from './logic'
 import styles from './styles'
@@ -16,9 +20,9 @@ import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 import { NotesSection } from './types'
 
-interface Props {}
+interface Props extends NavigationProps {}
 
-export default class NotesView extends StatefulUIElement<Props, State, Event> {
+export default class NotesView extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
         super(props, { logic: new Logic() })
     }

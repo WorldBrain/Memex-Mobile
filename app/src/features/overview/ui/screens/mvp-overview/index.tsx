@@ -4,11 +4,11 @@ import { View, Text, Linking } from 'react-native'
 import { version, storageKeys } from '../../../../../../app.json'
 import EmptyLayout from 'src/ui/layouts/empty'
 import Button from 'src/ui/components/memex-btn'
-import { NavigationScreen } from 'src/ui/types'
+import { NavigationScreen, NavigationProps } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import styles from './styles'
 
-interface Props {}
+interface Props extends NavigationProps {}
 
 export default class MVPOverviewMenu extends NavigationScreen<
     Props,

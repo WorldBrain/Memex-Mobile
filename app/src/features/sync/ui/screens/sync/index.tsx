@@ -1,14 +1,14 @@
 import React from 'react'
 
 import { storageKeys } from '../../../../../../app.json'
-import { NavigationScreen } from 'src/ui/types'
+import { NavigationScreen, NavigationProps } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import SetupStage from '../../components/sync-setup-stage'
 import LoadingStage from '../../components/sync-loading-stage'
 import SuccessStage from '../../components/sync-success-stage'
 import ScanQRStage from '../../components/sync-scan-qr-stage'
 
-interface Props {}
+interface Props extends NavigationProps {}
 
 export default class SyncScreen extends NavigationScreen<Props, State, Event> {
     static TEST_SYNC_KEY = 'this is a test!'

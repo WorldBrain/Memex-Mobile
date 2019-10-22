@@ -1,13 +1,13 @@
 import React from 'react'
 
 import { storageKeys } from '../../../../../../app.json'
-import { NavigationScreen } from 'src/ui/types'
+import { NavigationScreen, NavigationProps } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import GifLayout, { Props as GifLayoutProps } from '../../components/gif-layout'
 import Welcome from '../../components/welcome'
 import { OnboardingStage } from 'src/features/onboarding/types'
 
-interface Props {}
+interface Props extends NavigationProps {}
 
 export default class OnboardingScreen extends NavigationScreen<
     Props,

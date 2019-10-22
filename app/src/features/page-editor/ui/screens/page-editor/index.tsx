@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { NavigationScreen } from 'src/ui/types'
+import { NavigationScreen, NavigationProps } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import MainLayout from '../../components/main-layout'
 import Footer from '../../components/footer'
@@ -9,7 +9,7 @@ import ExistingNotes from '../../components/existing-notes'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 
-interface Props {}
+interface Props extends NavigationProps {}
 
 export default class PageEditorScreen extends NavigationScreen<
     Props,
