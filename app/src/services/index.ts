@@ -1,8 +1,6 @@
-import AsyncStorage from '@react-native-community/async-storage'
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
 
 import { Services } from './types'
-import { WorldBrainAuthService } from './auth/wb-auth'
 import { ShareExtService } from './share-ext'
 import { LocalStorageService } from './local-storage'
 import SyncService from './sync'
@@ -15,15 +13,13 @@ export interface CreateServicesOptions {
     signalTransportFactory: SignalTransportFactory
     sharedSyncLog: SharedSyncLog
     auth: AuthService
-    localStorage?: LocalStorageService
+    localStorage: LocalStorageService
 }
 
 export async function createServices(
     options: CreateServicesOptions,
 ): Promise<Services> {
-    const localStorage =
-        options.localStorage ||
-        new LocalStorageService({ storageAPI: AsyncStorage })
+    const localStorage = options.localStorage
     const services = {
         auth: options.auth,
         shareExt: new ShareExtService({}),
