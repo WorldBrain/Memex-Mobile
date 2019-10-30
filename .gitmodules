@@ -31,3 +31,6 @@
 [submodule "app/external/simple-signalling"]
 	path = app/external/simple-signalling
 	url = https://github.com/WorldBrain/simple-signalling.git
+[submodule "app/external/@worldbrain/memex-common"]
+	path = app/external/@worldbrain/memex-common
+	url = https://github.com/WorldBrain/memex-common.git

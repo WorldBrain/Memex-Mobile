@@ -1,31 +1,27 @@
 import StorageManager from '@worldbrain/storex'
-import { COLLECTION_NAMES as PAGES_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/pages/constants'
-import { COLLECTION_NAMES as TAGS_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/tags/constants'
-import { COLLECTION_NAMES as LISTS_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
-import { COLLECTION_NAMES as ANNOTATIONS_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/annotations/constants'
-import ContinousSync from './continuous-sync'
-import InitialSync, { SignalTransportFactory } from './initial-sync'
 import { LocalStorageService } from '../local-storage'
 import { AuthService } from '../auth/types'
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
 import { SyncLoggingMiddleware } from '@worldbrain/storex-sync/lib/logging-middleware'
 import { MemexClientSyncLogStorage } from 'src/features/sync/storage'
+import { SyncSettingsStore } from '@worldbrain/storex-sync/lib/integration/settings'
+import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/lib/sync/constants'
+import {
+    MemexInitialSync,
+    MemexContinuousSync,
+    SyncSecretStore,
+} from '@worldbrain/memex-common/lib/sync'
+import { MemexSyncSetting } from '@worldbrain/memex-common/lib/sync/types'
+import { SignalTransportFactory } from './initial-sync'
+import '../../polyfills'
 
 export default class SyncService {
-    readonly syncedCollections: string[] = [
-        PAGES_COLLECTION_NAMES.bookmark,
-        PAGES_COLLECTION_NAMES.page,
-        PAGES_COLLECTION_NAMES.visit,
-        TAGS_COLLECTION_NAMES.tag,
-        LISTS_COLLECTION_NAMES.list,
-        LISTS_COLLECTION_NAMES.listEntry,
-        ANNOTATIONS_COLLECTION_NAMES.annotation,
-        ANNOTATIONS_COLLECTION_NAMES.listEntry,
-        ANNOTATIONS_COLLECTION_NAMES.bookmark,
-    ]
+    readonly syncedCollections: string[] = SYNCED_COLLECTIONS
 
-    initialSync: InitialSync
-    continuousSync: ContinousSync
+    initialSync: MemexInitialSync
+    continuousSync: MemexContinuousSync
+    settingStore: MemexSyncSettingStore
+    secretStore: SyncSecretStore
     syncLoggingMiddleware?: SyncLoggingMiddleware
 
     constructor(
@@ -38,21 +34,29 @@ export default class SyncService {
             sharedSyncLog: SharedSyncLog
         },
     ) {
-        this.initialSync = new InitialSync({
+        this.settingStore = new MemexSyncSettingStore(options)
+        this.secretStore = new SyncSecretStore({
+            settingStore: this.settingStore,
+        })
+
+        this.initialSync = new MemexInitialSync({
             storageManager: options.storageManager,
             signalTransportFactory: options.signalTransportFactory,
             syncedCollections: this.syncedCollections,
+            secrectStore: this.secretStore,
         })
-        this.continuousSync = new ContinousSync({
-            auth: options.auth,
+        this.continuousSync = new MemexContinuousSync({
+            auth: {
+                getUserId: async () => {
+                    const user = await options.auth.getCurrentUser()
+                    return user && user.id
+                },
+            },
             storageManager: options.storageManager,
             clientSyncLog: this.options.clientSyncLog,
-            sharedSyncLog: options.sharedSyncLog,
-            settingStore: {
-                storeSetting: (key, value) =>
-                    options.localStorage.set(key, value),
-                retrieveSetting: key => options.localStorage.get(key),
-            },
+            getSharedSyncLog: async () => this.options.sharedSyncLog,
+            settingStore: this.settingStore,
+            secretStore: this.secretStore,
             toggleSyncLogging: (enabed: boolean) => {
                 if (this.syncLoggingMiddleware) {
                     this.syncLoggingMiddleware.enabled = enabed
@@ -73,5 +77,19 @@ export default class SyncService {
         })
         this.syncLoggingMiddleware.enabled = false
         return this.syncLoggingMiddleware
+    }
+}
+
+class MemexSyncSettingStore implements SyncSettingsStore {
+    constructor(private options: { localStorage: LocalStorageService }) {}
+
+    async retrieveSetting(key: MemexSyncSetting) {
+        return this.options.localStorage.get(key)
+    }
+    async storeSetting(
+        key: MemexSyncSetting,
+        value: boolean | number | string | null,
+    ) {
+        await this.options.localStorage.set(key, value)
     }
 }

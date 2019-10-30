@@ -18,7 +18,6 @@ describe('SyncService', () => {
         await devices[1].services.sync.initialSync.answerInitialSync({
             initialMessage,
         })
-
         await Promise.all(
             devices.map(device =>
                 device.services.sync.initialSync.waitForInitialSync(),
@@ -30,6 +29,18 @@ describe('SyncService', () => {
 
     it('should be able to do an incremental sync', async ({ createDevice }) => {
         const devices = [await createDevice(), await createDevice()]
+
+        const {
+            initialMessage,
+        } = await devices[0].services.sync.initialSync.requestInitialSync()
+        await devices[1].services.sync.initialSync.answerInitialSync({
+            initialMessage,
+        })
+        await Promise.all(
+            devices.map(device =>
+                device.services.sync.initialSync.waitForInitialSync(),
+            ),
+        )
 
         devices[0].auth.setUser({ id: 666 })
         devices[1].auth.setUser({ id: 666 })
