@@ -1,9 +1,8 @@
 import StorageManager from '@worldbrain/storex'
-import { LocalStorageService } from '../local-storage'
-import { AuthService } from '../auth/types'
+const WebRTC = require('react-native-webrtc')
+
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
 import { SyncLoggingMiddleware } from '@worldbrain/storex-sync/lib/logging-middleware'
-import { MemexClientSyncLogStorage } from 'src/features/sync/storage'
 import { SyncSettingsStore } from '@worldbrain/storex-sync/lib/integration/settings'
 import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/lib/sync/constants'
 import {
@@ -12,8 +11,11 @@ import {
     SyncSecretStore,
 } from '@worldbrain/memex-common/lib/sync'
 import { MemexSyncSetting } from '@worldbrain/memex-common/lib/sync/types'
-import { SignalTransportFactory } from './initial-sync'
+
 import '../../polyfills'
+import { AuthService } from '../auth/types'
+import { LocalStorageService } from '../local-storage'
+import { MemexClientSyncLogStorage } from 'src/features/sync/storage'
 
 export default class SyncService {
     readonly syncedCollections: string[] = SYNCED_COLLECTIONS
@@ -45,6 +47,7 @@ export default class SyncService {
             syncedCollections: this.syncedCollections,
             secrectStore: this.secretStore,
         })
+        this.initialSync.wrtc = WebRTC
         this.continuousSync = new MemexContinuousSync({
             auth: {
                 getUserId: async () => {
@@ -57,9 +60,15 @@ export default class SyncService {
             getSharedSyncLog: async () => this.options.sharedSyncLog,
             settingStore: this.settingStore,
             secretStore: this.secretStore,
-            toggleSyncLogging: (enabed: boolean) => {
+            toggleSyncLogging: (
+                enabled: boolean,
+                deviceId?: string | number,
+            ) => {
                 if (this.syncLoggingMiddleware) {
-                    this.syncLoggingMiddleware.enabled = enabed
+                    this.syncLoggingMiddleware.enabled = enabled
+                    if (enabled) {
+                        this.syncLoggingMiddleware.deviceId = deviceId!
+                    }
                 } else {
                     throw new Error(
                         `Tried to toggle sync logging before logging middleware was created`,

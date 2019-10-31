@@ -1,6 +1,6 @@
 import { Page } from 'src/features/overview/types'
 import { Storage } from 'src/storage/types'
-import { getStorageContents } from 'src/storage/utils'
+import { getStorageContents } from '@worldbrain/memex-common/lib/storage/utils'
 
 export const INTEGRATION_TEST_DATA: {
     pages: Omit<Page, 'domain' | 'hostname'>[]

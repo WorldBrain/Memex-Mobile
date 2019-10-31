@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage'
+import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
 import {
     createStorage,
     setStorageMiddleware,
@@ -9,9 +10,12 @@ import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { WorldBrainAuthService } from './services/auth/wb-auth'
 import { MemoryAuthService } from './services/auth/memory'
-import { createSelfTests } from './self-tests'
 import { LocalAuthService } from './services/auth/local'
 import { LocalStorageService } from './services/local-storage'
+import {
+    insertIntegrationTestData,
+    checkIntegrationTestData,
+} from './tests/shared-fixtures/integration'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -44,6 +48,17 @@ export async function main() {
     Object.assign(globalThis, {
         services,
         storage,
-        selfTests: await createSelfTests({ storage, services }),
+        selfTests: await createSelfTests({
+            storage,
+            services,
+            auth: {
+                getUser: async () => services.auth.getCurrentUser(),
+                setUser: async ({ id }) =>
+                    (services.auth as MemoryAuthService).setUser({ id }),
+            },
+            intergrationTestData: {
+                insert: () => insertIntegrationTestData({ storage }),
+            },
+        }),
     })
 }
