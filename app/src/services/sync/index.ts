@@ -9,6 +9,7 @@ import {
     MemexInitialSync,
     MemexContinuousSync,
     SyncSecretStore,
+    SignalTransportFactory,
 } from '@worldbrain/memex-common/lib/sync'
 import { MemexSyncSetting } from '@worldbrain/memex-common/lib/sync/types'
 
@@ -16,6 +17,7 @@ import '../../polyfills'
 import { AuthService } from '../auth/types'
 import { LocalStorageService } from '../local-storage'
 import { MemexClientSyncLogStorage } from 'src/features/sync/storage'
+import { PRODUCT_VERSION } from 'src/constants'
 
 export default class SyncService {
     readonly syncedCollections: string[] = SYNCED_COLLECTIONS
@@ -60,6 +62,8 @@ export default class SyncService {
             getSharedSyncLog: async () => this.options.sharedSyncLog,
             settingStore: this.settingStore,
             secretStore: this.secretStore,
+            productType: 'app',
+            productVersion: PRODUCT_VERSION,
             toggleSyncLogging: (
                 enabled: boolean,
                 deviceId?: string | number,
