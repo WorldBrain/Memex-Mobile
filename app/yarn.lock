@@ -6667,9 +6667,9 @@ react-native-share-extension@^2.0.0:
   resolved "https://registry.yarnpkg.com/react-native-share-extension/-/react-native-share-extension-2.0.0.tgz#c645715ce6c937e1dd527c4df5635df89ca88a44"
   integrity sha512-LWbyGd3Vu5m0TBvSado2NE4MJ5R3iRw4WpoT+6ptHNir19pM/inNQaFh+OiySLNNy5N058pFmWq3LFNA4DPZkg==
 
-react-native-sqlite-storage@WorldBrain/react-native-sqlite-storage#shared-group-storage:
-  version "3.3.11"
-  resolved "https://codeload.github.com/WorldBrain/react-native-sqlite-storage/tar.gz/7d6c2fc64f5f48910a33e28dff24b0f286581b2e"
+"react-native-sqlite-storage@git://github.com/WorldBrain/react-native-sqlite-storage#b1c5a50116d18c48eb71b067c36299ef0d50de6d":
+  version "4.1.0"
+  resolved "git://github.com/WorldBrain/react-native-sqlite-storage#b1c5a50116d18c48eb71b067c36299ef0d50de6d"
 
 react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
   version "1.4.1"

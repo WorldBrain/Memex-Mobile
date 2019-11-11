@@ -42,7 +42,7 @@
         "react-native-modalbox": "^1.7.1",
         "react-native-qrcode-scanner": "^1.2.1",
         "react-native-share-extension": "^2.0.0",
-        "react-native-sqlite-storage": "WorldBrain/react-native-sqlite-storage#shared-group-storage",
+        "react-native-sqlite-storage": "git://github.com/WorldBrain/react-native-sqlite-storage#b1c5a50116d18c48eb71b067c36299ef0d50de6d",
         "react-native-webrtc": "^1.75.0",
         "react-navigation": "^3.11.0",
         "simple-peer": "github:WorldBrain/simple-peer",
