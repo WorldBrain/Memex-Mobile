@@ -1,7 +1,5 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { ResultType } from '../../../types'
-
 export interface State {
     isSynced: boolean
 }

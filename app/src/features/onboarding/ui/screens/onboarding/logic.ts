@@ -1,6 +1,8 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
+import { storageKeys } from '../../../../../../app.json'
 import { OnboardingStage } from 'src/features/onboarding/types'
+import { UIServices, NavigationProps } from 'src/ui/types'
 
 export interface State {
     onboardingStage: OnboardingStage
@@ -8,24 +10,52 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    setOnboardingStage: { value: OnboardingStage }
-    setSyncStatus: { value: boolean }
+    goToNextStage: {}
 }>
 
-export default class Logic extends UILogic<State, Event> {
+export default class OnboardingScreenLogic extends UILogic<State, Event> {
+    constructor(
+        private options: NavigationProps & {
+            services: UIServices<'localStorage'>
+        },
+    ) {
+        super()
+    }
+
     getInitialState(): State {
         return { onboardingStage: 0, isSynced: false }
     }
 
-    setOnboardingStage(
-        incoming: IncomingUIEvent<State, Event, 'setOnboardingStage'>,
-    ): UIMutation<State> {
-        return { onboardingStage: { $set: incoming.event.value } }
+    async init() {
+        const syncKey = await this.options.services.localStorage.get<string>(
+            storageKeys.syncKey,
+        )
+
+        if (syncKey != null) {
+            this.emitMutation({ isSynced: { $set: true } })
+        }
     }
 
-    setSyncStatus(
-        incoming: IncomingUIEvent<State, Event, 'setSyncStatus'>,
+    goToNextStage(
+        incoming: IncomingUIEvent<State, Event, 'goToNextStage'>,
     ): UIMutation<State> {
-        return { isSynced: { $set: incoming.event.value } }
+        const value = (incoming.previousState.onboardingStage +
+            1) as OnboardingStage
+
+        if (value > 3) {
+            this.finishOnboarding()
+            return {}
+        }
+
+        return { onboardingStage: { $set: value } }
+    }
+
+    private async finishOnboarding() {
+        await this.options.services.localStorage.set(
+            storageKeys.showOnboarding,
+            false,
+        )
+
+        return this.options.navigation.navigate('Sync')
     }
 }

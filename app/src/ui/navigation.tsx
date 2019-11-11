@@ -5,6 +5,8 @@ import {
     // createStackNavigator,
     createAppContainer,
     NavigationContainer,
+    NavigationScreenProp,
+    NavigationRoute,
 } from 'react-navigation'
 
 import { UIDependencies } from './types'
@@ -31,12 +33,20 @@ export type NavigationContainerCreator = (
 const createMainNavigator: NavigationContainerCreator = deps =>
     createSwitchNavigator(
         {
-            Onboarding: props => <Onboarding {...props} {...deps} />,
-            // PageEditor: props => <PageEditor {...props} {...deps} />,
-            // Overview: props => <Overview {...props} {...deps} />,
-            MVPOverview: props => <MVPOverview {...props} {...deps} />,
-            Sync: props => <Sync {...props} {...deps} />,
-            Pairing: props => <Pairing {...props} {...deps} />,
+            Onboarding: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <Onboarding {...props} {...deps} />,
+            // PageEditor: (props: { navigation: NavigationScreenProp<NavigationRoute> }) => <PageEditor {...props} {...deps} />,
+            // Overview: (props: { navigation: NavigationScreenProp<NavigationRoute> }) => <Overview {...props} {...deps} />,
+            MVPOverview: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <MVPOverview {...props} {...deps} />,
+            Sync: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <Sync {...props} {...deps} />,
+            Pairing: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <Pairing {...props} {...deps} />,
         },
         {
             initialRouteName: 'MVPOverview',
@@ -46,7 +56,9 @@ const createMainNavigator: NavigationContainerCreator = deps =>
 const createShareNavigator: NavigationContainerCreator = deps =>
     createSwitchNavigator(
         {
-            ShareModal: props => <ShareModal {...props} {...deps} />,
+            ShareModal: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <ShareModal {...props} {...deps} />,
         },
         {
             initialRouteName: 'ShareModal',

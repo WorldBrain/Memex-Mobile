@@ -1,13 +1,14 @@
 import React from 'react'
 
-import { storageKeys } from '../../../../../../app.json'
-import { NavigationScreen, NavigationProps } from 'src/ui/types'
-import Logic, { State, Event } from './logic'
+import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
+import OnboardingScreenLogic, { State, Event } from './logic'
 import GifLayout, { Props as GifLayoutProps } from '../../components/gif-layout'
 import Welcome from '../../components/welcome'
 import { OnboardingStage } from 'src/features/onboarding/types'
 
-interface Props extends NavigationProps {}
+interface Props extends NavigationProps {
+    services: UIServices<'localStorage'>
+}
 
 export default class OnboardingScreen extends NavigationScreen<
     Props,
@@ -15,40 +16,7 @@ export default class OnboardingScreen extends NavigationScreen<
     Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic() })
-    }
-
-    componentDidMount() {
-        this.checkSyncState()
-    }
-
-    private async checkSyncState() {
-        const syncKey = await this.props.services.localStorage.get<string>(
-            storageKeys.syncKey,
-        )
-
-        if (syncKey != null) {
-            this.processEvent('setSyncStatus', { value: true })
-        }
-    }
-
-    private async finishOnboarding() {
-        await this.props.services.localStorage.set(
-            storageKeys.showOnboarding,
-            false,
-        )
-
-        return this.props.navigation.navigate('Sync')
-    }
-
-    private goToNextStage = () => {
-        const value = (this.state.onboardingStage + 1) as OnboardingStage
-
-        if (value > 3) {
-            return this.finishOnboarding()
-        }
-
-        this.processEvent('setOnboardingStage', { value })
+        super(props, { logic: new OnboardingScreenLogic(props) })
     }
 
     private renderOnboardingStage(props: Omit<GifLayoutProps, 'onBtnPress'>) {
@@ -56,7 +24,7 @@ export default class OnboardingScreen extends NavigationScreen<
             <GifLayout
                 {...props}
                 screenIndex={this.state.onboardingStage - 1}
-                onBtnPress={this.goToNextStage}
+                onBtnPress={() => this.processEvent('goToNextStage', {})}
                 showScreenProgress
             />
         )
@@ -65,7 +33,13 @@ export default class OnboardingScreen extends NavigationScreen<
     render() {
         switch (this.state.onboardingStage) {
             case 0:
-                return <Welcome onGetStartedPress={this.goToNextStage} />
+                return (
+                    <Welcome
+                        onGetStartedPress={() =>
+                            this.processEvent('goToNextStage', {})
+                        }
+                    />
+                )
             case 1:
                 return this.renderOnboardingStage({
                     titleText: 'Save websites on the go',
