@@ -47,6 +47,8 @@
 	<string>We don't use this</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need to scan a QR code to sync with the Memex web extension</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We don't use this</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We don't use this</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

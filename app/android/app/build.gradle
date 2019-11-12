@@ -145,19 +145,9 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-webrtc')
-    implementation project(':@react-native-firebase_firestore')
-    implementation project(':@react-native-firebase_database')
-    implementation project(':@react-native-firebase_auth')
-    implementation project(':@react-native-firebase_app')
-    implementation project(':@react-native-community_async-storage')
-    implementation project(':react-native-camera')
-    implementation project(':react-native-gesture-handler')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation project(':react-native-sqlite-storage')
-    implementation project(':react-native-share-extension')
     implementation "com.facebook.react:react-native:+"
 
     if (enableHermes) {
