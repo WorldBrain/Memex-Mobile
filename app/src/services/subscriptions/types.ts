@@ -9,14 +9,14 @@ export interface Claims {
     features: FeatureMap
     lastSubscribed: number | null
 }
-export interface SubscriptionMap {
-    [key: string]: { expiry: number }
+export type SubscriptionMap = {
+    [key in UserPlan]?: { expiry: number }
 }
-export interface FeatureMap {
-    [key: string]: { expiry: number }
+export type FeatureMap = {
+    [key in UserFeatures]?: { expiry: number }
 }
 export type UserFeatures = 'backup' | 'sync'
-export type UserPlans =
+export type UserPlan =
     | 'free'
     | 'pro-1-device'
     | 'pro-2-devices'
@@ -28,5 +28,5 @@ export type UserPlans =
     | 'pro-4-devices-yrl'
 
 export interface SubscriptionCheckoutOptions {
-    planId: string
+    plan: UserPlan
 }
