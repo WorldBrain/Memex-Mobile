@@ -1,7 +1,11 @@
 import React from 'react'
 import { FlatList, ListRenderItem } from 'react-native'
 
-import { NavigationScreen } from 'src/ui/types'
+import {
+    NavigationScreen,
+    NavigationProps,
+    UIStorageModules,
+} from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import MetaPicker from '../../components/meta-picker'
 import MetaPickerEntry from '../../components/meta-picker-entry'
@@ -14,7 +18,8 @@ import {
     MetaTypeName,
 } from 'src/features/meta-picker/types'
 
-interface Props {
+interface Props extends NavigationProps {
+    storage: UIStorageModules<'metaPicker'>
     url: string
     type: MetaType
     initEntries: string[]
