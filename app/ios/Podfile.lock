@@ -305,14 +305,6 @@ PODS:
     - React-cxxreact (= 0.61.0)
     - React-jsi (= 0.61.0)
   - React-jsinspector (0.61.0)
-  - react-native-camera (3.1.0):
-    - React
-    - react-native-camera/RCT (= 3.1.0)
-    - react-native-camera/RN (= 3.1.0)
-  - react-native-camera/RCT (3.1.0):
-    - React
-  - react-native-camera/RN (3.1.0):
-    - React
   - react-native-sqlite-storage (4.1.0):
     - React
   - react-native-webrtc (1.75.1):
@@ -352,6 +344,8 @@ PODS:
     - React-cxxreact (= 0.61.0)
     - React-jsi (= 0.61.0)
     - ReactCommon/jscallinvoker (= 0.61.0)
+  - ReactNativePermissions (1.2.0):
+    - React
   - ReactNativeShareExtension (2.0.0):
     - React
   - RNCAsyncStorage (1.6.1):
@@ -382,6 +376,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
+  - Firebase/Core (~> 6.8.1)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -395,7 +390,6 @@ DEPENDENCIES:
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
-  - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-sqlite-storage (from `../node_modules/react-native-sqlite-storage`)
   - react-native-webrtc (from `../node_modules/react-native-webrtc`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -409,9 +403,10 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/jscallinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - ReactNativePermissions (from `../node_modules/react-native-permissions/ReactNativePermissions.podspec`)
   - ReactNativeShareExtension (from `../node_modules/react-native-share-extension/ReactNativeShareExtension.podspec`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
-  - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
+  - "RNFBApp (from `../node_modules/@react-native-firebase/app/RNFBApp.podspec`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBDatabase (from `../node_modules/@react-native-firebase/database`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
@@ -472,8 +467,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
-  react-native-camera:
-    :path: "../node_modules/react-native-camera"
   react-native-sqlite-storage:
     :path: "../node_modules/react-native-sqlite-storage"
   react-native-webrtc:
@@ -498,12 +491,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativePermissions:
+    :podspec: "../node_modules/react-native-permissions/ReactNativePermissions.podspec"
   ReactNativeShareExtension:
     :podspec: "../node_modules/react-native-share-extension/ReactNativeShareExtension.podspec"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
   RNFBApp:
-    :path: "../node_modules/@react-native-firebase/app"
+    :path: "../node_modules/@react-native-firebase/app/RNFBApp.podspec"
   RNFBAuth:
     :path: "../node_modules/@react-native-firebase/auth"
   RNFBDatabase:
@@ -552,7 +547,6 @@ SPEC CHECKSUMS:
   React-jsi: 4b5e521350c455b5eb4be50ea98c02de25b44fad
   React-jsiexecutor: 5532ab4389aabbbf1b87904de04c8ddd7dda7036
   React-jsinspector: 99b82aeb51d67d9025ab4eb8ccb8132f8dcebf69
-  react-native-camera: b8a3ee7f65dbc7f66a1886919ff0375d18ea5508
   react-native-sqlite-storage: f06bfba10f67f989c00b6a699b9c2b80a816edbe
   react-native-webrtc: d0f28b91e024f82729fe79fab5c21f9ab188459e
   React-RCTActionSheet: 5f9a1733ec8e380aae8a97877f1166cb058733ae
@@ -565,7 +559,8 @@ SPEC CHECKSUMS:
   React-RCTText: beb19a6c50072a1a2f617490ea967237c98d1dfc
   React-RCTVibration: c8e67f140a83a14a1ad9042950cca08ab29423fd
   ReactCommon: 584ef683c340894c1c82be43ce760390493ae8bf
-  ReactNativeShareExtension: d99eb6e4f22233a6a54f3a938e94357f0a8e1462
+  ReactNativePermissions: f868320229df25a3a6ae3e5f8d465efc04ac801e
+  ReactNativeShareExtension: bcdff1f6bd00bf1546e79625d17666bda7c9d02d
   RNCAsyncStorage: 2e2e3feb9bdadc752a026703d8c4065ca912e75a
   RNFBApp: 5dd12fdb688ddd25aa756d8cd2780abaadf15709
   RNFBAuth: 7011c2d87c84bac55b5feb414cf1b0b92169f4b9
@@ -574,6 +569,6 @@ SPEC CHECKSUMS:
   RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
   Yoga: 3f70bbd9aa01e04eefec36e2a085b2fc0ff1dd98
 
-PODFILE CHECKSUM: 23d83c174171cf2b12dd4a8036c095454abcb7ab
+PODFILE CHECKSUM: 36e0f14e7282a5690b72704720a636b647f5d40f
 
 COCOAPODS: 1.8.4

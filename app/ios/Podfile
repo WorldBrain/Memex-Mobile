@@ -35,6 +35,10 @@ target 'app' do
 
   pod 'ReactNativeShareExtension', :podspec => '../node_modules/react-native-share-extension/ReactNativeShareExtension.podspec'
 
+  pod 'ReactNativePermissions', :podspec => '../node_modules/react-native-permissions/ReactNativePermissions.podspec'
+
+  pod 'Firebase/Core', '~> 6.8.1'
+  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app/RNFBApp.podspec'
   pod 'react-native-webrtc', :path => '../node_modules/react-native-webrtc'
 
   use_native_modules!
