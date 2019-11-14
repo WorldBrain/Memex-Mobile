@@ -8,14 +8,15 @@ import {
 import { createServices } from './services'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
-import { WorldbrainAuthService } from './services/auth/worldbrain'
-import { MemoryAuthService } from './services/auth/memory'
-import { LocalAuthService } from './services/auth/local'
+import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
+import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
+import { LocalAuthService } from '@worldbrain/memex-common/lib/authentication/local'
 import { LocalStorageService } from './services/local-storage'
 import {
     insertIntegrationTestData,
     checkIntegrationTestData,
 } from './tests/shared-fixtures/integration'
+import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -52,9 +53,8 @@ export async function main() {
             storage,
             services,
             auth: {
-                getUser: async () => services.auth.getCurrentUser(),
                 setUser: async ({ id }) =>
-                    (services.auth as MemoryAuthService).setUser({ id }),
+                    (services.auth as MemoryAuthService).setUser(TEST_USER),
             },
             intergrationTestData: {
                 insert: () => insertIntegrationTestData({ storage }),
