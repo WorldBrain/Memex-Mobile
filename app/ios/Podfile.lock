@@ -376,7 +376,10 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
+  - Firebase/Auth
   - Firebase/Core (~> 6.8.1)
+  - Firebase/Database
+  - Firebase/Firestore
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -559,8 +562,8 @@ SPEC CHECKSUMS:
   React-RCTText: beb19a6c50072a1a2f617490ea967237c98d1dfc
   React-RCTVibration: c8e67f140a83a14a1ad9042950cca08ab29423fd
   ReactCommon: 584ef683c340894c1c82be43ce760390493ae8bf
-  ReactNativePermissions: f868320229df25a3a6ae3e5f8d465efc04ac801e
-  ReactNativeShareExtension: bcdff1f6bd00bf1546e79625d17666bda7c9d02d
+  ReactNativePermissions: ab7ef69f14c465d571412c33d4e8dec880d6f5fc
+  ReactNativeShareExtension: d99eb6e4f22233a6a54f3a938e94357f0a8e1462
   RNCAsyncStorage: 2e2e3feb9bdadc752a026703d8c4065ca912e75a
   RNFBApp: 5dd12fdb688ddd25aa756d8cd2780abaadf15709
   RNFBAuth: 7011c2d87c84bac55b5feb414cf1b0b92169f4b9
@@ -569,6 +572,6 @@ SPEC CHECKSUMS:
   RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
   Yoga: 3f70bbd9aa01e04eefec36e2a085b2fc0ff1dd98
 
-PODFILE CHECKSUM: 36e0f14e7282a5690b72704720a636b647f5d40f
+PODFILE CHECKSUM: e00ec81ff12d3b5e69f03688b20db7d036415f79
 
 COCOAPODS: 1.8.4
