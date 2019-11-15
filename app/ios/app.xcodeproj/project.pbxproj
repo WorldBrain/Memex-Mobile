@@ -29,6 +29,8 @@
 		530D720B22AA523900E0F8D5 /* MemexShare.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 530D720022AA523900E0F8D5 /* MemexShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		530D721122AA529100E0F8D5 /* MemexShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 530D721022AA529100E0F8D5 /* MemexShare.m */; };
 		530D722422AA573400E0F8D5 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
+		531A3A97237D0222001F0924 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 531A3A96237D0222001F0924 /* GoogleService-Info.plist */; };
+		531A3A99237D0230001F0924 /* GoogleService-Info.share-ext.plist in Resources */ = {isa = PBXBuildFile; fileRef = 531A3A98237D0230001F0924 /* GoogleService-Info.share-ext.plist */; };
 		ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -245,6 +247,8 @@
 		530D720622AA523900E0F8D5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		530D720822AA523900E0F8D5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		530D721022AA529100E0F8D5 /* MemexShare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MemexShare.m; sourceTree = "<group>"; };
+		531A3A96237D0222001F0924 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		531A3A98237D0230001F0924 /* GoogleService-Info.share-ext.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.share-ext.plist"; sourceTree = SOURCE_ROOT; };
 		532CDDCF2301603100548299 /* MemexShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MemexShare.entitlements; sourceTree = "<group>"; };
 		53310F2C22CC600200066A7A /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		53B87F3822D2E91300F5DB10 /* app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = app.entitlements; path = app/app.entitlements; sourceTree = "<group>"; };
@@ -392,6 +396,7 @@
 		13B07FAE1A68108700A75B9A /* app */ = {
 			isa = PBXGroup;
 			children = (
+				531A3A96237D0222001F0924 /* GoogleService-Info.plist */,
 				53B87F3822D2E91300F5DB10 /* app.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -427,6 +432,7 @@
 		530D720122AA523900E0F8D5 /* MemexShare */ = {
 			isa = PBXGroup;
 			children = (
+				531A3A98237D0230001F0924 /* GoogleService-Info.share-ext.plist */,
 				532CDDCF2301603100548299 /* MemexShare.entitlements */,
 				530D720522AA523900E0F8D5 /* MainInterface.storyboard */,
 				530D720822AA523900E0F8D5 /* Info.plist */,
@@ -908,6 +914,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				531A3A97237D0222001F0924 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -930,6 +937,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				531A3A99237D0230001F0924 /* GoogleService-Info.share-ext.plist in Resources */,
 				530D720722AA523900E0F8D5 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
