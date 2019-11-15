@@ -4,14 +4,14 @@ const WebRTC = require('react-native-webrtc')
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
 import { SyncLoggingMiddleware } from '@worldbrain/storex-sync/lib/logging-middleware'
 import { SyncSettingsStore } from '@worldbrain/storex-sync/lib/integration/settings'
-import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/lib/sync/constants'
+import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/ts/sync/constants'
 import {
     MemexInitialSync,
     MemexContinuousSync,
     SyncSecretStore,
     SignalTransportFactory,
-} from '@worldbrain/memex-common/lib/sync'
-import { MemexSyncSetting } from '@worldbrain/memex-common/lib/sync/types'
+} from '@worldbrain/memex-common/ts/sync'
+import { MemexSyncSetting } from '@worldbrain/memex-common/ts/sync/types'
 
 import '../../polyfills'
 import { AuthService } from '../auth/types'

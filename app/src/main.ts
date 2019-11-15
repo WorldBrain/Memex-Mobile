@@ -1,5 +1,11 @@
 import AsyncStorage from '@react-native-community/async-storage'
-import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
+import { createSelfTests } from '@worldbrain/memex-common/ts/self-tests'
+import { WorldbrainAuthService } from '@worldbrain/memex-common/ts/authentication/worldbrain'
+import { MemoryAuthService } from '@worldbrain/memex-common/ts/authentication/memory'
+import { LocalAuthService } from '@worldbrain/memex-common/ts/authentication/local'
+import { TEST_USER } from '@worldbrain/memex-common/ts/authentication/dev'
+
+import './globals'
 import {
     createStorage,
     setStorageMiddleware,
@@ -8,15 +14,11 @@ import {
 import { createServices } from './services'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
-import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
-import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
-import { LocalAuthService } from '@worldbrain/memex-common/lib/authentication/local'
 import { LocalStorageService } from './services/local-storage'
 import {
     insertIntegrationTestData,
     checkIntegrationTestData,
 } from './tests/shared-fixtures/integration'
-import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate

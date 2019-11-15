@@ -20,5 +20,7 @@ module.exports = {
             '<rootDir>/external/@worldbrain/memex-storage/ts',
         '^@worldbrain/memex-url-utils$':
             '<rootDir>/external/@worldbrain/memex-url-utils/ts',
+        '^@worldbrain/memex-common$':
+            '<rootDir>/external/@worldbrain/memex-common/ts',
     },
 }
