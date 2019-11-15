@@ -11,6 +11,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <React/RCTLog.h>
+#import <Firebase.h>
 
 @interface MemexShare : ReactNativeShareExtension
 @end
@@ -20,6 +21,9 @@
 RCT_EXPORT_MODULE();
 
 - (UIView*) shareView {
+  if ([FIRApp defaultApp] == nil) {
+    [FIRApp configure];
+  }
   NSURL *jsCodeLocation;
   
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
