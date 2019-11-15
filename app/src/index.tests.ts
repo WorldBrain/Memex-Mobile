@@ -5,12 +5,12 @@ import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules
 import { SharedSyncLogStorage } from '@worldbrain/storex-sync/lib/shared-sync-log/storex'
 import { DexieStorageBackend } from '@worldbrain/storex-backend-dexie'
 import inMemory from '@worldbrain/storex-backend-dexie/lib/in-memory'
+import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
 import { MemorySignalTransportManager } from 'simple-signalling/lib/memory'
 import { createStorage, setStorageMiddleware } from 'src/storage'
 import { Storage } from 'src/storage/types'
 import { createServices } from './services'
 import { Services } from './services/types'
-import { MemoryAuthService } from './services/auth/memory'
 import { LocalStorageService } from './services/local-storage'
 
 export type MultiDeviceTestFunction = (

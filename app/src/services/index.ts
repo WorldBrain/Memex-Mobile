@@ -6,7 +6,7 @@ import { LocalStorageService } from './local-storage'
 import SyncService from './sync'
 import { SignalTransportFactory } from './sync/initial-sync'
 import { Storage } from 'src/storage/types'
-import { AuthService } from './auth/types'
+import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 
 export interface CreateServicesOptions {
     storage: Storage

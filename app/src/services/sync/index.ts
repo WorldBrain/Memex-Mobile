@@ -14,7 +14,7 @@ import {
 import { MemexSyncSetting } from '@worldbrain/memex-common/ts/sync/types'
 
 import '../../polyfills'
-import { AuthService } from '../auth/types'
+import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import { LocalStorageService } from '../local-storage'
 import { MemexClientSyncLogStorage } from 'src/features/sync/storage'
 import { PRODUCT_VERSION } from 'src/constants'
@@ -48,6 +48,9 @@ export default class SyncService {
             signalTransportFactory: options.signalTransportFactory,
             syncedCollections: this.syncedCollections,
             secrectStore: this.secretStore,
+            generateLoginToken: async () =>
+                (await options.auth.generateLoginToken()).token,
+            loginWithToken: async token => options.auth.loginWithToken(token),
         })
         this.initialSync.wrtc = WebRTC
         this.continuousSync = new MemexContinuousSync({
