@@ -60,7 +60,7 @@
             "@worldbrain/memex-common": [
                 "external/@worldbrain/memex-common/ts"
             ],
-            "@worldbrain/memex-common/ts/*": [
+            "@worldbrain/memex-common/lib/*": [
                 "external/@worldbrain/memex-common/ts/*"
             ],
             "@worldbrain/memex-url-utils": [

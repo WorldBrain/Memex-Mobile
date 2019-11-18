@@ -2,16 +2,11 @@ import StorageManager from '@worldbrain/storex'
 const WebRTC = require('react-native-webrtc')
 
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
-import { SyncLoggingMiddleware } from '@worldbrain/storex-sync/lib/logging-middleware'
 import { SyncSettingsStore } from '@worldbrain/storex-sync/lib/integration/settings'
-import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/ts/sync/constants'
-import {
-    MemexInitialSync,
-    MemexContinuousSync,
-    SyncSecretStore,
+import SyncService, {
     SignalTransportFactory,
-} from '@worldbrain/memex-common/ts/sync'
-import { MemexSyncSetting } from '@worldbrain/memex-common/ts/sync/types'
+} from '@worldbrain/memex-common/lib/sync'
+import { MemexSyncSetting } from '@worldbrain/memex-common/lib/sync/types'
 
 import '../../polyfills'
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
@@ -19,80 +14,23 @@ import { LocalStorageService } from '../local-storage'
 import { MemexClientSyncLogStorage } from 'src/features/sync/storage'
 import { PRODUCT_VERSION } from 'src/constants'
 
-export default class SyncService {
-    readonly syncedCollections: string[] = SYNCED_COLLECTIONS
-
-    initialSync: MemexInitialSync
-    continuousSync: MemexContinuousSync
-    settingStore: MemexSyncSettingStore
-    secretStore: SyncSecretStore
-    syncLoggingMiddleware?: SyncLoggingMiddleware
-
-    constructor(
-        private options: {
-            auth: AuthService
-            storageManager: StorageManager
-            signalTransportFactory: SignalTransportFactory
-            localStorage: LocalStorageService
-            clientSyncLog: MemexClientSyncLogStorage
-            sharedSyncLog: SharedSyncLog
-        },
-    ) {
-        this.settingStore = new MemexSyncSettingStore(options)
-        this.secretStore = new SyncSecretStore({
-            settingStore: this.settingStore,
-        })
-
-        this.initialSync = new MemexInitialSync({
-            storageManager: options.storageManager,
-            signalTransportFactory: options.signalTransportFactory,
-            syncedCollections: this.syncedCollections,
-            secrectStore: this.secretStore,
-            generateLoginToken: async () =>
-                (await options.auth.generateLoginToken()).token,
-            loginWithToken: async token => options.auth.loginWithToken(token),
-        })
-        this.initialSync.wrtc = WebRTC
-        this.continuousSync = new MemexContinuousSync({
-            auth: {
-                getUserId: async () => {
-                    const user = await options.auth.getCurrentUser()
-                    return user && user.id
-                },
-            },
-            storageManager: options.storageManager,
-            clientSyncLog: this.options.clientSyncLog,
-            getSharedSyncLog: async () => this.options.sharedSyncLog,
-            settingStore: this.settingStore,
-            secretStore: this.secretStore,
+export default class AppSyncService extends SyncService {
+    constructor(options: {
+        auth: AuthService
+        storageManager: StorageManager
+        signalTransportFactory: SignalTransportFactory
+        localStorage: LocalStorageService
+        clientSyncLog: MemexClientSyncLogStorage
+        sharedSyncLog: SharedSyncLog
+    }) {
+        super({
+            ...options,
+            settingStore: new MemexSyncSettingStore(options),
             productType: 'app',
             productVersion: PRODUCT_VERSION,
-            toggleSyncLogging: (
-                enabled: boolean,
-                deviceId?: string | number,
-            ) => {
-                if (this.syncLoggingMiddleware) {
-                    this.syncLoggingMiddleware.enabled = enabled
-                    if (enabled) {
-                        this.syncLoggingMiddleware.deviceId = deviceId!
-                    }
-                } else {
-                    throw new Error(
-                        `Tried to toggle sync logging before logging middleware was created`,
-                    )
-                }
-            },
         })
-    }
 
-    async createSyncLoggingMiddleware() {
-        this.syncLoggingMiddleware = new SyncLoggingMiddleware({
-            storageManager: this.options.storageManager,
-            clientSyncLog: this.options.clientSyncLog,
-            includeCollections: this.syncedCollections,
-        })
-        this.syncLoggingMiddleware.enabled = false
-        return this.syncLoggingMiddleware
+        this.initialSync.wrtc = WebRTC
     }
 }
 
