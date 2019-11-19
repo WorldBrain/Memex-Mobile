@@ -21,7 +21,7 @@ export default class AppSyncService extends SyncService {
         signalTransportFactory: SignalTransportFactory
         localStorage: LocalStorageService
         clientSyncLog: MemexClientSyncLogStorage
-        sharedSyncLog: SharedSyncLog
+        getSharedSyncLog: () => Promise<SharedSyncLog>
     }) {
         super({
             ...options,

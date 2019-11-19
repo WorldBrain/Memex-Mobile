@@ -98,6 +98,43 @@ describe('SyncScreen', () => {
         },
     )
 
+    multiDeviceTest(
+        'should be switch to the failure state if the sync setup goes wrong',
+        async ({ createDevice }) => {
+            const devices = [await createDevice()]
+
+            const userInterfaces = [
+                setup({
+                    ...devices[0],
+                    navigation: devices[0].navigation as any,
+                }),
+            ]
+
+            await userInterfaces[0].logicContainer.processEvent(
+                'init',
+                undefined,
+            )
+
+            await userInterfaces[0].logicContainer.processEvent(
+                'startScanning',
+                {},
+            )
+            expect(userInterfaces[0].logicContainer.state).toEqual({
+                status: 'scanning',
+            })
+
+            devices[0].services.sync.initialSync.answerInitialSync = async () => {
+                throw new Error('Muahaha')
+            }
+            await userInterfaces[0].logicContainer.processEvent('doSync', {
+                qrEvent: { data: 'bla' } as any,
+            })
+            expect(userInterfaces[0].logicContainer.state).toEqual({
+                status: 'failure',
+            })
+        },
+    )
+
     it('should skip the sync onboarding if already synced', async () => {
         const { logicContainer, services, navigation } = setup()
         services.localStorage.set(storageKeys.syncKey, true)

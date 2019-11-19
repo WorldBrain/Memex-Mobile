@@ -28,7 +28,7 @@ export async function createServices(
             signalTransportFactory: options.signalTransportFactory,
             storageManager: options.storage.manager,
             clientSyncLog: options.storage.modules.clientSyncLog,
-            sharedSyncLog: options.sharedSyncLog,
+            getSharedSyncLog: async () => options.sharedSyncLog,
             auth: options.auth,
             localStorage,
         }),
