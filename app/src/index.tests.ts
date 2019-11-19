@@ -12,6 +12,7 @@ import { Storage } from 'src/storage/types'
 import { createServices } from './services'
 import { Services } from './services/types'
 import { LocalStorageService } from './services/local-storage'
+import { FakeNavigation } from './tests/navigation'
 
 export type MultiDeviceTestFunction = (
     context: MultiDeviceTestContext,
@@ -24,6 +25,7 @@ export interface MultiDeviceTestContext {
 export interface MultiDeviceTestDevice {
     storage: Storage
     services: Services
+    navigation: FakeNavigation
     auth: MemoryAuthService
 }
 
@@ -61,7 +63,7 @@ export function makeStorageTestFactory() {
             typeof testOrOptions !== 'function' ? testOrOptions || {} : {}
 
         if (!test) {
-            it.todo(description)
+            ;(it as any).todo(description)
             return
         }
 
@@ -91,7 +93,7 @@ export function makeMultiDeviceTestFactory() {
         test?: MultiDeviceTestFunction,
     ): void {
         if (!test) {
-            it.todo(description)
+            ;(it as any).todo(description)
             return
         }
 
@@ -113,6 +115,7 @@ export function makeMultiDeviceTestFactory() {
                     },
                 })
 
+                const navigation = new FakeNavigation()
                 const auth = new MemoryAuthService()
                 const localStorage = new LocalStorageService({
                     storageAPI: new MockAsyncStorage(),
@@ -130,7 +133,7 @@ export function makeMultiDeviceTestFactory() {
                 })
                 services.sync.initialSync.wrtc = wrtc
 
-                const device = { storage, services, auth }
+                const device = { storage, services, auth, navigation }
                 createdDevices.push(device)
                 return device
             }
