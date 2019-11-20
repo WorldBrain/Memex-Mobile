@@ -14,6 +14,7 @@ export interface CreateServicesOptions {
     sharedSyncLog: SharedSyncLog
     auth: AuthService
     localStorage: LocalStorageService
+    devicePlatform: string
 }
 
 export async function createServices(
@@ -25,9 +26,11 @@ export async function createServices(
         shareExt: new ShareExtService({}),
         localStorage,
         sync: new SyncService({
+            devicePlatform: options.devicePlatform,
             signalTransportFactory: options.signalTransportFactory,
             storageManager: options.storage.manager,
             clientSyncLog: options.storage.modules.clientSyncLog,
+            syncInfoStorage: options.storage.modules.syncInfo,
             getSharedSyncLog: async () => options.sharedSyncLog,
             auth: options.auth,
             localStorage,

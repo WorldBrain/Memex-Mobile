@@ -112,5 +112,7 @@ export async function checkIntegrationTestData(options: { storage: Storage }) {
         annotations: [],
         annotBookmarks: [],
         annotListEntries: [],
+        syncDeviceInfo: expect.any(Array),
+        ...(options.extraData || {}),
     })
 }

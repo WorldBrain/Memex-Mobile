@@ -11,7 +11,10 @@ import { MemexSyncSetting } from '@worldbrain/memex-common/lib/sync/types'
 import '../../polyfills'
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import { LocalStorageService } from '../local-storage'
-import { MemexClientSyncLogStorage } from 'src/features/sync/storage'
+import {
+    MemexClientSyncLogStorage,
+    MemexSyncInfoStorage,
+} from 'src/features/sync/storage'
 import { PRODUCT_VERSION } from 'src/constants'
 
 export default class AppSyncService extends SyncService {
@@ -21,6 +24,8 @@ export default class AppSyncService extends SyncService {
         signalTransportFactory: SignalTransportFactory
         localStorage: LocalStorageService
         clientSyncLog: MemexClientSyncLogStorage
+        syncInfoStorage: MemexSyncInfoStorage
+        devicePlatform: string
         getSharedSyncLog: () => Promise<SharedSyncLog>
     }) {
         super({

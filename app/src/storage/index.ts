@@ -12,7 +12,10 @@ import { PageEditorStorage } from 'src/features/page-editor/storage'
 import { Services } from 'src/services/types'
 import { createServerStorageManager } from './server'
 import { createSharedSyncLog } from 'src/services/sync/shared-sync-log'
-import { MemexClientSyncLogStorage } from 'src/features/sync/storage'
+import {
+    MemexClientSyncLogStorage,
+    MemexSyncInfoStorage,
+} from 'src/features/sync/storage'
 
 export interface CreateStorageOptions {
     typeORMConnectionOpts: ConnectionOptions
@@ -38,6 +41,7 @@ export async function createStorage({
         metaPicker: new MetaPickerStorage({ storageManager }),
         pageEditor: new PageEditorStorage({ storageManager, normalizeUrl }),
         clientSyncLog: new MemexClientSyncLogStorage({ storageManager }),
+        syncInfo: new MemexSyncInfoStorage({ storageManager }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules as any)

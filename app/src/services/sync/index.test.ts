@@ -1,8 +1,29 @@
-import { makeMultiDeviceTestFactory } from 'src/index.tests'
+import {
+    makeMultiDeviceTestFactory,
+    MultiDeviceTestDevice,
+} from 'src/index.tests'
 import {
     insertIntegrationTestData,
     checkIntegrationTestData,
 } from 'src/tests/shared-fixtures/integration'
+import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
+
+async function doInitialSync(params: {
+    source: MultiDeviceTestDevice
+    target: MultiDeviceTestDevice
+}) {
+    const {
+        initialMessage,
+    } = await params.source.services.sync.initialSync.requestInitialSync()
+    await params.target.services.sync.initialSync.answerInitialSync({
+        initialMessage,
+    })
+    await Promise.all(
+        [params.source, params.target].map(device =>
+            device.services.sync.initialSync.waitForInitialSync(),
+        ),
+    )
+}
 
 describe('SyncService', () => {
     const it = makeMultiDeviceTestFactory()
@@ -10,40 +31,25 @@ describe('SyncService', () => {
     it('should be able to do an initial sync', async ({ createDevice }) => {
         const devices = [await createDevice(), await createDevice()]
 
+        devices[0].auth.setUser(TEST_USER)
+
         await insertIntegrationTestData(devices[0])
-
-        const {
-            initialMessage,
-        } = await devices[0].services.sync.initialSync.requestInitialSync()
-        await devices[1].services.sync.initialSync.answerInitialSync({
-            initialMessage,
+        await doInitialSync({
+            source: devices[0],
+            target: devices[1],
         })
-        await Promise.all(
-            devices.map(device =>
-                device.services.sync.initialSync.waitForInitialSync(),
-            ),
-        )
-
         await checkIntegrationTestData(devices[1])
     })
 
     it('should be able to do an incremental sync', async ({ createDevice }) => {
         const devices = [await createDevice(), await createDevice()]
 
-        const {
-            initialMessage,
-        } = await devices[0].services.sync.initialSync.requestInitialSync()
-        await devices[1].services.sync.initialSync.answerInitialSync({
-            initialMessage,
-        })
-        await Promise.all(
-            devices.map(device =>
-                device.services.sync.initialSync.waitForInitialSync(),
-            ),
-        )
+        devices[0].auth.setUser(TEST_USER)
 
-        devices[0].auth.setUser({ id: 666 })
-        devices[1].auth.setUser({ id: 666 })
+        await doInitialSync({
+            source: devices[0],
+            target: devices[1],
+        })
 
         await devices[0].services.sync.continuousSync.initDevice()
         await devices[1].services.sync.continuousSync.initDevice()
@@ -63,20 +69,12 @@ describe('SyncService', () => {
     }) => {
         const devices = [await createDevice(), await createDevice()]
 
-        const {
-            initialMessage,
-        } = await devices[0].services.sync.initialSync.requestInitialSync()
-        await devices[1].services.sync.initialSync.answerInitialSync({
-            initialMessage,
-        })
-        await Promise.all(
-            devices.map(device =>
-                device.services.sync.initialSync.waitForInitialSync(),
-            ),
-        )
+        devices[0].auth.setUser(TEST_USER)
 
-        devices[0].auth.setUser({ id: 666 })
-        devices[1].auth.setUser({ id: 666 })
+        await doInitialSync({
+            source: devices[0],
+            target: devices[1],
+        })
 
         await devices[0].services.sync.continuousSync.initDevice()
         await devices[1].services.sync.continuousSync.initDevice()
@@ -105,5 +103,18 @@ describe('SyncService', () => {
                 sv: expect.any(Number),
             },
         ])
+    })
+
+    it('should generate and transfer a device name during initial sync', async ({
+        createDevice,
+    }) => {
+        const devices = [await createDevice(), await createDevice()]
+
+        devices[0].auth.setUser(TEST_USER)
+
+        await doInitialSync({
+            source: devices[0],
+            target: devices[1],
+        })
     })
 })

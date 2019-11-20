@@ -1,3 +1,4 @@
+import { Platform } from 'react-native'
 import BackgroundFetch from 'react-native-background-fetch'
 import AsyncStorage from '@react-native-community/async-storage'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
@@ -38,6 +39,7 @@ export async function main() {
 
     const localStorage = new LocalStorageService({ storageAPI: AsyncStorage })
     const services = await createServices({
+        devicePlatform: Platform.OS,
         auth: new LocalAuthService({ localStorage }),
         localStorage,
         storage,

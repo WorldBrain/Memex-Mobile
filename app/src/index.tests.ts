@@ -121,6 +121,7 @@ export function makeMultiDeviceTestFactory() {
                     storageAPI: new MockAsyncStorage(),
                 })
                 const services = await createServices({
+                    devicePlatform: 'integration-tests',
                     auth,
                     storage,
                     signalTransportFactory,
