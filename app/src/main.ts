@@ -1,9 +1,10 @@
+import BackgroundFetch from 'react-native-background-fetch'
 import AsyncStorage from '@react-native-community/async-storage'
-import { createSelfTests } from '@worldbrain/memex-common/ts/self-tests'
-import { WorldbrainAuthService } from '@worldbrain/memex-common/ts/authentication/worldbrain'
-import { MemoryAuthService } from '@worldbrain/memex-common/ts/authentication/memory'
-import { LocalAuthService } from '@worldbrain/memex-common/ts/authentication/local'
-import { TEST_USER } from '@worldbrain/memex-common/ts/authentication/dev'
+import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
+import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
+import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
+import { LocalAuthService } from '@worldbrain/memex-common/lib/authentication/local'
+import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 
 import './globals'
 import {

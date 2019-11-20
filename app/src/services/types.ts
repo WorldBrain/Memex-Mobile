@@ -1,4 +1,5 @@
-import { AuthService } from './auth/types'
+import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
+
 import { ShareExtService } from './share-ext'
 import { LocalStorageService } from './local-storage'
 import SyncService from './sync'
