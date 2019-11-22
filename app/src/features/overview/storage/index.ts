@@ -10,6 +10,8 @@ import {
 import { URLPartsExtractor, URLNormalizer } from '@worldbrain/memex-url-utils'
 
 import { Page, Visit } from '../types'
+import { STORAGE_VERSIONS } from 'src/storage/constants'
+import { mapCollectionVersions } from '@worldbrain/storex-pattern-modules/lib/utils'
 
 export interface Props extends StorageModuleConstructorArgs {
     normalizeUrl: URLNormalizer
@@ -54,9 +56,15 @@ export class OverviewStorage extends StorageModule {
             'datetime'
 
         return {
-            collections: {
-                ...COLLECTION_DEFINITIONS,
-            },
+            collections: mapCollectionVersions({
+                collectionDefinitions: COLLECTION_DEFINITIONS,
+                mappings: [
+                    {
+                        moduleVersion: new Date('2019-09-13'),
+                        applicationVersion: STORAGE_VERSIONS[0].version,
+                    },
+                ],
+            }),
             operations: {
                 createPage: {
                     operation: 'createObject',

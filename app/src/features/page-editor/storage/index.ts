@@ -3,6 +3,7 @@ import {
     StorageModuleConfig,
     StorageModuleConstructorArgs,
 } from '@worldbrain/storex-pattern-modules'
+import { mapCollectionVersions } from '@worldbrain/storex-pattern-modules/lib/utils'
 import {
     COLLECTION_DEFINITIONS,
     COLLECTION_NAMES,
@@ -10,6 +11,7 @@ import {
 import { URLNormalizer } from '@worldbrain/memex-url-utils'
 
 import { Note } from '../types'
+import { STORAGE_VERSIONS } from 'src/storage/constants'
 
 export interface NoteOpArgs {
     url: string
@@ -35,17 +37,23 @@ export class PageEditorStorage extends StorageModule {
     getConfig = (): StorageModuleConfig => {
         // TODO: This type differs from corresponding Memex ext type (not supported in react native)
         //  TYPE: 'json' => 'string'
-        COLLECTION_DEFINITIONS[
-            PageEditorStorage.NOTE_COLL
-        ].fields.selector.type = 'string'
-        COLLECTION_DEFINITIONS[
-            PageEditorStorage.NOTE_COLL
-        ].history![0].fields.selector.type = 'string'
+        // COLLECTION_DEFINITIONS[
+        //     PageEditorStorage.NOTE_COLL
+        // ].fields.selector.type = 'string'
+        // COLLECTION_DEFINITIONS[
+        //     PageEditorStorage.NOTE_COLL
+        // ].history![0].fields.selector.type = 'string'
 
         return {
-            collections: {
-                ...COLLECTION_DEFINITIONS,
-            },
+            collections: mapCollectionVersions({
+                collectionDefinitions: COLLECTION_DEFINITIONS,
+                mappings: [
+                    {
+                        moduleVersion: new Date('2019-09-13'),
+                        applicationVersion: STORAGE_VERSIONS[0].version,
+                    },
+                ],
+            }),
             operations: {
                 addNoteToList: {
                     operation: 'createObject',

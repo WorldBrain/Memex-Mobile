@@ -2,6 +2,7 @@ import {
     StorageModule,
     StorageModuleConfig,
 } from '@worldbrain/storex-pattern-modules'
+import { mapCollectionVersions } from '@worldbrain/storex-pattern-modules/lib/utils'
 import {
     COLLECTION_DEFINITIONS as TAG_COLL_DEFINITIONS,
     COLLECTION_NAMES as TAG_COLL_NAMES,
@@ -11,6 +12,7 @@ import {
     COLLECTION_NAMES as LIST_COLL_NAMES,
 } from '@worldbrain/memex-storage/lib/lists/constants'
 
+import { STORAGE_VERSIONS } from 'src/storage/constants'
 import { Tag, List, ListEntry, MetaTypeShape } from '../types'
 
 export class MetaPickerStorage extends StorageModule {
@@ -22,10 +24,18 @@ export class MetaPickerStorage extends StorageModule {
     static generateListId = () => Date.now()
 
     getConfig = (): StorageModuleConfig => ({
-        collections: {
-            ...TAG_COLL_DEFINITIONS,
-            ...LIST_COLL_DEFINITIONS,
-        },
+        collections: mapCollectionVersions({
+            collectionDefinitions: {
+                ...TAG_COLL_DEFINITIONS,
+                ...LIST_COLL_DEFINITIONS,
+            },
+            mappings: [
+                {
+                    moduleVersion: new Date('2019-09-13'),
+                    applicationVersion: STORAGE_VERSIONS[0].version,
+                },
+            ],
+        }),
         operations: {
             createList: {
                 operation: 'createObject',
