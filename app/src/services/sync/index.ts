@@ -6,7 +6,10 @@ import { SyncSettingsStore } from '@worldbrain/storex-sync/lib/integration/setti
 import SyncService, {
     SignalTransportFactory,
 } from '@worldbrain/memex-common/lib/sync'
-import { MemexSyncSetting } from '@worldbrain/memex-common/lib/sync/types'
+import {
+    MemexSyncSetting,
+    MemexSyncDevicePlatform,
+} from '@worldbrain/memex-common/lib/sync/types'
 
 import '../../polyfills'
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
@@ -25,7 +28,7 @@ export default class AppSyncService extends SyncService {
         localStorage: LocalStorageService
         clientSyncLog: MemexClientSyncLogStorage
         syncInfoStorage: MemexSyncInfoStorage
-        devicePlatform: string
+        devicePlatform: MemexSyncDevicePlatform
         getSharedSyncLog: () => Promise<SharedSyncLog>
     }) {
         super({
@@ -33,6 +36,7 @@ export default class AppSyncService extends SyncService {
             settingStore: new MemexSyncSettingStore(options),
             productType: 'app',
             productVersion: PRODUCT_VERSION,
+            disableEncryption: true,
         })
 
         this.initialSync.wrtc = WebRTC

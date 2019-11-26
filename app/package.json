@@ -49,6 +49,7 @@
         "sqlite3": "^4.0.8",
         "text-encoder-lite": "^2.0.0",
         "tweetnacl": "^1.0.1",
+        "tweetnacl-util": "^0.15.0",
         "typed-emitter": "^0.1.0",
         "typeorm": "^0.2.17",
         "ui-logic-core": "^0.1.1",

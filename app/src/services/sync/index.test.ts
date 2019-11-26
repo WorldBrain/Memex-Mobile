@@ -64,7 +64,7 @@ describe('SyncService', () => {
         await checkIntegrationTestData(devices[1])
     })
 
-    it('should include extra info incremental sync batches', async ({
+    it('should include extra info with incremental sync batches', async ({
         createDevice,
     }) => {
         const devices = [await createDevice(), await createDevice()]
