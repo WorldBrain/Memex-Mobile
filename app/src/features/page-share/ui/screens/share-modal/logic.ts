@@ -1,8 +1,13 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { MetaType } from 'src/features/meta-picker/types'
+import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
+import { UITaskState, UIServices, UIStorageModules } from 'src/ui/types'
+import { loadInitial, executeUITask } from 'src/ui/utils'
 
 export interface State {
+    loadState: UITaskState
+    saveState: UITaskState
+    syncState: UITaskState
     pageUrl: string
     statusText: string
     noteText: string
@@ -10,35 +15,83 @@ export interface State {
     collectionsToAdd: string[]
     isStarred: boolean
     isModalShown: boolean
-    isPageSaving: boolean
     metaViewShown?: MetaType
 }
 export type Event = UIEvent<{
+    save: {}
+    metaPickerEntryPress: { entry: MetaTypeShape }
+    setMetaViewType: { type?: MetaType }
+    setModalVisible: { shown: boolean }
+    togglePageStar: {}
+    setNoteText: { value: string }
+
     toggleTag: { name: string }
     toggleCollection: { name: string }
     setPageUrl: { url: string }
-    setMetaViewType: { type?: MetaType }
-    setModalVisible: { shown: boolean }
-    setNoteText: { value: string }
     setPageStar: { value: boolean }
-    setPageSaving: { value: boolean }
     setStatusText: { value: string }
     setTagsToAdd: { values: string[] }
     setCollectionsToAdd: { values: string[] }
 }>
 
+export interface LogicDependencies {
+    services: UIServices<'sync' | 'shareExt'>
+    storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
+}
+
 export default class Logic extends UILogic<State, Event> {
+    constructor(private dependencies: LogicDependencies) {
+        super()
+    }
+
     getInitialState(): State {
         return {
+            loadState: 'pristine',
+            saveState: 'pristine',
+            syncState: 'pristine',
             pageUrl: '',
             isModalShown: true,
             isStarred: false,
-            isPageSaving: false,
             tagsToAdd: [],
             collectionsToAdd: [],
             noteText: '',
             statusText: '',
         }
+    }
+
+    async init() {
+        await loadInitial(this, async () => {
+            let mutation: UIMutation<State> = {}
+
+            const url = await this.dependencies.services.shareExt.getShareText()
+            if (url) {
+                mutation = {
+                    ...mutation,
+                    pageUrl: { $set: url },
+                }
+            } else {
+                mutation = {
+                    ...mutation,
+                    isModalShown: { $set: false },
+                }
+            }
+
+            const { overview, metaPicker } = this.dependencies.storage.modules
+            if (url) {
+                const isStarred = await overview.isPageStarred({ url })
+                const tags = await metaPicker.findTagsByPage({ url })
+                const collections = await metaPicker.findListsByPage({ url })
+
+                mutation = {
+                    ...mutation,
+                    isStarred: { $set: isStarred },
+                    tagsToAdd: { $set: tags.map(tag => tag.name) },
+                    collectionsToAdd: { $set: collections.map(c => c.name) },
+                }
+            }
+
+            this.emitMutation(mutation)
+        })
     }
 
     setPageUrl(
@@ -51,12 +104,6 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'setStatusText'>,
     ): UIMutation<State> {
         return { statusText: { $set: incoming.event.value } }
-    }
-
-    setPageSaving(
-        incoming: IncomingUIEvent<State, Event, 'setPageSaving'>,
-    ): UIMutation<State> {
-        return { isPageSaving: { $set: incoming.event.value } }
     }
 
     setMetaViewType(
@@ -124,6 +171,87 @@ export default class Logic extends UILogic<State, Event> {
 
                 return [...state, incoming.event.name]
             },
+        }
+    }
+
+    togglePageStar(
+        incoming: IncomingUIEvent<State, Event, 'togglePageStar'>,
+    ): UIMutation<State> {
+        return {
+            isStarred: { $set: !incoming.previousState.isStarred },
+        }
+    }
+
+    save(incoming: IncomingUIEvent<State, Event, 'save'>) {
+        executeUITask(this, 'saveState', async () => {
+            await this.storePage(incoming.previousState)
+            await executeUITask(this, 'syncState', async () => {
+                this.dependencies.services.sync.continuousSync.forceIncrementalSync()
+            })
+            this.emitMutation(
+                this.setModalVisible({
+                    event: { shown: false },
+                    previousState: incoming.previousState,
+                }),
+            )
+        })
+    }
+
+    metaPickerEntryPress(
+        incoming: IncomingUIEvent<State, Event, 'metaPickerEntryPress'>,
+    ) {
+        const { entry } = incoming.event
+        if (incoming.previousState.metaViewShown === 'tags') {
+            this.emitMutation(
+                this.toggleTag({
+                    event: { name: entry.name },
+                    previousState: incoming.previousState,
+                }),
+            )
+        } else {
+            this.emitMutation(
+                this.toggleCollection({
+                    event: { name: entry.name },
+                    previousState: incoming.previousState,
+                }),
+            )
+        }
+    }
+
+    private async storePage(state: State) {
+        const {
+            overview,
+            metaPicker,
+            pageEditor,
+        } = this.dependencies.storage.modules
+
+        await overview.createPage({
+            url: state.pageUrl,
+            fullUrl: state.pageUrl,
+            text: '',
+            fullTitle: '',
+        })
+        await overview.visitPage({ url: state.pageUrl })
+        await overview.setPageStar({
+            url: state.pageUrl,
+            isStarred: state.isStarred,
+        })
+
+        await metaPicker.setPageLists({
+            url: state.pageUrl,
+            lists: state.collectionsToAdd,
+        })
+        await metaPicker.setPageTags({
+            url: state.pageUrl,
+            tags: state.tagsToAdd,
+        })
+
+        if (state.noteText.trim().length > 0) {
+            await pageEditor.createNote({
+                comment: state.noteText.trim(),
+                pageUrl: state.pageUrl,
+                pageTitle: '',
+            })
         }
     }
 }

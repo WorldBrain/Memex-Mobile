@@ -1,1 +1,5 @@
 node_modules
+.project
+.settings/
+.classpath
+app/ios/Pods

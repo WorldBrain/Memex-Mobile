@@ -52,5 +52,6 @@ module.exports = {
                 alias: getAliases(),
             },
         ],
+        '@babel/plugin-proposal-async-generator-functions',
     ],
 }

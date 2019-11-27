@@ -23,7 +23,7 @@ export default class CollectionsView extends StatefulUIElement<
     Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic() })
+        super(props, new Logic())
     }
 
     private handleCollectionSelection = (name: string) => (

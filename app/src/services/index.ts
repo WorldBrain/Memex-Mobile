@@ -1,18 +1,40 @@
-import AsyncStorage from '@react-native-community/async-storage'
+import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
 
 import { Services } from './types'
-import { WorldBrainAuthService } from './auth/wb-auth'
 import { ShareExtService } from './share-ext'
 import { LocalStorageService } from './local-storage'
+import SyncService from './sync'
+import { SignalTransportFactory } from './sync/initial-sync'
+import { Storage } from 'src/storage/types'
+import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 
-export interface CreateServicesOptions {}
+export interface CreateServicesOptions {
+    storage: Storage
+    signalTransportFactory: SignalTransportFactory
+    sharedSyncLog: SharedSyncLog
+    auth: AuthService
+    localStorage: LocalStorageService
+    devicePlatform: string
+}
 
 export async function createServices(
     options: CreateServicesOptions,
 ): Promise<Services> {
-    return {
-        auth: new WorldBrainAuthService(),
+    const localStorage = options.localStorage
+    const services = {
+        auth: options.auth,
         shareExt: new ShareExtService({}),
-        localStorage: new LocalStorageService({ storageAPI: AsyncStorage }),
+        localStorage,
+        sync: new SyncService({
+            devicePlatform: options.devicePlatform,
+            signalTransportFactory: options.signalTransportFactory,
+            storageManager: options.storage.manager,
+            clientSyncLog: options.storage.modules.clientSyncLog,
+            syncInfoStorage: options.storage.modules.syncInfo,
+            getSharedSyncLog: async () => options.sharedSyncLog,
+            auth: options.auth,
+            localStorage,
+        }),
     }
+    return services
 }

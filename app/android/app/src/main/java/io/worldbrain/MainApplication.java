@@ -3,6 +3,11 @@ package io.worldbrain;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.oney.WebRTCModule.WebRTCModulePackage;
+import io.invertase.firebase.firestore.ReactNativeFirebaseFirestorePackage;
+import io.invertase.firebase.database.ReactNativeFirebaseDatabasePackage;
+import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
@@ -30,9 +35,14 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
         new SQLitePluginPackage(),   // register SQLite Plugin here
         new MainReactPackage(),
-            new AsyncStoragePackage(),
-            new RNCameraPackage(),
-            new RNGestureHandlerPackage(),
+        new WebRTCModulePackage(),
+        new ReactNativeFirebaseAppPackage(),
+        new ReactNativeFirebaseAuthPackage(),
+        new ReactNativeFirebaseDatabasePackage(),
+        new ReactNativeFirebaseFirestorePackage(),
+        new AsyncStoragePackage(),
+        new RNCameraPackage(),
+        new RNGestureHandlerPackage(),
         new SharePackage()  // register `react-native-share-extension` plugin here
       );
     }
