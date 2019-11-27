@@ -11,7 +11,6 @@ import {
     MemexSyncDevicePlatform,
 } from '@worldbrain/memex-common/lib/sync/types'
 
-import '../../polyfills'
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import { LocalStorageService } from '../local-storage'
 import {

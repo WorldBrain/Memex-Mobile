@@ -7,7 +7,7 @@ import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/m
 import { LocalAuthService } from '@worldbrain/memex-common/lib/authentication/local'
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 
-import './globals'
+import './polyfills'
 import {
     createStorage,
     setStorageMiddleware,
