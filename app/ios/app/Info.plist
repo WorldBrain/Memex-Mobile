@@ -19,11 +19,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.5</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -41,19 +41,25 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>We don't use this</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>We don't use this</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>We don't use this</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>We don't use this</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need to scan a QR code to sync with the Memex web extension</string>
-	<key>NSMicrophoneUsageDescription</key>
+	<key>NSContactsUsageDescription</key>
 	<string>We don't use this</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We don't use this</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We don't use this</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We don't use this</string>
 	<key>NSMotionUsageDescription</key>
+	<string>We don't use this</string>
+	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We don't use this</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>We don't use this</string>
