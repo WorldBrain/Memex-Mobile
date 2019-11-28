@@ -37,7 +37,18 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
 
         if (syncKey) {
             this.dependencies.navigation.navigate('MVPOverview')
+            return
         }
+
+        ;(globalThis as any).feedQrData = (data: string) =>
+            this.processUIEvent('doSync', {
+                event: { qrEvent: { data } as any },
+                previousState: {} as any,
+            })
+    }
+
+    async cleanup() {
+        delete (globalThis as any).feedQrData
     }
 
     async doSync(incoming: IncomingUIEvent<State, Event, 'doSync'>) {
@@ -55,6 +66,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
             )
             await this.emitMutation({ status: { $set: 'success' } })
         } catch (e) {
+            console.log('Error during initial sync', e)
             this.emitMutation({ status: { $set: 'failure' } })
         }
     }

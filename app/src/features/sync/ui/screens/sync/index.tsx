@@ -14,6 +14,7 @@ export default class SyncScreen extends NavigationScreen<
 > {
     constructor(props: SyncScreenDependencies) {
         super(props, { logic: new SyncScreenLogic(props) })
+        console.log('sync screen constructed')
     }
 
     render() {
@@ -37,7 +38,10 @@ export default class SyncScreen extends NavigationScreen<
                         }
                     />
                 )
-            default:
+            case 'failure':
+                throw new Error(
+                    `No UI implemented yet for initial sync failures`,
+                )
             case 'setup':
                 return (
                     <SetupStage
@@ -45,6 +49,10 @@ export default class SyncScreen extends NavigationScreen<
                             this.processEvent('startScanning', {})
                         }
                     />
+                )
+            default:
+                throw new Error(
+                    `Unknown sync screen status: ${this.state.status}`,
                 )
         }
     }
