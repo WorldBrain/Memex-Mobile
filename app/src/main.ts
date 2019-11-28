@@ -1,5 +1,4 @@
 import { Platform } from 'react-native'
-import BackgroundFetch from 'react-native-background-fetch'
 import AsyncStorage from '@react-native-community/async-storage'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
 import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'

@@ -49,6 +49,8 @@ target 'app' do
 
   use_native_modules!
 
+  pod 'react-native-randombytes', :path => '../node_modules/react-native-randombytes'
+
   target 'MemexShare' do
     use_native_modules!
     inherit! :complete

@@ -1,11 +1,13 @@
 import StorageManager from '@worldbrain/storex'
 const WebRTC = require('react-native-webrtc')
+import { randomBytes } from 'react-native-randombytes'
 
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
 import { SyncSettingsStore } from '@worldbrain/storex-sync/lib/integration/settings'
 import SyncService, {
     SignalTransportFactory,
 } from '@worldbrain/memex-common/lib/sync'
+import { TweetNaclSyncEncryption } from '@worldbrain/memex-common/lib/sync/secrets/tweetnacl'
 import {
     MemexSyncSetting,
     MemexSyncDevicePlatform,
@@ -36,6 +38,7 @@ export default class AppSyncService extends SyncService {
             productType: 'app',
             productVersion: PRODUCT_VERSION,
             disableEncryption: true,
+            syncEncryption: new TweetNaclSyncEncryption({ randomBytes }),
         })
 
         this.initialSync.wrtc = WebRTC
