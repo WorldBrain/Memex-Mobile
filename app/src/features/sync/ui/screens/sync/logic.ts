@@ -5,10 +5,10 @@ import { storageKeys } from '../../../../../../app.json'
 import { SyncStatus } from 'src/features/sync/types'
 import { NavigationProps, UIServices } from 'src/ui/types'
 
-export interface State {
+export interface SyncScreenState {
     status: SyncStatus
 }
-export type Event = UIEvent<{
+export type SyncScreenEvent = UIEvent<{
     setSyncStatus: { value: SyncStatus }
     doSync: { qrEvent: QRReadEvent }
     skip: {}
@@ -18,13 +18,17 @@ export type Event = UIEvent<{
 
 export interface SyncScreenDependencies extends NavigationProps {
     services: UIServices<'localStorage' | 'sync'>
+    suppressErrorLogging?: boolean
 }
-export default class SyncScreenLogic extends UILogic<State, Event> {
+export default class SyncScreenLogic extends UILogic<
+    SyncScreenState,
+    SyncScreenEvent
+> {
     constructor(private dependencies: SyncScreenDependencies) {
         super()
     }
 
-    getInitialState(): State {
+    getInitialState(): SyncScreenState {
         return {
             status: 'setup',
         }
@@ -40,18 +44,22 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
             return
         }
 
-        ;(globalThis as any).feedQrData = (data: string) =>
-            this.processUIEvent('doSync', {
-                event: { qrEvent: { data } as any },
-                previousState: {} as any,
-            })
+        if (typeof globalThis !== 'undefined') {
+            ;(globalThis as any).feedQrData = (data: string) =>
+                this.processUIEvent('doSync', {
+                    event: { qrEvent: { data } as any },
+                    previousState: {} as any,
+                })
+        }
     }
 
     async cleanup() {
         delete (globalThis as any).feedQrData
     }
 
-    async doSync(incoming: IncomingUIEvent<State, Event, 'doSync'>) {
+    async doSync(
+        incoming: IncomingUIEvent<SyncScreenState, SyncScreenEvent, 'doSync'>,
+    ) {
         this.emitMutation({ status: { $set: 'syncing' } })
         try {
             await this.dependencies.services.sync.initialSync.answerInitialSync(
@@ -66,7 +74,10 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
             )
             await this.emitMutation({ status: { $set: 'success' } })
         } catch (e) {
-            console.log('Error during initial sync', e)
+            if (!this.dependencies.suppressErrorLogging) {
+                console.error('Error during initial sync')
+                console.error(e)
+            }
             this.emitMutation({ status: { $set: 'failure' } })
         }
     }
@@ -76,8 +87,12 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
     }
 
     startScanning(
-        incoming: IncomingUIEvent<State, Event, 'startScanning'>,
-    ): UIMutation<State> {
+        incoming: IncomingUIEvent<
+            SyncScreenState,
+            SyncScreenEvent,
+            'startScanning'
+        >,
+    ): UIMutation<SyncScreenState> {
         return { status: { $set: 'scanning' } }
     }
 }

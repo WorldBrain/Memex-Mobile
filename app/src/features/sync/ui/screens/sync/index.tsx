@@ -1,7 +1,11 @@
 import React from 'react'
 
 import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
-import SyncScreenLogic, { State, Event, SyncScreenDependencies } from './logic'
+import SyncScreenLogic, {
+    SyncScreenState,
+    SyncScreenEvent,
+    SyncScreenDependencies,
+} from './logic'
 import SetupStage from '../../components/sync-setup-stage'
 import LoadingStage from '../../components/sync-loading-stage'
 import SuccessStage from '../../components/sync-success-stage'
@@ -9,12 +13,11 @@ import ScanQRStage from '../../components/sync-scan-qr-stage'
 
 export default class SyncScreen extends NavigationScreen<
     SyncScreenDependencies,
-    State,
-    Event
+    SyncScreenState,
+    SyncScreenEvent
 > {
     constructor(props: SyncScreenDependencies) {
         super(props, { logic: new SyncScreenLogic(props) })
-        console.log('sync screen constructed')
     }
 
     render() {

@@ -51,12 +51,6 @@ describe('SyncService', () => {
             target: devices[1],
         })
 
-        await devices[0].services.sync.continuousSync.initDevice()
-        await devices[1].services.sync.continuousSync.initDevice()
-
-        await devices[0].services.sync.continuousSync.enableContinuousSync()
-        await devices[1].services.sync.continuousSync.enableContinuousSync()
-
         await insertIntegrationTestData(devices[0])
         await devices[0].services.sync.continuousSync.forceIncrementalSync()
 
@@ -75,12 +69,6 @@ describe('SyncService', () => {
             source: devices[0],
             target: devices[1],
         })
-
-        await devices[0].services.sync.continuousSync.initDevice()
-        await devices[1].services.sync.continuousSync.initDevice()
-
-        await devices[0].services.sync.continuousSync.enableContinuousSync()
-        await devices[1].services.sync.continuousSync.enableContinuousSync()
 
         const sentExtraInfo: any[] = []
         const firstContinuousSync = devices[0].services.sync.continuousSync
