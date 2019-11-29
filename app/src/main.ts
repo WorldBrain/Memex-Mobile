@@ -1,3 +1,6 @@
+import firebase from '@react-native-firebase/app'
+import '@react-native-firebase/auth'
+
 import { Platform } from 'react-native'
 import BackgroundFetch from 'react-native-background-fetch'
 import AsyncStorage from '@react-native-community/async-storage'
@@ -40,7 +43,7 @@ export async function main() {
     const localStorage = new LocalStorageService({ storageAPI: AsyncStorage })
     const services = await createServices({
         devicePlatform: Platform.OS,
-        auth: new LocalAuthService({ localStorage }),
+        auth: new WorldbrainAuthService(firebase),
         localStorage,
         storage,
         signalTransportFactory: createFirebaseSignalTransport,

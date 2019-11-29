@@ -9,7 +9,11 @@ import {
 import { FakeNavigation } from 'src/tests/navigation'
 import { LocalStorageService } from 'src/services/local-storage'
 import { TestLogicContainer } from 'src/tests/ui-logic'
-import SyncScreenLogic, { SyncScreenDependencies } from './logic'
+import SyncScreenLogic, {
+    SyncScreenDependencies,
+    SyncScreenState,
+    SyncScreenEvent,
+} from './logic'
 
 const multiDeviceTest = makeMultiDeviceTestFactory()
 
@@ -29,11 +33,16 @@ describe('SyncScreen', () => {
     }
 
     function setup(
-        dependencies?: SyncScreenDependencies & { navigation: FakeNavigation },
+        dependencies?: SyncScreenDependencies & {
+            navigation: FakeNavigation
+        },
     ) {
         dependencies = dependencies || createMockDependencies()
         const logic = new SyncScreenLogic(dependencies)
-        const logicContainer = new TestLogicContainer(logic)
+        const logicContainer = new TestLogicContainer<
+            SyncScreenState,
+            SyncScreenEvent
+        >(logic)
 
         return { logicContainer, ...dependencies }
     }
@@ -107,6 +116,7 @@ describe('SyncScreen', () => {
                 setup({
                     ...devices[0],
                     navigation: devices[0].navigation as any,
+                    suppressErrorLogging: true,
                 }),
             ]
 
