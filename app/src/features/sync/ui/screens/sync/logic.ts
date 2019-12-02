@@ -75,6 +75,7 @@ export default class SyncScreenLogic extends UILogic<
             )
             await this.emitMutation({ status: { $set: 'success' } })
         } catch (e) {
+            throw e
             if (!this.dependencies.suppressErrorLogging) {
                 console.error('Error during initial sync')
                 console.error(e)

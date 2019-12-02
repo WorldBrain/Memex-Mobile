@@ -53,6 +53,8 @@ target 'app' do
 
   use_native_modules!
 
+  pod 'RNSecureRandom', :path => '../node_modules/react-native-securerandom'
+
   target 'MemexShare' do
     use_native_modules!
     inherit! :complete

@@ -34,3 +34,6 @@
 [submodule "app/external/@worldbrain/memex-common"]
 	path = app/external/@worldbrain/memex-common
 	url = https://github.com/WorldBrain/memex-common.git
+[submodule "app/external/simple-peer"]
+	path = app/external/react-native-simple-peer
+	url = https://github.com/WorldBrain/simple-peer.git

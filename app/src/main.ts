@@ -1,3 +1,5 @@
+globalThis.process.version = '1.1.1'
+
 import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'
 

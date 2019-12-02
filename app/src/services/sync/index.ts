@@ -1,5 +1,7 @@
+import { generateSecureRandom } from 'react-native-securerandom'
 import StorageManager from '@worldbrain/storex'
 const WebRTC = require('react-native-webrtc')
+const Peer = require('react-native-simple-peer')
 
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
 import { SyncSettingsStore } from '@worldbrain/storex-sync/lib/integration/settings'
@@ -38,7 +40,16 @@ export default class AppSyncService extends SyncService {
             disableEncryption: true,
         })
 
-        this.initialSync.wrtc = WebRTC
+        this.initialSync.getPeer = async ({ initiator }) => {
+            return new Peer({
+                initiator,
+                wrtc: WebRTC,
+                id: (await generateSecureRandom(8)).toString(),
+                channelName: (await generateSecureRandom(40)).toString(),
+            })
+        }
+        // .wrtc = WebRTC
+        // this.initialSync.randombytes = require('react-native-securerandom').generateSecureRandom
     }
 }
 

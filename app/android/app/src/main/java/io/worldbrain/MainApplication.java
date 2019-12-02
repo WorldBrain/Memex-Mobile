@@ -3,6 +3,7 @@ package io.worldbrain;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
 import io.invertase.firebase.firestore.ReactNativeFirebaseFirestorePackage;
 import io.invertase.firebase.database.ReactNativeFirebaseDatabasePackage;
@@ -36,6 +37,7 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
         new SQLitePluginPackage(),   // register SQLite Plugin here
         new MainReactPackage(),
+            new RNSecureRandomPackage(),
         new WebRTCModulePackage(),
         new ReactNativeFirebaseAppPackage(),
         new ReactNativeFirebaseAuthPackage(),
