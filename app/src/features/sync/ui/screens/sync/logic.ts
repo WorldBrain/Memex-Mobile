@@ -7,6 +7,7 @@ import { NavigationProps, UIServices } from 'src/ui/types'
 
 export interface SyncScreenState {
     status: SyncStatus
+    errMsg?: string
 }
 export type SyncScreenEvent = UIEvent<{
     setSyncStatus: { value: SyncStatus }
@@ -78,7 +79,12 @@ export default class SyncScreenLogic extends UILogic<
                 console.error('Error during initial sync')
                 console.error(e)
             }
-            this.emitMutation({ status: { $set: 'failure' } })
+            this.emitMutation({
+                status: { $set: 'failure' },
+                errMsg: {
+                    $set: `MSG: ${e.message}\nNAME: ${e.name} \n STACK: ${e.stack}`,
+                },
+            })
         }
     }
 

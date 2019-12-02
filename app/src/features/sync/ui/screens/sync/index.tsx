@@ -1,4 +1,5 @@
 import React from 'react'
+import { Text } from 'react-native'
 
 import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
 import SyncScreenLogic, {
@@ -42,9 +43,7 @@ export default class SyncScreen extends NavigationScreen<
                     />
                 )
             case 'failure':
-                throw new Error(
-                    `No UI implemented yet for initial sync failures`,
-                )
+                ;<Text>{this.state.errMsg}</Text>
             case 'setup':
                 return (
                     <SetupStage
