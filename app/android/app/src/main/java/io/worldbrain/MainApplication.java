@@ -15,6 +15,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
 
 import org.pgsqlite.SQLitePluginPackage;
 import com.alinz.parkerdan.shareextension.SharePackage;
@@ -42,6 +43,7 @@ public class MainApplication extends Application implements ReactApplication {
         new ReactNativeFirebaseFirestorePackage(),
         new AsyncStoragePackage(),
         new RNCameraPackage(),
+        new RNPermissionsPackage(),
         new RNGestureHandlerPackage(),
         new SharePackage()  // register `react-native-share-extension` plugin here
       );

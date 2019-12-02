@@ -141,6 +141,8 @@ PODS:
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
+  - Permission-Camera (2.0.4):
+    - RNPermissions
   - Protobuf (3.10.0)
   - RCTRequired (0.61.0)
   - RCTTypeSafety (0.61.0):
@@ -305,6 +307,14 @@ PODS:
     - React-cxxreact (= 0.61.0)
     - React-jsi (= 0.61.0)
   - React-jsinspector (0.61.0)
+  - react-native-camera (3.13.1):
+    - React
+    - react-native-camera/RCT (= 3.13.1)
+    - react-native-camera/RN (= 3.13.1)
+  - react-native-camera/RCT (3.13.1):
+    - React
+  - react-native-camera/RN (3.13.1):
+    - React
   - react-native-sqlite-storage (4.1.0):
     - React
   - react-native-webrtc (1.75.1):
@@ -344,8 +354,6 @@ PODS:
     - React-cxxreact (= 0.61.0)
     - React-jsi (= 0.61.0)
     - ReactCommon/jscallinvoker (= 0.61.0)
-  - ReactNativePermissions (1.2.0):
-    - React
   - ReactNativeShareExtension (2.0.0):
     - React
   - RNCAsyncStorage (1.6.1):
@@ -370,6 +378,8 @@ PODS:
     - RNFBApp
   - RNGestureHandler (1.3.0):
     - React
+  - RNPermissions (2.0.4):
+    - React
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -382,6 +392,7 @@ DEPENDENCIES:
   - Firebase/Firestore
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
@@ -392,6 +403,7 @@ DEPENDENCIES:
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
+  - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-sqlite-storage (from `../node_modules/react-native-sqlite-storage`)
   - react-native-webrtc (from `../node_modules/react-native-webrtc`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -405,7 +417,6 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/jscallinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
-  - ReactNativePermissions (from `../node_modules/react-native-permissions/ReactNativePermissions.podspec`)
   - ReactNativeShareExtension (from `../node_modules/react-native-share-extension/ReactNativeShareExtension.podspec`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app/RNFBApp.podspec`)"
@@ -413,6 +424,7 @@ DEPENDENCIES:
   - "RNFBDatabase (from `../node_modules/@react-native-firebase/database`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -451,6 +463,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  Permission-Camera:
+    :path: "../node_modules/react-native-permissions/ios/Camera.podspec"
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
   RCTTypeSafety:
@@ -469,6 +483,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
+  react-native-camera:
+    :path: "../node_modules/react-native-camera"
   react-native-sqlite-storage:
     :path: "../node_modules/react-native-sqlite-storage"
   react-native-webrtc:
@@ -493,8 +509,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
-  ReactNativePermissions:
-    :podspec: "../node_modules/react-native-permissions/ReactNativePermissions.podspec"
   ReactNativeShareExtension:
     :podspec: "../node_modules/react-native-share-extension/ReactNativeShareExtension.podspec"
   RNCAsyncStorage:
@@ -509,6 +523,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/firestore"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -539,6 +555,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 43b8b64263023d4f32caa0b40f4c8bfa3c5f36d8
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
+  Permission-Camera: 907d26263ce6cf10983b07e8801a6939f8b74567
   Protobuf: a4dc852ad69c027ca2166ed287b856697814375b
   RCTRequired: 1f0d5c0baf372e291f70b6b1275b19142bdce931
   RCTTypeSafety: 3b7329bbb97065c1f6ff7157f8eaf0da60fdc13d
@@ -549,6 +566,7 @@ SPEC CHECKSUMS:
   React-jsi: 4b5e521350c455b5eb4be50ea98c02de25b44fad
   React-jsiexecutor: 5532ab4389aabbbf1b87904de04c8ddd7dda7036
   React-jsinspector: 99b82aeb51d67d9025ab4eb8ccb8132f8dcebf69
+  react-native-camera: 1df7f9a047591bbc2c9a7ec80bd6412d3c19579f
   react-native-sqlite-storage: f06bfba10f67f989c00b6a699b9c2b80a816edbe
   react-native-webrtc: d0f28b91e024f82729fe79fab5c21f9ab188459e
   React-RCTActionSheet: 5f9a1733ec8e380aae8a97877f1166cb058733ae
@@ -561,7 +579,6 @@ SPEC CHECKSUMS:
   React-RCTText: beb19a6c50072a1a2f617490ea967237c98d1dfc
   React-RCTVibration: c8e67f140a83a14a1ad9042950cca08ab29423fd
   ReactCommon: 584ef683c340894c1c82be43ce760390493ae8bf
-  ReactNativePermissions: ab7ef69f14c465d571412c33d4e8dec880d6f5fc
   ReactNativeShareExtension: d99eb6e4f22233a6a54f3a938e94357f0a8e1462
   RNCAsyncStorage: 2e2e3feb9bdadc752a026703d8c4065ca912e75a
   RNFBApp: 5dd12fdb688ddd25aa756d8cd2780abaadf15709
@@ -569,8 +586,9 @@ SPEC CHECKSUMS:
   RNFBDatabase: e5c2bd3bfb20af7ee07c17ecc607d7a1ac941e72
   RNFBFirestore: c30508d379f35c55db2854ba621737872de8c52d
   RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
+  RNPermissions: 35959d09546f1cd60c129ee128146a120ea595c3
   Yoga: 3f70bbd9aa01e04eefec36e2a085b2fc0ff1dd98
 
-PODFILE CHECKSUM: 63016a250f1ffe69408f44d40bf8b8903a47b9b1
+PODFILE CHECKSUM: bba45b3acfa78ec927e9682c267f015d0b8b89f5
 
 COCOAPODS: 1.8.4
