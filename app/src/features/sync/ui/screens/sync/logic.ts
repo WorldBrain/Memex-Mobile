@@ -12,7 +12,7 @@ export interface SyncScreenState {
 export type SyncScreenEvent = UIEvent<{
     setSyncStatus: { value: SyncStatus }
     doSync: { qrEvent: QRReadEvent }
-    skip: {}
+    skipSync: {}
     startScanning: {}
     confirmSuccess: {}
 }>
@@ -75,7 +75,6 @@ export default class SyncScreenLogic extends UILogic<
             )
             await this.emitMutation({ status: { $set: 'success' } })
         } catch (e) {
-            throw e
             if (!this.dependencies.suppressErrorLogging) {
                 console.error('Error during initial sync')
                 console.error(e)
@@ -87,6 +86,15 @@ export default class SyncScreenLogic extends UILogic<
                 },
             })
         }
+    }
+
+    async skipSync() {
+        this.emitMutation({ status: { $set: 'success' } })
+
+        await this.dependencies.services.localStorage.set(
+            storageKeys.syncKey,
+            true,
+        )
     }
 
     confirmSuccess() {

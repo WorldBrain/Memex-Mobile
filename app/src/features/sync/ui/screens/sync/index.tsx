@@ -29,7 +29,7 @@ export default class SyncScreen extends NavigationScreen<
                         onQRRead={qrEvent =>
                             this.processEvent('doSync', { qrEvent })
                         }
-                        onSkipBtnPress={() => this.processEvent('skip', {})}
+                        onSkipBtnPress={() => this.processEvent('skipSync', {})}
                     />
                 )
             case 'syncing':
