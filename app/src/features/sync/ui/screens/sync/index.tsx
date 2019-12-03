@@ -43,7 +43,7 @@ export default class SyncScreen extends NavigationScreen<
                     />
                 )
             case 'failure':
-                ;<Text>{this.state.errMsg}</Text>
+                return <Text>{this.state.errMsg}</Text>
             case 'setup':
                 return (
                     <SetupStage
