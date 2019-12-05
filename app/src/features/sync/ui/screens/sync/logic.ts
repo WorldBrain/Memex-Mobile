@@ -1,5 +1,4 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
-import { Event as QRReadEvent } from 'react-native-qrcode-scanner'
 import { storageKeys } from '../../../../../../app.json'
 
 import { SyncStatus } from 'src/features/sync/types'
@@ -8,10 +7,12 @@ import { NavigationProps, UIServices } from 'src/ui/types'
 export interface SyncScreenState {
     status: SyncStatus
     errMsg?: string
+    manualInputValue: string
 }
 export type SyncScreenEvent = UIEvent<{
     setSyncStatus: { value: SyncStatus }
-    doSync: { qrEvent: QRReadEvent }
+    setManualInputText: { text: string }
+    doSync: { initialMessage: string }
     skipSync: {}
     startScanning: {}
     confirmSuccess: {}
@@ -32,6 +33,7 @@ export default class SyncScreenLogic extends UILogic<
     getInitialState(): SyncScreenState {
         return {
             status: 'setup',
+            manualInputValue: '',
         }
     }
 
@@ -48,7 +50,7 @@ export default class SyncScreenLogic extends UILogic<
         if (typeof globalThis !== 'undefined') {
             ;(globalThis as any).feedQrData = (data: string) =>
                 this.processUIEvent('doSync', {
-                    event: { qrEvent: { data } as any },
+                    event: { initialMessage: data },
                     previousState: {} as any,
                 })
         }
@@ -65,7 +67,7 @@ export default class SyncScreenLogic extends UILogic<
         try {
             await this.dependencies.services.sync.initialSync.answerInitialSync(
                 {
-                    initialMessage: incoming.event.qrEvent.data,
+                    initialMessage: incoming.event.initialMessage,
                 },
             )
             await this.dependencies.services.sync.initialSync.waitForInitialSync()
@@ -86,6 +88,16 @@ export default class SyncScreenLogic extends UILogic<
                 },
             })
         }
+    }
+
+    setManualInputText(
+        incoming: IncomingUIEvent<
+            SyncScreenState,
+            SyncScreenEvent,
+            'setManualInputText'
+        >,
+    ) {
+        return { manualInputValue: { $set: incoming.event.text } }
     }
 
     async skipSync() {

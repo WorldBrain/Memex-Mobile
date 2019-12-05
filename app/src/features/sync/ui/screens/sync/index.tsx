@@ -27,9 +27,21 @@ export default class SyncScreen extends NavigationScreen<
                 return (
                     <ScanQRStage
                         onQRRead={qrEvent =>
-                            this.processEvent('doSync', { qrEvent })
+                            this.processEvent('doSync', {
+                                initialMessage: qrEvent.data,
+                            })
                         }
                         onSkipBtnPress={() => this.processEvent('skipSync', {})}
+                        onManualInputSubmit={() =>
+                            this.processEvent('doSync', {
+                                initialMessage: this.state.manualInputValue,
+                            })
+                        }
+                        onManualInputChange={text =>
+                            this.processEvent('setManualInputText', { text })
+                        }
+                        manualInputValue={this.state.manualInputValue}
+                        debug={__DEV__}
                     />
                 )
             case 'syncing':
