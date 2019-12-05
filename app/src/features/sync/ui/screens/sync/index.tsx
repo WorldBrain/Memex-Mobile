@@ -45,7 +45,13 @@ export default class SyncScreen extends NavigationScreen<
                     />
                 )
             case 'syncing':
-                return <LoadingStage />
+                return (
+                    <LoadingStage
+                        __backToOverview={() =>
+                            this.props.navigation.navigate('MVPOverview')
+                        }
+                    />
+                )
             case 'success':
                 return (
                     <SuccessStage
