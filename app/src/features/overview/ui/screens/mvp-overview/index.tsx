@@ -52,6 +52,9 @@ export default class MVPOverviewMenu extends NavigationScreen<
     private handleTutorialPress = () =>
         this.props.navigation.navigate('Onboarding')
 
+    private handleConsolePress = () =>
+        this.props.navigation.navigate('DebugConsole')
+
     private handleRoadmapPress = () => Linking.openURL('https://worldbrain.io')
 
     private handleBugReportPress = () =>
@@ -91,6 +94,11 @@ export default class MVPOverviewMenu extends NavigationScreen<
                                 style={styles.btn}
                             />
                         )}
+                        <Button
+                            title="Debug console"
+                            onPress={this.handleConsolePress}
+                            style={styles.btn}
+                        />
                     </View>
                 </View>
                 <Text style={styles.versionText}>Version {version}</Text>
