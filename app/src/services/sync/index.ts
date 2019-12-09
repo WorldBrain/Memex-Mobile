@@ -1,7 +1,7 @@
 import { generateSecureRandom } from 'react-native-securerandom'
 import StorageManager from '@worldbrain/storex'
 const WebRTC = require('react-native-webrtc')
-const Peer = require('react-native-simple-peer')
+const Peer = require('simple-peer')
 
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
 import { SyncSettingsStore } from '@worldbrain/storex-sync/lib/integration/settings'
