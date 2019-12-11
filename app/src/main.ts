@@ -9,6 +9,7 @@ import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authenticati
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
 import { LocalAuthService } from '@worldbrain/memex-common/lib/authentication/local'
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
+import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
 
 import './polyfills'
 import {
@@ -17,6 +18,7 @@ import {
     createServerStorage,
 } from './storage'
 import { createServices } from './services'
+import { setupBackgroundSync } from './services/background-sync'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
@@ -59,6 +61,9 @@ export async function main() {
     await services.sync.continuousSync.setup()
 
     ui.initialize({ dependencies: { storage, services } })
+
+    setupBackgroundSync({ services })
+
     Object.assign(globalThis, {
         services,
         storage,
