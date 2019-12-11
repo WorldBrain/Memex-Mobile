@@ -8,8 +8,7 @@ import { ShareExtService } from './share-ext'
 import { LocalStorageService } from './local-storage'
 import SyncService from './sync'
 import { Storage } from 'src/storage/types'
-import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
-import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
+import { BackgroundProcessService } from './background-processing'
 
 export interface CreateServicesOptions {
     storage: Storage
@@ -27,6 +26,7 @@ export async function createServices(
     const services = {
         auth: options.auth,
         shareExt: new ShareExtService({}),
+        backgroundProcess: new BackgroundProcessService({}),
         localStorage,
         sync: new SyncService({
             devicePlatform: options.devicePlatform,
