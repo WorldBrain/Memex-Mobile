@@ -23,6 +23,8 @@ import { PRODUCT_VERSION } from 'src/constants'
 import { TweetNaclSyncEncryption } from '@worldbrain/memex-common/lib/sync/secrets/tweetnacl'
 
 export default class AppSyncService extends SyncService {
+    static DEF_CONTINUOUS_SYNC_BATCH_SIZE = 15
+
     constructor(options: {
         auth: AuthService
         storageManager: StorageManager
@@ -33,6 +35,7 @@ export default class AppSyncService extends SyncService {
         devicePlatform: MemexSyncDevicePlatform
         getSharedSyncLog: () => Promise<SharedSyncLog>
         disableEncryption?: boolean
+        continuousSyncBatchSize?: number
     }) {
         super({
             ...options,
@@ -45,6 +48,9 @@ export default class AppSyncService extends SyncService {
                 : new TweetNaclSyncEncryption({
                       randomBytes: n => generateSecureRandom(n),
                   }),
+            continuousSyncBatchSize:
+                options.continuousSyncBatchSize ||
+                AppSyncService.DEF_CONTINUOUS_SYNC_BATCH_SIZE,
         })
 
         this.initialSync.wrtc = WebRTC
