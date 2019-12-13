@@ -51,6 +51,7 @@ export default class AppSyncService extends SyncService {
             continuousSyncBatchSize:
                 options.continuousSyncBatchSize ||
                 AppSyncService.DEF_CONTINUOUS_SYNC_BATCH_SIZE,
+            continuousSyncSingleBatch: true,
         })
 
         this.initialSync.wrtc = WebRTC
