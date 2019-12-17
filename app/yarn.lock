@@ -6823,10 +6823,9 @@ react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
   dependencies:
     prop-types "^15.6.1"
 
-react-native-webrtc@^1.75.1:
-  version "1.75.1"
-  resolved "https://registry.yarnpkg.com/react-native-webrtc/-/react-native-webrtc-1.75.1.tgz#73662607a8aa7ae3913a25dd21eabe56de29bd6b"
-  integrity sha512-BAe2MK5SCtxGXRuzOA+2SBy5FNMgfMTwNvi5po/TglrA8WER6+v3X3AFFPyriD41Lg2MQzZ3GFqy4NLtccRZVQ==
+"react-native-webrtc@https://github.com/WorldBrain/react-native-webrtc.git#b3f2ff07af931b6093f74c6e9418e266245fd0df":
+  version "1.75.2"
+  resolved "https://github.com/WorldBrain/react-native-webrtc.git#b3f2ff07af931b6093f74c6e9418e266245fd0df"
   dependencies:
     base64-js "^1.1.2"
     event-target-shim "^1.0.5"

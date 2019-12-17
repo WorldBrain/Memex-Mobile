@@ -44,6 +44,7 @@ export default class AppSyncService extends SyncService {
             return new Peer({
                 initiator,
                 wrtc: WebRTC,
+                reconnectTimer: 1000,
                 id: (await generateSecureRandom(8)).toString(),
                 channelName: (await generateSecureRandom(40)).toString(),
             })
