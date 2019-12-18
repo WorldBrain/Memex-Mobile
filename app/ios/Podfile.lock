@@ -317,7 +317,7 @@ PODS:
     - React
   - react-native-sqlite-storage (4.1.0):
     - React
-  - react-native-webrtc (1.75.1):
+  - react-native-webrtc (1.75.3):
     - React
   - React-RCTActionSheet (0.61.0):
     - React-Core/RCTActionSheetHeaders (= 0.61.0)
@@ -573,7 +573,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 99b82aeb51d67d9025ab4eb8ccb8132f8dcebf69
   react-native-camera: 1df7f9a047591bbc2c9a7ec80bd6412d3c19579f
   react-native-sqlite-storage: f06bfba10f67f989c00b6a699b9c2b80a816edbe
-  react-native-webrtc: d0f28b91e024f82729fe79fab5c21f9ab188459e
+  react-native-webrtc: e00b0dd940ab8fc8b201b6a129b9a64acdf5974a
   React-RCTActionSheet: 5f9a1733ec8e380aae8a97877f1166cb058733ae
   React-RCTAnimation: 3e0a55305b70b1eb5a5e34230ed8198d4a782da9
   React-RCTBlob: a6ff2220ed7ef4b06e559ec61a0b0f4e80a3716a
