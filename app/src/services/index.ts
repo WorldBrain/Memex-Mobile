@@ -7,6 +7,7 @@ import SyncService from './sync'
 import { SignalTransportFactory } from './sync/initial-sync'
 import { Storage } from 'src/storage/types'
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
+import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
 
 export interface CreateServicesOptions {
     storage: Storage
@@ -14,7 +15,7 @@ export interface CreateServicesOptions {
     sharedSyncLog: SharedSyncLog
     auth: AuthService
     localStorage: LocalStorageService
-    devicePlatform: string
+    devicePlatform: MemexSyncDevicePlatform
 }
 
 export async function createServices(
@@ -36,5 +37,6 @@ export async function createServices(
             localStorage,
         }),
     }
+    await services.sync.continuousSync.setup()
     return services
 }
