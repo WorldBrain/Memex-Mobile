@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { storageKeys } from '../../../../../../app.json'
 
@@ -64,6 +65,7 @@ export default class SyncScreenLogic extends UILogic<
         incoming: IncomingUIEvent<SyncScreenState, SyncScreenEvent, 'doSync'>,
     ) {
         this.emitMutation({ status: { $set: 'syncing' } })
+        const timeBefore = Date.now()
         try {
             await this.dependencies.services.sync.initialSync.answerInitialSync(
                 {
@@ -88,6 +90,9 @@ export default class SyncScreenLogic extends UILogic<
                     $set: `MSG: ${e.message}\nNAME: ${e.name} \n STACK: ${e.stack}`,
                 },
             })
+        } finally {
+            const totalTime = Date.now() - timeBefore
+            console.log(`INIT SYNC - total time taken: ${totalTime}ms`)
         }
     }
 
