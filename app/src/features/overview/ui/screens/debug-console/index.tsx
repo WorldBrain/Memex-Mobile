@@ -28,6 +28,22 @@ export default class DebugConsoleScreen extends NavigationScreen<
     private handleBackPress = () =>
         this.props.navigation.navigate('MVPOverview')
 
+    private handleClearPress = () => {
+        switch (this.state.logType) {
+            case 'error':
+                ;(console as any).clearError()
+                break
+            case 'warn':
+                ;(console as any).clearWarn()
+                break
+            case 'out':
+            default:
+                ;(console as any).clearLog()
+        }
+
+        this.processEvent('refreshState', {})
+    }
+
     private renderLogEntries() {
         const getEntries = (debugConsole: DebugConsole): LogEntry[] => {
             switch (this.state.logType) {
@@ -54,6 +70,11 @@ export default class DebugConsoleScreen extends NavigationScreen<
                         </Text>
                     </View>
                 )}
+                ListEmptyComponent={
+                    <Text style={styles.emptyList}>
+                        Cleared at {this.state.refreshedAt.toISOString()}
+                    </Text>
+                }
             />
         )
     }
@@ -78,7 +99,10 @@ export default class DebugConsoleScreen extends NavigationScreen<
                             title="Errors"
                             onPress={this.initSetLogType('error')}
                         />
+                    </View>
+                    <View style={styles.buttonContainer}>
                         <Button title="Back" onPress={this.handleBackPress} />
+                        <Button title="Clear" onPress={this.handleClearPress} />
                     </View>
                 </View>
             </EmptyLayout>

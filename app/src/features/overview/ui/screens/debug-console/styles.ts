@@ -32,4 +32,8 @@ export default StyleSheet.create({
         fontFamily: 'Courier New',
         fontSize: 20,
     },
+    emptyList: {
+        flex: 1,
+        minWidth: '100%',
+    },
 })

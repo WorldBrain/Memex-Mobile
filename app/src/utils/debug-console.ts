@@ -40,9 +40,21 @@ export class DebugConsole
     assert = this.originalConsole.assert
     info = this.originalConsole.info
 
-    clear() {
+    clearLog() {
         this.outLog.clear()
+    }
+
+    clearWarn() {
         this.warnLog.clear()
+    }
+
+    clearError() {
         this.errorLog.clear()
+    }
+
+    clear() {
+        this.clearLog()
+        this.clearWarn()
+        this.clearError()
     }
 }
