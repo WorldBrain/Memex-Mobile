@@ -15,6 +15,7 @@ export interface State {
     collectionsToAdd: string[]
     isStarred: boolean
     isModalShown: boolean
+    isUnsupportedApplication: boolean
     metaViewShown?: MetaType
 }
 export type Event = UIEvent<{
@@ -46,6 +47,7 @@ export default class Logic extends UILogic<State, Event> {
 
     getInitialState(): State {
         return {
+            isUnsupportedApplication: false,
             loadState: 'pristine',
             saveState: 'pristine',
             syncState: 'pristine',
@@ -62,32 +64,33 @@ export default class Logic extends UILogic<State, Event> {
     async init() {
         await loadInitial(this, async () => {
             let mutation: UIMutation<State> = {}
+            let url: string
 
-            const url = await this.dependencies.services.shareExt.getShareText()
-            if (url) {
-                mutation = {
+            try {
+                url = await this.dependencies.services.shareExt.getSharedUrl()
+            } catch (err) {
+                this.emitMutation({
                     ...mutation,
-                    pageUrl: { $set: url },
-                }
-            } else {
-                mutation = {
-                    ...mutation,
-                    isModalShown: { $set: false },
-                }
+                    isUnsupportedApplication: { $set: true },
+                })
+                return
+            }
+
+            mutation = {
+                ...mutation,
+                pageUrl: { $set: url },
             }
 
             const { overview, metaPicker } = this.dependencies.storage.modules
-            if (url) {
-                const isStarred = await overview.isPageStarred({ url })
-                const tags = await metaPicker.findTagsByPage({ url })
-                const collections = await metaPicker.findListsByPage({ url })
+            const isStarred = await overview.isPageStarred({ url })
+            const tags = await metaPicker.findTagsByPage({ url })
+            const collections = await metaPicker.findListsByPage({ url })
 
-                mutation = {
-                    ...mutation,
-                    isStarred: { $set: isStarred },
-                    tagsToAdd: { $set: tags.map(tag => tag.name) },
-                    collectionsToAdd: { $set: collections.map(c => c.name) },
-                }
+            mutation = {
+                ...mutation,
+                isStarred: { $set: isStarred },
+                tagsToAdd: { $set: tags.map(tag => tag.name) },
+                collectionsToAdd: { $set: collections.map(c => c.name) },
             }
 
             this.emitMutation(mutation)

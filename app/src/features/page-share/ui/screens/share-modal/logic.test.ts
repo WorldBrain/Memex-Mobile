@@ -9,12 +9,21 @@ import { FakeStatefulUIElement } from 'src/ui/index.tests'
 describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    async function setup(options: { storage: Storage; shareText?: string }) {
+    async function setup(options: {
+        storage: Storage
+        getSharedText?: () => string
+        getSharedUrl?: () => string
+    }) {
         const logic = new Logic({
             services: {
                 shareExt: ({
-                    getShareText: async () => options.shareText,
-                } as Partial<ShareExtService>) as any,
+                    getSharedText: options.getSharedText
+                        ? options.getSharedText
+                        : () => 'test page',
+                    getSharedUrl: options.getSharedUrl
+                        ? options.getSharedUrl
+                        : () => 'http://test.com',
+                } as any) as any,
             } as any,
             storage: options.storage,
         })
@@ -25,7 +34,12 @@ describe('share modal UI logic tests', () => {
     }
 
     it('should load correctly without a URL', async context => {
-        const { element } = await setup(context)
+        const { element } = await setup({
+            ...context,
+            getSharedUrl: () => {
+                throw new Error()
+            },
+        })
         await element.init()
         try {
             expect(element.state).toEqual({
@@ -33,7 +47,8 @@ describe('share modal UI logic tests', () => {
                 saveState: 'pristine',
                 syncState: 'pristine',
                 collectionsToAdd: [],
-                isModalShown: false,
+                isModalShown: true,
+                isUnsupportedApplication: true,
                 isStarred: false,
                 noteText: '',
                 pageUrl: '',
@@ -47,7 +62,10 @@ describe('share modal UI logic tests', () => {
 
     it('should load correctly with a URL, but no stored page', async context => {
         const pageUrl = 'http://bla.com'
-        const { element } = await setup({ ...context, shareText: pageUrl })
+        const { element } = await setup({
+            ...context,
+            getSharedUrl: () => pageUrl,
+        })
         await element.init()
         try {
             expect(element.state).toEqual({
@@ -55,6 +73,7 @@ describe('share modal UI logic tests', () => {
                 saveState: 'pristine',
                 syncState: 'pristine',
                 collectionsToAdd: [],
+                isUnsupportedApplication: false,
                 isModalShown: true,
                 isStarred: false,
                 noteText: '',
@@ -73,7 +92,10 @@ describe('share modal UI logic tests', () => {
             url: pageUrl,
             time: Date.now(),
         })
-        const { element } = await setup({ ...context, shareText: pageUrl })
+        const { element } = await setup({
+            ...context,
+            getSharedUrl: () => pageUrl,
+        })
         await element.init()
         try {
             expect(element.state).toEqual({
@@ -81,6 +103,7 @@ describe('share modal UI logic tests', () => {
                 saveState: 'pristine',
                 syncState: 'pristine',
                 collectionsToAdd: [],
+                isUnsupportedApplication: false,
                 isModalShown: true,
                 isStarred: true,
                 noteText: '',
@@ -103,7 +126,10 @@ describe('share modal UI logic tests', () => {
             url: pageUrl,
             name: 'tagB',
         })
-        const { element } = await setup({ ...context, shareText: pageUrl })
+        const { element } = await setup({
+            ...context,
+            getSharedUrl: () => pageUrl,
+        })
         await element.init()
         try {
             expect(element.state).toEqual({
@@ -111,6 +137,7 @@ describe('share modal UI logic tests', () => {
                 saveState: 'pristine',
                 syncState: 'pristine',
                 collectionsToAdd: [],
+                isUnsupportedApplication: false,
                 isModalShown: true,
                 isStarred: false,
                 noteText: '',
@@ -134,7 +161,10 @@ describe('share modal UI logic tests', () => {
             pageUrl,
             listId,
         })
-        const { element } = await setup({ ...context, shareText: pageUrl })
+        const { element } = await setup({
+            ...context,
+            getSharedUrl: () => pageUrl,
+        })
         await element.init()
         try {
             expect(element.state).toEqual({
@@ -142,6 +172,7 @@ describe('share modal UI logic tests', () => {
                 saveState: 'pristine',
                 syncState: 'pristine',
                 collectionsToAdd: ['My list'],
+                isUnsupportedApplication: false,
                 isModalShown: true,
                 isStarred: false,
                 noteText: '',
