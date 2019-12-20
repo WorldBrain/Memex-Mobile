@@ -4,6 +4,7 @@ import { storageKeys } from '../../../../../../app.json'
 
 import { SyncStatus } from 'src/features/sync/types'
 import { NavigationProps, UIServices } from 'src/ui/types'
+import { FastSyncProgress } from '@worldbrain/storex-sync/lib/fast-sync/types.js'
 
 export interface SyncScreenState {
     status: SyncStatus
@@ -27,6 +28,21 @@ export default class SyncScreenLogic extends UILogic<
     SyncScreenState,
     SyncScreenEvent
 > {
+    private static logSyncStats(
+        syncStartTime: number,
+        syncProgress: FastSyncProgress,
+    ) {
+        const totalTime = Date.now() - syncStartTime
+        console.log(`INIT SYNC - total time taken: ${totalTime}ms`)
+        console.log(
+            `INIT SYNC - total objects processed: #${syncProgress.totalObjectsProcessed}`,
+        )
+        console.log(
+            `INIT SYNC - collection count: #${syncProgress.collectionCount}`,
+        )
+        console.log(`INIT SYNC - objects count: #${syncProgress.objectCount}`)
+    }
+
     constructor(private dependencies: SyncScreenDependencies) {
         super()
     }
@@ -66,6 +82,13 @@ export default class SyncScreenLogic extends UILogic<
     ) {
         this.emitMutation({ status: { $set: 'syncing' } })
         const timeBefore = Date.now()
+        let syncProgress: FastSyncProgress = {} as FastSyncProgress
+
+        this.dependencies.services.sync.initialSync.events.addListener(
+            'progress',
+            ({ progress }) => (syncProgress = progress),
+        )
+
         try {
             await this.dependencies.services.sync.initialSync.answerInitialSync(
                 {
@@ -91,8 +114,7 @@ export default class SyncScreenLogic extends UILogic<
                 },
             })
         } finally {
-            const totalTime = Date.now() - timeBefore
-            console.log(`INIT SYNC - total time taken: ${totalTime}ms`)
+            SyncScreenLogic.logSyncStats(timeBefore, syncProgress)
         }
     }
 
