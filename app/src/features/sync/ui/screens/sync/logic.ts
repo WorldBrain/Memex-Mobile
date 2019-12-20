@@ -75,6 +75,7 @@ export default class SyncScreenLogic extends UILogic<
                 storageKeys.syncKey,
                 true,
             )
+            await this.dependencies.services.sync.continuousSync.setup()
             await this.emitMutation({ status: { $set: 'success' } })
         } catch (e) {
             if (!this.dependencies.suppressErrorLogging) {
