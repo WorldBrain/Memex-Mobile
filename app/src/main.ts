@@ -55,6 +55,8 @@ export async function main() {
         services,
         storage,
     })
+    await services.sync.continuousSync.setup()
+
     ui.initialize({ dependencies: { storage, services } })
     Object.assign(globalThis, {
         services,

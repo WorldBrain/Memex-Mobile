@@ -37,6 +37,5 @@ export async function createServices(
             localStorage,
         }),
     }
-    await services.sync.continuousSync.setup()
     return services
 }
