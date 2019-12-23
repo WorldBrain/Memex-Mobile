@@ -6,9 +6,9 @@ import { extractUrlParts, normalizeUrl } from '@worldbrain/memex-url-utils'
 
 import defaultConnectionOpts from './default-connection-opts'
 import { Storage } from './types'
-import { OverviewStorage } from 'src/features/overview/storage'
-import { MetaPickerStorage } from 'src/features/meta-picker/storage'
-import { PageEditorStorage } from 'src/features/page-editor/storage'
+import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
+import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
+import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
 import { Services } from 'src/services/types'
 import { createServerStorageManager } from './server'
 import { createSharedSyncLog } from 'src/services/sync/shared-sync-log'
@@ -38,7 +38,7 @@ export async function createStorage({
             normalizeUrl,
             extractUrlParts,
         }),
-        metaPicker: new MetaPickerStorage({ storageManager }),
+        metaPicker: new MetaPickerStorage({ storageManager, normalizeUrl }),
         pageEditor: new PageEditorStorage({ storageManager, normalizeUrl }),
         clientSyncLog: new MemexClientSyncLogStorage({ storageManager }),
         syncInfo: new MemexSyncInfoStorage({ storageManager }),

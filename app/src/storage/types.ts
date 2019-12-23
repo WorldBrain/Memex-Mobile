@@ -1,8 +1,8 @@
 import StorageManager from '@worldbrain/storex'
 
-import { OverviewStorage } from 'src/features/overview/storage'
-import { MetaPickerStorage } from 'src/features/meta-picker/storage'
-import { PageEditorStorage } from 'src/features/page-editor/storage'
+import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
+import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
+import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
 import {
     MemexClientSyncLogStorage,
     MemexSyncInfoStorage,
