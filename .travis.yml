@@ -1,17 +1,36 @@
-language: node_js
-node_js:
-  - "lts/*"
-before_install:
-  - cd app/
-install:
-  - git submodule update --init --recursive
-  - yarn install --frozen-lockfile
-script:
-  - npm run test
-  - npm run lint
-cache:
-  yarn: true
-  directories:
-    - node_modules
-notifications:
-  email: false
+jobs:
+  include:
+    - stage: Test and lint
+      language: node_js
+      node_js:
+        - "lts/*"
+      before_install:
+        - cd app/
+      install:
+        - git submodule update --init --recursive
+        - yarn install --frozen-lockfile
+      script:
+        - yarn test
+        - yarn lint
+      cache:
+        yarn: true
+        directories:
+          - node_modules
+      notifications:
+        email: false
+    - stage: Deploy Testflight
+      if: branch = develop AND type = push
+      os: osx
+      osx_image: xcode9.2
+      language: node_js
+      node_js:
+        - "lts/*"
+      before_install:
+        - cd app/ios/
+        - pod install
+        - cd ..
+      install:
+        - git submodule update --init --recursive
+        - yarn install --frozen-lockfile
+      script:
+        - yarn ios:beta
