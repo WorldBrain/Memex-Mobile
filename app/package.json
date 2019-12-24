@@ -31,7 +31,7 @@
         "immutability-helper": "^3.0.0",
         "json-date-parser": "^1.0.1",
         "lodash": "^4.17.15",
-        "normalize-url": "^4.5.0",
+        "normalize-url": "4.3.0",
         "openpgp": "^4.6.2",
         "pluralize": "^8.0.0",
         "queue-microtask": "^1.1.2",
@@ -59,7 +59,8 @@
         "ui-logic-core": "^0.1.1",
         "ui-logic-react": "^0.1.2",
         "url": "^0.11.0",
-        "user-logic": "^0.0.1"
+        "user-logic": "^0.0.1",
+        "whatwg-url": "^7.1.0"
     },
     "devDependencies": {
         "@babel/core": "^7.4.4",
@@ -75,6 +76,7 @@
         "@types/react-native": "^0.57.58",
         "@types/react-test-renderer": "^16.8.1",
         "@types/simple-peer": "^6.1.6",
+        "@types/whatwg-url": "^6.4.0",
         "babel": "^6.23.0",
         "babel-jest": "^24.8.0",
         "babel-plugin-module-alias": "^1.6.0",
