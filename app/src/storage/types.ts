@@ -7,6 +7,7 @@ import {
     MemexClientSyncLogStorage,
     MemexSyncInfoStorage,
 } from 'src/features/sync/storage'
+import { SettingsStorage } from 'src/features/settings/storage'
 
 export interface Storage {
     manager: StorageManager
@@ -19,4 +20,5 @@ export interface StorageModules {
     pageEditor: PageEditorStorage
     clientSyncLog: MemexClientSyncLogStorage
     syncInfo: MemexSyncInfoStorage
+    settings: SettingsStorage
 }

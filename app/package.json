@@ -19,7 +19,6 @@
     },
     "dependencies": {
         "@josephg/resolvable": "^1.0.0",
-        "@react-native-community/async-storage": "^1.6.1",
         "@react-native-firebase/app": "^6.0.1",
         "@react-native-firebase/auth": "^6.0.1",
         "@react-native-firebase/database": "^6.0.1",
@@ -89,7 +88,6 @@
         "jest": "^24.8.0",
         "jetifier": "^1.6.4",
         "metro-react-native-babel-preset": "^0.54.1",
-        "mock-async-storage": "^2.2.0",
         "prettier": "^1.18.2",
         "pretty-quick": "^1.11.1",
         "react-test-renderer": "16.8.3",

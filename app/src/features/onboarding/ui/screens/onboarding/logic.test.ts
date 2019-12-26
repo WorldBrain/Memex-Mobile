@@ -1,16 +1,16 @@
-const MockAsyncStorage = require('mock-async-storage').default
 import { storageKeys } from '../../../../../../app.json'
 import { LocalStorageService } from 'src/services/local-storage'
 import { OnboardingStage } from 'src/features/onboarding/types'
 import OnboardingScreenLogic from './logic'
 import { TestLogicContainer } from 'src/tests/ui-logic'
 import { FakeNavigation } from 'src/tests/navigation'
+import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage.js'
 
 describe('onboarding UI logic tests', () => {
     function setup() {
         const navigation = new FakeNavigation()
         const localStorage = new LocalStorageService({
-            storageAPI: new MockAsyncStorage(),
+            settingsStorage: new MockSettingsStorage(),
         })
         const logic = new OnboardingScreenLogic({
             navigation: navigation as any,

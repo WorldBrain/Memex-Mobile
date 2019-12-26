@@ -4,8 +4,6 @@ import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'
 
 import { Platform } from 'react-native'
-import BackgroundFetch from 'react-native-background-fetch'
-import AsyncStorage from '@react-native-community/async-storage'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
 import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
@@ -26,6 +24,7 @@ import {
     insertIntegrationTestData,
     checkIntegrationTestData,
 } from './tests/shared-fixtures/integration'
+import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -42,9 +41,11 @@ export async function main() {
     })
     const serverStorage = await createServerStorage()
 
-    const localStorage = new LocalStorageService({ storageAPI: AsyncStorage })
+    const localStorage = new LocalStorageService({
+        settingsStorage: storage.modules.settings,
+    })
     const services = await createServices({
-        devicePlatform: Platform.OS,
+        devicePlatform: Platform.OS as MemexSyncDevicePlatform,
         auth: new WorldbrainAuthService(firebase),
         localStorage,
         storage,

@@ -1,42 +1,30 @@
-import { AsyncStorageStatic } from '@react-native-community/async-storage'
-
 import { LocalStorageAPI } from './types'
+import { SettableSettings } from 'src/features/settings/types'
 
 export interface Props {
-    storageAPI: AsyncStorageStatic
+    settingsStorage: SettableSettings
 }
 
 export class LocalStorageService implements LocalStorageAPI {
-    private storageAPI: AsyncStorageStatic
+    constructor(private props: Props) {}
 
-    constructor({ storageAPI }: Props) {
-        this.storageAPI = storageAPI
-    }
-
-    async get<T = any>(keyName: string) {
-        const storedValue = await this.storageAPI.getItem(keyName)
+    async get<T = any>(key: string) {
+        const storedValue = await this.props.settingsStorage.getSetting<T>({
+            key,
+        })
 
         if (storedValue == null) {
             return null
         }
 
-        let returnValue: T
-        try {
-            returnValue = JSON.parse(storedValue)
-        } catch (err) {
-            returnValue = storedValue as any
-        }
-
-        return returnValue
+        return storedValue
     }
 
-    async set<T = any>(keyName: string, value: T) {
-        const valueToStore = JSON.stringify(value)
-
-        return this.storageAPI.setItem(keyName, valueToStore)
+    async set<T = any>(key: string, value: T) {
+        return this.props.settingsStorage.setSetting({ key, value })
     }
 
-    async clear(keyName: string) {
-        return this.storageAPI.removeItem(keyName)
+    async clear(key: string) {
+        return this.props.settingsStorage.clearSetting({ key })
     }
 }

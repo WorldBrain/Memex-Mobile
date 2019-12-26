@@ -1,5 +1,4 @@
 const wrtc = require('wrtc')
-const MockAsyncStorage = require('mock-async-storage').default
 import StorageManager from '@worldbrain/storex'
 import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
 import { SharedSyncLogStorage } from '@worldbrain/storex-sync/lib/shared-sync-log/storex'
@@ -13,6 +12,7 @@ import { createServices } from './services'
 import { Services } from './services/types'
 import { LocalStorageService } from './services/local-storage'
 import { FakeNavigation } from './tests/navigation'
+import { MockSettingsStorage } from './features/settings/storage/mock-storage'
 
 export type MultiDeviceTestFunction = (
     context: MultiDeviceTestContext,
@@ -118,7 +118,7 @@ export function makeMultiDeviceTestFactory() {
                 const navigation = new FakeNavigation()
                 const auth = new MemoryAuthService()
                 const localStorage = new LocalStorageService({
-                    storageAPI: new MockAsyncStorage(),
+                    settingsStorage: new MockSettingsStorage(),
                 })
                 const services = await createServices({
                     devicePlatform: 'integration-tests',

@@ -6,6 +6,7 @@ import { extractUrlParts, normalizeUrl } from '@worldbrain/memex-url-utils'
 
 import defaultConnectionOpts from './default-connection-opts'
 import { Storage } from './types'
+import { SettingsStorage } from 'src/features/settings/storage'
 import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
 import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
 import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
@@ -42,6 +43,7 @@ export async function createStorage({
         pageEditor: new PageEditorStorage({ storageManager, normalizeUrl }),
         clientSyncLog: new MemexClientSyncLogStorage({ storageManager }),
         syncInfo: new MemexSyncInfoStorage({ storageManager }),
+        settings: new SettingsStorage({ storageManager }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules as any)

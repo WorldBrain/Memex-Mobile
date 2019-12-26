@@ -1,4 +1,3 @@
-const MockAsyncStorage = require('mock-async-storage').default
 import { storageKeys } from '../../../../../../app.json'
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 import { makeMultiDeviceTestFactory } from 'src/index.tests'
@@ -14,6 +13,7 @@ import SyncScreenLogic, {
     SyncScreenState,
     SyncScreenEvent,
 } from './logic'
+import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 
 const multiDeviceTest = makeMultiDeviceTestFactory()
 
@@ -21,7 +21,7 @@ describe('SyncScreen', () => {
     function createMockDependencies() {
         const navigation = new FakeNavigation()
         const localStorage = new LocalStorageService({
-            storageAPI: new MockAsyncStorage(),
+            settingsStorage: new MockSettingsStorage(),
         })
         return {
             navigation: navigation as any,
