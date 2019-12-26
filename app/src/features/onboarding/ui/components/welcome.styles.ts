@@ -11,9 +11,13 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 18,
     },
-    btn: {
+    btnContainer: {
+        flex: 1,
+        justifyContent: 'space-around',
+        alignItems: 'center',
         position: 'absolute',
         bottom: 35,
-        height: 50,
+        width: '100%',
+        height: 120,
     },
 })

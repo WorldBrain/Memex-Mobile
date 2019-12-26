@@ -11,6 +11,7 @@ export interface State {
 
 export type Event = UIEvent<{
     goToNextStage: {}
+    finishOnboarding: {}
 }>
 
 export default class OnboardingScreenLogic extends UILogic<State, Event> {
@@ -50,12 +51,12 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
         return { onboardingStage: { $set: value } }
     }
 
-    private async finishOnboarding() {
+    async finishOnboarding() {
         await this.options.services.localStorage.set(
             storageKeys.showOnboarding,
             false,
         )
 
-        return this.options.navigation.navigate('Sync')
+        await this.options.navigation.navigate('Sync')
     }
 }

@@ -6,20 +6,27 @@ import EmptyLayout from 'src/ui/layouts/empty'
 import styles from './welcome.styles'
 
 export interface Props {
-    onGetStartedPress: () => void
+    onGetSyncedPress: () => void
+    onOnboardingPress: () => void
 }
 
-const WelcomeScreen: React.StatelessComponent<Props> = ({
-    onGetStartedPress,
-}) => (
+const WelcomeScreen: React.StatelessComponent<Props> = props => (
     <EmptyLayout>
         <View style={styles.logo} />
-        <Text style={styles.mainText}>Let's get you set up</Text>
-        <Button
-            style={styles.btn}
-            title="Get Started"
-            onPress={onGetStartedPress}
-        />
+        <Text style={styles.mainText}>
+            Memex requires some setup to sync with your other devices.
+        </Text>
+        <View style={styles.btnContainer}>
+            <Button
+                title="Learn how to use"
+                onPress={props.onOnboardingPress}
+                secondary
+            />
+            <Button
+                title="Let's get synced!"
+                onPress={props.onGetSyncedPress}
+            />
+        </View>
     </EmptyLayout>
 )
 

@@ -29,7 +29,7 @@ const SyncSuccessStage: React.StatelessComponent<Props> = props => (
             <Button
                 title="Pair with new device"
                 onPress={props.onBtnPress}
-                hasWarning
+                warning
             />
         ) : (
             <Button title="Get Started" onPress={props.onBtnPress} />

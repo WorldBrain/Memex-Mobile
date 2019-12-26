@@ -35,9 +35,12 @@ export default class OnboardingScreen extends NavigationScreen<
             case 0:
                 return (
                     <Welcome
-                        onGetStartedPress={() =>
+                        onOnboardingPress={() =>
                             this.processEvent('goToNextStage', {})
                         }
+                        onGetSyncedPress={() => {
+                            this.processEvent('finishOnboarding', {})
+                        }}
                     />
                 )
             case 1:
