@@ -66,10 +66,9 @@ describe('SyncScreen', () => {
                 }),
             ]
 
-            expect(userInterfaces.map(ui => ui.logicContainer.state)).toEqual([
-                { status: 'setup' },
-                { status: 'setup' },
-            ])
+            expect(
+                userInterfaces.map(ui => ui.logicContainer.state.status),
+            ).toEqual(['setup', 'setup'])
 
             await userInterfaces[0].logicContainer.processEvent(
                 'init',
@@ -79,18 +78,17 @@ describe('SyncScreen', () => {
                 'init',
                 undefined,
             )
-            expect(userInterfaces.map(ui => ui.logicContainer.state)).toEqual([
-                { status: 'setup' },
-                { status: 'setup' },
-            ])
+            expect(
+                userInterfaces.map(ui => ui.logicContainer.state.status),
+            ).toEqual(['setup', 'setup'])
 
             await userInterfaces[1].logicContainer.processEvent(
                 'startScanning',
                 {},
             )
-            expect(userInterfaces[1].logicContainer.state).toEqual({
-                status: 'scanning',
-            })
+            expect(userInterfaces[1].logicContainer.state.status).toEqual(
+                'scanning',
+            )
 
             const {
                 initialMessage,
@@ -98,9 +96,9 @@ describe('SyncScreen', () => {
             await userInterfaces[1].logicContainer.processEvent('doSync', {
                 qrEvent: { data: initialMessage } as any,
             })
-            expect(userInterfaces[1].logicContainer.state).toEqual({
-                status: 'success',
-            })
+            expect(userInterfaces[1].logicContainer.state.status).toEqual(
+                'success',
+            )
 
             await checkIntegrationTestData(devices[1])
             expect(await devices[1].auth.getCurrentUser()).toEqual(TEST_USER)
@@ -129,9 +127,9 @@ describe('SyncScreen', () => {
                 'startScanning',
                 {},
             )
-            expect(userInterfaces[0].logicContainer.state).toEqual({
-                status: 'scanning',
-            })
+            expect(userInterfaces[0].logicContainer.state.status).toEqual(
+                'scanning',
+            )
 
             devices[0].services.sync.initialSync.answerInitialSync = async () => {
                 throw new Error('Muahaha')
@@ -139,23 +137,19 @@ describe('SyncScreen', () => {
             await userInterfaces[0].logicContainer.processEvent('doSync', {
                 qrEvent: { data: 'bla' } as any,
             })
-            expect(userInterfaces[0].logicContainer.state).toEqual({
-                status: 'failure',
-            })
+            expect(userInterfaces[0].logicContainer.state.status).toEqual(
+                'failure',
+            )
         },
     )
 
     it('should skip the sync onboarding if already synced', async () => {
         const { logicContainer, services, navigation } = setup()
         services.localStorage.set(storageKeys.syncKey, true)
-        expect(logicContainer.state).toEqual({
-            status: 'setup',
-        })
+        expect(logicContainer.state.status).toEqual('setup')
 
         await logicContainer.processEvent('init', undefined)
-        expect(logicContainer.state).toEqual({
-            status: 'setup',
-        })
+        expect(logicContainer.state.status).toEqual('setup')
         expect(navigation.popRequests()).toEqual([
             {
                 type: 'navigate',
