@@ -20,6 +20,7 @@ import {
     MemexSyncInfoStorage,
 } from 'src/features/sync/storage'
 import { PRODUCT_VERSION } from 'src/constants'
+import { TweetNaclSyncEncryption } from '@worldbrain/memex-common/lib/sync/secrets/tweetnacl'
 
 export default class AppSyncService extends SyncService {
     constructor(options: {
@@ -37,7 +38,10 @@ export default class AppSyncService extends SyncService {
             settingStore: new MemexSyncSettingStore(options),
             productType: 'app',
             productVersion: PRODUCT_VERSION,
-            disableEncryption: true,
+            disableEncryption: false,
+            syncEncryption: new TweetNaclSyncEncryption({
+                randomBytes: n => generateSecureRandom(n),
+            }),
         })
 
         this.initialSync.getPeer = async ({ initiator }) => {
@@ -49,8 +53,6 @@ export default class AppSyncService extends SyncService {
                 channelName: (await generateSecureRandom(40)).toString(),
             })
         }
-        // .wrtc = WebRTC
-        // this.initialSync.randombytes = require('react-native-securerandom').generateSecureRandom
     }
 }
 
