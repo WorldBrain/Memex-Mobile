@@ -5,16 +5,22 @@ export default StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#8fffd7',
-        borderRadius: 5,
+        backgroundColor: '#5CD9A6',
+        borderRadius: 25,
         width: '85%',
         maxHeight: 50,
     },
+    buttonSecondary: {
+        backgroundColor: '#5671CF',
+    },
     buttonWarn: {
-        backgroundColor: '#ff000f',
+        backgroundColor: '#FF000F',
+    },
+    buttonMini: {
+        width: '15%',
     },
     text: {
-        color: 'black',
+        color: 'white',
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
