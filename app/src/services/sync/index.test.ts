@@ -42,7 +42,10 @@ describe('SyncService', () => {
     })
 
     it('should be able to do an incremental sync', async ({ createDevice }) => {
-        const devices = [await createDevice(), await createDevice()]
+        const devices = [
+            await createDevice({ debugSql: false }),
+            await createDevice({ debugSql: false }),
+        ]
 
         devices[0].auth.setUser(TEST_USER)
 
@@ -52,7 +55,7 @@ describe('SyncService', () => {
         })
 
         await insertIntegrationTestData(devices[0])
-        await devices[0].services.sync.continuousSync.forceIncrementalSync()
+        await devices[0].services.sync.continuousSync.doIncrementalSync()
 
         await devices[1].services.sync.continuousSync.forceIncrementalSync()
         await checkIntegrationTestData(devices[1])

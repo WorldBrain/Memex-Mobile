@@ -32,25 +32,38 @@ export default class AppSyncService extends SyncService {
         syncInfoStorage: MemexSyncInfoStorage
         devicePlatform: MemexSyncDevicePlatform
         getSharedSyncLog: () => Promise<SharedSyncLog>
+        disableEncryption?: boolean
     }) {
         super({
             ...options,
             settingStore: new MemexSyncSettingStore(options),
             productType: 'app',
             productVersion: PRODUCT_VERSION,
-            disableEncryption: false,
-            syncEncryption: new TweetNaclSyncEncryption({
-                randomBytes: n => generateSecureRandom(n),
-            }),
+            disableEncryption: !!options.disableEncryption,
+            syncEncryption: options.disableEncryption
+                ? undefined
+                : new TweetNaclSyncEncryption({
+                      randomBytes: n => generateSecureRandom(n),
+                  }),
         })
 
+        this.initialSync.wrtc = WebRTC
         this.initialSync.getPeer = async ({ initiator }) => {
+            const params =
+                options.devicePlatform !== 'integration-tests'
+                    ? {
+                          id: (await generateSecureRandom(8)).toString(),
+                          channelName: (await generateSecureRandom(
+                              40,
+                          )).toString(),
+                      }
+                    : {}
+
             return new Peer({
                 initiator,
-                wrtc: WebRTC,
+                wrtc: this.initialSync.wrtc,
                 reconnectTimer: 1000,
-                id: (await generateSecureRandom(8)).toString(),
-                channelName: (await generateSecureRandom(40)).toString(),
+                ...params,
             })
         }
     }

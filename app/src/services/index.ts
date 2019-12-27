@@ -34,6 +34,7 @@ export async function createServices(
             syncInfoStorage: options.storage.modules.syncInfo,
             getSharedSyncLog: async () => options.sharedSyncLog,
             auth: options.auth,
+            disableEncryption: options.devicePlatform === 'integration-tests',
             localStorage,
         }),
     }
