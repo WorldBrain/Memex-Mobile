@@ -11,7 +11,7 @@ export interface State {
 
 export type Event = UIEvent<{
     goToNextStage: {}
-    finishOnboarding: {}
+    goToPrevStage: {}
 }>
 
 export default class OnboardingScreenLogic extends UILogic<State, Event> {
@@ -40,23 +40,22 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
     goToNextStage(
         incoming: IncomingUIEvent<State, Event, 'goToNextStage'>,
     ): UIMutation<State> {
-        const value = (incoming.previousState.onboardingStage +
-            1) as OnboardingStage
-
-        if (value > 3) {
-            this.finishOnboarding()
-            return {}
+        return {
+            onboardingStage: {
+                $set: (incoming.previousState.onboardingStage +
+                    1) as OnboardingStage,
+            },
         }
-
-        return { onboardingStage: { $set: value } }
     }
 
-    async finishOnboarding() {
-        await this.options.services.localStorage.set(
-            storageKeys.showOnboarding,
-            false,
-        )
-
-        await this.options.navigation.navigate('Sync')
+    goToPrevStage(
+        incoming: IncomingUIEvent<State, Event, 'goToPrevStage'>,
+    ): UIMutation<State> {
+        return {
+            onboardingStage: {
+                $set: (incoming.previousState.onboardingStage -
+                    1) as OnboardingStage,
+            },
+        }
     }
 }

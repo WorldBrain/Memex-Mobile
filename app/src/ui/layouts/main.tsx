@@ -16,7 +16,6 @@ export interface Props {
     titleText: string
     subtitleText: string
     showScreenProgress?: boolean
-    screenIndex?: number
     isComingSoon?: boolean
     onBtnPress: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
 }
