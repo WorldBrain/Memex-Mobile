@@ -4,7 +4,7 @@ import { OnboardingStage } from 'src/features/onboarding/types'
 import OnboardingScreenLogic from './logic'
 import { TestLogicContainer } from 'src/tests/ui-logic'
 import { FakeNavigation } from 'src/tests/navigation'
-import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage.js'
+import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 
 describe('onboarding UI logic tests', () => {
     function setup() {

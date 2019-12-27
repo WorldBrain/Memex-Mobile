@@ -13,66 +13,58 @@ export class SettingsStorage extends StorageModule implements SettableSettings {
                 [SettingsStorage.SETTINGS_COLL_NAME]: {
                     version: new Date('2019-12-16'),
                     fields: {
-                        settings: { type: 'json' },
+                        key: { type: 'string' },
+                        value: { type: 'json', optional: true },
                     },
+                    indices: [{ field: ['key'], pk: true }],
                 },
             },
             operations: {
-                getSettings: {
+                getSetting: {
                     operation: 'findObject',
                     collection: SettingsStorage.SETTINGS_COLL_NAME,
-                    args: {},
+                    args: { key: '$key:string' },
                 },
-                setSettings: {
-                    operation: 'updateObject',
-                    collection: SettingsStorage.SETTINGS_COLL_NAME,
-                    args: [{ id: '$id:pk' }, { settings: '$settings:any' }],
-                },
-                createSettings: {
+                createSetting: {
                     operation: 'createObject',
                     collection: SettingsStorage.SETTINGS_COLL_NAME,
+                    args: { key: '$key:string', value: '$value:any' },
+                },
+                updateSetting: {
+                    operation: 'updateObject',
+                    collection: SettingsStorage.SETTINGS_COLL_NAME,
+                    args: [{ key: '$key:string' }, { value: '$value:any' }],
+                },
+                deleteSetting: {
+                    operation: 'deleteObjects',
+                    collection: SettingsStorage.SETTINGS_COLL_NAME,
+                    args: { key: '$key:string' },
                 },
             },
         }
     }
 
     async setSetting(args: { key: string; value: any }): Promise<void> {
-        const newPair = { [args.key]: args.value }
-
-        const existing = await this.operation('getSettings', {})
+        const existing = await this.operation('getSetting', { key: args.key })
 
         if (!existing) {
-            return this.operation('createSettings', { settings: newPair })
+            return this.operation('createSetting', args)
+        } else {
+            return this.operation('updateSetting', args)
         }
-
-        return this.operation('setSettings', {
-            id: existing.id,
-            settings: { ...existing.settings, ...newPair },
-        })
     }
 
     async getSetting<T = any>(args: { key: string }): Promise<T | null> {
-        const existing = await this.operation('getSettings', {})
+        const existing = await this.operation('getSetting', args)
 
         if (!existing) {
             return null
         }
 
-        return existing.settings[args.key] as T
+        return existing.value as T
     }
 
     async clearSetting(args: { key: string }): Promise<void> {
-        const existing = await this.operation('getSettings', {})
-
-        if (!existing) {
-            return
-        }
-
-        const { [args.key]: toRemove, ...remainingSettings } = existing.settings
-
-        return this.operation('setSettings', {
-            id: existing.id,
-            settings: { ...remainingSettings },
-        })
+        await this.operation('deleteSetting', args)
     }
 }
