@@ -382,6 +382,8 @@ PODS:
     - React
   - RNSecureRandom (1.0.0-rc.0):
     - React
+  - RNSVG (9.13.6):
+    - React
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -428,6 +430,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNSecureRandom (from `../node_modules/react-native-securerandom`)
+  - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -530,6 +533,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions"
   RNSecureRandom:
     :path: "../node_modules/react-native-securerandom"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -593,6 +598,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
   RNPermissions: 35959d09546f1cd60c129ee128146a120ea595c3
   RNSecureRandom: 1f19ad1492f7ed416b8fc79e92216a1f73f13a4c
+  RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   Yoga: 3f70bbd9aa01e04eefec36e2a085b2fc0ff1dd98
 
 PODFILE CHECKSUM: 2298f651022ec7c6bd21c9abfc391a4e0a972ce9
