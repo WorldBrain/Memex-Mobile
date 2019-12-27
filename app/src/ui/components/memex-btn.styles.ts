@@ -16,8 +16,14 @@ export default StyleSheet.create({
     buttonWarn: {
         backgroundColor: '#FF000F',
     },
-    buttonMini: {
-        width: '15%',
+    buttonEmpty: {
+        backgroundColor: 'transparent',
+    },
+    buttonSmallWidth: {
+        maxWidth: '25%',
+    },
+    buttonHidden: {
+        backgroundColor: 'transparent',
     },
     text: {
         color: 'white',

@@ -1,28 +1,42 @@
 import React from 'react'
-import { Text, TouchableOpacity, ButtonProps, StyleProp } from 'react-native'
+import {
+    Text,
+    View,
+    TouchableOpacity,
+    ButtonProps,
+    StyleProp,
+} from 'react-native'
 
 import styles from './memex-btn.styles'
 
 export interface Props extends ButtonProps {
     style?: StyleProp<any>
-    warning?: boolean
+    smallWidth?: boolean
     secondary?: boolean
+    warning?: boolean
+    hidden?: boolean
+    empty?: boolean
 }
 
-const MainLayout: React.StatelessComponent<Props> = props => (
-    <TouchableOpacity
-        style={[
-            styles.button,
-            props.warning ? styles.buttonWarn : null,
-            props.secondary ? styles.buttonSecondary : null,
-            props.style,
-        ]}
-        onPress={props.onPress}
-    >
-        <Text style={[styles.text, props.warning ? styles.textWarn : null]}>
-            {props.title}
-        </Text>
-    </TouchableOpacity>
-)
+const MainLayout: React.StatelessComponent<Props> = props =>
+    props.hidden ? (
+        <View style={[styles.button, styles.buttonHidden]} />
+    ) : (
+        <TouchableOpacity
+            onPress={props.onPress}
+            style={[
+                styles.button,
+                props.smallWidth ? styles.buttonSmallWidth : null,
+                props.secondary ? styles.buttonSecondary : null,
+                props.warning ? styles.buttonWarn : null,
+                props.empty ? styles.buttonEmpty : null,
+                props.style,
+            ]}
+        >
+            <Text style={[styles.text, props.warning ? styles.textWarn : null]}>
+                {props.title}
+            </Text>
+        </TouchableOpacity>
+    )
 
 export default MainLayout
