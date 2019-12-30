@@ -3,3 +3,7 @@ node_modules
 .settings/
 .classpath
 app/ios/Pods
+
+# GitHub deploy key
+travis_key
+travis_key.pub
