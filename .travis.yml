@@ -3,7 +3,7 @@ jobs:
     - stage: Test and lint
       language: node_js
       node_js:
-        - "lts/*"
+        - lts/*
       before_install:
         - cd app/
       install:
@@ -24,8 +24,9 @@ jobs:
       osx_image: xcode9.2
       language: node_js
       node_js:
-        - "lts/*"
+        - lts/*
       before_install:
+        - ".travis/gh.sh"
         - cd app/ios/
         - pod install
         - cd ..
@@ -34,3 +35,6 @@ jobs:
         - yarn install --frozen-lockfile
       script:
         - yarn ios:beta
+env:
+  matrix:
+    secure: Qqqz/vQX9rU3iGcGLimuGVUUogLTY8ahmnb+Yux9n/N0e8RAgncSJeSlCJRWH1ON2IDkwZ+H04IIlO5taKo9j0dP78FMdxVa2/HgRLEeyaMRhVHV52IzJ46OD/cXAmSyCNpj8Ams+tPsUq4jDVxZpA2/tJ50fBQcd05Oh3ehdoyMo+U2bLMT/tplckQ7g/WsCsTXbXwO4zlZbMpUhZGIdz4qld1I+wQy6hYKYrJcEBfCJxUhMlfQvINwi3DBt9Q//Xh+ec47osU1BfsGzYsHkwwsEAy+OTALfHM1/37TtOtrMYA/vHVRsR/G4RuWqTCx+pO0WA76Xzzcl1RSZQI3QM87YBGjAJjj8uq0LLaNf+0oCPaFvd3CJDrJWTG0kCL+knKX9wqNjv2byNhgri9MmeGrCzWAaENaRhG2YLStwSX703jcWfIYTNwuMP6DF/judJPapYwUcNJqNjUKFs59cN/SvcmAuvOdF8q9JaZNOFS2OmQlz3WG8EplSuREQi/I2hmKsSKfCr8VRZpGrIa48gqeNsFKue97ft2BLYRMNHyOu3Rf/aOgJ8jqIgaJvFnF5nvF2G48rUrwEqD7EUEsDxpvSgF+w7Z/9UntAXdBgLBCPPVsQAJ7q6utLkX5qHlN9+wHWzgx/T7K5fI4JGYjNDAb/n6mtSbMIQBoLIkm6mw=
