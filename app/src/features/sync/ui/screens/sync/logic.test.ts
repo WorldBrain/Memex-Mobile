@@ -94,7 +94,7 @@ describe('SyncScreen', () => {
                 initialMessage,
             } = await devices[0].services.sync.initialSync.requestInitialSync()
             await userInterfaces[1].logicContainer.processEvent('doSync', {
-                qrEvent: { data: initialMessage } as any,
+                initialMessage,
             })
             expect(userInterfaces[1].logicContainer.state.status).toEqual(
                 'success',
