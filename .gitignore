@@ -7,3 +7,8 @@ app/ios/Pods
 # GitHub deploy key
 travis_key
 travis_key.pub
+
+# iOS sigining keys
+dist.cer
+dist.p12
+travis.mobileprovision

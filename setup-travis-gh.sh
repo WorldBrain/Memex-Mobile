@@ -4,6 +4,9 @@ GH_PUBLIC_KEY="github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9
 
 decrypt_deploy_key() {
   openssl aes-256-cbc -k "$travis_key_password" -d -md sha256 -a -in travis_key.enc -out travis_key
+  openssl aes-256-cbc -k "$travis_key_password" -d -a -in dist.p12.enc -out dist.p12
+  openssl aes-256-cbc -k "$travis_key_password" -d -a -in dist.cer.enc -out dist.cer
+  openssl aes-256-cbc -k "$travis_key_password" -d -a -in travis.mobileprovision.enc -out travis.mobileprovision
   echo "Host github.com" > ~/.ssh/config
   echo "  IdentityFile  $(pwd)/travis_key" >> ~/.ssh/config
   chmod 400 travis_key
