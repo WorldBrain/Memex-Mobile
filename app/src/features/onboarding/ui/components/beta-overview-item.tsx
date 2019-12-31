@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 
-import Tick from '../assets/tick.svg'
+import TickBall from 'src/ui/components/tick-ball'
 import styles from './beta-overview-item.styles'
 
 export interface Props {
@@ -12,16 +12,7 @@ export interface Props {
 
 const BetaOverviewItem: React.StatelessComponent<Props> = props => (
     <View style={styles.mainContainer}>
-        <View
-            style={[
-                styles.checkCircle,
-                props.checked
-                    ? styles.checkCircleChecked
-                    : styles.checkCircleEmpty,
-            ]}
-        >
-            {props.checked && <Tick style={styles.tick} />}
-        </View>
+        <TickBall disabled={!props.checked} style={styles.tickBall} />
         <View style={styles.textContainer}>
             <Text
                 style={[

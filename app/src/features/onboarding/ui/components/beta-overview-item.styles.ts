@@ -1,29 +1,14 @@
 import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
+    tickBall: {
+        marginRight: 10,
+    },
     mainContainer: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-    },
-    checkCircle: {
-        height: 34,
-        width: 34,
-        borderRadius: 25,
-        marginRight: 10,
-        position: 'relative',
-    },
-    checkCircleChecked: {
-        backgroundColor: '#5CD9A6',
-    },
-    checkCircleEmpty: {
-        backgroundColor: '#2C49AB',
-    },
-    tick: {
-        position: 'absolute',
-        left: 8,
-        top: 11,
     },
     textContainer: {},
     headingText: {
