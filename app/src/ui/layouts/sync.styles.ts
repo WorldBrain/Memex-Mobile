@@ -13,16 +13,7 @@ export default StyleSheet.create({
         marginHorizontal: 50,
         textAlign: 'center',
     },
-    comingSoonText: {
-        fontSize: 18,
-        color: 'red',
-        textAlign: 'center',
-        textTransform: 'uppercase',
-    },
     children: {
         height: 300,
-    },
-    comingSoonContainer: {
-        height: 20,
     },
 })

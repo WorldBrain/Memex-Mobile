@@ -11,6 +11,7 @@ import SetupStage from '../../components/sync-setup-stage'
 import LoadingStage from '../../components/sync-loading-stage'
 import InfoStage from '../../components/sync-info-stage'
 import SuccessStage from '../../components/sync-success-stage'
+import ErrorStage from '../../components/sync-error-stage'
 import ScanQRStage from '../../components/sync-scan-qr-stage'
 
 export default class SyncScreen extends NavigationScreen<
@@ -66,7 +67,14 @@ export default class SyncScreen extends NavigationScreen<
                     />
                 )
             case 'failure':
-                return <Text>{this.state.errMsg}</Text>
+                return (
+                    <ErrorStage
+                        onCancelBtnPress={this.handleCancelBtnPress}
+                        onSupportBtnPress={this.handleCancelBtnPress}
+                        errorText="Something has gone wrong"
+                        onBtnPress={() => undefined}
+                    />
+                )
             case 'info':
                 return (
                     <InfoStage

@@ -4,10 +4,11 @@ export default StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'space-evenly',
+        justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 100,
-        marginBottom: '50%',
+    },
+    spinner: {
+        marginBottom: 50,
     },
     icon: {
         width: 50,
@@ -15,9 +16,8 @@ export default StyleSheet.create({
         backgroundColor: '#c4c4c4',
     },
     text: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        paddingHorizontal: 50,
+        fontSize: 15,
+        color: '#757280',
         textAlign: 'center',
     },
 })

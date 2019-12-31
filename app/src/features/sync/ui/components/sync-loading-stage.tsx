@@ -1,8 +1,8 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { Text, View } from 'react-native'
 
+import SyncLayout from 'src/ui/layouts/sync'
 import LoadingBalls from 'src/ui/components/loading-balls'
-import Button from 'src/ui/components/memex-btn'
 import styles from './sync-loading-stage.styles'
 
 export interface Props {
@@ -10,12 +10,17 @@ export interface Props {
 }
 
 const SyncLoadingStage: React.StatelessComponent<Props> = props => (
-    <View style={styles.container}>
-        <View style={styles.icon} />
-        <LoadingBalls />
-        <Text style={styles.text}>Pairing devices and syncing data</Text>
-        <Button onPress={props.__backToOverview} title="CANCEL" />
-    </View>
+    <SyncLayout
+        titleText="Step 4"
+        btnText="Next"
+        disableMainBtn
+        onCancelBtnPress={props.__backToOverview}
+    >
+        <View style={styles.container}>
+            <LoadingBalls style={styles.spinner} />
+            <Text style={styles.text}>Syncing in progress</Text>
+        </View>
+    </SyncLayout>
 )
 
 export default SyncLoadingStage
