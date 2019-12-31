@@ -16,6 +16,7 @@ export interface Props extends ButtonProps {
     warning?: boolean
     hidden?: boolean
     empty?: boolean
+    __notReallyDisabled?: boolean
 }
 
 const MainLayout: React.StatelessComponent<Props> = props =>
@@ -23,17 +24,25 @@ const MainLayout: React.StatelessComponent<Props> = props =>
         <View style={[styles.button, styles.buttonHidden]} />
     ) : (
         <TouchableOpacity
+            disabled={props.__notReallyDisabled ? false : props.disabled}
             onPress={props.onPress}
             style={[
                 styles.button,
                 props.smallWidth ? styles.buttonSmallWidth : null,
                 props.secondary ? styles.buttonSecondary : null,
+                props.disabled ? styles.buttonDisabled : null,
                 props.warning ? styles.buttonWarn : null,
                 props.empty ? styles.buttonEmpty : null,
                 props.style,
             ]}
         >
-            <Text style={[styles.text, props.warning ? styles.textWarn : null]}>
+            <Text
+                style={[
+                    styles.text,
+                    props.warning ? styles.textWarn : null,
+                    props.empty ? styles.textEmpty : null,
+                ]}
+            >
                 {props.title}
             </Text>
         </TouchableOpacity>

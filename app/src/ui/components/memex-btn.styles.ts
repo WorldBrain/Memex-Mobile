@@ -16,6 +16,9 @@ export default StyleSheet.create({
     buttonWarn: {
         backgroundColor: '#FF000F',
     },
+    buttonDisabled: {
+        backgroundColor: '#cef4e4',
+    },
     buttonEmpty: {
         backgroundColor: 'transparent',
     },
@@ -33,5 +36,8 @@ export default StyleSheet.create({
     },
     textWarn: {
         color: 'white',
+    },
+    textEmpty: {
+        color: 'black',
     },
 })
