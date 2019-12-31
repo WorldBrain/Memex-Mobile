@@ -67,9 +67,10 @@ export default class MVPOverviewMenu extends NavigationScreen<
                     <View style={styles.memexLogo} />
                     <View style={styles.btnsContainer}>
                         <Button
-                            title="View Tutorial"
+                            title="Learn how to use"
                             onPress={this.handleTutorialPress}
                             style={styles.btn}
+                            secondary
                         />
                         <Button
                             title="Feature Roadmap"

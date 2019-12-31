@@ -141,13 +141,13 @@ export default class SyncScreenLogic extends UILogic<
         this.dependencies.navigation.navigate('MVPOverview')
     }
 
-    startScanning(
+    setSyncStatus(
         incoming: IncomingUIEvent<
             SyncScreenState,
             SyncScreenEvent,
-            'startScanning'
+            'setSyncStatus'
         >,
     ): UIMutation<SyncScreenState> {
-        return { status: { $set: 'scanning' } }
+        return { status: { $set: incoming.event.value } }
     }
 }
