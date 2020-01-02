@@ -26,7 +26,6 @@ import {
     insertIntegrationTestData,
     checkIntegrationTestData,
 } from './tests/shared-fixtures/integration'
-import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
