@@ -356,6 +356,8 @@ PODS:
     - ReactCommon/jscallinvoker (= 0.61.0)
   - ReactNativeShareExtension (2.0.0):
     - React
+  - RNBackgroundFetch (2.7.1):
+    - React
   - RNCAsyncStorage (1.6.1):
     - React
   - RNFBApp (6.0.1):
@@ -420,6 +422,7 @@ DEPENDENCIES:
   - ReactCommon/jscallinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeShareExtension (from `../node_modules/react-native-share-extension/ReactNativeShareExtension.podspec`)
+  - RNBackgroundFetch (from `../node_modules/react-native-background-fetch`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app/RNFBApp.podspec`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
@@ -514,6 +517,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeShareExtension:
     :podspec: "../node_modules/react-native-share-extension/ReactNativeShareExtension.podspec"
+  RNBackgroundFetch:
+    :path: "../node_modules/react-native-background-fetch"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
   RNFBApp:
@@ -585,6 +590,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: c8e67f140a83a14a1ad9042950cca08ab29423fd
   ReactCommon: 584ef683c340894c1c82be43ce760390493ae8bf
   ReactNativeShareExtension: d99eb6e4f22233a6a54f3a938e94357f0a8e1462
+  RNBackgroundFetch: 8d8d66b47eafcb9e772b2eb95057939038b3ef95
   RNCAsyncStorage: 2e2e3feb9bdadc752a026703d8c4065ca912e75a
   RNFBApp: 5dd12fdb688ddd25aa756d8cd2780abaadf15709
   RNFBAuth: 7011c2d87c84bac55b5feb414cf1b0b92169f4b9

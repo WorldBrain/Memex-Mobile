@@ -17,6 +17,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
+import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 
 import org.pgsqlite.SQLitePluginPackage;
 import com.alinz.parkerdan.shareextension.SharePackage;
@@ -47,6 +48,7 @@ public class MainApplication extends Application implements ReactApplication {
         new RNCameraPackage(),
         new RNPermissionsPackage(),
         new RNGestureHandlerPackage(),
+        new RNBackgroundFetchPackage(),
         new SharePackage()  // register `react-native-share-extension` plugin here
       );
     }

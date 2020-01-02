@@ -161,6 +161,7 @@ dependencies {
     implementation project(':react-native-sqlite-storage')
     implementation project(':react-native-share-extension')
     implementation "com.facebook.react:react-native:+"
+    implementation project(':react-native-background-fetch')
 
     if (enableHermes) {
       // for RN 0.61+
