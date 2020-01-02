@@ -9,12 +9,15 @@ import { LocalStorageService } from './local-storage'
 import SyncService from './sync'
 import { Storage } from 'src/storage/types'
 import { BackgroundProcessService } from './background-processing'
+import { KeychainService } from './keychain'
+import { KeychainPackageAPI } from './keychain/types'
 
 export interface CreateServicesOptions {
     storage: Storage
     signalTransportFactory: SignalTransportFactory
     sharedSyncLog: SharedSyncLog
     auth: AuthService
+    keychain: KeychainPackageAPI
     localStorage: LocalStorageService
     devicePlatform: MemexSyncDevicePlatform
 }
@@ -27,6 +30,7 @@ export async function createServices(
         auth: options.auth,
         shareExt: new ShareExtService({}),
         backgroundProcess: new BackgroundProcessService({}),
+        keychain: new KeychainService({ keychain: options.keychain }),
         localStorage,
         sync: new SyncService({
             devicePlatform: options.devicePlatform,

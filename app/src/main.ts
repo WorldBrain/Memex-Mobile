@@ -2,6 +2,7 @@ globalThis.process.version = '1.1.1'
 
 import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'
+import * as Keychain from 'react-native-keychain'
 
 import { Platform } from 'react-native'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
@@ -52,6 +53,7 @@ export async function main() {
         storage,
         signalTransportFactory: createFirebaseSignalTransport,
         sharedSyncLog: serverStorage.modules.sharedSyncLog,
+        keychain: Keychain,
     })
     await setStorageMiddleware({
         services,
