@@ -43,6 +43,8 @@ target 'app' do
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
   pod 'Firebase/Database'
+  pod 'Firebase/Functions'
+
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 

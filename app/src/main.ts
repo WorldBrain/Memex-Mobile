@@ -2,6 +2,7 @@ globalThis.process.version = '1.1.1'
 
 import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'
+import '@react-native-firebase/functions'
 import * as Keychain from 'react-native-keychain'
 
 import { Platform } from 'react-native'
