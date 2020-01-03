@@ -14,3 +14,5 @@ export interface Services {
     localStorage: LocalStorageService
     backgroundProcess: BackgroundProcessService
 }
+
+export type ServiceStarter = (args: { services: Services }) => Promise<void>

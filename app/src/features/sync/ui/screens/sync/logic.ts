@@ -1,6 +1,6 @@
 // tslint:disable:no-console
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
-import { storageKeys } from '../../../../../../app.json'
+import { appGroup, storageKeys } from '../../../../../../app.json'
 
 import { SyncStatus } from 'src/features/sync/types'
 import { NavigationProps, UIServices } from 'src/ui/types'
@@ -21,7 +21,7 @@ export type SyncScreenEvent = UIEvent<{
 }>
 
 export interface SyncScreenDependencies extends NavigationProps {
-    services: UIServices<'localStorage' | 'sync'>
+    services: UIServices<'localStorage' | 'sync' | 'auth' | 'keychain'>
     suppressErrorLogging?: boolean
 }
 export default class SyncScreenLogic extends UILogic<
@@ -77,6 +77,21 @@ export default class SyncScreenLogic extends UILogic<
         delete (globalThis as any).feedQrData
     }
 
+    async saveFirebaseTokenToKeychain() {
+        const {
+            token,
+        } = await this.dependencies.services.auth.generateLoginToken()
+
+        if (!token || !token.length) {
+            throw new Error('Could not generate Firebase Auth logic token')
+        }
+
+        await this.dependencies.services.keychain.setLogin({
+            username: appGroup,
+            password: token,
+        })
+    }
+
     async doSync(
         incoming: IncomingUIEvent<SyncScreenState, SyncScreenEvent, 'doSync'>,
     ) {
@@ -101,6 +116,9 @@ export default class SyncScreenLogic extends UILogic<
                 true,
             )
             await this.dependencies.services.sync.continuousSync.setup()
+
+            await this.saveFirebaseTokenToKeychain()
+
             await this.emitMutation({ status: { $set: 'success' } })
         } catch (e) {
             if (!this.dependencies.suppressErrorLogging) {

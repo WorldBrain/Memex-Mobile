@@ -20,7 +20,7 @@ import {
     createServerStorage,
 } from './storage'
 import { createServices } from './services'
-import { setupBackgroundSync } from './services/background-sync'
+import { setupBackgroundSync, setupFirebaseAuth } from './services/setup'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
@@ -65,7 +65,8 @@ export async function main() {
 
     ui.initialize({ dependencies: { storage, services } })
 
-    setupBackgroundSync({ services })
+    await setupBackgroundSync({ services })
+    await setupFirebaseAuth({ services })
 
     Object.assign(globalThis, {
         services,
