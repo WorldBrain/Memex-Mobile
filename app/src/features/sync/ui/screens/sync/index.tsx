@@ -1,5 +1,6 @@
 import React from 'react'
 import { Text } from 'react-native'
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake'
 
 import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
 import SyncScreenLogic, {
@@ -21,19 +22,23 @@ export default class SyncScreen extends NavigationScreen<
         super(props, { logic: new SyncScreenLogic(props) })
     }
 
+    handleDoSync = async ({ initialMessage }: { initialMessage: string }) => {
+        activateKeepAwake()
+        await this.processEvent('doSync', { initialMessage })
+        deactivateKeepAwake()
+    }
+
     render() {
         switch (this.state.status) {
             case 'scanning':
                 return (
                     <ScanQRStage
                         onQRRead={qrEvent =>
-                            this.processEvent('doSync', {
-                                initialMessage: qrEvent.data,
-                            })
+                            this.handleDoSync({ initialMessage: qrEvent.data })
                         }
                         onSkipBtnPress={() => this.processEvent('skipSync', {})}
                         onManualInputSubmit={() =>
-                            this.processEvent('doSync', {
+                            this.handleDoSync({
                                 initialMessage: this.state.manualInputValue,
                             })
                         }
