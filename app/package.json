@@ -50,6 +50,7 @@
         "react-native-share-extension": "git+https://github.com/WorldBrain/react-native-share-extension#591e523e7c9e2595bd0a7f04ad02c4c0c7cf2206",
         "react-native-sqlite-storage": "git://github.com/WorldBrain/react-native-sqlite-storage#b1c5a50116d18c48eb71b067c36299ef0d50de6d",
         "react-native-stream": "^0.1.9",
+        "react-native-unimodules": "^0.7.0",
         "react-native-webrtc": "https://github.com/WorldBrain/react-native-webrtc.git#7392fe76e583f9ff9c5cc010bdf352e6d17803e6",
         "react-navigation": "^3.11.0",
         "sqlite3": "^4.0.8",

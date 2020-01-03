@@ -144,6 +144,8 @@ android {
     }
 }
 
+apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
+
 dependencies {
     implementation project(':react-native-securerandom')
     implementation project(':react-native-webrtc')
@@ -162,6 +164,8 @@ dependencies {
     implementation project(':react-native-share-extension')
     implementation "com.facebook.react:react-native:+"
     implementation project(':react-native-background-fetch')
+
+    addUnimodulesDependencies()
 
     if (enableHermes) {
       // for RN 0.61+
