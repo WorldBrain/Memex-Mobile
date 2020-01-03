@@ -1,31 +1,21 @@
-import { KeychainPackageAPI, Login } from './types'
+import { KeychainAPI, Login } from './types'
 
-export class MockKeychainPackage implements KeychainPackageAPI {
+export class MockKeychainPackage implements KeychainAPI {
     login: Login | null = null
 
-    async getGenericPassword(opts: any) {
+    async getLogin() {
         if (this.login == null) {
-            return false
+            return null
         }
 
-        return { ...this.login, service: '' }
+        return { ...this.login }
     }
 
-    async setGenericPassword(username: string, password: string) {
-        if (this.login != null) {
-            return false
-        }
-
+    async setLogin({ username, password }: Login) {
         this.login = { username, password }
-        return true
     }
 
-    async resetGenericPassword() {
-        if (this.login == null) {
-            return false
-        }
-
+    async resetLogin() {
         this.login = null
-        return true
     }
 }

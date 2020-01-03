@@ -10,14 +10,14 @@ import SyncService from './sync'
 import { Storage } from 'src/storage/types'
 import { BackgroundProcessService } from './background-processing'
 import { KeychainService } from './keychain'
-import { KeychainPackageAPI } from './keychain/types'
+import { KeychainAPI } from './keychain/types'
 
 export interface CreateServicesOptions {
     storage: Storage
     signalTransportFactory: SignalTransportFactory
     sharedSyncLog: SharedSyncLog
     auth: AuthService
-    keychain: KeychainPackageAPI
+    keychain: KeychainAPI
     localStorage: LocalStorageService
     devicePlatform: MemexSyncDevicePlatform
 }

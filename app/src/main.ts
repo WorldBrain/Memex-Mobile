@@ -24,6 +24,7 @@ import { setupBackgroundSync } from './services/background-sync'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
+import { KeychainPackage } from './services/keychain/keychain'
 import {
     insertIntegrationTestData,
     checkIntegrationTestData,
@@ -54,7 +55,7 @@ export async function main() {
         storage,
         signalTransportFactory: createFirebaseSignalTransport,
         sharedSyncLog: serverStorage.modules.sharedSyncLog,
-        keychain: Keychain,
+        keychain: new KeychainPackage({ server: 'worldbrain.io' }),
     })
     await setStorageMiddleware({
         services,
