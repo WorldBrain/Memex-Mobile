@@ -8,6 +8,7 @@ import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.SingletonModule;
 
+import com.oblador.keychain.KeychainPackage;
 import com.facebook.react.ReactApplication;
 import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
@@ -53,6 +54,7 @@ public class MainApplication extends Application implements ReactApplication {
         new ReactNativeFirebaseFirestorePackage(),
         new AsyncStoragePackage(),
         new RNCameraPackage(),
+        new KeychainPackage(),
         new RNPermissionsPackage(),
         new RNGestureHandlerPackage(),
         new RNBackgroundFetchPackage(),

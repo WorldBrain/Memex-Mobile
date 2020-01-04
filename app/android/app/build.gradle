@@ -164,6 +164,7 @@ dependencies {
     implementation project(':react-native-share-extension')
     implementation "com.facebook.react:react-native:+"
     implementation project(':react-native-background-fetch')
+    compile project(':react-native-keychain')
 
     addUnimodulesDependencies()
 
