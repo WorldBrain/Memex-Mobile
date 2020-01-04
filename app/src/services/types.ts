@@ -4,11 +4,15 @@ import SyncService from './sync'
 import { ShareExtService } from './share-ext'
 import { LocalStorageService } from './local-storage'
 import { BackgroundProcessService } from './background-processing'
+import { KeychainService } from './keychain'
 
 export interface Services {
     auth: AuthService
     sync: SyncService
     shareExt: ShareExtService
+    keychain: KeychainService
     localStorage: LocalStorageService
     backgroundProcess: BackgroundProcessService
 }
+
+export type ServiceStarter = (args: { services: Services }) => Promise<void>

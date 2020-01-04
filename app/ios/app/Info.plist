@@ -51,6 +51,8 @@
 	<string>We need to scan a QR code to sync with the Memex web extension</string>
 	<key>NSContactsUsageDescription</key>
 	<string>We don't use this</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to use your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We don't use this</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -59,8 +61,12 @@
 	<string>We don't use this</string>
 	<key>NSMotionUsageDescription</key>
 	<string>We don't use this</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Give $(PRODUCT_NAME) permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We don't use this</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your reminders</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>We don't use this</string>
 	<key>UIBackgroundModes</key>

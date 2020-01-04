@@ -2,6 +2,8 @@ globalThis.process.version = '1.1.1'
 
 import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'
+import '@react-native-firebase/functions'
+import * as Keychain from 'react-native-keychain'
 
 import { Platform } from 'react-native'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
@@ -18,10 +20,11 @@ import {
     createServerStorage,
 } from './storage'
 import { createServices } from './services'
-import { setupBackgroundSync } from './services/background-sync'
+import { setupBackgroundSync, setupFirebaseAuth } from './services/setup'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
+import { KeychainPackage } from './services/keychain/keychain'
 import {
     insertIntegrationTestData,
     checkIntegrationTestData,
@@ -52,6 +55,7 @@ export async function main() {
         storage,
         signalTransportFactory: createFirebaseSignalTransport,
         sharedSyncLog: serverStorage.modules.sharedSyncLog,
+        keychain: new KeychainPackage({ server: 'worldbrain.io' }),
     })
     await setStorageMiddleware({
         services,
@@ -61,7 +65,8 @@ export async function main() {
 
     ui.initialize({ dependencies: { storage, services } })
 
-    setupBackgroundSync({ services })
+    await setupBackgroundSync({ services })
+    await setupFirebaseAuth({ services })
 
     Object.assign(globalThis, {
         services,

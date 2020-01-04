@@ -1,7 +1,14 @@
 package io.worldbrain;
 
+ import io.worldbrain.generated.BasePackageList;
+
 import android.app.Application;
 
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.interfaces.SingletonModule;
+
+import com.oblador.keychain.KeychainPackage;
 import com.facebook.react.ReactApplication;
 import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
@@ -26,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
+   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList());
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
@@ -38,7 +46,7 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
         new SQLitePluginPackage(),   // register SQLite Plugin here
         new MainReactPackage(),
-            new RNSecureRandomPackage(),
+        new RNSecureRandomPackage(),
         new WebRTCModulePackage(),
         new ReactNativeFirebaseAppPackage(),
         new ReactNativeFirebaseAuthPackage(),
@@ -46,10 +54,12 @@ public class MainApplication extends Application implements ReactApplication {
         new ReactNativeFirebaseFirestorePackage(),
         new AsyncStoragePackage(),
         new RNCameraPackage(),
+        new KeychainPackage(),
         new RNPermissionsPackage(),
         new RNGestureHandlerPackage(),
         new RNBackgroundFetchPackage(),
-        new SharePackage()  // register `react-native-share-extension` plugin here
+        new SharePackage(),  // register `react-native-share-extension` plugin here
+        new ModuleRegistryAdapter(mModuleRegistryProvider)
       );
     }
 

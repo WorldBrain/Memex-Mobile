@@ -1,5 +1,6 @@
 platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
 
 target 'app' do
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
@@ -43,6 +44,8 @@ target 'app' do
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
   pod 'Firebase/Database'
+  pod 'Firebase/Functions'
+
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
@@ -52,6 +55,7 @@ target 'app' do
   pod 'react-native-camera', path: '../node_modules/react-native-camera'
 
   use_native_modules!
+  use_unimodules!
 
   pod 'RNSecureRandom', :path => '../node_modules/react-native-securerandom'
 
