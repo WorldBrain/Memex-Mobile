@@ -1,4 +1,10 @@
+apply from: '../node_modules/react-native-unimodules/gradle.groovy'
+includeUnimodulesProjects()
+
 rootProject.name = 'app'
+
+include ':react-native-keychain'
+project(':react-native-keychain').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-keychain/android')
 include ':react-native-securerandom'
 project(':react-native-securerandom').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-securerandom/android')
 include ':react-native-webrtc'
@@ -27,3 +33,6 @@ project(':react-native-sqlite-storage').projectDir = new File(rootProject.projec
 
 include ':app', ':react-native-share-extension'
 project(':react-native-share-extension').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-share-extension/android')
+
+include ':react-native-background-fetch'
+project(':react-native-background-fetch').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-background-fetch/android')

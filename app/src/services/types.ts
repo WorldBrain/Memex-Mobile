@@ -1,12 +1,18 @@
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 
+import SyncService from './sync'
 import { ShareExtService } from './share-ext'
 import { LocalStorageService } from './local-storage'
-import SyncService from './sync'
+import { BackgroundProcessService } from './background-processing'
+import { KeychainService } from './keychain'
 
 export interface Services {
     auth: AuthService
-    shareExt: ShareExtService
-    localStorage: LocalStorageService
     sync: SyncService
+    shareExt: ShareExtService
+    keychain: KeychainService
+    localStorage: LocalStorageService
+    backgroundProcess: BackgroundProcessService
 }
+
+export type ServiceStarter = (args: { services: Services }) => Promise<void>

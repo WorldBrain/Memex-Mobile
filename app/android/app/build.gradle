@@ -115,6 +115,19 @@ android {
         missingDimensionStrategy 'react-native-camera', 'general'
         multiDexEnabled true
     }
+
+    dexOptions {
+       javaMaxHeapSize "3g"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(MYAPP_UPLOAD_STORE_FILE)
+            storePassword MYAPP_UPLOAD_STORE_PASSWORD
+            keyAlias MYAPP_UPLOAD_KEY_ALIAS
+            keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+        }
+    }
     splits {
         abi {
             reset()
@@ -127,6 +140,8 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+            debuggable = false
         }
     }
     // applicationVariants are e.g. debug, release
@@ -143,6 +158,8 @@ android {
         }
     }
 }
+
+apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
     implementation project(':react-native-securerandom')
@@ -161,6 +178,10 @@ dependencies {
     implementation project(':react-native-sqlite-storage')
     implementation project(':react-native-share-extension')
     implementation "com.facebook.react:react-native:+"
+    implementation project(':react-native-background-fetch')
+    compile project(':react-native-keychain')
+
+    addUnimodulesDependencies()
 
     if (enableHermes) {
       // for RN 0.61+

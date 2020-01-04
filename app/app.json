@@ -3,6 +3,8 @@
     "displayName": "Memex",
     "shareExtName": "MemexShare",
     "version": "0.1",
+    "appGroup": "group.io.worldbrain.memex",
+    "appIdPrefix": "5YUPQC9D96",
     "storageKeys": {
         "showOnboarding": "@MemexApp_show-onboarding",
         "syncKey": "@MemexApp_sync-key"

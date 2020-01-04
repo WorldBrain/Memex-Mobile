@@ -29,6 +29,7 @@
 		530D720B22AA523900E0F8D5 /* MemexShare.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 530D720022AA523900E0F8D5 /* MemexShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		530D721122AA529100E0F8D5 /* MemexShare.m in Sources */ = {isa = PBXBuildFile; fileRef = 530D721022AA529100E0F8D5 /* MemexShare.m */; };
 		530D722422AA573400E0F8D5 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
+		53508EB523A0891C00846EB1 /* RNBackgroundFetch+AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 53508EB423A0891C00846EB1 /* RNBackgroundFetch+AppDelegate.m */; };
 		538C1A87237E8A870059DC2A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 538C1A86237E8A870059DC2A /* GoogleService-Info.plist */; };
 		538C1A89237E8A910059DC2A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 538C1A88237E8A910059DC2A /* GoogleService-Info.plist */; };
 		ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
@@ -249,6 +250,7 @@
 		530D721022AA529100E0F8D5 /* MemexShare.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MemexShare.m; sourceTree = "<group>"; };
 		532CDDCF2301603100548299 /* MemexShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MemexShare.entitlements; sourceTree = "<group>"; };
 		53310F2C22CC600200066A7A /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
+		53508EB423A0891C00846EB1 /* RNBackgroundFetch+AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RNBackgroundFetch+AppDelegate.m"; path = "../node_modules/react-native-background-fetch/ios/RNBackgroundFetch/RNBackgroundFetch+AppDelegate.m"; sourceTree = "<group>"; };
 		538C1A86237E8A870059DC2A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "app/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		538C1A88237E8A910059DC2A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		53B87F3822D2E91300F5DB10 /* app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = app.entitlements; path = app/app.entitlements; sourceTree = "<group>"; };
@@ -396,6 +398,7 @@
 		13B07FAE1A68108700A75B9A /* app */ = {
 			isa = PBXGroup;
 			children = (
+				53508EB423A0891C00846EB1 /* RNBackgroundFetch+AppDelegate.m */,
 				53B87F3822D2E91300F5DB10 /* app.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -1103,6 +1106,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53508EB523A0891C00846EB1 /* RNBackgroundFetch+AppDelegate.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
@@ -1246,7 +1250,7 @@
 				);
 				INFOPLIST_FILE = app/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.18;
+				MARKETING_VERSION = 1.2.24;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1277,7 +1281,7 @@
 				);
 				INFOPLIST_FILE = app/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.2.18;
+				MARKETING_VERSION = 1.2.24;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1448,7 +1452,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 1.2.18;
+				MARKETING_VERSION = 1.2.24;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
@@ -1492,7 +1496,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				MARKETING_VERSION = 1.2.18;
+				MARKETING_VERSION = 1.2.24;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
