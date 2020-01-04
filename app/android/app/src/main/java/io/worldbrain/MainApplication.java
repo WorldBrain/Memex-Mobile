@@ -42,7 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
 
     @Override
     protected List<ReactPackage> getPackages() {
-      List<ReactPackage> packages = Arrays.<ReactPackage>asList(
+      return Arrays.<ReactPackage>asList(
         new SQLitePluginPackage(),   // register SQLite Plugin here
         new MainReactPackage(),
         new RNSecureRandomPackage(),
@@ -56,17 +56,9 @@ public class MainApplication extends Application implements ReactApplication {
         new RNPermissionsPackage(),
         new RNGestureHandlerPackage(),
         new RNBackgroundFetchPackage(),
-        new SharePackage()  // register `react-native-share-extension` plugin here
-      );
-
-      // Add unimodules
-      List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
+        new SharePackage(),  // register `react-native-share-extension` plugin here
         new ModuleRegistryAdapter(mModuleRegistryProvider)
       );
-
-      packages.addAll(unimodules);
-
-      return packages;
     }
 
     @Override
