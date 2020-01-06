@@ -9,7 +9,7 @@ export default StyleSheet.create({
     textInput: {
         padding: 15,
         fontSize: 16,
-        color: '#545454',
+        color: '#000000',
         fontWeight: '400',
     },
 })
