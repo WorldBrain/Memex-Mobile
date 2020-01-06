@@ -41,11 +41,6 @@ describe('onboarding UI logic tests', () => {
             isSynced: false,
             onboardingStage: 2,
         })
-        await logicContainer.processEvent('goToNextStage', {})
-        expect(logicContainer.state).toEqual({
-            isSynced: false,
-            onboardingStage: 3,
-        })
 
         expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(null)
         await logicContainer.processEvent('goToNextStage', {})

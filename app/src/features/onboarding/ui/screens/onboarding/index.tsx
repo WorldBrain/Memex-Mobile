@@ -24,36 +24,19 @@ export default class OnboardingScreen extends NavigationScreen<
         super(props, { logic: new OnboardingScreenLogic(props) })
     }
 
-    private finishOnboarding = async () => {
-        await this.props.services.localStorage.set(
-            storageKeys.showOnboarding,
-            false,
-        )
-
-        await this.props.navigation.navigate('Sync')
-    }
-
-    private goToNextStage = async () => {
-        if (this.state.onboardingStage + 1 > 2) {
-            return this.finishOnboarding()
-        }
-
-        return this.processEvent('goToNextStage', {})
-    }
-
     private renderOnboardingStage(
         props: Omit<
             OnboardingLayoutProps,
-            'onNextPress' | 'onBackPress' | 'onSkipPress'
+            'onNextPress' | 'onBackPress' | 'onSkipPress' | 'screenIndex'
         >,
     ) {
         return (
             <OnboardingLayout
                 {...props}
-                screenIndex={this.state.onboardingStage - 1}
-                onNextPress={this.goToNextStage}
+                screenIndex={this.state.onboardingStage}
+                onNextPress={() => this.processEvent('goToNextStage', {})}
                 onBackPress={() => this.processEvent('goToPrevStage', {})}
-                onSkipPress={this.finishOnboarding}
+                onSkipPress={() => this.processEvent('finishOnboarding', {})}
             />
         )
     }
@@ -62,19 +45,16 @@ export default class OnboardingScreen extends NavigationScreen<
         switch (this.state.onboardingStage) {
             case 0:
                 return this.renderOnboardingStage({
-                    screenIndex: 0,
                     children: <SaveWebsite />,
                 })
             case 1:
                 return this.renderOnboardingStage({
-                    screenIndex: 1,
                     showBackBtn: true,
                     children: <OrganizeContent />,
                 })
             case 2:
             default:
                 return this.renderOnboardingStage({
-                    screenIndex: 0,
                     showBackBtn: true,
                     children: <BetaOverview />,
                 })
