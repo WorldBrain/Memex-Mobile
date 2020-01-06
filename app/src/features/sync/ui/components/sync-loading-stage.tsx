@@ -19,6 +19,7 @@ const SyncLoadingStage: React.StatelessComponent<Props> = props => (
         <View style={styles.container}>
             <LoadingBalls style={styles.spinner} />
             <Text style={styles.text}>Syncing in progress</Text>
+            <Text style={styles.warningText}>PLEASE DON'T LEAVE THE APP</Text>
         </View>
     </SyncLayout>
 )

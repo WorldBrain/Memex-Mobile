@@ -4,12 +4,12 @@ import {
     NativeTouchEvent,
     Text,
     View,
+    Image,
 } from 'react-native'
 
 import styles from './sync-setup-stage.styles'
 import sharedStyles from './shared.styles'
 import SyncLayout from 'src/ui/layouts/sync'
-import DevicePair from '../assets/device-pair.svg'
 
 export interface Props {
     onBtnPress: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
@@ -22,13 +22,19 @@ const SyncSetupStage: React.StatelessComponent<Props> = props => (
         titleText="Pair app with your computer"
         {...props}
     >
-        <Text style={sharedStyles.stepText}>Step 1</Text>
         <Text style={styles.instructionText}>
-            You need to be on the same wifi connection with the devices you are
-            trying to pair
+            You need to be{' '}
+            <Text style={{ fontWeight: 'bold' }}>
+                on the same wifi connection
+            </Text>{' '}
+            with the devices you are trying to pair
         </Text>
         <View style={styles.mainImgContainer}>
-            <DevicePair style={styles.mainImg} />
+            <Image
+                resizeMode="contain"
+                style={styles.mainImg}
+                source={require('../assets/device-pair.png')}
+            />
         </View>
     </SyncLayout>
 )

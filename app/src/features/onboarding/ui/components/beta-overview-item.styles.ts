@@ -8,13 +8,14 @@ export default StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        alignItems: 'center',
+        alignItems: 'flex-start',
     },
     textContainer: {},
     headingText: {
         color: '#091D62',
         fontWeight: 'bold',
         fontSize: 18,
+        marginTop: 5,
     },
     secondaryText: {
         color: '#091D62',

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Linking } from 'react-native'
+import { View, Text, Linking, Image } from 'react-native'
 
 import { version, storageKeys } from '../../../../../../app.json'
 import EmptyLayout from 'src/ui/layouts/empty'
@@ -58,29 +58,25 @@ export default class MVPOverviewMenu extends NavigationScreen<
     private handleRoadmapPress = () => Linking.openURL('https://worldbrain.io')
 
     private handleBugReportPress = () =>
-        Linking.openURL('https://worldbrain.io')
+        Linking.openURL('https://community.worldbrain.io/c/bug-reports')
 
     render() {
         return (
             <EmptyLayout>
                 <View style={styles.mainContent}>
-                    <View style={styles.memexLogo} />
+                    <View style={styles.memexLogo}>
+                        <Image
+                            style={styles.logoImg}
+                            resizeMode="contain"
+                            source={require('../../assets/logo-memex-vertical.png')}
+                        />
+                    </View>
                     <View style={styles.btnsContainer}>
                         <Button
-                            title="Learn how to use"
+                            title="2 Step Tutorial"
                             onPress={this.handleTutorialPress}
                             style={styles.btn}
                             secondary
-                        />
-                        <Button
-                            title="Feature Roadmap"
-                            onPress={this.handleRoadmapPress}
-                            style={styles.btn}
-                        />
-                        <Button
-                            title="Report Bugs"
-                            onPress={this.handleBugReportPress}
-                            style={styles.btn}
                         />
                         {this.state.isSynced ? (
                             <Button
@@ -96,13 +92,26 @@ export default class MVPOverviewMenu extends NavigationScreen<
                             />
                         )}
                         <Button
-                            title="Debug console"
-                            onPress={this.handleConsolePress}
+                            title="Feature Roadmap"
+                            onPress={this.handleRoadmapPress}
+                            style={styles.btn}
+                        />
+                        <Button
+                            title="Report Bugs"
+                            onPress={this.handleBugReportPress}
                             style={styles.btn}
                         />
                     </View>
                 </View>
-                <Text style={styles.versionText}>Version {version}</Text>
+                <View style={styles.footer}>
+                    <Text style={styles.versionText}>Version {version}</Text>
+                    <Text
+                        style={styles.versionText}
+                        onPress={this.handleConsolePress}
+                    >
+                        Debug Console
+                    </Text>
+                </View>
             </EmptyLayout>
         )
     }

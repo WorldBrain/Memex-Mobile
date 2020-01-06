@@ -34,7 +34,7 @@ export default class OnboardingScreen extends NavigationScreen<
     }
 
     private goToNextStage = async () => {
-        if (this.state.onboardingStage + 1 > 3) {
+        if (this.state.onboardingStage + 1 > 2) {
             return this.finishOnboarding()
         }
 
@@ -61,27 +61,20 @@ export default class OnboardingScreen extends NavigationScreen<
     render() {
         switch (this.state.onboardingStage) {
             case 0:
-                return (
-                    <Welcome
-                        onOnboardingPress={this.goToNextStage}
-                        onGetSyncedPress={this.finishOnboarding}
-                    />
-                )
-            case 1:
                 return this.renderOnboardingStage({
                     screenIndex: 0,
                     children: <SaveWebsite />,
                 })
-            case 2:
+            case 1:
                 return this.renderOnboardingStage({
                     screenIndex: 1,
                     showBackBtn: true,
                     children: <OrganizeContent />,
                 })
-            case 3:
+            case 2:
             default:
                 return this.renderOnboardingStage({
-                    screenIndex: 2,
+                    screenIndex: 0,
                     showBackBtn: true,
                     children: <BetaOverview />,
                 })

@@ -9,11 +9,12 @@ export interface Props {}
 
 const SaveWebsite: React.StatelessComponent<Props> = props => (
     <OnboardingFeature
-        headingText="Save websites on the go"
+        headingText="Save Websites & Tweets on the go"
         secondaryText="Easily save any website to your Memex using the share feature on your device"
     >
         <Share style={styles.shareImg} />
         <Image
+            resizeMode="contain"
             style={styles.mockupImg}
             source={require('../assets/screen-step1.png')}
         />

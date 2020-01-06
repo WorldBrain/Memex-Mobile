@@ -31,13 +31,20 @@ const SyncLayout: React.StatelessComponent<Props> = ({
             <Text style={styles.subtitleText}>{props.subtitleText}</Text>
         )}
         <View style={styles.children}>{props.children}</View>
-        <Button
-            title={props.btnText}
-            onPress={props.onBtnPress!}
-            disabled={props.disableMainBtn}
-            __notReallyDisabled
-        />
-        <Button title={cancelBtnText} onPress={props.onCancelBtnPress} empty />
+        <View style={styles.buttonContainer}>
+            <Button
+                title={props.btnText}
+                onPress={props.onBtnPress!}
+                disabled={props.disableMainBtn}
+                //__notReallyDisabled
+            />
+            <Button
+                title={cancelBtnText}
+                onPress={props.onCancelBtnPress}
+                style={styles.cancelButton}
+                empty
+            />
+        </View>
     </EmptyLayout>
 )
 

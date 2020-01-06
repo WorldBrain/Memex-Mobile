@@ -8,10 +8,11 @@ export interface Props {}
 
 const OrganizeContent: React.StatelessComponent<Props> = props => (
     <OnboardingFeature
-        headingText="Organise your content"
-        secondaryText="Save tags, collections and notes"
+        headingText="Organise your Websites & Tweets"
+        secondaryText="Add tags, collections and notes"
     >
         <Image
+            resizeMode="contain"
             style={styles.mockupImg}
             source={require('../assets/screen-step2.png')}
         />

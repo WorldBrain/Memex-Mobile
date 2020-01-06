@@ -4,7 +4,6 @@ export default StyleSheet.create({
     logo: {
         height: 150,
         width: 200,
-        backgroundColor: '#c4c4c4',
     },
     mainText: {
         textAlign: 'center',

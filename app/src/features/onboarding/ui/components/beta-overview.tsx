@@ -9,8 +9,18 @@ export interface Props {}
 
 const BetaOverview: React.StatelessComponent<Props> = props => (
     <View style={styles.mainContainer}>
-        <Text style={featureStyles.headingText}>Memex mobile is in beta</Text>
+        <Text style={featureStyles.headingText}>Memex Mobile</Text>
+        <Text style={featureStyles.betaText}>Beta</Text>
         <View style={styles.checkList}>
+            <View
+                style={{
+                    borderLeftColor: '#2C49AB',
+                    borderLeftWidth: 2,
+                    height: '85%',
+                    marginLeft: 16,
+                    position: 'absolute',
+                }}
+            />
             <OverviewItem
                 headingText="Share page to your desktop app"
                 checked
@@ -20,10 +30,13 @@ const BetaOverview: React.StatelessComponent<Props> = props => (
                 headingText="Add tags, collections and notes"
             />
             <Text style={styles.comingSoonText}>Coming soon</Text>
-            <OverviewItem headingText="Highlight Text" />
+            <OverviewItem
+                headingText="Highlights & Annotations"
+                secondaryText="Create highlights on websites"
+            />
             <OverviewItem
                 headingText="Dashboard"
-                secondaryText="Access and search through all your synced bookmarks"
+                secondaryText="Search saved websites & notes on the go"
             />
         </View>
     </View>

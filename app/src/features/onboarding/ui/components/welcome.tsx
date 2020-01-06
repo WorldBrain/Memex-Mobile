@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Text, View, Image } from 'react-native'
 
 import Button from 'src/ui/components/memex-btn'
 import EmptyLayout from 'src/ui/layouts/empty'
@@ -12,7 +12,13 @@ export interface Props {
 
 const WelcomeScreen: React.StatelessComponent<Props> = props => (
     <EmptyLayout>
-        <View style={styles.logo} />
+        <View style={styles.logo}>
+            <Image
+                style={styles.mockupImg}
+                source={require('../assets/logo-memex.png')}
+            />
+        </View>
+
         <Text style={styles.mainText}>
             Memex requires some setup to sync with your other devices.
         </Text>

@@ -4,11 +4,11 @@ import {
     NativeTouchEvent,
     Text,
     View,
+    Image,
 } from 'react-native'
 
 import styles from './sync-setup-stage.styles'
 import SyncLayout from 'src/ui/layouts/sync'
-import SyncExt from '../assets/sync-ext.svg'
 
 export interface Props {
     onBtnPress: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
@@ -24,7 +24,11 @@ const SyncInfoStage: React.StatelessComponent<Props> = props => (
             to generate a QR code
         </Text>
         <View style={styles.mainImgContainer}>
-            <SyncExt style={styles.mainImg} />
+            <Image
+                resizeMode="contain"
+                style={styles.mainImg}
+                source={require('../assets/sync-ext.png')}
+            />
         </View>
     </SyncLayout>
 )

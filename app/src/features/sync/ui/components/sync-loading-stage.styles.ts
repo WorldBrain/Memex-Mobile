@@ -13,11 +13,16 @@ export default StyleSheet.create({
     icon: {
         width: 50,
         height: 50,
-        backgroundColor: '#c4c4c4',
     },
     text: {
-        fontSize: 15,
-        color: '#757280',
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'black',
         textAlign: 'center',
+    },
+    warningText: {
+        fontSize: 25,
+        color: 'red',
+        marginTop: 15,
     },
 })

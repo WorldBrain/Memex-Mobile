@@ -3,12 +3,16 @@ import { StyleSheet } from 'react-native'
 export default StyleSheet.create({
     shareImg: {
         position: 'absolute',
-        left: '-7%',
+        left: 25,
+        top: '15%',
+        width: 100,
     },
     mockupImg: {
-        width: 177,
-        height: 314,
+        width: '70%',
+        height: '85%',
         position: 'absolute',
-        right: '-85%',
+        display: 'flex',
+        top: '0%',
+        right: '-15%',
     },
 })

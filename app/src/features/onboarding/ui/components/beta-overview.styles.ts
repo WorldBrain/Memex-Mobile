@@ -4,17 +4,20 @@ export default StyleSheet.create({
     mainContainer: {
         flex: 1,
         flexDirection: 'column',
-        marginTop: 50,
+        marginTop: '10%',
     },
     checkList: {
-        maxWidth: '70%',
-        maxHeight: '70%',
+        maxWidth: '80%',
+        height: '55%',
+        marginTop: '5%',
+        paddingRight: 25,
     },
     comingSoonText: {
         color: '#091D62',
         fontSize: 14,
         textTransform: 'uppercase',
         fontWeight: 'bold',
-        marginLeft: 45,
+        marginLeft: 43,
+        marginBottom: 20,
     },
 })

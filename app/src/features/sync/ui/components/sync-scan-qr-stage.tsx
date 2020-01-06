@@ -2,6 +2,7 @@ import React from 'react'
 import QRCodeScanner, {
     Event as QRReadEvent,
 } from 'react-native-qrcode-scanner'
+import { Text } from 'react-native'
 
 import SyncLayout from 'src/ui/layouts/sync'
 import E2EEMessage from './e2ee-msg'
@@ -22,22 +23,14 @@ const SyncScanQRStage: React.StatelessComponent<Props> = ({
     debug,
     ...props
 }) => (
-    <SyncLayout
-        titleText="Step 3"
-        subtitleText="Scan the QR code"
-        btnText="Next"
-        disableMainBtn
-        {...props}
-    >
+    <SyncLayout titleText="Step 3" btnText="Next" disableMainBtn {...props}>
+        <Text style={styles.instructionText}>Scan the QR code</Text>
         <QRCodeScanner
             cameraStyle={styles.cameraView as any}
             containerStyle={styles.cameraViewContainer as any}
             onRead={onQRRead}
         />
-        <E2EEMessage
-            onPress={onQRRead as any} // TODO: Remove this; just offers a way for simulator to do a fake sync as camera isn't available
-        />
-        {debug && <ManualSyncInput {...props} />}
+        <E2EEMessage />
     </SyncLayout>
 )
 

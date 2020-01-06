@@ -2,19 +2,25 @@ import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
     mainContent: {
-        height: '90%',
+        height: '100%',
+        width: '90%',
+        display: 'flex',
+        alignItems: 'center',
     },
     memexLogo: {
-        height: 80,
-        width: 300,
-        backgroundColor: '#c4c4c4',
-        marginVertical: 30,
+        flex: 1,
+        height: '100%',
+        width: '100%',
+        marginTop: '20%',
+        display: 'flex',
+        alignItems: 'center',
     },
     btnsContainer: {
-        flex: 1,
+        flex: 2,
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
+        width: '80%',
     },
     btn: {
         marginVertical: 10,
@@ -22,5 +28,21 @@ export default StyleSheet.create({
     },
     versionText: {
         textAlign: 'center',
+    },
+    logoImg: {
+        flex: 1,
+        width: '100%',
+        overflow: 'hidden',
+    },
+    btnLight: {
+        backgroundColor: 'white',
+        color: 'red',
+    },
+    footer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '60%',
+        bottom: '15%',
     },
 })
