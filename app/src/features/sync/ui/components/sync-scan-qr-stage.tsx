@@ -31,6 +31,7 @@ const SyncScanQRStage: React.StatelessComponent<Props> = ({
             onRead={onQRRead}
         />
         <E2EEMessage />
+        {debug && <ManualSyncInput {...props} />}
     </SyncLayout>
 )
 

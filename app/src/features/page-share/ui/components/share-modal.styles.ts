@@ -9,9 +9,10 @@ export default StyleSheet.create({
         position: 'absolute',
         left: 15,
         right: 15,
-        top: 80,
+        top: 10,
         bottom: 200,
         borderRadius: 10,
+        height: '50%',
     },
     stretched: {
         bottom: 20,
