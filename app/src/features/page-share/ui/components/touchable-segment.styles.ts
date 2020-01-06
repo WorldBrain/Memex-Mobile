@@ -12,8 +12,9 @@ export default StyleSheet.create({
         flex: 1,
     },
     mainText: {
-        fontWeight: '100',
-        color: '#9b9b9b',
+        color: '#545454',
+        fontWeight: '400',
+        fontSize: 16,
     },
     border: {
         borderBottomWidth: 1,

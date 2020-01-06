@@ -3,10 +3,13 @@ import { View } from 'react-native'
 
 import styles from './empty.styles'
 
-export interface Props {}
+export interface Props {
+    style?: any
+}
 
-const EmptyLayout: React.StatelessComponent<Props> = props => (
-    <View style={styles.container}>{props.children}</View>
-)
+const EmptyLayout: React.StatelessComponent<Props> = ({
+    style = {},
+    ...props
+}) => <View style={[style, styles.container]}>{props.children}</View>
 
 export default EmptyLayout

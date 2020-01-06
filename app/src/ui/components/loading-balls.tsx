@@ -1,9 +1,11 @@
 import React from 'react'
-import { View, Animated } from 'react-native'
+import { View, Animated, StyleProp } from 'react-native'
 
 import styles from './loading-balls.styles'
 
-export interface Props {}
+export interface Props {
+    style?: StyleProp<any>
+}
 
 interface State {
     leftOffset: Animated.Value
@@ -45,7 +47,7 @@ class LoadingBalls extends React.PureComponent<Props, State> {
 
     render() {
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, this.props.style]}>
                 <Animated.View
                     style={{
                         ...styles.ball,

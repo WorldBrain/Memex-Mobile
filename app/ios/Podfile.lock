@@ -409,6 +409,8 @@ PODS:
     - React
   - RNSecureRandom (1.0.0-rc.0):
     - React
+  - RNSVG (9.13.6):
+    - React
   - UMBarCodeScannerInterface (5.0.0)
   - UMCameraInterface (5.0.0)
   - UMConstantsInterface (5.0.0)
@@ -479,6 +481,7 @@ DEPENDENCIES:
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNSecureRandom (from `../node_modules/react-native-securerandom`)
+  - RNSVG (from `../node_modules/react-native-svg`)
   - UMBarCodeScannerInterface (from `../node_modules/unimodules-barcode-scanner-interface/ios`)
   - UMCameraInterface (from `../node_modules/unimodules-camera-interface/ios`)
   - UMConstantsInterface (from `../node_modules/unimodules-constants-interface/ios`)
@@ -615,6 +618,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions"
   RNSecureRandom:
     :path: "../node_modules/react-native-securerandom"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   UMBarCodeScannerInterface:
     :path: !ruby/object:Pathname
     path: "../node_modules/unimodules-barcode-scanner-interface/ios"
@@ -723,6 +728,7 @@ SPEC CHECKSUMS:
   RNKeychain: 840f8e6f13be0576202aefcdffd26a4f54bfe7b5
   RNPermissions: 35959d09546f1cd60c129ee128146a120ea595c3
   RNSecureRandom: 1f19ad1492f7ed416b8fc79e92216a1f73f13a4c
+  RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   UMBarCodeScannerInterface: 3802c8574ef119c150701d679ab386e2266d6a54
   UMCameraInterface: 985d301f688ed392f815728f0dd906ca34b7ccb1
   UMConstantsInterface: bda5f8bd3403ad99e663eb3c4da685d063c5653c

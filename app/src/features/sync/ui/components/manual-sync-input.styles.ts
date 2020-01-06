@@ -6,7 +6,7 @@ export default StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        // minHeight: 56,
+        width: '80%',
     },
     input: {
         flex: 2,
