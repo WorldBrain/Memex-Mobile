@@ -83,8 +83,10 @@ describe('SyncScreen', () => {
             ).toEqual(['setup', 'setup'])
 
             await userInterfaces[1].logicContainer.processEvent(
-                'startScanning',
-                {},
+                'setSyncStatus',
+                {
+                    value: 'scanning',
+                },
             )
             expect(userInterfaces[1].logicContainer.state.status).toEqual(
                 'scanning',
@@ -124,8 +126,10 @@ describe('SyncScreen', () => {
             )
 
             await userInterfaces[0].logicContainer.processEvent(
-                'startScanning',
-                {},
+                'setSyncStatus',
+                {
+                    value: 'scanning',
+                },
             )
             expect(userInterfaces[0].logicContainer.state.status).toEqual(
                 'scanning',

@@ -13,6 +13,7 @@ import { Services } from './services/types'
 import { LocalStorageService } from './services/local-storage'
 import { FakeNavigation } from './tests/navigation'
 import { MockSettingsStorage } from './features/settings/storage/mock-storage'
+import { MockKeychainPackage } from './services/keychain/mock-keychain-package'
 
 export type MultiDeviceTestFunction = (
     context: MultiDeviceTestContext,
@@ -127,6 +128,8 @@ export function makeMultiDeviceTestFactory() {
                     signalTransportFactory,
                     sharedSyncLog,
                     localStorage,
+                    disableSyncEncryption: true,
+                    keychain: new MockKeychainPackage(),
                 })
                 await setStorageMiddleware({
                     services,

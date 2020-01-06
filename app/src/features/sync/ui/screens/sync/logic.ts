@@ -16,7 +16,6 @@ export type SyncScreenEvent = UIEvent<{
     setManualInputText: { text: string }
     doSync: { initialMessage: string }
     skipSync: {}
-    startScanning: {}
     confirmSuccess: {}
 }>
 

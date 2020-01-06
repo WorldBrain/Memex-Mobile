@@ -20,6 +20,7 @@ export interface CreateServicesOptions {
     keychain: KeychainAPI
     localStorage: LocalStorageService
     devicePlatform: MemexSyncDevicePlatform
+    disableSyncEncryption?: boolean
 }
 
 export async function createServices(
@@ -40,7 +41,7 @@ export async function createServices(
             syncInfoStorage: options.storage.modules.syncInfo,
             getSharedSyncLog: async () => options.sharedSyncLog,
             auth: options.auth,
-            disableEncryption: options.devicePlatform === 'integration-tests',
+            disableEncryption: options.disableSyncEncryption,
             localStorage,
         }),
     }

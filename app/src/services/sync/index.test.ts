@@ -55,8 +55,10 @@ describe('SyncService', () => {
         })
 
         await insertIntegrationTestData(devices[0])
-        await devices[0].services.sync.continuousSync.doIncrementalSync()
+        await devices[0].services.sync.continuousSync.forceIncrementalSync()
 
+        // We need to do this twice because not all sync entries are processed at once
+        await devices[1].services.sync.continuousSync.forceIncrementalSync()
         await devices[1].services.sync.continuousSync.forceIncrementalSync()
         await checkIntegrationTestData(devices[1])
     })
