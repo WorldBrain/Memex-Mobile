@@ -6,6 +6,7 @@ import { extractUrlParts, normalizeUrl } from '@worldbrain/memex-url-utils'
 
 import defaultConnectionOpts from './default-connection-opts'
 import { Storage } from './types'
+import { createStorexPlugins } from '@worldbrain/memex-storage/lib/mobile-app/plugins'
 import { SettingsStorage } from 'src/features/settings/storage'
 import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
 import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
@@ -31,6 +32,11 @@ export async function createStorage({
     } as ConnectionOptions
 
     const backend = new TypeORMStorageBackend({ connectionOptions })
+
+    for (const plugin of createStorexPlugins()) {
+        backend.use(plugin)
+    }
+
     const storageManager = new StorageManager({ backend })
 
     const modules: Storage['modules'] = {
