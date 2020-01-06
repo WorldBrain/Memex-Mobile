@@ -16,6 +16,7 @@ import io.invertase.firebase.firestore.ReactNativeFirebaseFirestorePackage;
 import io.invertase.firebase.database.ReactNativeFirebaseDatabasePackage;
 import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
@@ -29,6 +30,7 @@ import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 import org.pgsqlite.SQLitePluginPackage;
 import com.alinz.parkerdan.shareextension.SharePackage;
 
+import com.horcrux.svg.SvgPackage;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,6 +54,7 @@ public class MainApplication extends Application implements ReactApplication {
         new ReactNativeFirebaseAuthPackage(),
         new ReactNativeFirebaseDatabasePackage(),
         new ReactNativeFirebaseFirestorePackage(),
+        new ReactNativeFirebaseFunctionsPackage(),
         new AsyncStoragePackage(),
         new RNCameraPackage(),
         new KeychainPackage(),
@@ -59,7 +62,8 @@ public class MainApplication extends Application implements ReactApplication {
         new RNGestureHandlerPackage(),
         new RNBackgroundFetchPackage(),
         new SharePackage(),  // register `react-native-share-extension` plugin here
-        new ModuleRegistryAdapter(mModuleRegistryProvider)
+        new ModuleRegistryAdapter(mModuleRegistryProvider),
+        new SvgPackage()
       );
     }
 
