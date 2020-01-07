@@ -48,10 +48,6 @@ export default class AppSyncService extends SyncService {
                 : new TweetNaclSyncEncryption({
                       randomBytes: n => generateSecureRandom(n),
                   }),
-            continuousSyncBatchSize:
-                options.continuousSyncBatchSize ||
-                AppSyncService.DEF_CONTINUOUS_SYNC_BATCH_SIZE,
-            continuousSyncSingleBatch: true,
         })
 
         this.initialSync.wrtc = WebRTC
