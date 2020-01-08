@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, ListRenderItem } from 'react-native'
+import { View, FlatList, ListRenderItem } from 'react-native'
 
 import {
     NavigationScreen,
@@ -17,11 +17,14 @@ import {
     MetaTypeShape,
     MetaTypeName,
 } from 'src/features/meta-picker/types'
+import LoadingBalls from 'src/ui/components/loading-balls'
+import styles from './styles'
 
 interface Props extends NavigationProps {
     storage: UIStorageModules<'metaPicker'>
     url: string
     type: MetaType
+    isSyncLoading: boolean
     initEntries: string[]
     onEntryPress: (item: MetaTypeShape) => void
 }
@@ -144,14 +147,20 @@ export default class MetaPickerScreen extends NavigationScreen<
                     value={selectors.inputText(this.state)}
                     onChange={this.handleInputText}
                 />
-                <FlatList
-                    renderItem={this.renderPickerEntry}
-                    data={selectors.pickerEntries(this.state)}
-                    keyExtractor={(item, index) => index.toString()}
-                    ListEmptyComponent={
-                        <MetaPickerEmptyRow type={this.props.type} />
-                    }
-                />
+                {this.props.isSyncLoading || this.state.isLoading ? (
+                    <View style={styles.loadingBallContainer}>
+                        <LoadingBalls style={styles.loadingBalls} />
+                    </View>
+                ) : (
+                    <FlatList
+                        renderItem={this.renderPickerEntry}
+                        data={selectors.pickerEntries(this.state)}
+                        keyExtractor={(item, index) => index.toString()}
+                        ListEmptyComponent={
+                            <MetaPickerEmptyRow type={this.props.type} />
+                        }
+                    />
+                )}
             </MetaPicker>
         )
     }
