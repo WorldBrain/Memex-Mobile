@@ -110,8 +110,8 @@ android {
         applicationId "io.worldbrain"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.2.26"
+        versionCode 4
+        versionName "1.2.27"
         missingDimensionStrategy 'react-native-camera', 'general'
         multiDexEnabled true
     }
