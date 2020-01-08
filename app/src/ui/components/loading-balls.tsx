@@ -5,6 +5,7 @@ import styles from './loading-balls.styles'
 
 export interface Props {
     style?: StyleProp<any>
+    ballStyle?: StyleProp<any>
 }
 
 interface State {
@@ -54,18 +55,21 @@ class LoadingBalls extends React.PureComponent<Props, State> {
                         width: this.state.sizeInc,
                         height: this.state.sizeInc,
                         left: 0,
+                        ...this.props.ballStyle,
                     }}
                 />
                 <Animated.View
                     style={{
                         ...styles.ball,
                         left: Animated.add(0, this.state.leftOffset),
+                        ...this.props.ballStyle,
                     }}
                 />
                 <Animated.View
                     style={{
                         ...styles.ball,
                         left: Animated.add(30, this.state.leftOffset),
+                        ...this.props.ballStyle,
                     }}
                 />
                 <Animated.View
@@ -74,6 +78,7 @@ class LoadingBalls extends React.PureComponent<Props, State> {
                         width: this.state.sizeDec,
                         height: this.state.sizeDec,
                         left: 60,
+                        ...this.props.ballStyle,
                     }}
                 />
             </View>

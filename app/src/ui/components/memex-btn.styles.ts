@@ -13,6 +13,9 @@ export default StyleSheet.create({
     buttonSecondary: {
         backgroundColor: '#5671CF',
     },
+    buttonSecondaryDisabled: {
+        backgroundColor: '#ced3f7',
+    },
     buttonWarn: {
         backgroundColor: '#FF000F',
     },
@@ -39,5 +42,11 @@ export default StyleSheet.create({
     },
     textEmpty: {
         color: 'black',
+    },
+    loading: {
+        bottom: 6,
+    },
+    loadingBall: {
+        backgroundColor: '#5671CF',
     },
 })
