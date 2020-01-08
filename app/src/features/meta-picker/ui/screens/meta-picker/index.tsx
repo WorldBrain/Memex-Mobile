@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, ListRenderItem } from 'react-native'
+import { View, FlatList, ListRenderItem } from 'react-native'
 
 import {
     NavigationScreen,
@@ -18,6 +18,7 @@ import {
     MetaTypeName,
 } from 'src/features/meta-picker/types'
 import LoadingBalls from 'src/ui/components/loading-balls'
+import styles from './styles'
 
 interface Props extends NavigationProps {
     storage: UIStorageModules<'metaPicker'>
@@ -147,7 +148,9 @@ export default class MetaPickerScreen extends NavigationScreen<
                     onChange={this.handleInputText}
                 />
                 {this.props.isSyncLoading || this.state.isLoading ? (
-                    <LoadingBall />
+                    <View style={styles.loadingBallContainer}>
+                        <LoadingBalls style={styles.loadingBalls} />
+                    </View>
                 ) : (
                     <FlatList
                         renderItem={this.renderPickerEntry}
