@@ -3,7 +3,6 @@ import Logic from './logic'
 import { MetaType } from 'src/features/meta-picker/types'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { Storage } from 'src/storage/types'
-import { ShareExtService } from 'src/services/share-ext'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 
 describe('share modal UI logic tests', () => {
@@ -24,6 +23,11 @@ describe('share modal UI logic tests', () => {
                         ? options.getSharedUrl
                         : () => 'http://test.com',
                 } as any) as any,
+                sync: {
+                    continuousSync: {
+                        forceIncrementalSync: () => Promise.resolve(),
+                    },
+                },
             } as any,
             storage: options.storage,
         })
@@ -249,20 +253,33 @@ describe('share modal UI logic tests', () => {
     }) => {
         const { logic, initialState: state } = await setup(context)
         const types: MetaType[] = ['tags', 'collections']
+
+        logic['syncRunning'] = Promise.resolve()
+
         let previousState = state
 
-        for (const t of types) {
-            const newState = logic.withMutation(
-                state,
-                logic.setMetaViewType({
-                    event: { type: t },
-                    previousState,
-                }),
-            )
+        for (const type of types) {
+            let newState: typeof state
 
-            expect(previousState.metaViewShown).not.toBe(t)
-            expect(newState.metaViewShown).toBe(t)
-            previousState = newState
+            logic.events.on('mutation', (mutation: any) => {
+                newState = logic.withMutation(state, mutation)
+
+                // If final mutation
+                if (mutation.syncState.$set === 'done') {
+                    expect(previousState.syncState).not.toBe('done')
+                    expect(newState.syncState).toBe('done')
+
+                    expect(previousState.metaViewShown).not.toBe(type)
+                    expect(newState.metaViewShown).toBe(type)
+                }
+
+                previousState = newState
+            })
+
+            await logic.setMetaViewType({
+                event: { type },
+                previousState,
+            })
         }
     })
 

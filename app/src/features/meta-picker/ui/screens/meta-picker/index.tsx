@@ -17,11 +17,13 @@ import {
     MetaTypeShape,
     MetaTypeName,
 } from 'src/features/meta-picker/types'
+import LoadingBalls from 'src/ui/components/loading-balls'
 
 interface Props extends NavigationProps {
     storage: UIStorageModules<'metaPicker'>
     url: string
     type: MetaType
+    isSyncLoading: boolean
     initEntries: string[]
     onEntryPress: (item: MetaTypeShape) => void
 }
@@ -144,14 +146,18 @@ export default class MetaPickerScreen extends NavigationScreen<
                     value={selectors.inputText(this.state)}
                     onChange={this.handleInputText}
                 />
-                <FlatList
-                    renderItem={this.renderPickerEntry}
-                    data={selectors.pickerEntries(this.state)}
-                    keyExtractor={(item, index) => index.toString()}
-                    ListEmptyComponent={
-                        <MetaPickerEmptyRow type={this.props.type} />
-                    }
-                />
+                {this.props.isSyncLoading || this.state.isLoading ? (
+                    <LoadingBall />
+                ) : (
+                    <FlatList
+                        renderItem={this.renderPickerEntry}
+                        data={selectors.pickerEntries(this.state)}
+                        keyExtractor={(item, index) => index.toString()}
+                        ListEmptyComponent={
+                            <MetaPickerEmptyRow type={this.props.type} />
+                        }
+                    />
+                )}
             </MetaPicker>
         )
     }
