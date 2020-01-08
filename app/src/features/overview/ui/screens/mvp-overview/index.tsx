@@ -8,8 +8,8 @@ import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import styles from './styles'
 
-interface Props extends NavigationProps {
-    services: UIServices<'localStorage'>
+export interface Props extends NavigationProps {
+    services: UIServices<'localStorage' | 'sync'>
 }
 
 export default class MVPOverviewMenu extends NavigationScreen<
@@ -18,7 +18,7 @@ export default class MVPOverviewMenu extends NavigationScreen<
     Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic() })
+        super(props, { logic: new Logic(props) })
     }
 
     componentDidMount() {
@@ -60,6 +60,8 @@ export default class MVPOverviewMenu extends NavigationScreen<
     private handleBugReportPress = () =>
         Linking.openURL('https://community.worldbrain.io/c/bug-reports')
 
+    private handleSyncNowPress = () => this.processEvent('syncNow', {})
+
     render() {
         return (
             <EmptyLayout>
@@ -100,6 +102,14 @@ export default class MVPOverviewMenu extends NavigationScreen<
                             title="Report Bugs"
                             onPress={this.handleBugReportPress}
                             style={styles.btn}
+                        />
+                        <Button
+                            title="Sync Now"
+                            onPress={this.handleSyncNowPress}
+                            style={styles.btn}
+                            secondary
+                            disabled={!this.state.isSynced}
+                            isLoading={this.state.syncState === 'running'}
                         />
                     </View>
                 </View>

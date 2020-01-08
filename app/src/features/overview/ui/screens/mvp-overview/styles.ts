@@ -21,6 +21,7 @@ export default StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         width: '80%',
+        bottom: 30,
     },
     btn: {
         marginVertical: 10,
