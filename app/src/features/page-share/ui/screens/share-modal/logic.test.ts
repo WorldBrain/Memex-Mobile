@@ -1,9 +1,12 @@
 import expect from 'expect'
+
 import Logic from './logic'
 import { MetaType } from 'src/features/meta-picker/types'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { Storage } from 'src/storage/types'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
+
+import * as DATA from './logic.test.data'
 
 describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -65,7 +68,7 @@ describe('share modal UI logic tests', () => {
     })
 
     it('should load correctly with a URL, but no stored page', async context => {
-        const pageUrl = 'http://bla.com'
+        const pageUrl = DATA.PAGE_URL_1
         const { element } = await setup({
             ...context,
             getSharedUrl: () => pageUrl,
@@ -91,7 +94,7 @@ describe('share modal UI logic tests', () => {
     })
 
     it('should correctly load page starred', async context => {
-        const pageUrl = 'http://bla.com'
+        const pageUrl = DATA.PAGE_URL_1
         await context.storage.modules.overview.starPage({
             url: pageUrl,
             time: Date.now(),
@@ -111,7 +114,7 @@ describe('share modal UI logic tests', () => {
                 isModalShown: true,
                 isStarred: true,
                 noteText: '',
-                pageUrl: 'http://bla.com',
+                pageUrl,
                 statusText: '',
                 tagsToAdd: [],
             })
@@ -121,7 +124,7 @@ describe('share modal UI logic tests', () => {
     })
 
     it('should correctly load tags', async context => {
-        const pageUrl = 'http://bla.com'
+        const pageUrl = DATA.PAGE_URL_1
         await context.storage.modules.metaPicker.createTag({
             url: pageUrl,
             name: 'tagA',
@@ -145,7 +148,7 @@ describe('share modal UI logic tests', () => {
                 isModalShown: true,
                 isStarred: false,
                 noteText: '',
-                pageUrl: 'http://bla.com',
+                pageUrl,
                 statusText: '',
                 tagsToAdd: ['tagA', 'tagB'],
             })
@@ -155,7 +158,7 @@ describe('share modal UI logic tests', () => {
     })
 
     it('should correctly associated lists', async context => {
-        const pageUrl = 'http://bla.com'
+        const pageUrl = DATA.PAGE_URL_1
         const {
             object: { id: listId },
         } = await context.storage.modules.metaPicker.createList({
@@ -180,7 +183,7 @@ describe('share modal UI logic tests', () => {
                 isModalShown: true,
                 isStarred: false,
                 noteText: '',
-                pageUrl: 'http://bla.com',
+                pageUrl,
                 statusText: '',
                 tagsToAdd: [],
             })
@@ -193,7 +196,7 @@ describe('share modal UI logic tests', () => {
         storage: Storage
     }) => {
         const { logic, initialState: state } = await setup(context)
-        const testUrl = 'http://www.google.com'
+        const testUrl = DATA.PAGE_URL_1
 
         expect(state.pageUrl).not.toEqual(testUrl)
         const newState = logic.withMutation(
@@ -389,5 +392,77 @@ describe('share modal UI logic tests', () => {
             }),
         )
         expect(nextStateB.collectionsToAdd.length).toBe(0)
+    })
+
+    it('should be able to store a page', async context => {
+        const { logic, initialState: state } = await setup(context)
+        const TEST_DATA = new DATA.TestData({
+            url: DATA.PAGE_URL_1,
+            normalizedUrl: DATA.PAGE_URL_1_NORM,
+        })
+
+        await logic['storePage']({ ...state, pageUrl: DATA.PAGE_URL_1 })
+
+        expect(
+            await context.storage.manager.collection('pages').findObjects({}),
+        ).toEqual([TEST_DATA.PAGE])
+    })
+
+    it('should be able to store a page with a note', async context => {
+        const { logic, initialState: state } = await setup(context)
+        const TEST_DATA = new DATA.TestData({
+            url: DATA.PAGE_URL_1,
+            normalizedUrl: DATA.PAGE_URL_1_NORM,
+            noteText: DATA.NOTE_1_TEXT,
+        })
+
+        await logic['storePage'](
+            {
+                ...state,
+                pageUrl: DATA.PAGE_URL_1,
+                noteText: DATA.NOTE_1_TEXT,
+            },
+            DATA.NOTE_TIMESTAMP,
+        )
+
+        expect(
+            await context.storage.manager.collection('pages').findObjects({}),
+        ).toEqual([TEST_DATA.PAGE])
+
+        expect(
+            await context.storage.manager
+                .collection('annotations')
+                .findObjects({}),
+        ).toEqual([TEST_DATA.NOTE])
+    })
+
+    it('should be able to store a page with a note on a URL with hash fragment', async context => {
+        const { logic, initialState: state } = await setup(context)
+        const TEST_DATA = new DATA.TestData({
+            url: DATA.PAGE_URL_2,
+            domain: DATA.PAGE_URL_1_NORM,
+            hostname: DATA.PAGE_URL_1_NORM,
+            normalizedUrl: DATA.PAGE_URL_2_NORM,
+            noteText: DATA.NOTE_1_TEXT,
+        })
+
+        await logic['storePage'](
+            {
+                ...state,
+                pageUrl: DATA.PAGE_URL_2,
+                noteText: DATA.NOTE_1_TEXT,
+            },
+            DATA.NOTE_TIMESTAMP,
+        )
+
+        expect(
+            await context.storage.manager.collection('pages').findObjects({}),
+        ).toEqual([TEST_DATA.PAGE])
+
+        expect(
+            await context.storage.manager
+                .collection('annotations')
+                .findObjects({}),
+        ).toEqual([TEST_DATA.NOTE])
     })
 })

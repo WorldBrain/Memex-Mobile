@@ -223,7 +223,7 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation(mutation)
     }
 
-    private async storePage(state: State) {
+    private async storePage(state: State, customTimestamp?: number) {
         const {
             overview,
             metaPicker,
@@ -252,11 +252,14 @@ export default class Logic extends UILogic<State, Event> {
         })
 
         if (state.noteText.trim().length > 0) {
-            await pageEditor.createNote({
-                comment: state.noteText.trim(),
-                pageUrl: state.pageUrl,
-                pageTitle: '',
-            })
+            await pageEditor.createNote(
+                {
+                    comment: state.noteText.trim(),
+                    pageUrl: state.pageUrl,
+                    pageTitle: '',
+                },
+                customTimestamp,
+            )
         }
     }
 }
