@@ -1,4 +1,5 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import { SyncReturnValue } from '@worldbrain/storex-sync'
 
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
 import { UITaskState, UIServices, UIStorageModules } from 'src/ui/types'
@@ -42,7 +43,7 @@ export interface LogicDependencies {
 }
 
 export default class Logic extends UILogic<State, Event> {
-    private syncRunning!: Promise<void>
+    private syncRunning!: Promise<void | SyncReturnValue>
 
     constructor(private dependencies: LogicDependencies) {
         super()
@@ -64,8 +65,14 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
+    private handleSyncError = (err: Error) => {
+        console.log('SYNC ERROR:', err.message)
+    }
+
     async init() {
         this.syncRunning = this.dependencies.services.sync.continuousSync.forceIncrementalSync()
+
+        this.syncRunning.catch(this.handleSyncError)
 
         await loadInitial(this, async () => {
             let mutation: UIMutation<State> = {}
