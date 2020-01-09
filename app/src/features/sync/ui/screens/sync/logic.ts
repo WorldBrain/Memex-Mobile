@@ -79,10 +79,10 @@ export default class SyncScreenLogic extends UILogic<
     async saveFirebaseTokenToKeychain() {
         const {
             token,
-        } = await this.dependencies.services.auth.generateLoginToken()
+        } = await this.dependencies.services.auth.getCurrentToken()
 
         if (!token || !token.length) {
-            throw new Error('Could not generate Firebase Auth logic token')
+            throw new Error('Could not get Firebase Auth token')
         }
 
         await this.dependencies.services.keychain.setLogin({
