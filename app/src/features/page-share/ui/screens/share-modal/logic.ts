@@ -194,15 +194,19 @@ export default class Logic extends UILogic<State, Event> {
     async save(incoming: IncomingUIEvent<State, Event, 'save'>) {
         return executeUITask(this, 'saveState', async () => {
             await this.storePage(incoming.previousState)
-            await this.syncRunning
-            await this.dependencies.services.sync.continuousSync.forceIncrementalSync()
-
-            this.emitMutation(
-                this.setModalVisible({
-                    event: { shown: false },
-                    previousState: incoming.previousState,
-                }),
-            )
+            try {
+                await this.syncRunning
+                await this.dependencies.services.sync.continuousSync.forceIncrementalSync()
+            } catch (error) {
+                this.handleSyncError(error)
+            } finally {
+                this.emitMutation(
+                    this.setModalVisible({
+                        event: { shown: false },
+                        previousState: incoming.previousState,
+                    }),
+                )
+            }
         })
     }
 

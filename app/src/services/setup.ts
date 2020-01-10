@@ -3,7 +3,7 @@ import { ServiceStarter } from './types'
 
 export const setupBackgroundSync: ServiceStarter = async ({ services }) => {
     services.backgroundProcess.scheduleProcess(async () => {
-        const { token } = await services.auth.getCurrentToken()
+        const { token } = await services.auth.generateLoginToken()
 
         if (token) {
             await services.keychain.setLogin({
@@ -21,12 +21,20 @@ export const setupBackgroundSync: ServiceStarter = async ({ services }) => {
 
 export const setupFirebaseAuth: ServiceStarter = async ({ services }) => {
     if (await services.auth.getCurrentUser()) {
+        console.log('FB: LOGGED IN')
         return
     }
+    console.log('FB: NOT LOGGED IN - USING STORED TOKEN')
 
     const storedLogin = await services.keychain.getLogin()
 
     if (storedLogin != null) {
-        await services.auth.loginWithToken(storedLogin.password)
+        console.log('FB: STORED TOKEN FOUND')
+
+        try {
+            await services.auth.loginWithToken(storedLogin.password)
+        } catch (err) {
+            console.log('FB:', err.message)
+        }
     }
 }
