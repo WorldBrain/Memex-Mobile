@@ -11,6 +11,7 @@
         "build:deptree": "depcruise --exclude '^node_modules' --output-type dot ./src | dot -T svg > /tmp/dependencygraph.svg",
         "build:android-release": "sh build-android-release.sh",
         "format": "prettier --config prettier.config.js --write '**/*.{ts,js,tsx,jsx,css,md}'",
+        "android:beta": "fastlane android beta",
         "ios:beta": "fastlane ios beta",
         "postinstall": "jetify"
     },
