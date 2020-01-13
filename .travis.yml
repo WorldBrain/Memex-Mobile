@@ -26,7 +26,6 @@ jobs:
       node_js:
         - lts/*
       before_install:
-        - "./setup-travis-gh.sh"
         - cd app/ios/
         - pod install
         - cd ..
