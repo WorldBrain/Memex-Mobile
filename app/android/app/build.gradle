@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply from: './versionCode.gradle'
 
 import com.android.build.OutputFile
 
@@ -110,8 +111,8 @@ android {
         applicationId "io.worldbrain"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7
-        versionName "1.2.30"
+        versionCode Integer.parseInt(VERSION_CODE)
+        versionName VERSION_NAME
         missingDimensionStrategy 'react-native-camera', 'general'
         multiDexEnabled true
     }
