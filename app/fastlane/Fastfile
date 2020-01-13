@@ -1,22 +1,23 @@
-fastlane_version '2.53.1'
+setup_travis
+fastlane_version '2.140.0'
 
 before_all do
-#   ensure_git_status_clean
-  git_pull
+    ensure_git_status_clean
+    git_pull
 end
 
 platform :ios do
     desc 'Fetch certificates and provisioning profiles'
     lane :certificates do
-        match(app_identifier: 'io.worldbrain.memex', type: 'development', readonly: true)
-        match(app_identifier: 'io.worldbrain.memex', type: 'appstore', readonly: true)
+        match(app_identifier: ['io.worldbrain.memex', 'io.worldbrain.memex.MemexShare'], type: 'development', readonly: true)
+        match(app_identifier: ['io.worldbrain.memex', 'io.worldbrain.memex.MemexShare'], type: 'appstore', readonly: true)
     end
 
-    desc 'Build the iOS application.'
+    desc 'Build a new iOS application version.'
     private_lane :build do
         certificates
         increment_build_number(xcodeproj: './ios/app.xcworkspace')
-        gym(scheme: 'app', project: './ios/app.xcworkspace')
+        gym(scheme: 'app', project: './ios/app.xcworkspace', clean: true)
     end
 
     desc 'Ship to Testflight.'
