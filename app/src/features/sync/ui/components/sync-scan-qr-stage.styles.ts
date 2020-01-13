@@ -2,13 +2,28 @@ import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
     cameraViewContainer: {
-        flex: 1,
+        position: 'relative',
+        top: 50,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        marginTop: 20,
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderColor: '#d4d4d4',
+        width: '100%',
+        height: 600,
+        display: 'flex',
     },
     cameraView: {
-        width: 250,
-        height: 250,
+        flex: 1,
+    },
+    instructionText: {
+        position: 'relative',
+        top: 40,
+        fontSize: 18,
+        textAlign: 'center',
+        marginLeft: '10%',
+        marginRight: '10%',
     },
 })

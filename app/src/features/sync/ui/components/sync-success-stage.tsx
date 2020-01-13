@@ -1,5 +1,11 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, Button as StdButton } from 'react-native'
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Image,
+    Button as StdButton,
+} from 'react-native'
 
 import Button from 'src/ui/components/memex-btn'
 import E2EEMessage from './e2ee-msg'
@@ -15,13 +21,18 @@ const SyncSuccessStage: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
         {props.onBackBtnPress && (
             <TouchableOpacity style={styles.backBtn}>
-                <StdButton title="Back" onPress={props.onBackBtnPress} />
+                <StdButton title="Go Back" onPress={props.onBackBtnPress} />
             </TouchableOpacity>
         )}
         <View style={styles.textContainer}>
-            <View style={styles.icon} />
+            <View style={styles.icon}>
+                <Image
+                    style={styles.successIcon}
+                    source={require('../assets/successIcon.png')}
+                />
+            </View>
             <Text style={styles.text}>
-                Pairing successful. You're ready to go!
+                Pairing successful. {'\n'}You're ready to go!
             </Text>
             <E2EEMessage />
         </View>
@@ -29,7 +40,7 @@ const SyncSuccessStage: React.StatelessComponent<Props> = props => (
             <Button
                 title="Pair with new device"
                 onPress={props.onBtnPress}
-                hasWarning
+                warning
             />
         ) : (
             <Button title="Get Started" onPress={props.onBtnPress} />

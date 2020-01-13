@@ -1,7 +1,8 @@
 import React from 'react'
 import { Text } from 'react-native'
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake'
 
-import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
+import { NavigationScreen } from 'src/ui/types'
 import SyncScreenLogic, {
     SyncScreenState,
     SyncScreenEvent,
@@ -9,7 +10,9 @@ import SyncScreenLogic, {
 } from './logic'
 import SetupStage from '../../components/sync-setup-stage'
 import LoadingStage from '../../components/sync-loading-stage'
+import InfoStage from '../../components/sync-info-stage'
 import SuccessStage from '../../components/sync-success-stage'
+import ErrorStage from '../../components/sync-error-stage'
 import ScanQRStage from '../../components/sync-scan-qr-stage'
 
 export default class SyncScreen extends NavigationScreen<
@@ -21,19 +24,28 @@ export default class SyncScreen extends NavigationScreen<
         super(props, { logic: new SyncScreenLogic(props) })
     }
 
+    private handleCancelBtnPress = () => {
+        this.props.navigation.navigate('MVPOverview')
+    }
+
+    handleDoSync = async ({ initialMessage }: { initialMessage: string }) => {
+        activateKeepAwake()
+        await this.processEvent('doSync', { initialMessage })
+        deactivateKeepAwake()
+    }
+
     render() {
         switch (this.state.status) {
             case 'scanning':
                 return (
                     <ScanQRStage
+                        onCancelBtnPress={this.handleCancelBtnPress}
                         onQRRead={qrEvent =>
-                            this.processEvent('doSync', {
-                                initialMessage: qrEvent.data,
-                            })
+                            this.handleDoSync({ initialMessage: qrEvent.data })
                         }
-                        onSkipBtnPress={() => this.processEvent('skipSync', {})}
+                        onBtnPress={() => this.processEvent('skipSync', {})}
                         onManualInputSubmit={() =>
-                            this.processEvent('doSync', {
+                            this.handleDoSync({
                                 initialMessage: this.state.manualInputValue,
                             })
                         }
@@ -47,26 +59,46 @@ export default class SyncScreen extends NavigationScreen<
             case 'syncing':
                 return (
                     <LoadingStage
-                        __backToOverview={() =>
-                            this.props.navigation.navigate('MVPOverview')
-                        }
+                        __backToOverview={this.handleCancelBtnPress}
                     />
                 )
             case 'success':
                 return (
                     <SuccessStage
+                        onCancelBtnPress={this.handleCancelBtnPress}
                         onBtnPress={() =>
                             this.processEvent('confirmSuccess', {})
                         }
                     />
                 )
             case 'failure':
-                return <Text>{this.state.errMsg}</Text>
+                return (
+                    <ErrorStage
+                        onCancelBtnPress={this.handleCancelBtnPress}
+                        onSupportBtnPress={this.handleCancelBtnPress}
+                        errorText="Something has gone wrong"
+                        onBtnPress={() => undefined}
+                    />
+                )
+            case 'info':
+                return (
+                    <InfoStage
+                        onCancelBtnPress={this.handleCancelBtnPress}
+                        onBtnPress={() =>
+                            this.processEvent('setSyncStatus', {
+                                value: 'scanning',
+                            })
+                        }
+                    />
+                )
             case 'setup':
                 return (
                     <SetupStage
+                        onCancelBtnPress={this.handleCancelBtnPress}
                         onBtnPress={() =>
-                            this.processEvent('startScanning', {})
+                            this.processEvent('setSyncStatus', {
+                                value: 'info',
+                            })
                         }
                     />
                 )

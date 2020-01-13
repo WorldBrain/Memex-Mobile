@@ -52,7 +52,7 @@ export async function insertIntegrationTestData(options: { storage: Storage }) {
 
 export async function checkIntegrationTestData(options: { storage: Storage }) {
     const storedData = await getStorageContents(options.storage.manager, {
-        exclude: new Set(['clientSyncLogEntry']),
+        exclude: new Set(['clientSyncLogEntry', 'syncDeviceInfo', 'settings']),
     })
     expect(storedData).toEqual({
         pages: [
@@ -112,8 +112,5 @@ export async function checkIntegrationTestData(options: { storage: Storage }) {
         annotations: [],
         annotBookmarks: [],
         annotListEntries: [],
-        syncDeviceInfo: expect.any(Array),
-        settings: expect.any(Array),
-        ...(options.extraData || {}),
     })
 }

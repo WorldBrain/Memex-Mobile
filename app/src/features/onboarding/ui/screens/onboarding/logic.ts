@@ -10,7 +10,9 @@ export interface State {
 }
 
 export type Event = UIEvent<{
+    finishOnboarding: {}
     goToNextStage: {}
+    goToPrevStage: {}
 }>
 
 export default class OnboardingScreenLogic extends UILogic<State, Event> {
@@ -36,26 +38,38 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
         }
     }
 
-    goToNextStage(
-        incoming: IncomingUIEvent<State, Event, 'goToNextStage'>,
-    ): UIMutation<State> {
-        const value = (incoming.previousState.onboardingStage +
-            1) as OnboardingStage
-
-        if (value > 3) {
-            this.finishOnboarding()
-            return {}
-        }
-
-        return { onboardingStage: { $set: value } }
-    }
-
     private async finishOnboarding() {
         await this.options.services.localStorage.set(
             storageKeys.showOnboarding,
             false,
         )
 
-        return this.options.navigation.navigate('Sync')
+        await this.options.navigation.navigate('Sync')
+        return {}
+    }
+
+    goToNextStage(
+        incoming: IncomingUIEvent<State, Event, 'goToNextStage'>,
+    ): UIMutation<State> {
+        const nextStage = (incoming.previousState.onboardingStage +
+            1) as OnboardingStage
+
+        if (nextStage > 2) {
+            this.finishOnboarding()
+            return {}
+        }
+
+        return { onboardingStage: { $set: nextStage } }
+    }
+
+    goToPrevStage(
+        incoming: IncomingUIEvent<State, Event, 'goToPrevStage'>,
+    ): UIMutation<State> {
+        return {
+            onboardingStage: {
+                $set: (incoming.previousState.onboardingStage -
+                    1) as OnboardingStage,
+            },
+        }
     }
 }

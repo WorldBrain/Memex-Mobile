@@ -110,10 +110,23 @@ android {
         applicationId "io.worldbrain"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 7
+        versionName "1.2.30"
         missingDimensionStrategy 'react-native-camera', 'general'
         multiDexEnabled true
+    }
+
+    dexOptions {
+       javaMaxHeapSize "3g"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(MYAPP_UPLOAD_STORE_FILE)
+            storePassword MYAPP_UPLOAD_STORE_PASSWORD
+            keyAlias MYAPP_UPLOAD_KEY_ALIAS
+            keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+        }
     }
     splits {
         abi {
@@ -127,6 +140,8 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+            debuggable = false
         }
     }
     // applicationVariants are e.g. debug, release
@@ -144,6 +159,8 @@ android {
     }
 }
 
+apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
+
 dependencies {
     implementation project(':react-native-securerandom')
     implementation project(':react-native-webrtc')
@@ -151,8 +168,10 @@ dependencies {
     implementation project(':@react-native-firebase_database')
     implementation project(':@react-native-firebase_auth')
     implementation project(':@react-native-firebase_app')
+    implementation project(path: ":@react-native-firebase_functions")
     implementation project(':@react-native-community_async-storage')
     implementation project(':react-native-camera')
+    implementation project(':react-native-svg')
     implementation project(':react-native-gesture-handler')
     implementation project(':react-native-permissions')
     implementation fileTree(dir: "libs", include: ["*.jar"])
@@ -161,6 +180,10 @@ dependencies {
     implementation project(':react-native-sqlite-storage')
     implementation project(':react-native-share-extension')
     implementation "com.facebook.react:react-native:+"
+    implementation project(':react-native-background-fetch')
+    compile project(':react-native-keychain')
+
+    addUnimodulesDependencies()
 
     if (enableHermes) {
       // for RN 0.61+

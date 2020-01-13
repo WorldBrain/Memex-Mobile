@@ -1,4 +1,5 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import { SyncReturnValue } from '@worldbrain/storex-sync'
 
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
 import { UITaskState, UIServices, UIStorageModules } from 'src/ui/types'
@@ -20,6 +21,7 @@ export interface State {
 }
 export type Event = UIEvent<{
     save: {}
+
     metaPickerEntryPress: { entry: MetaTypeShape }
     setMetaViewType: { type?: MetaType }
     setModalVisible: { shown: boolean }
@@ -41,6 +43,8 @@ export interface LogicDependencies {
 }
 
 export default class Logic extends UILogic<State, Event> {
+    private syncRunning!: Promise<void | SyncReturnValue>
+
     constructor(private dependencies: LogicDependencies) {
         super()
     }
@@ -61,7 +65,15 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
+    private handleSyncError = (err: Error) => {
+        console.log('SYNC ERROR:', err.message)
+    }
+
     async init() {
+        this.syncRunning = this.dependencies.services.sync.continuousSync.forceIncrementalSync()
+
+        this.syncRunning.catch(this.handleSyncError)
+
         await loadInitial(this, async () => {
             let mutation: UIMutation<State> = {}
             let url: string
@@ -107,12 +119,6 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'setStatusText'>,
     ): UIMutation<State> {
         return { statusText: { $set: incoming.event.value } }
-    }
-
-    setMetaViewType(
-        incoming: IncomingUIEvent<State, Event, 'setMetaViewType'>,
-    ): UIMutation<State> {
-        return { metaViewShown: { $set: incoming.event.type } }
     }
 
     setModalVisible(
@@ -188,15 +194,29 @@ export default class Logic extends UILogic<State, Event> {
     async save(incoming: IncomingUIEvent<State, Event, 'save'>) {
         return executeUITask(this, 'saveState', async () => {
             await this.storePage(incoming.previousState)
-            await executeUITask(this, 'syncState', async () => {
-                return this.dependencies.services.sync.continuousSync.forceIncrementalSync()
-            })
-            this.emitMutation(
-                this.setModalVisible({
-                    event: { shown: false },
-                    previousState: incoming.previousState,
-                }),
-            )
+            try {
+                await this.syncRunning
+                await this.dependencies.services.sync.continuousSync.forceIncrementalSync()
+            } catch (error) {
+                this.handleSyncError(error)
+            } finally {
+                this.emitMutation(
+                    this.setModalVisible({
+                        event: { shown: false },
+                        previousState: incoming.previousState,
+                    }),
+                )
+            }
+        })
+    }
+
+    async setMetaViewType(
+        incoming: IncomingUIEvent<State, Event, 'setMetaViewType'>,
+    ) {
+        return executeUITask(this, 'syncState', async () => {
+            this.emitMutation({ metaViewShown: { $set: incoming.event.type } })
+
+            await this.syncRunning
         })
     }
 
@@ -204,24 +224,20 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'metaPickerEntryPress'>,
     ) {
         const { entry } = incoming.event
-        if (incoming.previousState.metaViewShown === 'tags') {
-            this.emitMutation(
-                this.toggleTag({
-                    event: { name: entry.name },
-                    previousState: incoming.previousState,
-                }),
-            )
-        } else {
-            this.emitMutation(
-                this.toggleCollection({
-                    event: { name: entry.name },
-                    previousState: incoming.previousState,
-                }),
-            )
+        const event = {
+            event: { name: entry.name },
+            previousState: incoming.previousState,
         }
+
+        const mutation =
+            incoming.previousState.metaViewShown === 'tags'
+                ? this.toggleTag(event)
+                : this.toggleCollection(event)
+
+        this.emitMutation(mutation)
     }
 
-    private async storePage(state: State) {
+    private async storePage(state: State, customTimestamp?: number) {
         const {
             overview,
             metaPicker,
@@ -250,11 +266,14 @@ export default class Logic extends UILogic<State, Event> {
         })
 
         if (state.noteText.trim().length > 0) {
-            await pageEditor.createNote({
-                comment: state.noteText.trim(),
-                pageUrl: state.pageUrl,
-                pageTitle: '',
-            })
+            await pageEditor.createNote(
+                {
+                    comment: state.noteText.trim(),
+                    pageUrl: state.pageUrl,
+                    pageTitle: '',
+                },
+                customTimestamp,
+            )
         }
     }
 }

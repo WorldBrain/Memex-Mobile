@@ -5,21 +5,48 @@ export default StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#8fffd7',
-        borderRadius: 5,
+        backgroundColor: '#5CD9A6',
+        borderRadius: 25,
         width: '85%',
         maxHeight: 50,
     },
+    buttonSecondary: {
+        backgroundColor: '#5671CF',
+    },
+    buttonSecondaryDisabled: {
+        backgroundColor: '#ced3f7',
+    },
     buttonWarn: {
-        backgroundColor: '#ff000f',
+        backgroundColor: '#FF000F',
+    },
+    buttonDisabled: {
+        backgroundColor: '#cef4e4',
+    },
+    buttonEmpty: {
+        backgroundColor: 'transparent',
+    },
+    buttonSmallWidth: {
+        maxWidth: '25%',
+    },
+    buttonHidden: {
+        backgroundColor: 'transparent',
     },
     text: {
-        color: 'black',
+        color: 'white',
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
     },
     textWarn: {
         color: 'white',
+    },
+    textEmpty: {
+        color: 'black',
+    },
+    loading: {
+        bottom: 6,
+    },
+    loadingBall: {
+        backgroundColor: '#5671CF',
     },
 })

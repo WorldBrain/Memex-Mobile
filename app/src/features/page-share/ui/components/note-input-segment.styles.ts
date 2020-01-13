@@ -12,5 +12,8 @@ export default StyleSheet.create({
     textInput: {
         height: '100%',
         width: '100%',
+        color: '#545454',
+        fontWeight: '500',
+        fontSize: 16,
     },
 })

@@ -71,6 +71,7 @@ export default class ShareModalScreen extends NavigationScreen<
                     url={this.state.pageUrl}
                     onEntryPress={this.handleMetaPickerEntryPress}
                     initEntries={initEntries}
+                    isSyncLoading={this.state.syncState === 'running'}
                     {...this.props}
                 />
             </>

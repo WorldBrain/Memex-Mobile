@@ -2,6 +2,8 @@ globalThis.process.version = '1.1.1'
 
 import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'
+import '@react-native-firebase/functions'
+import * as Keychain from 'react-native-keychain'
 
 import { Platform } from 'react-native'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
@@ -9,6 +11,7 @@ import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authenticati
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
 import { LocalAuthService } from '@worldbrain/memex-common/lib/authentication/local'
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
+import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
 
 import './polyfills'
 import {
@@ -17,14 +20,15 @@ import {
     createServerStorage,
 } from './storage'
 import { createServices } from './services'
+import { setupBackgroundSync, setupFirebaseAuth } from './services/setup'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
+import { KeychainPackage } from './services/keychain/keychain'
 import {
     insertIntegrationTestData,
     checkIntegrationTestData,
 } from './tests/shared-fixtures/integration'
-import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -51,14 +55,20 @@ export async function main() {
         storage,
         signalTransportFactory: createFirebaseSignalTransport,
         sharedSyncLog: serverStorage.modules.sharedSyncLog,
+        keychain: new KeychainPackage({ server: 'worldbrain.io' }),
     })
     await setStorageMiddleware({
         services,
         storage,
     })
+
+    await setupBackgroundSync({ services })
+    await setupFirebaseAuth({ services })
+
     await services.sync.continuousSync.setup()
 
     ui.initialize({ dependencies: { storage, services } })
+
     Object.assign(globalThis, {
         services,
         storage,

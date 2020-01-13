@@ -83,8 +83,10 @@ describe('SyncScreen', () => {
             ).toEqual(['setup', 'setup'])
 
             await userInterfaces[1].logicContainer.processEvent(
-                'startScanning',
-                {},
+                'setSyncStatus',
+                {
+                    value: 'scanning',
+                },
             )
             expect(userInterfaces[1].logicContainer.state.status).toEqual(
                 'scanning',
@@ -94,7 +96,7 @@ describe('SyncScreen', () => {
                 initialMessage,
             } = await devices[0].services.sync.initialSync.requestInitialSync()
             await userInterfaces[1].logicContainer.processEvent('doSync', {
-                qrEvent: { data: initialMessage } as any,
+                initialMessage,
             })
             expect(userInterfaces[1].logicContainer.state.status).toEqual(
                 'success',
@@ -124,8 +126,10 @@ describe('SyncScreen', () => {
             )
 
             await userInterfaces[0].logicContainer.processEvent(
-                'startScanning',
-                {},
+                'setSyncStatus',
+                {
+                    value: 'scanning',
+                },
             )
             expect(userInterfaces[0].logicContainer.state.status).toEqual(
                 'scanning',

@@ -10,10 +10,13 @@ export interface Props {
 
 const E2EEMessage: React.StatelessComponent<Props> = props => (
     <>
-        <Text style={styles.basicText}>Your sync is End-2-End encrypted!</Text>
+        <Text style={styles.basicText}>
+            Your sync is End-2-End encrypted! {'\n'} We can never read any of
+            your data
+        </Text>
         <Link
             style={styles.basicText}
-            href="https://google.com"
+            href="https://en.wikipedia.org/wiki/End-to-end_encryption"
             onPress={props.onPress}
         >
             What does that mean?
