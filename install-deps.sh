@@ -1,8 +1,8 @@
 #!/bin/sh
 
 git submodule update --init --recursive
-cd app/
+cd ./app/
 yarn install --frozen-lockfile
-cd ios/
+cd ./ios/
 pod install
-cd ..
+cd ./..
