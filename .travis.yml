@@ -1,23 +1,5 @@
 jobs:
   include:
-    - stage: Test and lint
-      language: node_js
-      node_js:
-        - lts/*
-      before_install:
-        - cd app/
-      install:
-        - git submodule update --init --recursive
-        - yarn install --frozen-lockfile
-      script:
-        - yarn test
-        - yarn lint
-      cache:
-        yarn: true
-        directories:
-          - node_modules
-      notifications:
-        email: false
     - stage: Deploy Testflight
       if: branch = develop AND type = push
       os: osx
