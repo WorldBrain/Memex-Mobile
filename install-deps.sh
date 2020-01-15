@@ -5,4 +5,3 @@ cd ./app/
 yarn install --frozen-lockfile
 cd ./ios/
 pod install
-cd ./..

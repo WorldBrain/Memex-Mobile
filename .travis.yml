@@ -13,7 +13,7 @@ jobs:
       install:
         - "./install-deps.sh"
       script:
-        - yarn ios:beta
+        - "./deploy-ios-beta.sh"
 env:
   global:
     - APP_NAME="Memex Mobile"
