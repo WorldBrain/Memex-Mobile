@@ -5,11 +5,15 @@ jobs:
       os: osx
       osx_image: xcode11.3
       language: node_js
+      cache:
+        cocoapods: true
+        yarn: true
       node_js:
         - lts/*
       before_install:
         - "./write-keys.sh"
         - npm install -g yarn
+        - sudo gem install fastlane
       install:
         - "./install-deps.sh"
       script:
