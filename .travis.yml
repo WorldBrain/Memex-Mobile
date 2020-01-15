@@ -10,17 +10,8 @@ jobs:
       before_install:
         - "./write-keys.sh"
         - npm install -g yarn
-        - yarn -version
       install:
-        - git submodule update --init --recursive
-        - cd app/
-        - yarn install --frozen-lockfile
-        - cd ios/
-        - pod install
-        - cd ..
-      install:
-        - git submodule update --init --recursive
-        - yarn install --frozen-lockfile
+        - "./install-deps.sh"
       script:
         - yarn ios:beta
 env:
