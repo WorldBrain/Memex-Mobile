@@ -9,6 +9,9 @@ jobs:
         - lts/*
       before_install:
         - "./write-keys.sh"
+      install:
+        - git submodule update --init --recursive
+        - yarn install --frozen-lockfile
         - cd app/ios/
         - pod install
         - cd ..
