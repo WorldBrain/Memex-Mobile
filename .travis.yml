@@ -13,8 +13,9 @@ jobs:
         - yarn -version
       install:
         - git submodule update --init --recursive
+        - cd app/
         - yarn install --frozen-lockfile
-        - cd app/ios/
+        - cd ios/
         - pod install
         - cd ..
       install:
