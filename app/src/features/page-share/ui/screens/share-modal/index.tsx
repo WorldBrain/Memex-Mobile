@@ -1,11 +1,6 @@
 import React from 'react'
 
-import {
-    NavigationScreen,
-    NavigationProps,
-    UIServices,
-    UIStorageModules,
-} from 'src/ui/types'
+import { NavigationScreen, NavigationProps } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import Logic, { State, Event, LogicDependencies } from './logic'
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
@@ -15,6 +10,7 @@ import ActionBar from '../../components/action-bar-segment'
 import NoteInput from '../../components/note-input-segment'
 import StarPage from '../../components/star-page-segment'
 import AddTags from '../../components/add-tags-segment'
+import UnsupportedApp from '../../components/unsupported-app'
 
 type Props = NavigationProps & LogicDependencies
 
@@ -112,6 +108,23 @@ export default class ShareModalScreen extends NavigationScreen<
         )
     }
 
+    private renderMainView() {
+        if (this.state.isUnsupportedApplication) {
+            return (
+                <>
+                    <ActionBar onCancelPress={this.handleModalClose} />
+                    <UnsupportedApp />
+                </>
+            )
+        }
+
+        if (this.state.metaViewShown) {
+            return this.renderMetaPicker()
+        }
+
+        return this.renderInputs()
+    }
+
     render() {
         return (
             <ShareModal
@@ -119,9 +132,7 @@ export default class ShareModalScreen extends NavigationScreen<
                 onClosed={this.props.services.shareExt.close}
                 stretched={!!this.state.metaViewShown}
             >
-                {this.state.metaViewShown
-                    ? this.renderMetaPicker()
-                    : this.renderInputs()}
+                {this.renderMainView()}
             </ShareModal>
         )
     }

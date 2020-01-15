@@ -51,7 +51,7 @@ export default class Logic extends UILogic<State, Event> {
 
     getInitialState(): State {
         return {
-            isUnsupportedApplication: false,
+            isUnsupportedApplication: true,
             loadState: 'pristine',
             saveState: 'pristine',
             syncState: 'pristine',
