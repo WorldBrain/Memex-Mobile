@@ -1,7 +1,7 @@
 jobs:
   include:
-    - stage: Deploy Testflight
-      if: branch = develop AND type = push
+    - stage: ios-beta
+      # if: branch = develop AND type = push
       os: osx
       osx_image: xcode11.3
       language: node_js
@@ -18,10 +18,7 @@ jobs:
       script:
         - yarn ios:beta
 env:
-  matrix:
-    secure: Qqqz/vQX9rU3iGcGLimuGVUUogLTY8ahmnb+Yux9n/N0e8RAgncSJeSlCJRWH1ON2IDkwZ+H04IIlO5taKo9j0dP78FMdxVa2/HgRLEeyaMRhVHV52IzJ46OD/cXAmSyCNpj8Ams+tPsUq4jDVxZpA2/tJ50fBQcd05Oh3ehdoyMo+U2bLMT/tplckQ7g/WsCsTXbXwO4zlZbMpUhZGIdz4qld1I+wQy6hYKYrJcEBfCJxUhMlfQvINwi3DBt9Q//Xh+ec47osU1BfsGzYsHkwwsEAy+OTALfHM1/37TtOtrMYA/vHVRsR/G4RuWqTCx+pO0WA76Xzzcl1RSZQI3QM87YBGjAJjj8uq0LLaNf+0oCPaFvd3CJDrJWTG0kCL+knKX9wqNjv2byNhgri9MmeGrCzWAaENaRhG2YLStwSX703jcWfIYTNwuMP6DF/judJPapYwUcNJqNjUKFs59cN/SvcmAuvOdF8q9JaZNOFS2OmQlz3WG8EplSuREQi/I2hmKsSKfCr8VRZpGrIa48gqeNsFKue97ft2BLYRMNHyOu3Rf/aOgJ8jqIgaJvFnF5nvF2G48rUrwEqD7EUEsDxpvSgF+w7Z/9UntAXdBgLBCPPVsQAJ7q6utLkX5qHlN9+wHWzgx/T7K5fI4JGYjNDAb/n6mtSbMIQBoLIkm6mw=
   global:
     - APP_NAME="Memex Mobile"
     - 'DEVELOPER_NAME="iPhone Distribution: WorldBrain UG (haftungsbeschränkt)"'
     - PROFILE_NAME="travis"
-    - secure: i6EJumPaYxZyVpT+eIBhZxY2NkyFJANMl0dZKFnTPkuXq0We7FpoaW4PU8b8ZTz7mMolsB6fZrRw75T3v1asgNiglkqNf/7XzoNtk39Ovci9tZ7okCl3FhhVxTPRdyE2cH/wc2OQDCgtwHebtiKvMXr69z//1zJy2y3/XS8bwZyC5zx4c8wlLz0GVt1r0pveXaC/ysT14mH2/ijWkPuhHrA5cRmo61MJAuE3TfqR3JVXnzAiwaT8RMFzfvUIcTbuH4pgSFJOTajBgVdQh27a9p4PJuXNempzHBHNX4h5ghv15+9oIXVf4JcNiJgSH83eI8kXZ5aJ1cedSgwczDNEiKLGjTaCWvDBwdZZ+BvE9DZMowgwenXUDuluk5vR/E7hTfO3M39x1CXMA9+TTMuGPXPaDXNOsAZsYx8vPAKH27wt+mhBP+OsoGOXSjHEfqsyW9vA6gFVSGwGaLS+2XsXLO78Jy0+g8CuWv5WZAln6DT1vUsUEUNR2iiobRUQM5vg6LYGLiGtKhwF4cq1U8zGhsGpuoWfntyiL8DAElIdhbBdWN/qdNR5EmvTz6w2sT8KE/uPx5tsMgQ7rYLAvs89ScYKL/lT0PDPEvCxHNQPA80ZGvBta9algYM3t/Q4cn9YRXRkazFAMslSVXfn7Td4S73t6VlTFpYF8G2gImZoAGY=
