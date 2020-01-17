@@ -11,10 +11,9 @@ jobs:
       node_js:
         - lts/*
       before_install:
-        - "./write-keys.sh"
-        - npm install -g yarn
         - sudo gem install fastlane
       install:
+        - "./write-keys.sh"
         - "./install-deps.sh"
       script:
         - "./deploy-ios-beta.sh"
