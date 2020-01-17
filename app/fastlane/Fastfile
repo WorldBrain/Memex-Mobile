@@ -16,8 +16,8 @@ platform :ios do
     desc 'Build a new iOS application version.'
     private_lane :build do
         certificates
-        increment_build_number(xcodeproj: './ios/app.xcworkspace')
-        gym(scheme: 'app', project: './ios/app.xcworkspace', clean: true)
+        increment_build_number(xcodeproj: './ios/app.xcodeproj')
+        gym(scheme: 'app', workspace: './ios/app.xcworkspace', clean: true)
     end
 
     desc 'Ship to Testflight.'
@@ -25,7 +25,7 @@ platform :ios do
         # ensure_git_branch(branch: 'develop')
         build
         pilot
-        commit_version_bump(message: 'Bump iOS version', xcodeproj: './ios/app.xcworkspace')
+        commit_version_bump(message: 'Bump iOS version', xcodeproj: './ios/app.xcodeproj')
         push_to_git_remote
     end
 end
