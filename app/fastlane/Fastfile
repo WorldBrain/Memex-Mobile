@@ -1,6 +1,20 @@
 setup_travis
 fastlane_version '2.140.0'
 
+MAIN_APP_ID = "io.worldbrain.memex"
+MAIN_APP_PROFILE = "match AppStore io.worldbrain.memex"
+EXT_APP_ID = "io.worldbrain.memex.MemexShare"
+EXT_APP_PROFILE = "match AppStore io.worldbrain.memex.MemexShare"
+TEAM = "WorldBrain UG (haftungsbeschränkt)"
+XCWORKSPACE_PATH = "./ios/app.xcworkspace"
+XCPROJ_PATH = "./ios/app.xcworkspace"
+
+settings_to_override = {
+  :BUNDLE_IDENTIFIER => MAIN_APP_ID,
+  :PROVISIONING_PROFILE_SPECIFIER => MAIN_APP_PROFILE,
+  :DEVELOPMENT_TEAM => TEAM
+}
+
 before_all do
     ensure_git_status_clean
     git_pull
@@ -9,15 +23,29 @@ end
 platform :ios do
     desc 'Fetch certificates and provisioning profiles'
     lane :certificates do
-        match(app_identifier: ['io.worldbrain.memex', 'io.worldbrain.memex.MemexShare'], type: 'development', readonly: true)
-        match(app_identifier: ['io.worldbrain.memex', 'io.worldbrain.memex.MemexShare'], type: 'appstore', readonly: true)
+        # match(app_identifier: [MAIN_APP_ID, EXT_APP_ID], type: 'development', readonly: true)
+        match(app_identifier: [MAIN_APP_ID, EXT_APP_ID], type: 'appstore', readonly: true)
     end
 
     desc 'Build a new iOS application version.'
     private_lane :build do
         certificates
-        increment_build_number(xcodeproj: './ios/app.xcodeproj')
-        gym(scheme: 'app', workspace: './ios/app.xcworkspace', clean: true)
+        increment_build_number(xcodeproj: XCPROJ_PATH)
+        gym(
+            scheme: 'app',
+            configuration: "Production",
+            workspace: XCWORKSPACE_PATH,
+            xcargs: settings_to_override,
+            clean: true,
+            silent: true,
+            export_options: {
+                method: "app-store",
+                provisioningProfiles: {
+                  MAIN_APP_ID => MAIN_APP_PROFILE,
+                  EXT_APP_ID => EXT_APP_PROFILE
+                }
+            }
+        )
     end
 
     desc 'Ship to Testflight.'
@@ -25,7 +53,7 @@ platform :ios do
         # ensure_git_branch(branch: 'develop')
         build
         pilot
-        commit_version_bump(message: 'Bump iOS version', xcodeproj: './ios/app.xcodeproj')
+        commit_version_bump(message: 'Bump iOS version', xcodeproj: XCPROJ_PATH)
         push_to_git_remote
     end
 end

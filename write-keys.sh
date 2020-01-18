@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 declare -r SSH_FILE="$(mktemp -u $HOME/.ssh/id_rsa)"
 
 echo $IOS_REPO_PRIVATE_KEY | base64 -D > $SSH_FILE
