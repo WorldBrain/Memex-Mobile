@@ -7,7 +7,7 @@ EXT_APP_ID = "io.worldbrain.memex.MemexShare"
 EXT_APP_PROFILE = "match AppStore io.worldbrain.memex.MemexShare"
 TEAM = "WorldBrain UG (haftungsbeschränkt)"
 XCWORKSPACE_PATH = "./ios/app.xcworkspace"
-XCPROJ_PATH = "./ios/app.xcworkspace"
+XCPROJ_PATH = "./ios/app.xcodeproj"
 
 settings_to_override = {
   :BUNDLE_IDENTIFIER => MAIN_APP_ID,
