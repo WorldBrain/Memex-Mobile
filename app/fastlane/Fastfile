@@ -2,11 +2,9 @@ setup_travis
 fastlane_version '2.140.0'
 
 MAIN_APP_ID = "io.worldbrain.memex"
-# MAIN_APP_PROFILE = "match AppStore io.worldbrain.memex"
-MAIN_APP_PROFILE = "Automatic"
+MAIN_APP_PROFILE = "match AppStore io.worldbrain.memex"
 EXT_APP_ID = "io.worldbrain.memex.MemexShare"
-EXT_APP_PROFILE = "Automatic"
-# EXT_APP_PROFILE = "match AppStore io.worldbrain.memex.MemexShare"
+EXT_APP_PROFILE = "match AppStore io.worldbrain.memex.MemexShare"
 TEAM = "WorldBrain UG (haftungsbeschränkt)"
 XCWORKSPACE_PATH = "./ios/app.xcworkspace"
 XCPROJ_PATH = "./ios/app.xcodeproj"
