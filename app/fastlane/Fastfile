@@ -40,6 +40,7 @@ platform :ios do
             xcargs: settings_to_override,
             clean: true,
             silent: true,
+            suppress_xcode_output: true,
             export_options: {
                 method: "app-store",
                 provisioningProfiles: {
