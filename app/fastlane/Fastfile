@@ -5,15 +5,11 @@ MAIN_APP_ID = "io.worldbrain.memex"
 MAIN_APP_PROFILE = "match AppStore io.worldbrain.memex"
 EXT_APP_ID = "io.worldbrain.memex.MemexShare"
 EXT_APP_PROFILE = "match AppStore io.worldbrain.memex.MemexShare"
-TEAM = "WorldBrain UG (haftungsbeschränkt)"
+TEAM = "5YUPQC9D96"
 XCWORKSPACE_PATH = "./ios/app.xcworkspace"
 XCPROJ_PATH = "./ios/app.xcodeproj"
-
-settings_to_override = {
-  :BUNDLE_IDENTIFIER => MAIN_APP_ID,
-  :PROVISIONING_PROFILE_SPECIFIER => MAIN_APP_PROFILE,
-  :DEVELOPMENT_TEAM => TEAM
-}
+APPLE_USER_ID = "dev@worldbrain.io"
+APPLE_APP_ID = "1471860331"
 
 before_all do
     ensure_git_status_clean
@@ -35,7 +31,6 @@ platform :ios do
             scheme: 'app',
             configuration: "Production",
             workspace: XCWORKSPACE_PATH,
-            xcargs: settings_to_override,
             clean: true,
             silent: true,
             export_options: {
@@ -52,7 +47,10 @@ platform :ios do
     lane :beta do
         # ensure_git_branch(branch: 'develop')
         build
-        pilot
+        pilot(
+            username: APPLE_USER_ID,
+            apple_id: APPLE_APP_ID
+        )
         commit_version_bump(message: 'Bump iOS version', xcodeproj: XCPROJ_PATH)
         push_to_git_remote
     end
