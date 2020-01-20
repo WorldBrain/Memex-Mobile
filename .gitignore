@@ -12,3 +12,5 @@ travis_key.pub
 dist.cer
 dist.p12
 travis.mobileprovision
+
+app/app.app.dSYM.zip
