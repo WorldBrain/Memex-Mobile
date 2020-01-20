@@ -19,6 +19,7 @@ before_all do
 end
 
 platform :ios do
+    desc 'Wipe out apple account env vars'
     private_lane :reset_pass do
         ENV['FASTLANE_USER'] = nil
         ENV['FASTLANE_PASSWORD'] = nil
