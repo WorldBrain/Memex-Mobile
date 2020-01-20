@@ -10,9 +10,11 @@ XCWORKSPACE_PATH = "./ios/app.xcworkspace"
 XCPROJ_PATH = "./ios/app.xcodeproj"
 APPLE_USER_ID = "dev@worldbrain.io"
 APPLE_APP_ID = "1471860331"
+PACKAGE_JSON_PATH = "./package.json"
+AAB_PATH = "./android/app/build/outputs/bundle/release/app.aab"
 
 before_all do
-    ensure_git_status_clean
+    # ensure_git_status_clean
     git_pull
 end
 
@@ -25,8 +27,11 @@ platform :ios do
 
     desc 'Build a new iOS application version.'
     private_lane :build do
+        package = load_json(json_path: PACKAGE_JSON_PATH)
+
         certificates
         increment_build_number(xcodeproj: XCPROJ_PATH)
+        increment_version_number(xcodeproj: XCPROJ_PATH, version_number: package["version"])
         gym(
             scheme: 'app',
             configuration: "Production",
@@ -47,29 +52,47 @@ platform :ios do
     lane :beta do
         # ensure_git_branch(branch: 'develop')
         build
-        pilot(
-            username: APPLE_USER_ID,
-            apple_id: APPLE_APP_ID
-        )
+        pilot
         commit_version_bump(message: 'Bump iOS version', xcodeproj: XCPROJ_PATH)
         push_to_git_remote
     end
 end
 
 platform :android do
+    desc 'Bump Android version code'
+    private_lane :bump_version_code do
+        path = '../android/gradle.properties'
+        re = /VERSION_CODE=(\d+)/
+
+        s = File.read(path)
+        versionCode = s[re, 1].to_i
+        s[re, 1] = (versionCode + 1).to_s
+
+        f = File.new(path, 'w')
+        f.write(s)
+        f.close
+      end
+
     desc 'Build a new Android application version.'
     private_lane :build do
+        package = load_json(json_path: PACKAGE_JSON_PATH)
+
         gradle(task: 'clean', project_dir: 'android/')
-        gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => options[:newVersion] })
-        gradle(task: 'assemble', build_type: 'Release', project_dir: 'android/')
+        bump_version_code
+        gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"] })
+        gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
     end
 
     desc 'Ship to Playstore Beta.'
     lane :beta do
-        ensure_git_branch(branch: 'develop')
+        # ensure_git_branch(branch: 'develop')
         build
-        supply(track: 'beta', track_promote_to: 'beta')
-        git_commit(path: ['./android/gradle.properties'], message: 'Bump Android version')
+        supply(
+            track: 'beta',
+            track_promote_to: 'beta',
+            aab: AAB_PATH,
+        )
+        git_commit(path: ['../android/gradle.properties'], message: 'Bump Android version')
         push_to_git_remote
     end
 end

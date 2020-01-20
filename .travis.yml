@@ -15,6 +15,24 @@ jobs:
         - "./install-deps.sh"
       script:
         - "./deploy-ios-beta.sh"
+    - stage: android-beta
+      # if: branch = develop AND type = push
+      language: android
+      jdk: oraclejdk8
+      android:
+        components:
+          - tools
+          - platform-tools
+          - android-26
+          - extra-google-m2repository
+          - extra-google-google_play_services
+      before_script:
+        - ./internals/scripts/travis/gitconfig.sh
+      install:
+        - "./install-deps.sh"
+        - bundle install
+      script:
+        - "./deploy-android-beta.sh"
 env:
   global:
     - APP_NAME="Memex Mobile"
