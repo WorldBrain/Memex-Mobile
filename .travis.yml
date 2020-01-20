@@ -1,3 +1,24 @@
+aliases:
+  - &android
+    components:
+      - tools
+      - platform-tools
+      - android-26
+      - extra-google-m2repository
+      - extra-google-google_play_services
+
+  - &android-cache
+    directories:
+      - ~/.cache/yarn
+      - ~/.gradle/caches/modules-2
+      - ~/.gradle/wrapper
+
+  - &ios-cache
+    directories:
+      - ~/.rncache
+      - ~/Library/Caches/Yarn
+      - ~/Library/Caches/CocoaPods
+
 jobs:
   include:
     - stage: ios-beta
@@ -5,6 +26,7 @@ jobs:
       os: osx
       osx_image: xcode11.3
       language: node_js
+      cache: *ios-cache
       node_js:
         - lts/*
       before_install:
@@ -19,13 +41,8 @@ jobs:
       # if: branch = develop AND type = push
       language: android
       jdk: oraclejdk8
-      android:
-        components:
-          - tools
-          - platform-tools
-          - android-26
-          - extra-google-m2repository
-          - extra-google-google_play_services
+      android: *android
+      cache: *android-cache
       before_script:
         - ./internals/scripts/travis/gitconfig.sh
       install:
