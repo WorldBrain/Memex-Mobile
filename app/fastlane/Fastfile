@@ -19,6 +19,11 @@ before_all do
 end
 
 platform :ios do
+    private_lane :reset_pass do
+        ENV['FASTLANE_USER'] = nil
+        ENV['FASTLANE_PASSWORD'] = nil
+    end
+
     desc 'Fetch certificates and provisioning profiles'
     lane :certificates do
         # match(app_identifier: [MAIN_APP_ID, EXT_APP_ID], type: 'development', readonly: true)
@@ -52,7 +57,12 @@ platform :ios do
     lane :beta do
         # ensure_git_branch(branch: 'develop')
         build
-        pilot
+        reset_pass
+        pilot(
+            username: APPLE_USER_ID,
+            apple_id: APPLE_APP_ID,
+            skip_waiting_for_build_processing: true
+        )
         commit_version_bump(message: 'Bump iOS version', xcodeproj: XCPROJ_PATH)
         push_to_git_remote
     end
