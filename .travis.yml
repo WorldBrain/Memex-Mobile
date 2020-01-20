@@ -12,7 +12,7 @@ jobs:
         - npm install -g yarn
       install:
         - "./write-keys.sh"
-        - "./install-deps.sh"
+        - "./install-deps.sh pods"
       script:
         - "./deploy-ios-beta.sh"
     - stage: android-beta
