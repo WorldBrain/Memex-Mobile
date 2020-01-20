@@ -33,7 +33,7 @@ jobs:
         - sudo gem install fastlane
         - npm install -g yarn
       install:
-        - "./write-keys.sh"
+        - "./write-ios-keys.sh"
         - "./install-deps.sh pods"
       script:
         - "./deploy-ios-beta.sh"
@@ -46,6 +46,7 @@ jobs:
       before_script:
         - ./internals/scripts/travis/gitconfig.sh
       install:
+        - "./write-android-keys.sh"
         - "./install-deps.sh"
         - bundle install
       script:
