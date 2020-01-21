@@ -41,7 +41,7 @@ jobs:
         - yes | sdkmanager "build-tools;28.0.3"
       install:
         - "./write-android-keys.sh"
-        - "./install-deps.sh gems"
+        - ./install-deps.sh gems
       script:
         - "./deploy-android-beta.sh":
 
@@ -58,7 +58,7 @@ jobs:
         - npm install -g yarn
       install:
         - "./write-ios-keys.sh"
-        - "./install-deps.sh pods"
+        - ./install-deps.sh pods
       script:
         - "./deploy-ios-beta.sh"
 
