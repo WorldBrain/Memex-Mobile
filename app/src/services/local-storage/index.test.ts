@@ -1,25 +1,10 @@
 import { LocalStorageService } from '.'
-
-class MemoryStorage {
-    private mem: { [keyName: string]: string } = {}
-
-    async getItem(key: string) {
-        return this.mem[key]
-    }
-
-    async setItem(key: string, value: string) {
-        this.mem[key] = value
-    }
-
-    async removeItem(key: string) {
-        delete this.mem[key]
-    }
-}
+import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 
 describe('local storage service tests', () => {
     function setup() {
         const storage = new LocalStorageService({
-            storageAPI: new MemoryStorage() as any,
+            settingsStorage: new MockSettingsStorage(),
         })
         return { storage }
     }

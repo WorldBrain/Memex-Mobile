@@ -1,0 +1,111 @@
+fastlane_version '2.140.0'
+
+REPO = "git@github.com:WorldBrain/Memex-Mobile.git"
+REMOTE = "ssh-origin"
+MAIN_APP_ID = "io.worldbrain.memex"
+MAIN_APP_PROFILE = "match AppStore io.worldbrain.memex"
+EXT_APP_ID = "io.worldbrain.memex.MemexShare"
+EXT_APP_PROFILE = "match AppStore io.worldbrain.memex.MemexShare"
+ANDROID_APP_ID = "io.worldbrain"
+TEAM = "5YUPQC9D96"
+XCWORKSPACE_PATH = "./ios/app.xcworkspace"
+XCPROJ_PATH = "./ios/app.xcodeproj"
+APPLE_USER_ID = "dev@worldbrain.io"
+APPLE_APP_ID = "1471860331"
+PACKAGE_JSON_PATH = "./package.json"
+AAB_PATH = "./android/app/build/outputs/bundle/release/app.aab"
+ANDROID_SERVICE_JSON_PATH = "./android/service-account.json"
+
+before_all do
+    ensure_git_status_clean
+    git_pull
+end
+
+lane :push_to_git_ssh_remote do
+    branch = git_branch
+    sh("git", "remote", "add", REMOTE, REPO)
+    sh("git", "push", REMOTE, branch)
+end
+
+
+platform :ios do
+    desc 'Wipe out apple account env vars'
+    private_lane :reset_pass do
+        ENV['FASTLANE_USER'] = nil
+        ENV['FASTLANE_PASSWORD'] = nil
+    end
+
+    desc 'Fetch certificates and provisioning profiles'
+    lane :certificates do
+        # match(app_identifier: [MAIN_APP_ID, EXT_APP_ID], type: 'development', readonly: true)
+        match(app_identifier: [MAIN_APP_ID, EXT_APP_ID], type: 'appstore', readonly: true)
+    end
+
+    desc 'Build a new iOS application version.'
+    private_lane :build do
+        package = load_json(json_path: PACKAGE_JSON_PATH)
+
+        certificates
+        increment_build_number(xcodeproj: XCPROJ_PATH)
+        increment_version_number(xcodeproj: XCPROJ_PATH, version_number: package["version"])
+        gym(
+            scheme: 'app',
+            configuration: "Production",
+            workspace: XCWORKSPACE_PATH,
+            clean: true,
+            silent: true,
+            export_options: {
+                method: "app-store",
+                provisioningProfiles: {
+                  MAIN_APP_ID => MAIN_APP_PROFILE,
+                  EXT_APP_ID => EXT_APP_PROFILE
+                }
+            }
+        )
+    end
+
+    desc 'Ship to Testflight.'
+    lane :beta do
+        setup_travis
+        ensure_git_branch(branch: 'master')
+        build
+        reset_pass
+        pilot(
+            username: APPLE_USER_ID,
+            apple_id: APPLE_APP_ID,
+            skip_waiting_for_build_processing: true
+        )
+        commit_version_bump(message: 'Bump iOS version', xcodeproj: XCPROJ_PATH)
+        push_to_git_ssh_remote
+    end
+end
+
+platform :android do
+    desc 'Build a new Android application version.'
+    private_lane :build do
+        package = load_json(json_path: PACKAGE_JSON_PATH)
+
+        gradle(task: 'clean', project_dir: 'android/')
+        gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"] })
+        gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
+    end
+
+    desc 'Ship to Playstore Beta.'
+    lane :beta do
+        ensure_git_branch(branch: 'master')
+        build
+        supply(
+            track: 'beta',
+            track_promote_to: 'beta',
+            aab: AAB_PATH,
+            json_key: ANDROID_SERVICE_JSON_PATH,
+            package_name: ANDROID_APP_ID,
+            skip_upload_metadata: true,
+            skip_upload_images: true,
+            skip_upload_screenshots: true,
+            skip_upload_apk: true
+        )
+        git_commit(path: ['./android/gradle.properties'], message: 'Bump Android version')
+        push_to_git_ssh_remote
+    end
+end

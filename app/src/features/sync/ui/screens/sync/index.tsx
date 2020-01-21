@@ -1,75 +1,110 @@
 import React from 'react'
+import { Text } from 'react-native'
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake'
 
-import { storageKeys } from '../../../../../../app.json'
 import { NavigationScreen } from 'src/ui/types'
-import Logic, { State, Event } from './logic'
+import SyncScreenLogic, {
+    SyncScreenState,
+    SyncScreenEvent,
+    SyncScreenDependencies,
+} from './logic'
 import SetupStage from '../../components/sync-setup-stage'
 import LoadingStage from '../../components/sync-loading-stage'
+import InfoStage from '../../components/sync-info-stage'
 import SuccessStage from '../../components/sync-success-stage'
+import ErrorStage from '../../components/sync-error-stage'
 import ScanQRStage from '../../components/sync-scan-qr-stage'
 
-interface Props {}
-
-export default class SyncScreen extends NavigationScreen<Props, State, Event> {
-    static TEST_SYNC_KEY = 'this is a test!'
-
-    constructor(props: Props) {
-        super(props, { logic: new Logic() })
+export default class SyncScreen extends NavigationScreen<
+    SyncScreenDependencies,
+    SyncScreenState,
+    SyncScreenEvent
+> {
+    constructor(props: SyncScreenDependencies) {
+        super(props, { logic: new SyncScreenLogic(props) })
     }
 
-    componentDidMount() {
-        this.skipSyncIfNeeded()
+    private handleCancelBtnPress = () => {
+        this.props.navigation.navigate('MVPOverview')
     }
 
-    private async skipSyncIfNeeded() {
-        const syncKey = await this.props.services.localStorage.get<string>(
-            storageKeys.syncKey,
-        )
-
-        if (syncKey != null) {
-            this.props.navigation.navigate('MVPOverview')
-        }
+    handleDoSync = async ({ initialMessage }: { initialMessage: string }) => {
+        activateKeepAwake()
+        await this.processEvent('doSync', { initialMessage })
+        deactivateKeepAwake()
     }
-
-    private handleSyncSuccess = async () => {
-        await this.props.services.localStorage.set(
-            storageKeys.syncKey,
-            SyncScreen.TEST_SYNC_KEY,
-        )
-        this.processEvent('setSyncStatus', { value: 'success' })
-    }
-
-    private handleFakeSync = e => {
-        this.processEvent('setSyncStatus', { value: 'syncing' })
-
-        setTimeout(this.handleSyncSuccess, 1500)
-    }
-
-    private navToOverview = () => this.props.navigation.navigate('MVPOverview')
 
     render() {
         switch (this.state.status) {
             case 'scanning':
                 return (
                     <ScanQRStage
-                        onQRRead={this.handleFakeSync}
-                        onSkipBtnPress={this.navToOverview}
+                        onCancelBtnPress={this.handleCancelBtnPress}
+                        onQRRead={qrEvent =>
+                            this.handleDoSync({ initialMessage: qrEvent.data })
+                        }
+                        onBtnPress={() => this.processEvent('skipSync', {})}
+                        onManualInputSubmit={() =>
+                            this.handleDoSync({
+                                initialMessage: this.state.manualInputValue,
+                            })
+                        }
+                        onManualInputChange={text =>
+                            this.processEvent('setManualInputText', { text })
+                        }
+                        manualInputValue={this.state.manualInputValue}
+                        debug={__DEV__}
                     />
                 )
             case 'syncing':
-                return <LoadingStage />
-            case 'success':
-                return <SuccessStage onBtnPress={this.navToOverview} />
-            default:
-            case 'setup':
                 return (
-                    <SetupStage
+                    <LoadingStage
+                        __backToOverview={this.handleCancelBtnPress}
+                    />
+                )
+            case 'success':
+                return (
+                    <SuccessStage
+                        onCancelBtnPress={this.handleCancelBtnPress}
+                        onBtnPress={() =>
+                            this.processEvent('confirmSuccess', {})
+                        }
+                    />
+                )
+            case 'failure':
+                return (
+                    <ErrorStage
+                        onCancelBtnPress={this.handleCancelBtnPress}
+                        onSupportBtnPress={this.handleCancelBtnPress}
+                        errorText="Something has gone wrong"
+                        onBtnPress={() => undefined}
+                    />
+                )
+            case 'info':
+                return (
+                    <InfoStage
+                        onCancelBtnPress={this.handleCancelBtnPress}
                         onBtnPress={() =>
                             this.processEvent('setSyncStatus', {
                                 value: 'scanning',
                             })
                         }
                     />
+                )
+            case 'setup':
+                return (
+                    <SetupStage
+                        onCancelBtnPress={this.handleCancelBtnPress}
+                        onBtnPress={() =>
+                            this.processEvent('setSyncStatus', {
+                                value: 'info',
+                            })
+                        }
+                    />
+                )
+            default:
+                throw new Error(
+                    `Unknown sync screen status: ${this.state.status}`,
                 )
         }
     }

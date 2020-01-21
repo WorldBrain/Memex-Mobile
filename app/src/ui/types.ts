@@ -3,6 +3,16 @@ import { NavigationScreenProp, NavigationRoute } from 'react-navigation'
 
 import { Storage } from 'src/storage/types'
 import { Services } from 'src/services/types'
+import { UILogic } from 'ui-logic-core'
+
+export type UITaskState = 'pristine' | 'running' | 'done' | 'error'
+export type UIServices<Required extends keyof Services> = Pick<
+    Services,
+    Required
+>
+export interface UIStorageModules<Required extends keyof Storage['modules']> {
+    modules: Pick<Storage['modules'], Required>
+}
 
 export interface UIDependencies {
     storage: Storage
@@ -18,21 +28,17 @@ export abstract class StatefulUIElement<Props, State, Event> extends UIElement<
     State,
     Event
 > {
-    constructor(props, logic) {
-        super(props, logic)
+    constructor(props: Props, logic: UILogic<State, Event>) {
+        super(props, { logic })
     }
 }
 
 export abstract class NavigationScreen<
-    Props,
+    Props extends NavigationProps,
     State,
     Event
-> extends StatefulUIElement<
-    Props & NavigationProps & UIDependencies,
-    State,
-    Event
-> {
-    constructor(props, logic) {
-        super(props, logic)
+> extends StatefulUIElement<Props, State, Event> {
+    constructor(props: Props, options: { logic: UILogic<State, Event> }) {
+        super(props, options.logic)
     }
 }

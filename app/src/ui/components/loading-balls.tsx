@@ -1,9 +1,12 @@
 import React from 'react'
-import { View, Animated } from 'react-native'
+import { View, Animated, StyleProp } from 'react-native'
 
 import styles from './loading-balls.styles'
 
-export interface Props {}
+export interface Props {
+    style?: StyleProp<any>
+    ballStyle?: StyleProp<any>
+}
 
 interface State {
     leftOffset: Animated.Value
@@ -45,25 +48,28 @@ class LoadingBalls extends React.PureComponent<Props, State> {
 
     render() {
         return (
-            <View style={styles.container}>
+            <View style={[styles.container, this.props.style]}>
                 <Animated.View
                     style={{
                         ...styles.ball,
                         width: this.state.sizeInc,
                         height: this.state.sizeInc,
                         left: 0,
+                        ...this.props.ballStyle,
                     }}
                 />
                 <Animated.View
                     style={{
                         ...styles.ball,
                         left: Animated.add(0, this.state.leftOffset),
+                        ...this.props.ballStyle,
                     }}
                 />
                 <Animated.View
                     style={{
                         ...styles.ball,
                         left: Animated.add(30, this.state.leftOffset),
+                        ...this.props.ballStyle,
                     }}
                 />
                 <Animated.View
@@ -72,6 +78,7 @@ class LoadingBalls extends React.PureComponent<Props, State> {
                         width: this.state.sizeDec,
                         height: this.state.sizeDec,
                         left: 60,
+                        ...this.props.ballStyle,
                     }}
                 />
             </View>

@@ -1,7 +1,11 @@
 import React from 'react'
-import { FlatList, ListRenderItem } from 'react-native'
+import { View, FlatList, ListRenderItem } from 'react-native'
 
-import { NavigationScreen } from 'src/ui/types'
+import {
+    NavigationScreen,
+    NavigationProps,
+    UIStorageModules,
+} from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import MetaPicker from '../../components/meta-picker'
 import MetaPickerEntry from '../../components/meta-picker-entry'
@@ -13,10 +17,14 @@ import {
     MetaTypeShape,
     MetaTypeName,
 } from 'src/features/meta-picker/types'
+import LoadingBalls from 'src/ui/components/loading-balls'
+import styles from './styles'
 
-interface Props {
+interface Props extends NavigationProps {
+    storage: UIStorageModules<'metaPicker'>
     url: string
     type: MetaType
+    isSyncLoading: boolean
     initEntries: string[]
     onEntryPress: (item: MetaTypeShape) => void
 }
@@ -38,6 +46,23 @@ export default class MetaPickerScreen extends NavigationScreen<
         this.fetchInitEntries()
     }
 
+    private mergeThenSetEntries(entries: MetaTypeShape[]): void {
+        this.processEvent('setEntries', {
+            entries: entries.map(entry => {
+                const currentEntry = this.state.entries.get(entry.name)
+                const isChecked =
+                    (currentEntry && currentEntry.isChecked) ||
+                    entry.isChecked ||
+                    this.props.initEntries.includes(entry.name)
+
+                return {
+                    name: entry.name,
+                    isChecked,
+                }
+            }),
+        })
+    }
+
     private async fetchInitEntries() {
         const { metaPicker } = this.props.storage.modules
         let entries: MetaTypeShape[]
@@ -55,11 +80,11 @@ export default class MetaPickerScreen extends NavigationScreen<
 
         // Add any entries passed from parent
         entries = [
-            ...this.props.initEntries.map(name => ({ name, isChecked: true })),
             ...entries,
+            ...this.props.initEntries.map(name => ({ name, isChecked: true })),
         ]
 
-        this.processEvent('setEntries', { entries })
+        this.mergeThenSetEntries(entries)
         this.processEvent('setIsLoading', { value: false })
     }
 
@@ -96,24 +121,46 @@ export default class MetaPickerScreen extends NavigationScreen<
         />
     )
 
+    private handleInputText = async (text: string) => {
+        const { metaPicker } = this.props.storage.modules
+
+        const collection =
+            this.props.type === 'collections' ? 'customLists' : 'tags'
+
+        this.processEvent('setInputText', { text })
+        this.processEvent('setIsLoading', { value: true })
+
+        const entries = await metaPicker.suggest(this.props.url, {
+            collection,
+            query: { name: text },
+        })
+
+        this.processEvent('setIsLoading', { value: false })
+        this.mergeThenSetEntries(entries)
+    }
+
     render() {
         return (
             <MetaPicker>
                 <SearchAddInput
                     type={this.metaTypeName}
                     value={selectors.inputText(this.state)}
-                    onChange={text =>
-                        this.processEvent('setInputText', { text })
-                    }
+                    onChange={this.handleInputText}
                 />
-                <FlatList
-                    renderItem={this.renderPickerEntry}
-                    data={selectors.pickerEntries(this.state)}
-                    keyExtractor={(item, index) => index.toString()}
-                    ListEmptyComponent={
-                        <MetaPickerEmptyRow type={this.props.type} />
-                    }
-                />
+                {this.props.isSyncLoading || this.state.isLoading ? (
+                    <View style={styles.loadingBallContainer}>
+                        <LoadingBalls style={styles.loadingBalls} />
+                    </View>
+                ) : (
+                    <FlatList
+                        renderItem={this.renderPickerEntry}
+                        data={selectors.pickerEntries(this.state)}
+                        keyExtractor={(item, index) => index.toString()}
+                        ListEmptyComponent={
+                            <MetaPickerEmptyRow type={this.props.type} />
+                        }
+                    />
+                )}
             </MetaPicker>
         )
     }

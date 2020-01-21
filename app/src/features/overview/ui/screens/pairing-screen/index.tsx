@@ -3,9 +3,11 @@ import { Alert } from 'react-native'
 
 import SyncSuccess from 'src/features/sync/ui/components/sync-success-stage'
 import { storageKeys } from '../../../../../../app.json'
-import { NavigationScreen } from 'src/ui/types'
+import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
 
-interface Props {}
+interface Props extends NavigationProps {
+    services: UIServices<'localStorage'>
+}
 
 export default class RePairScreen extends NavigationScreen<Props, {}, Event> {
     private handleRePairConfirmation = async () => {

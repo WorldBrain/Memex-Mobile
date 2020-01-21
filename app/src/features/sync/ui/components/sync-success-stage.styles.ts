@@ -15,21 +15,24 @@ export default StyleSheet.create({
         alignItems: 'center',
     },
     icon: {
+        marginTop: 50,
         width: 50,
         height: 50,
-        backgroundColor: '#c4c4c4',
+    },
+    successIcon: {
+        width: 50,
+        height: 50,
     },
     text: {
         fontSize: 24,
         fontWeight: 'bold',
         marginTop: 15,
         paddingHorizontal: 50,
-        marginBottom: 30,
         textAlign: 'center',
     },
     backBtn: {
         position: 'absolute',
-        top: 20,
+        top: 50,
         left: 20,
     },
 })

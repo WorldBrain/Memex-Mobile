@@ -1,6 +1,8 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
+import { storageKeys } from '../../../../../../app.json'
 import { OnboardingStage } from 'src/features/onboarding/types'
+import { UIServices, NavigationProps } from 'src/ui/types'
 
 export interface State {
     onboardingStage: OnboardingStage
@@ -8,24 +10,66 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    setOnboardingStage: { value: OnboardingStage }
-    setSyncStatus: { value: boolean }
+    finishOnboarding: {}
+    goToNextStage: {}
+    goToPrevStage: {}
 }>
 
-export default class Logic extends UILogic<State, Event> {
+export default class OnboardingScreenLogic extends UILogic<State, Event> {
+    constructor(
+        private options: NavigationProps & {
+            services: UIServices<'localStorage'>
+        },
+    ) {
+        super()
+    }
+
     getInitialState(): State {
         return { onboardingStage: 0, isSynced: false }
     }
 
-    setOnboardingStage(
-        incoming: IncomingUIEvent<State, Event, 'setOnboardingStage'>,
-    ): UIMutation<State> {
-        return { onboardingStage: { $set: incoming.event.value } }
+    async init() {
+        const syncKey = await this.options.services.localStorage.get<string>(
+            storageKeys.syncKey,
+        )
+
+        if (syncKey != null) {
+            this.emitMutation({ isSynced: { $set: true } })
+        }
     }
 
-    setSyncStatus(
-        incoming: IncomingUIEvent<State, Event, 'setSyncStatus'>,
+    private async finishOnboarding() {
+        await this.options.services.localStorage.set(
+            storageKeys.showOnboarding,
+            false,
+        )
+
+        await this.options.navigation.navigate('Sync')
+        return {}
+    }
+
+    goToNextStage(
+        incoming: IncomingUIEvent<State, Event, 'goToNextStage'>,
     ): UIMutation<State> {
-        return { isSynced: { $set: incoming.event.value } }
+        const nextStage = (incoming.previousState.onboardingStage +
+            1) as OnboardingStage
+
+        if (nextStage > 2) {
+            this.finishOnboarding()
+            return {}
+        }
+
+        return { onboardingStage: { $set: nextStage } }
+    }
+
+    goToPrevStage(
+        incoming: IncomingUIEvent<State, Event, 'goToPrevStage'>,
+    ): UIMutation<State> {
+        return {
+            onboardingStage: {
+                $set: (incoming.previousState.onboardingStage -
+                    1) as OnboardingStage,
+            },
+        }
     }
 }

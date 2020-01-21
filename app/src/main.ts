@@ -1,6 +1,38 @@
-import { createStorage } from './storage'
+globalThis.process.version = '1.1.1'
+
+import firebase from '@react-native-firebase/app'
+import '@react-native-firebase/auth'
+import '@react-native-firebase/functions'
+import * as Keychain from 'react-native-keychain'
+
+import { Platform } from 'react-native'
+import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
+import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
+import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
+import { LocalAuthService } from '@worldbrain/memex-common/lib/authentication/local'
+import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
+import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
+
+import './polyfills'
+import {
+    createStorage,
+    setStorageMiddleware,
+    createServerStorage,
+} from './storage'
 import { createServices } from './services'
+import { setupBackgroundSync, setupFirebaseAuth } from './services/setup'
 import { UI } from './ui'
+import { createFirebaseSignalTransport } from './services/sync/signalling'
+import { LocalStorageService } from './services/local-storage'
+import { KeychainPackage } from './services/keychain/keychain'
+import {
+    insertIntegrationTestData,
+    checkIntegrationTestData,
+} from './tests/shared-fixtures/integration'
+
+if (!process.nextTick) {
+    process.nextTick = setImmediate
+}
 
 export async function main() {
     const ui = new UI()
@@ -11,6 +43,45 @@ export async function main() {
             database: 'memex',
         },
     })
-    const services = await createServices({})
+    const serverStorage = await createServerStorage()
+
+    const localStorage = new LocalStorageService({
+        settingsStorage: storage.modules.settings,
+    })
+    const services = await createServices({
+        devicePlatform: Platform.OS as MemexSyncDevicePlatform,
+        auth: new WorldbrainAuthService(firebase),
+        localStorage,
+        storage,
+        signalTransportFactory: createFirebaseSignalTransport,
+        sharedSyncLog: serverStorage.modules.sharedSyncLog,
+        keychain: new KeychainPackage({ server: 'worldbrain.io' }),
+    })
+    await setStorageMiddleware({
+        services,
+        storage,
+    })
+
+    await setupBackgroundSync({ services })
+    await setupFirebaseAuth({ services })
+
+    await services.sync.continuousSync.setup()
+
     ui.initialize({ dependencies: { storage, services } })
+
+    Object.assign(globalThis, {
+        services,
+        storage,
+        selfTests: await createSelfTests({
+            storage,
+            services,
+            auth: {
+                setUser: async ({ id }) =>
+                    (services.auth as MemoryAuthService).setUser(TEST_USER),
+            },
+            intergrationTestData: {
+                insert: () => insertIntegrationTestData({ storage }),
+            },
+        }),
+    })
 }

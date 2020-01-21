@@ -1,1 +1,16 @@
 node_modules
+.project
+.settings/
+.classpath
+app/ios/Pods
+
+# GitHub deploy key
+travis_key
+travis_key.pub
+
+# iOS sigining keys
+dist.cer
+dist.p12
+travis.mobileprovision
+
+app/app.app.dSYM.zip

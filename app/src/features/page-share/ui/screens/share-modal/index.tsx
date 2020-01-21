@@ -1,8 +1,13 @@
 import React from 'react'
 
-import { NavigationScreen } from 'src/ui/types'
+import {
+    NavigationScreen,
+    NavigationProps,
+    UIServices,
+    UIStorageModules,
+} from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
-import Logic, { State, Event } from './logic'
+import Logic, { State, Event, LogicDependencies } from './logic'
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
 import AddCollection from '../../components/add-collections-segment'
 import ShareModal from '../../components/share-modal'
@@ -11,7 +16,7 @@ import NoteInput from '../../components/note-input-segment'
 import StarPage from '../../components/star-page-segment'
 import AddTags from '../../components/add-tags-segment'
 
-interface Props {}
+type Props = NavigationProps & LogicDependencies
 
 export default class ShareModalScreen extends NavigationScreen<
     Props,
@@ -19,79 +24,11 @@ export default class ShareModalScreen extends NavigationScreen<
     Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic() })
+        super(props, { logic: new Logic(props) })
     }
 
-    async componentDidMount() {
-        await this.setSharedUrl()
-        await this.setStoredStates()
-    }
-
-    private async setSharedUrl() {
-        const url = await this.props.services.shareExt.getShareText()
-        if (url) {
-            this.processEvent('setPageUrl', { url })
-        } else {
-            this.handleModalClose()
-        }
-    }
-
-    private async setStoredStates() {
-        const { overview, metaPicker } = this.props.storage.modules
-        const { pageUrl: url } = this.state
-
-        const isStarred = await overview.isPageStarred({ url })
-        const tags = await metaPicker.findTagsByPage({ url })
-        const collections = await metaPicker.findListsByPage({ url })
-        this.processEvent('setPageStar', { value: isStarred })
-        this.processEvent('setTagsToAdd', { values: tags.map(t => t.name) })
-        this.processEvent('setCollectionsToAdd', {
-            values: collections.map(c => c.name),
-        })
-    }
-
-    private initHandleMetaShow = (type?: MetaType) => (e: any) => {
+    private handleMetaViewTypeSwitch = (type?: MetaType) => (e: any) => {
         this.processEvent('setMetaViewType', { type })
-    }
-
-    private handleSave = async () => {
-        this.processEvent('setPageSaving', { value: true })
-        await this.storePage()
-        this.processEvent('setPageSaving', { value: false })
-        this.handleModalClose()
-    }
-
-    private async storePage() {
-        const { overview, metaPicker, pageEditor } = this.props.storage.modules
-
-        await overview.createPage({
-            url: this.state.pageUrl,
-            fullUrl: this.state.pageUrl,
-            text: '',
-            fullTitle: '',
-        })
-        await overview.visitPage({ url: this.state.pageUrl })
-        await overview.setPageStar({
-            url: this.state.pageUrl,
-            isStarred: this.state.isStarred,
-        })
-
-        await metaPicker.setPageLists({
-            url: this.state.pageUrl,
-            lists: this.state.collectionsToAdd,
-        })
-        await metaPicker.setPageTags({
-            url: this.state.pageUrl,
-            tags: this.state.tagsToAdd,
-        })
-
-        if (this.state.noteText.trim().length > 0) {
-            await pageEditor.createNote({
-                comment: this.state.noteText.trim(),
-                pageUrl: this.state.pageUrl,
-                pageTitle: '',
-            })
-        }
     }
 
     private handleModalClose = () => {
@@ -100,18 +37,22 @@ export default class ShareModalScreen extends NavigationScreen<
         // this.props.services.shareExt.close()
     }
 
+    private handleSave = () => {
+        this.processEvent('save', {})
+        // For whatever reason, calling this seems to result in a crash. Though it still closes as expected without calling it...
+        // this.props.services.shareExt.close()
+    }
+
     private handleStarPress = () => {
-        this.processEvent('setPageStar', {
-            value: !this.state.isStarred,
-        })
+        this.processEvent('togglePageStar', {})
     }
 
     private handleMetaPickerEntryPress = async (entry: MetaTypeShape) => {
-        if (this.state.metaViewShown === 'tags') {
-            this.processEvent('toggleTag', { name: entry.name })
-        } else {
-            this.processEvent('toggleCollection', { name: entry.name })
-        }
+        this.processEvent('metaPickerEntryPress', { entry })
+    }
+
+    private handleNoteTextChange = (value: string) => {
+        this.processEvent('setNoteText', { value })
     }
 
     private renderMetaPicker() {
@@ -122,12 +63,15 @@ export default class ShareModalScreen extends NavigationScreen<
 
         return (
             <>
-                <ActionBar onCancelPress={this.initHandleMetaShow(undefined)} />
+                <ActionBar
+                    onCancelPress={this.handleMetaViewTypeSwitch(undefined)}
+                />
                 <MetaPicker
                     type={this.state.metaViewShown}
                     url={this.state.pageUrl}
                     onEntryPress={this.handleMetaPickerEntryPress}
                     initEntries={initEntries}
+                    isSyncLoading={this.state.syncState === 'running'}
                     {...this.props}
                 />
             </>
@@ -140,31 +84,29 @@ export default class ShareModalScreen extends NavigationScreen<
                 <ActionBar
                     onCancelPress={this.handleModalClose}
                     onConfirmPress={this.handleSave}
-                    isConfirming={this.state.isPageSaving}
+                    isConfirming={this.state.saveState === 'running'}
                 >
                     {this.state.statusText}
                 </ActionBar>
                 <NoteInput
-                    onChange={value =>
-                        this.processEvent('setNoteText', { value })
-                    }
+                    onChange={this.handleNoteTextChange}
                     value={this.state.noteText}
-                    disabled={this.state.isPageSaving}
+                    disabled={this.state.saveState === 'running'}
                 />
                 <StarPage
                     isStarred={this.state.isStarred}
                     onPress={this.handleStarPress}
-                    disabled={this.state.isPageSaving}
+                    disabled={this.state.saveState === 'running'}
                 />
                 <AddCollection
-                    onPress={this.initHandleMetaShow('collections')}
+                    onPress={this.handleMetaViewTypeSwitch('collections')}
                     count={this.state.collectionsToAdd.length}
-                    disabled={this.state.isPageSaving}
+                    disabled={this.state.saveState === 'running'}
                 />
                 <AddTags
-                    onPress={this.initHandleMetaShow('tags')}
+                    onPress={this.handleMetaViewTypeSwitch('tags')}
                     count={this.state.tagsToAdd.length}
-                    disabled={this.state.isPageSaving}
+                    disabled={this.state.saveState === 'running'}
                 />
             </>
         )

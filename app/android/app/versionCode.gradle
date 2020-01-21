@@ -1,0 +1,11 @@
+task('updateVersion') {
+    description= "Increments the version code and applies a new version name"
+    doLast {
+        def versionCode = Integer.parseInt(VERSION_CODE) + 1
+        def versionName = version_number
+        ant.propertyfile(file: "../gradle.properties") {
+            entry(key: "VERSION_CODE", value: versionCode)
+            entry(key: "VERSION_NAME", value: versionName)
+        }
+    }
+}

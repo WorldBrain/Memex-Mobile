@@ -1,27 +1,42 @@
 import React from 'react'
-import { NativeSyntheticEvent, NativeTouchEvent, Text } from 'react-native'
+import {
+    NativeSyntheticEvent,
+    NativeTouchEvent,
+    Text,
+    View,
+    Image,
+} from 'react-native'
 
 import styles from './sync-setup-stage.styles'
 import sharedStyles from './shared.styles'
-import MainLayout from 'src/ui/layouts/main'
+import SyncLayout from 'src/ui/layouts/sync'
 
 export interface Props {
     onBtnPress: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
+    onCancelBtnPress: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
 }
 
 const SyncSetupStage: React.StatelessComponent<Props> = props => (
-    <MainLayout
-        btnText="Next"
+    <SyncLayout
+        btnText="OK, got it!"
         titleText="Pair app with your computer"
-        subtitleText="To use this app, connect it to your Memex"
         {...props}
     >
-        <Text style={sharedStyles.stepText}>Step 1</Text>
         <Text style={styles.instructionText}>
-            Open <Text style={styles.boldText}>worldbrain.io/sync</Text> on your
-            desktop browser and follow the instructions
+            You need to be{' '}
+            <Text style={{ fontWeight: 'bold' }}>
+                on the same wifi connection
+            </Text>{' '}
+            with the devices you are trying to pair
         </Text>
-    </MainLayout>
+        <View style={styles.mainImgContainer}>
+            <Image
+                resizeMode="contain"
+                style={styles.mainImg}
+                source={require('../assets/device-pair.png')}
+            />
+        </View>
+    </SyncLayout>
 )
 
 export default SyncSetupStage

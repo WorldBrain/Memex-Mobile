@@ -44,6 +44,7 @@
                 "src",
                 "user-logic",
                 "@worldbrain/storex",
+                "@worldbrain/memex-common",
                 "@worldbrain/memex-storage",
                 "@worldbrain/storex-backend-typeorm",
                 "@worldbrain/storex-pattern-modules",

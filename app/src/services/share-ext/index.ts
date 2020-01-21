@@ -13,13 +13,24 @@ export class ShareExtService {
         this.shareAPI = shareAPI
     }
 
-    async getShareText() {
-        // TODO: Figure out what these are... What do I do with `type`?
-        const { type, value } = await this.shareAPI.data()
+    async getSharedUrl(): Promise<string> {
+        const text = await this.getSharedText()
 
-        if (value && value.length) {
-            return value
+        if (!text.startsWith('http')) {
+            throw new Error('URL not received')
         }
+
+        return text
+    }
+
+    async getSharedText(): Promise<string> {
+        const { value } = await this.shareAPI.data()
+
+        if (!value || !value.length) {
+            throw new Error('No shared text received')
+        }
+
+        return value
     }
 
     close = () => this.shareAPI.close()

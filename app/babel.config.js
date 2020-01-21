@@ -36,6 +36,9 @@ function getAliases() {
                 [`^${packageName}$`]: `./external/${packageName}/ts`,
                 [`^${packageName}/lib(.+)$`]: `./external/${packageName}/ts\\1`,
             })
+        } else if (packageName === 'react-native-simple-peer') {
+            aliases['react-native-simple-peer'] =
+                './external/react-native-simple-peer'
         }
     }
 
@@ -52,5 +55,6 @@ module.exports = {
                 alias: getAliases(),
             },
         ],
+        '@babel/plugin-proposal-async-generator-functions',
     ],
 }

@@ -4,20 +4,25 @@ export default StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'space-evenly',
+        justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 100,
-        marginBottom: '50%',
+    },
+    spinner: {
+        marginBottom: 50,
     },
     icon: {
         width: 50,
         height: 50,
-        backgroundColor: '#c4c4c4',
     },
     text: {
-        fontSize: 24,
+        fontSize: 18,
         fontWeight: 'bold',
-        paddingHorizontal: 50,
+        color: 'black',
         textAlign: 'center',
+    },
+    warningText: {
+        fontSize: 25,
+        color: 'red',
+        marginTop: 15,
     },
 })

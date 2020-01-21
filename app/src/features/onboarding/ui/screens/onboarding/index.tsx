@@ -1,13 +1,19 @@
 import React from 'react'
 
 import { storageKeys } from '../../../../../../app.json'
-import { NavigationScreen } from 'src/ui/types'
-import Logic, { State, Event } from './logic'
-import GifLayout, { Props as GifLayoutProps } from '../../components/gif-layout'
+import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
+import OnboardingScreenLogic, { State, Event } from './logic'
+import OnboardingLayout, {
+    Props as OnboardingLayoutProps,
+} from 'src/ui/layouts/onboarding'
 import Welcome from '../../components/welcome'
-import { OnboardingStage } from 'src/features/onboarding/types'
+import SaveWebsite from '../../components/save-websites'
+import OrganizeContent from '../../components/organize-content'
+import BetaOverview from '../../components/beta-overview'
 
-interface Props {}
+interface Props extends NavigationProps {
+    services: UIServices<'localStorage'>
+}
 
 export default class OnboardingScreen extends NavigationScreen<
     Props,
@@ -15,49 +21,22 @@ export default class OnboardingScreen extends NavigationScreen<
     Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic() })
+        super(props, { logic: new OnboardingScreenLogic(props) })
     }
 
-    componentDidMount() {
-        this.checkSyncState()
-    }
-
-    private async checkSyncState() {
-        const syncKey = await this.props.services.localStorage.get<string>(
-            storageKeys.syncKey,
-        )
-
-        if (syncKey != null) {
-            this.processEvent('setSyncStatus', { value: true })
-        }
-    }
-
-    private async finishOnboarding() {
-        await this.props.services.localStorage.set(
-            storageKeys.showOnboarding,
-            false,
-        )
-
-        return this.props.navigation.navigate('Sync')
-    }
-
-    private goToNextStage = () => {
-        const value = (this.state.onboardingStage + 1) as OnboardingStage
-
-        if (value > 3) {
-            return this.finishOnboarding()
-        }
-
-        this.processEvent('setOnboardingStage', { value })
-    }
-
-    private renderOnboardingStage(props: Omit<GifLayoutProps, 'onBtnPress'>) {
+    private renderOnboardingStage(
+        props: Omit<
+            OnboardingLayoutProps,
+            'onNextPress' | 'onBackPress' | 'onSkipPress' | 'screenIndex'
+        >,
+    ) {
         return (
-            <GifLayout
+            <OnboardingLayout
                 {...props}
-                screenIndex={this.state.onboardingStage - 1}
-                onBtnPress={this.goToNextStage}
-                showScreenProgress
+                screenIndex={this.state.onboardingStage}
+                onNextPress={() => this.processEvent('goToNextStage', {})}
+                onBackPress={() => this.processEvent('goToPrevStage', {})}
+                onSkipPress={() => this.processEvent('finishOnboarding', {})}
             />
         )
     }
@@ -65,32 +44,19 @@ export default class OnboardingScreen extends NavigationScreen<
     render() {
         switch (this.state.onboardingStage) {
             case 0:
-                return <Welcome onGetStartedPress={this.goToNextStage} />
+                return this.renderOnboardingStage({
+                    children: <SaveWebsite />,
+                })
             case 1:
                 return this.renderOnboardingStage({
-                    titleText: 'Save websites on the go',
-                    subtitleText:
-                        "Easily save websites with your device's sharing features",
-                    btnText: 'Next',
+                    showBackBtn: true,
+                    children: <OrganizeContent />,
                 })
             case 2:
-                return this.renderOnboardingStage({
-                    titleText: 'Highlight and add notes',
-                    subtitleText:
-                        'Highlight any text in your browser and attach notes',
-                    btnText: 'Next',
-                    isComingSoon: true,
-                })
-            case 3:
             default:
                 return this.renderOnboardingStage({
-                    titleText: 'Search your knowledge',
-                    subtitleText:
-                        'Sync your history & notes between desktop and mobile app',
-                    btnText: this.state.isSynced
-                        ? 'Close Tutorial'
-                        : 'Continue to Setup',
-                    isComingSoon: true,
+                    showBackBtn: true,
+                    children: <BetaOverview />,
                 })
         }
     }

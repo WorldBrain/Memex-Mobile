@@ -22,6 +22,8 @@ export default StyleSheet.create({
     },
     entryText: {
         fontSize: 18,
+        color: '#545454',
+        fontWeight: '400',
     },
     emptyRowText: {
         width: '100%',
