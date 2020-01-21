@@ -24,6 +24,23 @@ aliases:
 
 jobs:
   include:
+    - stage: ios-beta
+      # if: branch = develop AND type = push
+      os: osx
+      osx_image: xcode11.3
+      language: node_js
+      cache: *ios-cache
+      node_js:
+        - lts/*
+      before_install:
+        - sudo gem install fastlane
+        - npm install -g yarn
+      install:
+        - "./write-ios-keys.sh"
+        - "./install-deps-ios.sh"
+      script:
+        - "./deploy-ios-beta.sh"
+
     - stage: android-beta
       # if: branch = develop AND type = push
       language: android
@@ -42,23 +59,6 @@ jobs:
         - "./install-deps-android.sh"
       script:
         - "./deploy-android-beta.sh"
-
-    - stage: ios-beta
-      # if: branch = develop AND type = push
-      os: osx
-      osx_image: xcode11.3
-      language: node_js
-      cache: *ios-cache
-      node_js:
-        - lts/*
-      before_install:
-        - sudo gem install fastlane
-        - npm install -g yarn
-      install:
-        - "./write-ios-keys.sh"
-        - "./install-deps-ios.sh"
-      script:
-        - "./deploy-ios-beta.sh"
 
 env:
   global:

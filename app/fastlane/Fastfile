@@ -67,7 +67,7 @@ platform :ios do
     desc 'Ship to Testflight.'
     lane :beta do
         setup_travis
-        # ensure_git_branch(branch: 'master')
+        ensure_git_branch(branch: 'master')
         build
         reset_pass
         pilot(
@@ -81,33 +81,18 @@ platform :ios do
 end
 
 platform :android do
-    desc 'Bump Android version code'
-    private_lane :bump_version_code do
-        path = '../android/gradle.properties'
-        re = /VERSION_CODE=(\d+)/
-
-        s = File.read(path)
-        versionCode = s[re, 1].to_i
-        s[re, 1] = (versionCode + 1).to_s
-
-        f = File.new(path, 'w')
-        f.write(s)
-        f.close
-      end
-
     desc 'Build a new Android application version.'
     private_lane :build do
         package = load_json(json_path: PACKAGE_JSON_PATH)
 
         gradle(task: 'clean', project_dir: 'android/')
-        # bump_version_code
         gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"] })
         gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
     end
 
     desc 'Ship to Playstore Beta.'
     lane :beta do
-        # ensure_git_branch(branch: 'master')
+        ensure_git_branch(branch: 'master')
         build
         supply(
             track: 'beta',
