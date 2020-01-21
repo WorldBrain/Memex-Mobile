@@ -100,7 +100,7 @@ platform :android do
         package = load_json(json_path: PACKAGE_JSON_PATH)
 
         gradle(task: 'clean', project_dir: 'android/')
-        bump_version_code
+        # bump_version_code
         gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"] })
         gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
     end
