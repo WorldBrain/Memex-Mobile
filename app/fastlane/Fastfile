@@ -114,7 +114,11 @@ platform :android do
             track_promote_to: 'beta',
             aab: AAB_PATH,
             json_key: ANDROID_SERVICE_JSON_PATH,
-            package_name: ANDROID_APP_ID
+            package_name: ANDROID_APP_ID,
+            skip_upload_metadata: true,
+            skip_upload_images: true,
+            skip_upload_screenshots: true,
+            skip_upload_apk: true
         )
         git_commit(path: ['../android/gradle.properties'], message: 'Bump Android version')
         push_to_git_ssh_remote
