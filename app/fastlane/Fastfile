@@ -13,6 +13,7 @@ APPLE_USER_ID = "dev@worldbrain.io"
 APPLE_APP_ID = "1471860331"
 PACKAGE_JSON_PATH = "./package.json"
 AAB_PATH = "./android/app/build/outputs/bundle/release/app.aab"
+ANDROID_SERVICE_JSON_PATH = "./android/service-account.json"
 
 before_all do
     ensure_git_status_clean
@@ -65,7 +66,7 @@ platform :ios do
     desc 'Ship to Testflight.'
     lane :beta do
         setup_travis
-        ensure_git_branch(branch: 'master')
+        # ensure_git_branch(branch: 'master')
         build
         reset_pass
         pilot(
@@ -105,12 +106,13 @@ platform :android do
 
     desc 'Ship to Playstore Beta.'
     lane :beta do
-        ensure_git_branch(branch: 'master')
+        # ensure_git_branch(branch: 'master')
         build
         supply(
             track: 'beta',
             track_promote_to: 'beta',
             aab: AAB_PATH,
+            json_key: ANDROID_SERVICE_JSON_PATH
         )
         git_commit(path: ['../android/gradle.properties'], message: 'Bump Android version')
         push_to_git_ssh_remote

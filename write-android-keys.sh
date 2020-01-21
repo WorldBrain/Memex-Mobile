@@ -1,5 +1,6 @@
 #!/bin/sh
 
+SERVICE_ACC_KEY="./app/android/service-account.json"
 SIGN_KEY="./app/android/app/my-upload-key.keystore"
 declare -r SSH_FILE="$(mktemp -u $HOME/.ssh/id_rsa)"
 
@@ -10,6 +11,10 @@ chmod 600 $SSH_FILE
 # Set up Android app signing key
 echo $ANDROID_SIGN_KEY | base64 -d > $SIGN_KEY
 chmod 400 $SIGN_KEY
+
+# Set up Google Play service account config
+echo $ANDROID_SERVICE_JSON | base64 -d > $SERVICE_ACC_KEY
+chmod 400 $SERVICE_ACC_KEY
 
 # Enable SSH authentication
 printf "%s\n" \
