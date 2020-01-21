@@ -33,6 +33,7 @@ jobs:
       before_script:
         - ./internals/scripts/travis/gitconfig.sh
       before_install:
+        - rvm install 2.x
         - sudo gem install fastlane
         - npm install -g yarn
         - yes | sdkmanager "platforms;android-28"
