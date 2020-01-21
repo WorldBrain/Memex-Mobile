@@ -120,7 +120,7 @@ platform :android do
             skip_upload_screenshots: true,
             skip_upload_apk: true
         )
-        git_commit(path: ['../android/gradle.properties'], message: 'Bump Android version')
+        git_commit(path: ['./android/gradle.properties'], message: 'Bump Android version')
         push_to_git_ssh_remote
     end
 end
