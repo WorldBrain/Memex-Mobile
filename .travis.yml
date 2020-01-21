@@ -24,6 +24,20 @@ aliases:
 
 jobs:
   include:
+    - stage: android-beta
+      # if: branch = develop AND type = push
+      language: android
+      jdk: oraclejdk8
+      android: *android
+      cache: *android-cache
+      before_script:
+        - ./internals/scripts/travis/gitconfig.sh
+      install:
+        - "./write-android-keys.sh"
+        - "./install-deps.sh gems"
+      script:
+        - "./deploy-android-beta.sh":
+
     - stage: ios-beta
       # if: branch = develop AND type = push
       os: osx
@@ -42,20 +56,7 @@ jobs:
         - "./install-deps.sh pods"
       script:
         - "./deploy-ios-beta.sh"
-    - stage: android-beta
-      # if: branch = develop AND type = push
-      language: android
-      jdk: oraclejdk8
-      android: *android
-      cache: *android-cache
-      before_script:
-        - ./internals/scripts/travis/gitconfig.sh
-      install:
-        - "./write-android-keys.sh"
-        - "./install-deps.sh"
-        - bundle install
-      script:
-        - "./deploy-android-beta.sh"
+
 env:
   global:
     - APP_NAME="Memex Mobile"
