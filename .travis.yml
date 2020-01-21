@@ -30,13 +30,12 @@ jobs:
       jdk: oraclejdk8
       android: *android
       cache: *android-cache
-      node_js:
-        - lts/*
       before_script:
         - ./internals/scripts/travis/gitconfig.sh
       before_install:
         - rvm install 2.6.5
         - gem install fastlane
+        - nvm install 10.17.0
         - npm install -g yarn
         - yes | sdkmanager "platforms;android-28"
         - yes | sdkmanager "build-tools;28.0.3"
