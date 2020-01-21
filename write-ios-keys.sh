@@ -2,16 +2,11 @@
 
 declare -r SSH_FILE="$(mktemp -u $HOME/.ssh/id_rsa)"
 
+# Set up private key
 echo $IOS_REPO_PRIVATE_KEY | base64 -D > $SSH_FILE
 chmod 600 $SSH_FILE
 
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 # Enable SSH authentication
-
 printf "%s\n" \
         "Host gitlab.com" \
         "  User git" \
