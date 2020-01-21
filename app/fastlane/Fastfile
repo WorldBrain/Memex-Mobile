@@ -6,6 +6,7 @@ MAIN_APP_ID = "io.worldbrain.memex"
 MAIN_APP_PROFILE = "match AppStore io.worldbrain.memex"
 EXT_APP_ID = "io.worldbrain.memex.MemexShare"
 EXT_APP_PROFILE = "match AppStore io.worldbrain.memex.MemexShare"
+ANDROID_APP_ID = "io.worldbrain"
 TEAM = "5YUPQC9D96"
 XCWORKSPACE_PATH = "./ios/app.xcworkspace"
 XCPROJ_PATH = "./ios/app.xcodeproj"
@@ -113,7 +114,7 @@ platform :android do
             track_promote_to: 'beta',
             aab: AAB_PATH,
             json_key: ANDROID_SERVICE_JSON_PATH,
-            package_name: MAIN_APP_ID
+            package_name: ANDROID_APP_ID
         )
         git_commit(path: ['../android/gradle.properties'], message: 'Bump Android version')
         push_to_git_ssh_remote
