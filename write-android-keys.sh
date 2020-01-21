@@ -24,4 +24,13 @@ printf "%s\n" \
         "  StrictHostKeyChecking no" \
         "  CheckHostIP no" \
         "  PasswordAuthentication no" \
-        "  LogLevel ERROR" >> ~/.ssh/config
+        "  LogLevel ERROR" \
+        "" \
+        "Host github.com" \
+        "  User git" \
+        "  IdentityFile $SSH_FILE" \
+        "  StrictHostKeyChecking no" \
+        "  CheckHostIP no" \
+        "  PasswordAuthentication no" \
+        "  LogLevel ERROR" \
+        " >> ~/.ssh/config
