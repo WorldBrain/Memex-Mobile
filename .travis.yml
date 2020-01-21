@@ -32,6 +32,11 @@ jobs:
       cache: *android-cache
       before_script:
         - ./internals/scripts/travis/gitconfig.sh
+      before_install:
+        - sudo gem install fastlane
+        - npm install -g yarn
+        - yes | sdkmanager "platforms;android-28"
+        - yes | sdkmanager "build-tools;28.0.3"
       install:
         - "./write-android-keys.sh"
         - "./install-deps.sh gems"
@@ -49,8 +54,6 @@ jobs:
       before_install:
         - sudo gem install fastlane
         - npm install -g yarn
-        - yes | sdkmanager "platforms;android-28"
-        - yes | sdkmanager "build-tools;28.0.3"
       install:
         - "./write-ios-keys.sh"
         - "./install-deps.sh pods"
