@@ -59,3 +59,4 @@ fastlane/README.md
 fastlane/report.xml
 
 android/service-account.json
+android/metadata
