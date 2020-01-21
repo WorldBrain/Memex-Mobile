@@ -1,6 +1,8 @@
 setup_travis
 fastlane_version '2.140.0'
 
+REPO = "git@github.com:WorldBrain/Memex-Mobile.git"
+REMOTE = "ssh-origin"
 MAIN_APP_ID = "io.worldbrain.memex"
 MAIN_APP_PROFILE = "match AppStore io.worldbrain.memex"
 EXT_APP_ID = "io.worldbrain.memex.MemexShare"
@@ -17,6 +19,12 @@ before_all do
     # ensure_git_status_clean
     git_pull
 end
+
+lane :push_to_git_ssh_remote do
+    sh("git", "remote", "add", REMOTE, REPO)
+    sh("git", "push", REMOTE)
+end
+
 
 platform :ios do
     desc 'Wipe out apple account env vars'
@@ -65,7 +73,7 @@ platform :ios do
             skip_waiting_for_build_processing: true
         )
         commit_version_bump(message: 'Bump iOS version', xcodeproj: XCPROJ_PATH)
-        push_to_git_remote
+        push_to_git_ssh_remote
     end
 end
 
@@ -104,6 +112,6 @@ platform :android do
             aab: AAB_PATH,
         )
         git_commit(path: ['../android/gradle.properties'], message: 'Bump Android version')
-        push_to_git_remote
+        push_to_git_ssh_remote
     end
 end
