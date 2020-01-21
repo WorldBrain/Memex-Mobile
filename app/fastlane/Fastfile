@@ -21,8 +21,9 @@ before_all do
 end
 
 lane :push_to_git_ssh_remote do
+    branch = git_branch
     sh("git", "remote", "add", REMOTE, REPO)
-    sh("git", "push", REMOTE)
+    sh("git", "push", REMOTE, branch)
 end
 
 
