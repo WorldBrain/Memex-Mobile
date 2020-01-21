@@ -30,6 +30,8 @@ jobs:
       jdk: oraclejdk8
       android: *android
       cache: *android-cache
+      node_js:
+        - lts/*
       before_script:
         - ./internals/scripts/travis/gitconfig.sh
       before_install:
