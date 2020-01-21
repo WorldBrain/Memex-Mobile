@@ -32,5 +32,4 @@ printf "%s\n" \
         "  StrictHostKeyChecking no" \
         "  CheckHostIP no" \
         "  PasswordAuthentication no" \
-        "  LogLevel ERROR" \
-        " >> ~/.ssh/config
+        "  LogLevel ERROR" >> ~/.ssh/config
