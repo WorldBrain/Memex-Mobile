@@ -57,3 +57,5 @@ buck-out/
 
 fastlane/README.md
 fastlane/report.xml
+
+android/service-account.json
