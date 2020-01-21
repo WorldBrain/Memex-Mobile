@@ -25,7 +25,7 @@ aliases:
 jobs:
   include:
     - stage: ios-beta
-      # if: branch = develop AND type = push
+      if: branch = master AND type = push
       os: osx
       osx_image: xcode11.3
       language: node_js
@@ -42,7 +42,7 @@ jobs:
         - "./deploy-ios-beta.sh"
 
     - stage: android-beta
-      # if: branch = develop AND type = push
+      if: branch = master AND type = push
       language: android
       jdk: oraclejdk8
       android: *android
