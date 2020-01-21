@@ -41,7 +41,7 @@ jobs:
         - "./write-android-keys.sh"
         - "./install-deps-android.sh"
       script:
-        - "./deploy-android-beta.sh":
+        - "./deploy-android-beta.sh"
 
     - stage: ios-beta
       # if: branch = develop AND type = push
