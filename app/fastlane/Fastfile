@@ -17,7 +17,7 @@ AAB_PATH = "./android/app/build/outputs/bundle/release/app.aab"
 ANDROID_SERVICE_JSON_PATH = "./android/service-account.json"
 
 before_all do
-    ensure_git_status_clean
+    # ensure_git_status_clean
     git_pull
 end
 
