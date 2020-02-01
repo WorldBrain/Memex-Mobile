@@ -22,9 +22,17 @@ export default StyleSheet.create({
         flexDirection: 'column',
         width: '90%',
     },
+    optional: {
+        fontWeight: 'bold',
+        color: '#5cd9a6',
+        textAlign: 'center',
+        fontSize: 30,
+        marginTop: 40,
+        marginBottom: -30,
+    },
     headingText: {
         fontWeight: 'bold',
-        color: 'white',
+        color: '#3A2F45',
         textAlign: 'center',
         fontSize: 30,
         marginTop: 40,
@@ -37,9 +45,9 @@ export default StyleSheet.create({
         marginBottom: 20,
     },
     secondaryText: {
-        color: 'white',
+        color: '#3A2F45',
         textAlign: 'center',
-        fontSize: 18,
-        marginTop: 15,
+        fontSize: 20,
+        marginTop: 30,
     },
 })

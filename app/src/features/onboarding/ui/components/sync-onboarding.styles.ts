@@ -20,4 +20,10 @@ export default StyleSheet.create({
         marginLeft: 43,
         marginBottom: 20,
     },
+    mainImg: {
+        height: '70%',
+        position: 'absolute',
+        top: '5%',
+        // position: 'absolute',
+    },
 })

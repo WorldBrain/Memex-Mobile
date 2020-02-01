@@ -9,7 +9,7 @@ import OnboardingLayout, {
 import Welcome from '../../components/welcome'
 import SaveWebsite from '../../components/save-websites'
 import OrganizeContent from '../../components/organize-content'
-import BetaOverview from '../../components/beta-overview'
+import SyncOnboarding from '../../components/sync-onboarding'
 
 interface Props extends NavigationProps {
     services: UIServices<'localStorage'>
@@ -56,7 +56,7 @@ export default class OnboardingScreen extends NavigationScreen<
             default:
                 return this.renderOnboardingStage({
                     showBackBtn: true,
-                    children: <BetaOverview />,
+                    children: <SyncOnboarding />,
                 })
         }
     }

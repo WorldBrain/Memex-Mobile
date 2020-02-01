@@ -13,6 +13,7 @@ import LoadingBalls from './loading-balls'
 export interface Props extends ButtonProps {
     style?: StyleProp<any>
     smallWidth?: boolean
+    bigText?: boolean
     isLoading?: boolean
     secondary?: boolean
     warning?: boolean
@@ -27,6 +28,7 @@ class MemexButton extends React.PureComponent<Props> {
         return [
             styles.button,
             this.props.smallWidth ? styles.buttonSmallWidth : null,
+            this.props.bigText ? styles.buttonBigText : null,
             this.props.secondary ? styles.buttonSecondary : null,
             isDisabled ? styles.buttonDisabled : null,
             this.props.secondary && isDisabled
@@ -60,6 +62,7 @@ class MemexButton extends React.PureComponent<Props> {
             <Text
                 style={[
                     styles.text,
+                    this.props.bigText ? styles.buttonBigText : styles.text,
                     this.props.warning ? styles.textWarn : null,
                     this.props.empty ? styles.textEmpty : null,
                 ]}
