@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native'
 export default StyleSheet.create({
     titleText: {
         position: 'absolute',
-        top: '8%',
+        top: '10%',
         fontSize: 25,
         width: '70%',
         textAlign: 'center',
@@ -12,7 +12,7 @@ export default StyleSheet.create({
     },
     subtitleText: {
         position: 'relative',
-        top: 20,
+        top: 15,
         fontSize: 18,
         marginBottom: 30,
         marginTop: 30,

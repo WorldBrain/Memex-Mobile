@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, Link } from 'react-native'
 
 import OnboardingFeature from './onboarding-feature'
 import styles from './sync-onboarding.styles'
@@ -12,7 +12,7 @@ const SyncOnboarding: React.StatelessComponent<Props> = props => (
         <OnboardingFeature
             optional="OPTIONAL"
             headingText="Sync with your computer"
-            secondaryText="Add tags, collections and notes"
+            secondaryText="Sync is End2End encrypted. We will never know anything about your data"
         >
             <Image
                 resizeMode="contain"

@@ -34,7 +34,7 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         color: '#3A2F45',
         textAlign: 'center',
-        fontSize: 30,
+        fontSize: 28,
         marginTop: 40,
     },
     betaText: {
@@ -48,6 +48,7 @@ export default StyleSheet.create({
         color: '#3A2F45',
         textAlign: 'center',
         fontSize: 20,
-        marginTop: 30,
+        marginTop: 25,
+        lineHeight: 30,
     },
 })

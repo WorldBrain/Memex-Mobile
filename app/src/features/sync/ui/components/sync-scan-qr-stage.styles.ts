@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native'
 export default StyleSheet.create({
     cameraViewContainer: {
         position: 'relative',
-        top: 50,
+        top: 60,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',

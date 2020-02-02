@@ -17,11 +17,7 @@ export interface Props {
 }
 
 const SyncSetupStage: React.StatelessComponent<Props> = props => (
-    <SyncLayout
-        btnText="OK, got it!"
-        titleText="Pair app with your computer"
-        {...props}
-    >
+    <SyncLayout btnText="OK, got it!" titleText="STEP 1" {...props}>
         <Text style={styles.instructionText}>
             You need to be{' '}
             <Text style={{ fontWeight: 'bold' }}>
