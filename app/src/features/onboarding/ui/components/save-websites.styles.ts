@@ -3,8 +3,8 @@ import { StyleSheet } from 'react-native'
 export default StyleSheet.create({
     shareImg: {
         position: 'absolute',
-        right: '58%',
-        top: '28%',
+        right: '55%',
+        top: '35%',
         height: 120,
         width: 120,
     },
@@ -13,7 +13,7 @@ export default StyleSheet.create({
         height: '85%',
         position: 'absolute',
         display: 'flex',
-        top: '5%',
-        right: '-15%',
+        top: '15%',
+        right: '-17%',
     },
 })

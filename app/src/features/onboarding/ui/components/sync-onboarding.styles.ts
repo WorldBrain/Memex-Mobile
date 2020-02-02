@@ -23,7 +23,7 @@ export default StyleSheet.create({
     mainImg: {
         height: '60%',
         position: 'absolute',
-        top: '10%',
+        top: '15%',
         // position: 'absolute',
     },
 })

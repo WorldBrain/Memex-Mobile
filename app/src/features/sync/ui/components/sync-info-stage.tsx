@@ -22,7 +22,7 @@ const SyncInfoStage: React.StatelessComponent<Props> = props => (
             on your Memex browser extension and go to {'\n'}
             <Text style={styles.boldText}>
                 {' '}
-                Settings ▸ Sync ▸ Pair New Devive{' '}
+                Settings ▸ Sync ▸ Pair New Device{' '}
             </Text>
         </Text>
         <View style={styles.mainImgContainer}>
