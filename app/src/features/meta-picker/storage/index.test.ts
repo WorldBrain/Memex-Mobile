@@ -238,6 +238,54 @@ describe('meta picker StorageModule', () => {
         ).toEqual(expect.arrayContaining([data.tags[2], data.tags[3]]))
     })
 
+    it('should be able to get most recently added pages from a list', async ({
+        storage: {
+            modules: { metaPicker, overview },
+        },
+    }) => {
+        await overview.createPage(pageData.pages[0])
+        await overview.createPage(pageData.pages[1])
+        await overview.createPage(pageData.pages[2])
+
+        const listIds: number[] = []
+
+        for (const name of data.lists) {
+            const { object } = await metaPicker.createList({ name })
+            listIds.push(object.id)
+        }
+
+        expect(listIds.length).toBe(data.lists.length)
+
+        for (const idx of [2, 0, 1]) {
+            await metaPicker.createPageListEntry({
+                pageUrl: pageData.pages[idx].url,
+                listId: listIds[0],
+            })
+        }
+
+        expect(
+            await metaPicker.findRecentListEntries(listIds[0], {
+                skip: 0,
+                limit: 1,
+            }),
+        ).toEqual([expect.objectContaining({ pageUrl: pageData.pages[1].url })])
+        expect(
+            await metaPicker.findRecentListEntries(listIds[0], {
+                skip: 1,
+                limit: 1,
+            }),
+        ).toEqual([expect.objectContaining({ pageUrl: pageData.pages[0].url })])
+        expect(
+            await metaPicker.findRecentListEntries(listIds[0], {
+                skip: 1,
+                limit: 2,
+            }),
+        ).toEqual([
+            expect.objectContaining({ pageUrl: pageData.pages[0].url }),
+            expect.objectContaining({ pageUrl: pageData.pages[2].url }),
+        ])
+    })
+
     it('should be able to get list suggestions', async ({
         storage: {
             modules: { metaPicker, overview },
