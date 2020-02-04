@@ -7,7 +7,8 @@ export default StyleSheet.create({
     instructionText: {
         position: 'relative',
         top: 60,
-        fontSize: 18,
+        fontSize: 20,
+        lineHeight: 30,
         textAlign: 'center',
         marginLeft: '5%',
         marginRight: '5%',
@@ -21,7 +22,7 @@ export default StyleSheet.create({
         top: 30,
     },
     mainImg: {
-        width: '80%',
+        width: '90%',
         height: '80%',
         marginRight: 100,
         marginLeft: 100,

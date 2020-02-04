@@ -2,9 +2,9 @@ import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
     mockupImg: {
-        height: '90%',
+        height: '85%',
         position: 'absolute',
-        top: '-5%',
+        top: '11%',
         // position: 'absolute',
     },
 })

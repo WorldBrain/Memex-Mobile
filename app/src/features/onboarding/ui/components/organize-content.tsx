@@ -8,8 +8,8 @@ export interface Props {}
 
 const OrganizeContent: React.StatelessComponent<Props> = props => (
     <OnboardingFeature
-        headingText="Organise your Websites & Tweets"
-        secondaryText="Add tags, collections and notes"
+        headingText="Tags, Lists & Notes"
+        secondaryText="Flexible organise what you save"
     >
         <Image
             resizeMode="contain"

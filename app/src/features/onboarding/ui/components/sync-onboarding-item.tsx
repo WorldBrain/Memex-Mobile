@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text } from 'react-native'
 
 import TickBall from 'src/ui/components/tick-ball'
-import styles from './beta-overview-item.styles'
+import styles from './sync-onboarding-item.styles'
 
 export interface Props {
     headingText: string
@@ -10,7 +10,7 @@ export interface Props {
     checked?: boolean
 }
 
-const BetaOverviewItem: React.StatelessComponent<Props> = props => (
+const SyncOnboardingItem: React.StatelessComponent<Props> = props => (
     <View style={styles.mainContainer}>
         <TickBall disabled={!props.checked} style={styles.tickBall} />
         <View style={styles.textContainer}>
@@ -36,4 +36,4 @@ const BetaOverviewItem: React.StatelessComponent<Props> = props => (
     </View>
 )
 
-export default BetaOverviewItem
+export default SyncOnboardingItem

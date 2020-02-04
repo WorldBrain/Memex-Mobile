@@ -26,10 +26,14 @@ export default StyleSheet.create({
         backgroundColor: 'transparent',
     },
     buttonSmallWidth: {
-        maxWidth: '25%',
+        maxWidth: '40%',
     },
     buttonHidden: {
         backgroundColor: 'transparent',
+    },
+    buttonBigText: {
+        color: '#3A2F45',
+        fontSize: 40,
     },
     text: {
         color: 'white',
