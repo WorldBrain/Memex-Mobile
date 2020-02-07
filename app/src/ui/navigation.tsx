@@ -11,13 +11,13 @@ import {
 
 import { UIDependencies } from './types'
 import ShareModal from 'src/features/page-share/ui/screens/share-modal'
-// import Overview from 'src/features/overview/ui/screens/overview'
+import Overview from 'src/features/overview/ui/screens/overview'
 import DebugConsole from 'src/features/overview/ui/screens/debug-console'
 import MVPOverview from 'src/features/overview/ui/screens/mvp-overview'
 import Pairing from 'src/features/overview/ui/screens/pairing-screen'
 import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
 import Sync from 'src/features/sync/ui/screens/sync'
-// import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
+import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
 
 export type NavigationContainerCreator = (
     deps: UIDependencies,
@@ -37,8 +37,12 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             Onboarding: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
             }) => <Onboarding {...props} {...deps} />,
-            // PageEditor: (props: { navigation: NavigationScreenProp<NavigationRoute> }) => <PageEditor {...props} {...deps} />,
-            // Overview: (props: { navigation: NavigationScreenProp<NavigationRoute> }) => <Overview {...props} {...deps} />,
+            PageEditor: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <PageEditor {...props} {...deps} />,
+            Overview: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <Overview {...props} {...deps} />,
             DebugConsole: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
             }) => <DebugConsole {...props} {...deps} />,

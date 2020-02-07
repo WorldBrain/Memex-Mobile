@@ -45,11 +45,12 @@ export default class CollectionsView extends StatefulUIElement<
     )
 
     render() {
+        const datas = [{ id: '1', name: 'name 2' }]
         return (
             <View style={styles.container}>
                 <FlatList
                     renderItem={this.renderCollection}
-                    data={selectors.collectionsList(this.state)}
+                    data={datas}
                     style={styles.list}
                     keyExtractor={(item, index) => index.toString()}
                 />

@@ -7,7 +7,6 @@ export default StyleSheet.create({
         borderRadius: 4,
         borderWidth: 0.5,
         borderColor: '#d6d7da',
-        marginTop: 15,
         padding: 10,
     },
     resultNote: {
