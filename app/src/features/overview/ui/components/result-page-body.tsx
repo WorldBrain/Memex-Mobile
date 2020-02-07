@@ -14,7 +14,7 @@ export interface Props {
     favIcon?: string
     titleText: string
     pageUrl: string
-    onResultPress: NativeTouchEventHandler
+    onResultPress?: NativeTouchEventHandler
 }
 
 const ResultPageBody: React.StatelessComponent<Props> = props => (
