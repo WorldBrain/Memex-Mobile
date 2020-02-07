@@ -2,9 +2,9 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { SyncReturnValue } from '@worldbrain/storex-sync'
 
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
-import { MOBILE_LIST_NAME } from 'src/features/meta-picker/constants'
 import { UITaskState, UIServices, UIStorageModules } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 
 export interface State {
     loadState: UITaskState
@@ -263,22 +263,12 @@ export default class Logic extends UILogic<State, Event> {
         })
         await overview.visitPage({ url: state.pageUrl })
 
-        const foundMobileLists = await metaPicker.findListsByNames({
-            names: [MOBILE_LIST_NAME],
-        })
-        if (!foundMobileLists.length) {
-            await metaPicker.createList({
-                name: MOBILE_LIST_NAME,
-                isDeletable: false,
-                isNestable: false,
-            })
-        }
-
         await overview.setPageStar({
             url: state.pageUrl,
             isStarred: state.isStarred,
         })
 
+        await metaPicker.createMobileListIfAbsent()
         await metaPicker.setPageLists({
             url: state.pageUrl,
             lists: [...state.collectionsToAdd, MOBILE_LIST_NAME],

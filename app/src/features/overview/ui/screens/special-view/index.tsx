@@ -1,6 +1,6 @@
 import React from 'react'
 import { FlatList, ListRenderItem, View, Alert } from 'react-native'
-import Logic, { State, Event } from './logic'
+import Logic, { State, Event, LogicDependencies } from './logic'
 import { NavigationScreen, NavigationProps } from 'src/ui/types'
 import styles from './styles'
 import ResultPage from '../../components/result-page'
@@ -8,11 +8,11 @@ import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 
-interface Props extends NavigationProps {}
+type Props = NavigationProps & LogicDependencies
 
 export default class SpecialView extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
-        super(props, { logic: new Logic() })
+        super(props, { logic: new Logic(props) })
     }
 
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () =>
