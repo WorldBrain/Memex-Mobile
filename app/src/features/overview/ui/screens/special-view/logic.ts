@@ -10,6 +10,7 @@ export type Event = UIEvent<{
     setPages: { pages: UIPage[] }
     deletePage: { url: string }
     togglePageStar: { url: string }
+    toggleResultPress: { url: string }
 }>
 
 export default class Logic extends UILogic<State, Event> {
@@ -45,6 +46,20 @@ export default class Logic extends UILogic<State, Event> {
             pages: state => {
                 const page = state.get(url)!
                 return state.set(url, { ...page, isStarred: !page.isStarred })
+            },
+        }
+    }
+
+    toggleResultPress({
+        event: { url },
+    }: IncomingUIEvent<State, Event, 'toggleResultPress'>): UIMutation<State> {
+        return {
+            pages: state => {
+                const page = state.get(url)!
+                return state.set(url, {
+                    ...page,
+                    isResultPressed: !page.isResultPressed,
+                })
             },
         }
     }

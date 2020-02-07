@@ -20,6 +20,7 @@ export interface UIPage extends UIResult {
     pageUrl: string
     favIcon?: string
     titleText: string
+    isResultPressed?: boolean
 }
 
 export interface UIPageWithNotes extends UIPage {

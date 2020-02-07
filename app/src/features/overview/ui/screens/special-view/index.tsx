@@ -39,8 +39,14 @@ export default class SpecialView extends NavigationScreen<Props, State, Event> {
         this.processEvent('togglePageStar', { url })
     }
 
+    private initHandleResultPress = ({ url }: UIPage) => () => {
+        this.processEvent('toggleResultPress', { url })
+    }
+
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
         <ResultPage
+            buttonLabel={'Visit >'}
+            onResultPress={this.initHandleResultPress(item)}
             onDeletePress={this.initHandleDeletePress(item)}
             onStarPress={this.initHandlePageStar(item)}
             onCommentPress={this.navToPageEditor(item, 'notes')}
