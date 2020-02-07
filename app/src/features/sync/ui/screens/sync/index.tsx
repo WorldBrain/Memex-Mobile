@@ -76,7 +76,9 @@ export default class SyncScreen extends NavigationScreen<
                     <ErrorStage
                         onCancelBtnPress={this.handleCancelBtnPress}
                         onSupportBtnPress={this.handleCancelBtnPress}
-                        errorText="Something has gone wrong"
+                        errorText={
+                            this.state.errMsg || 'Something has gone wrong'
+                        }
                         onBtnPress={() => undefined}
                     />
                 )

@@ -94,30 +94,36 @@ export default class SyncScreenLogic extends UILogic<
     async doSync(
         incoming: IncomingUIEvent<SyncScreenState, SyncScreenEvent, 'doSync'>,
     ) {
+        const { sync, localStorage } = this.dependencies.services
+
         this.emitMutation({ status: { $set: 'syncing' } })
         const timeBefore = Date.now()
         let syncProgress: FastSyncProgress = {} as FastSyncProgress
 
-        this.dependencies.services.sync.initialSync.events.addListener(
+        sync.initialSync.events.addListener(
             'progress',
             ({ progress }) => (syncProgress = progress),
         )
 
-        try {
-            await this.dependencies.services.sync.initialSync.answerInitialSync(
-                {
-                    initialMessage: incoming.event.initialMessage,
+        sync.initialSync.events.addListener('stalled', () =>
+            this.emitMutation({
+                status: { $set: 'failure' },
+                errMsg: {
+                    $set:
+                        'Sync has stalled. Please try again on a different connection.',
                 },
-            )
-            await this.dependencies.services.sync.initialSync.waitForInitialSync()
-            await this.dependencies.services.localStorage.set(
-                storageKeys.syncKey,
-                true,
-            )
-            await this.dependencies.services.sync.continuousSync.setup()
+            }),
+        )
+
+        try {
+            await sync.initialSync.answerInitialSync({
+                initialMessage: incoming.event.initialMessage,
+            })
+            await sync.initialSync.waitForInitialSync()
+            await localStorage.set(storageKeys.syncKey, true)
+            await sync.continuousSync.setup()
 
             await this.saveFirebaseTokenToKeychain()
-
             await this.emitMutation({ status: { $set: 'success' } })
         } catch (e) {
             if (!this.dependencies.suppressErrorLogging) {
@@ -132,6 +138,8 @@ export default class SyncScreenLogic extends UILogic<
             })
         } finally {
             SyncScreenLogic.logSyncStats(timeBefore, syncProgress)
+            sync.initialSync.events.removeAllListeners('stalled')
+            sync.initialSync.events.removeAllListeners('progress')
         }
     }
 
