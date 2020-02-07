@@ -2,6 +2,7 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { SyncReturnValue } from '@worldbrain/storex-sync'
 
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
+import { MOBILE_LIST_NAME } from 'src/features/meta-picker/constants'
 import { UITaskState, UIServices, UIStorageModules } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 
@@ -74,7 +75,7 @@ export default class Logic extends UILogic<State, Event> {
 
         this.syncRunning.catch(this.handleSyncError)
 
-        await loadInitial(this, async () => {
+        await loadInitial<State>(this, async () => {
             let mutation: UIMutation<State> = {}
             let url: string
 
@@ -192,32 +193,42 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async save(incoming: IncomingUIEvent<State, Event, 'save'>) {
-        return executeUITask(this, 'saveState', async () => {
-            await this.storePage(incoming.previousState)
-            try {
-                await this.syncRunning
-                await this.dependencies.services.sync.continuousSync.forceIncrementalSync()
-            } catch (error) {
-                this.handleSyncError(error)
-            } finally {
-                this.emitMutation(
-                    this.setModalVisible({
-                        event: { shown: false },
-                        previousState: incoming.previousState,
-                    }),
-                )
-            }
-        })
+        return executeUITask<State, 'saveState', void>(
+            this,
+            'saveState',
+            async () => {
+                await this.storePage(incoming.previousState)
+                try {
+                    await this.syncRunning
+                    await this.dependencies.services.sync.continuousSync.forceIncrementalSync()
+                } catch (error) {
+                    this.handleSyncError(error)
+                } finally {
+                    this.emitMutation(
+                        this.setModalVisible({
+                            event: { shown: false },
+                            previousState: incoming.previousState,
+                        }),
+                    )
+                }
+            },
+        )
     }
 
     async setMetaViewType(
         incoming: IncomingUIEvent<State, Event, 'setMetaViewType'>,
     ) {
-        return executeUITask(this, 'syncState', async () => {
-            this.emitMutation({ metaViewShown: { $set: incoming.event.type } })
+        return executeUITask<State, 'syncState', void>(
+            this,
+            'syncState',
+            async () => {
+                this.emitMutation({
+                    metaViewShown: { $set: incoming.event.type },
+                })
 
-            await this.syncRunning
-        })
+                await this.syncRunning
+            },
+        )
     }
 
     metaPickerEntryPress(
@@ -251,6 +262,18 @@ export default class Logic extends UILogic<State, Event> {
             fullTitle: '',
         })
         await overview.visitPage({ url: state.pageUrl })
+
+        const foundMobileLists = await metaPicker.findListsByNames({
+            names: [MOBILE_LIST_NAME],
+        })
+        if (!foundMobileLists.length) {
+            await metaPicker.createList({
+                name: MOBILE_LIST_NAME,
+                isDeletable: false,
+                isNestable: false,
+            })
+        }
+
         await overview.setPageStar({
             url: state.pageUrl,
             isStarred: state.isStarred,
@@ -258,7 +281,7 @@ export default class Logic extends UILogic<State, Event> {
 
         await metaPicker.setPageLists({
             url: state.pageUrl,
-            lists: state.collectionsToAdd,
+            lists: [...state.collectionsToAdd, MOBILE_LIST_NAME],
         })
         await metaPicker.setPageTags({
             url: state.pageUrl,

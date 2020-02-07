@@ -1,12 +1,13 @@
 import expect from 'expect'
 
-import Logic from './logic'
+import Logic, { State, Event } from './logic'
 import { MetaType } from 'src/features/meta-picker/types'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { Storage } from 'src/storage/types'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 
 import * as DATA from './logic.test.data'
+import { List } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
 
 describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -35,7 +36,7 @@ describe('share modal UI logic tests', () => {
             storage: options.storage,
         })
         const initialState = logic.getInitialState()
-        const element = new FakeStatefulUIElement(logic)
+        const element = new FakeStatefulUIElement<State, Event>(logic)
 
         return { logic, initialState, element }
     }
@@ -401,11 +402,38 @@ describe('share modal UI logic tests', () => {
             normalizedUrl: DATA.PAGE_URL_1_NORM,
         })
 
+        expect(
+            await context.storage.manager
+                .collection('customLists')
+                .findObjects({}),
+        ).toEqual([])
+
         await logic['storePage']({ ...state, pageUrl: DATA.PAGE_URL_1 })
 
         expect(
             await context.storage.manager.collection('pages').findObjects({}),
         ).toEqual([TEST_DATA.PAGE])
+
+        const lists: List[] = await context.storage.manager
+            .collection('customLists')
+            .findObjects({})
+        expect(lists).toEqual([
+            expect.objectContaining({
+                isDeletable: false,
+                isNestable: false,
+                name: 'Saved from Mobile',
+            }),
+        ])
+        expect(
+            await context.storage.modules.metaPicker.findPageListEntriesByList({
+                listId: lists[0].id,
+            }),
+        ).toEqual([
+            expect.objectContaining({
+                fullUrl: DATA.PAGE_URL_1,
+                pageUrl: DATA.PAGE_URL_1_NORM,
+            }),
+        ])
     })
 
     it('should be able to store a page with a note', async context => {
