@@ -1,11 +1,7 @@
 import React from 'react'
 import { FlatList, ListRenderItem, View, Alert } from 'react-native'
 import Logic, { State, Event } from './logic'
-import {
-    StatefulUIElement,
-    NavigationScreen,
-    NavigationProps,
-} from 'src/ui/types'
+import { NavigationScreen, NavigationProps } from 'src/ui/types'
 import styles from './styles'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
@@ -14,7 +10,7 @@ import * as selectors from './selectors'
 
 interface Props extends NavigationProps {}
 
-export default class PagesView extends NavigationScreen<Props, State, Event> {
+export default class SpecialView extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
         super(props, { logic: new Logic() })
     }
@@ -43,8 +39,14 @@ export default class PagesView extends NavigationScreen<Props, State, Event> {
         this.processEvent('togglePageStar', { url })
     }
 
+    private initHandleResultPress = ({ url }: UIPage) => () => {
+        this.processEvent('toggleResultPress', { url })
+    }
+
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
         <ResultPage
+            buttonLabel={'Visit >'}
+            onResultPress={this.initHandleResultPress(item)}
             onDeletePress={this.initHandleDeletePress(item)}
             onStarPress={this.initHandlePageStar(item)}
             onCommentPress={this.navToPageEditor(item, 'notes')}

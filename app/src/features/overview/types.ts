@@ -3,7 +3,7 @@ import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
 export type NativeTouchEventHandler = (
     ev: NativeSyntheticEvent<NativeTouchEvent>,
 ) => void
-export type ResultType = 'pages' | 'notes'
+export type ResultType = 'special' | 'pages' | 'notes'
 
 export interface UICollection {
     id: number
@@ -20,6 +20,7 @@ export interface UIPage extends UIResult {
     pageUrl: string
     favIcon?: string
     titleText: string
+    isResultPressed?: boolean
 }
 
 export interface UIPageWithNotes extends UIPage {
