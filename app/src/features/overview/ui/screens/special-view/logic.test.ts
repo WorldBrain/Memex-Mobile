@@ -1,5 +1,4 @@
 import Logic, { State, Event, LogicDependencies } from './logic'
-import initTestData from './test-data'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { Storage } from 'src/storage/types'
@@ -8,10 +7,22 @@ import {
     INTEGRATION_TEST_DATA,
 } from 'src/tests/shared-fixtures/integration'
 import { UIPage } from 'src/features/overview/types'
+import { Page } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/types'
 
-const { pages } = initTestData()
-const testPages = [...pages.values()]
-const testPageUrls = testPages.map(p => p.url)
+const UI_PAGE_1: UIPage = {
+    url: 'test.com',
+    pageUrl: 'test.com',
+    titleText: 'This is a test page',
+    date: 'a few seconds ago',
+    isStarred: false,
+}
+const UI_PAGE_2: UIPage = {
+    url: 'test.com.bla',
+    pageUrl: 'test.com.bla',
+    titleText: 'This is a test page bla',
+    date: 'a few seconds ago',
+    isStarred: false,
+}
 
 describe('pages view UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -21,6 +32,25 @@ describe('pages view UI logic tests', () => {
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
         return { element }
+    }
+
+    async function createRecentlyVisitedPage(
+        page: Omit<Page, 'domain' | 'hostname'>,
+        { storage }: { storage: Storage },
+    ) {
+        await storage.modules.overview.createPage(page)
+        await addToMobileList(page.url, { storage })
+    }
+
+    async function addToMobileList(
+        pageUrl: string,
+        { storage }: { storage: Storage },
+    ) {
+        const mobileListId = await storage.modules.metaPicker.createMobileListIfAbsent()
+        await storage.modules.metaPicker.createPageListEntry({
+            listId: mobileListId,
+            pageUrl,
+        })
     }
 
     it('should load correctly without any saved pages', async ({ storage }) => {
@@ -41,11 +71,7 @@ describe('pages view UI logic tests', () => {
         const { element } = setup({ storage })
 
         await insertIntegrationTestData({ storage })
-        const mobileListId = await storage.modules.metaPicker.createMobileListIfAbsent()
-        await storage.modules.metaPicker.createPageListEntry({
-            listId: mobileListId,
-            pageUrl: INTEGRATION_TEST_DATA.pages[0].url,
-        })
+        await addToMobileList(INTEGRATION_TEST_DATA.pages[0].url, { storage })
 
         await element.init()
         expect(element.state).toEqual({
@@ -54,18 +80,7 @@ describe('pages view UI logic tests', () => {
             couldHaveMore: false,
             actionState: 'pristine',
             actionFinishedAt: 0,
-            pages: new Map([
-                [
-                    'test.com',
-                    {
-                        url: 'test.com',
-                        pageUrl: 'test.com',
-                        titleText: 'This is a test page',
-                        date: 'a few seconds ago',
-                        isStarred: true,
-                    },
-                ],
-            ]),
+            pages: new Map([['test.com', { ...UI_PAGE_1, isStarred: true }]]),
         })
     })
 
@@ -94,30 +109,16 @@ describe('pages view UI logic tests', () => {
         })
 
         await element.init()
-        const firstEntry: UIPage = {
-            url: 'test.com.bla',
-            pageUrl: 'test.com.bla',
-            titleText: 'This is a test page bla',
-            date: 'a few seconds ago',
-            isStarred: false,
-        }
         expect(element.state).toEqual({
             loadState: 'done',
             loadMoreState: 'pristine',
             couldHaveMore: true,
             actionState: 'pristine',
             actionFinishedAt: 0,
-            pages: new Map([['test.com.bla', firstEntry]]),
+            pages: new Map([['test.com.bla', UI_PAGE_2]]),
         })
 
         await element.processEvent('loadMore', {})
-        const secondEntry: UIPage = {
-            url: 'test.com',
-            pageUrl: 'test.com',
-            titleText: 'This is a test page',
-            date: 'a few seconds ago',
-            isStarred: false,
-        }
         expect(element.state).toEqual({
             loadState: 'done',
             loadMoreState: 'done',
@@ -125,8 +126,8 @@ describe('pages view UI logic tests', () => {
             actionState: 'pristine',
             actionFinishedAt: 0,
             pages: new Map([
-                ['test.com.bla', firstEntry],
-                ['test.com', secondEntry],
+                ['test.com.bla', UI_PAGE_2],
+                ['test.com', UI_PAGE_1],
             ]),
         })
 
@@ -138,8 +139,8 @@ describe('pages view UI logic tests', () => {
             actionState: 'pristine',
             actionFinishedAt: 0,
             pages: new Map([
-                ['test.com.bla', firstEntry],
-                ['test.com', secondEntry],
+                ['test.com.bla', UI_PAGE_2],
+                ['test.com', UI_PAGE_1],
             ]),
         })
     })
@@ -147,8 +148,12 @@ describe('pages view UI logic tests', () => {
     it('should be able to delete pages', async ({ storage }) => {
         const { element } = setup({ storage })
 
-        await insertIntegrationTestData({ storage })
+        await createRecentlyVisitedPage(INTEGRATION_TEST_DATA.pages[0], {
+            storage,
+        })
+
         await element.init()
+        expect(element.state.pages).toEqual(new Map([['test.com', UI_PAGE_1]]))
 
         const url = INTEGRATION_TEST_DATA.pages[0].url
         await element.processEvent('deletePage', {
@@ -169,20 +174,18 @@ describe('pages view UI logic tests', () => {
         expect(
             await storage.manager.collection('pages').findObjects({}),
         ).toEqual([])
+
+        const { element: secondElement } = setup({ storage })
+        await secondElement.init()
+        expect(secondElement.state.pages).toEqual(new Map([]))
     })
 
     it('should be able to star + unstar pages', async ({ storage }) => {
         const { element } = setup({ storage })
 
         const { url } = INTEGRATION_TEST_DATA.pages[0]
-        await storage.modules.overview.createPage(
-            INTEGRATION_TEST_DATA.pages[0],
-        )
-
-        const mobileListId = await storage.modules.metaPicker.createMobileListIfAbsent()
-        await storage.modules.metaPicker.createPageListEntry({
-            listId: mobileListId,
-            pageUrl: INTEGRATION_TEST_DATA.pages[0].url,
+        await createRecentlyVisitedPage(INTEGRATION_TEST_DATA.pages[0], {
+            storage,
         })
 
         await element.init()
