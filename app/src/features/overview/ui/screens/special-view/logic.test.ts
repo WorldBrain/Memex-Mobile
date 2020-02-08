@@ -31,8 +31,8 @@ describe('pages view UI logic tests', () => {
             loadState: 'done',
             loadMoreState: 'pristine',
             couldHaveMore: false,
-            deletingState: 'pristine',
-            deletingFinishedAt: 0,
+            actionState: 'pristine',
+            actionFinishedAt: 0,
             pages: new Map(),
         })
     })
@@ -52,8 +52,8 @@ describe('pages view UI logic tests', () => {
             loadState: 'done',
             loadMoreState: 'pristine',
             couldHaveMore: false,
-            deletingState: 'pristine',
-            deletingFinishedAt: 0,
+            actionState: 'pristine',
+            actionFinishedAt: 0,
             pages: new Map([
                 [
                     'test.com',
@@ -62,6 +62,7 @@ describe('pages view UI logic tests', () => {
                         pageUrl: 'test.com',
                         titleText: 'This is a test page',
                         date: 'a few seconds ago',
+                        isStarred: true,
                     },
                 ],
             ]),
@@ -98,13 +99,14 @@ describe('pages view UI logic tests', () => {
             pageUrl: 'test.com.bla',
             titleText: 'This is a test page bla',
             date: 'a few seconds ago',
+            isStarred: false,
         }
         expect(element.state).toEqual({
             loadState: 'done',
             loadMoreState: 'pristine',
             couldHaveMore: true,
-            deletingState: 'pristine',
-            deletingFinishedAt: 0,
+            actionState: 'pristine',
+            actionFinishedAt: 0,
             pages: new Map([['test.com.bla', firstEntry]]),
         })
 
@@ -114,13 +116,14 @@ describe('pages view UI logic tests', () => {
             pageUrl: 'test.com',
             titleText: 'This is a test page',
             date: 'a few seconds ago',
+            isStarred: false,
         }
         expect(element.state).toEqual({
             loadState: 'done',
             loadMoreState: 'done',
             couldHaveMore: true,
-            deletingState: 'pristine',
-            deletingFinishedAt: 0,
+            actionState: 'pristine',
+            actionFinishedAt: 0,
             pages: new Map([
                 ['test.com.bla', firstEntry],
                 ['test.com', secondEntry],
@@ -132,8 +135,8 @@ describe('pages view UI logic tests', () => {
             loadState: 'done',
             loadMoreState: 'done',
             couldHaveMore: false,
-            deletingState: 'pristine',
-            deletingFinishedAt: 0,
+            actionState: 'pristine',
+            actionFinishedAt: 0,
             pages: new Map([
                 ['test.com.bla', firstEntry],
                 ['test.com', secondEntry],
@@ -155,11 +158,12 @@ describe('pages view UI logic tests', () => {
             loadState: 'done',
             loadMoreState: 'pristine',
             couldHaveMore: false,
-            deletingState: 'done',
-            deletingFinishedAt: expect.any(Number),
+            action: 'delete',
+            actionState: 'done',
+            actionFinishedAt: expect.any(Number),
             pages: new Map([]),
         })
-        expect(element.state.deletingFinishedAt).toBeGreaterThan(
+        expect(element.state.actionFinishedAt).toBeGreaterThan(
             Date.now() - 5000,
         )
         expect(
@@ -170,10 +174,18 @@ describe('pages view UI logic tests', () => {
     it('should be able to star + unstar pages', async ({ storage }) => {
         const { element } = setup({ storage })
 
-        const url = testPageUrls[0]
-        await element.processEvent('setPages', {
-            pages: testPages,
+        const { url } = INTEGRATION_TEST_DATA.pages[0]
+        await storage.modules.overview.createPage(
+            INTEGRATION_TEST_DATA.pages[0],
+        )
+
+        const mobileListId = await storage.modules.metaPicker.createMobileListIfAbsent()
+        await storage.modules.metaPicker.createPageListEntry({
+            listId: mobileListId,
+            pageUrl: INTEGRATION_TEST_DATA.pages[0].url,
         })
+
+        await element.init()
         const pageA = element.state.pages.get(url)!
         expect(pageA.isStarred).toBeFalsy()
 
@@ -181,12 +193,16 @@ describe('pages view UI logic tests', () => {
             url,
         })
         const pageB = element.state.pages.get(url)!
-        expect(pageB.isStarred).toBeTruthy()
+        expect(pageB.isStarred).toBe(true)
+        expect(await storage.modules.overview.isPageStarred({ url })).toBe(true)
 
         await element.processEvent('togglePageStar', {
             url,
         })
         const pageC = element.state.pages.get(url)!
-        expect(pageC.isStarred).toBeFalsy()
+        expect(await storage.modules.overview.isPageStarred({ url })).toBe(
+            false,
+        )
+        expect(pageC.isStarred).toBe(false)
     })
 })

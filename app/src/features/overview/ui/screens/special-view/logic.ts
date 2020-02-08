@@ -10,10 +10,12 @@ import { ListEntry } from 'src/features/meta-picker/types'
 export interface State {
     loadState: UITaskState
     loadMoreState: UITaskState
-    deletingState: UITaskState
-    deletingFinishedAt: number
     couldHaveMore: boolean
     pages: Map<string, UIPage>
+
+    action?: 'delete' | 'togglePageStar'
+    actionState: UITaskState
+    actionFinishedAt: number
 }
 export type Event = UIEvent<{
     loadMore: {}
@@ -44,9 +46,9 @@ export default class Logic extends UILogic<State, Event> {
         return {
             loadState: 'pristine',
             loadMoreState: 'pristine',
-            deletingState: 'pristine',
-            deletingFinishedAt: 0,
             couldHaveMore: true,
+            actionState: 'pristine',
+            actionFinishedAt: 0,
             pages: new Map(),
         }
     }
@@ -105,6 +107,9 @@ export default class Logic extends UILogic<State, Event> {
                                     url: listEntry.pageUrl,
                                 })
                             )?.fullTitle || '<Missing title>',
+                        isStarred: await overview.isPageStarred({
+                            url: listEntry.pageUrl,
+                        }),
                         date: moment(listEntry.createdAt).fromNow(),
                     },
                 ],
@@ -132,10 +137,13 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async deletePage(incoming: IncomingUIEvent<State, Event, 'deletePage'>) {
-        await executeUITask<State, 'deletingState', void>(
+        await executeUITask<State, 'actionState', void>(
             this,
-            'deletingState',
+            'actionState',
             async () => {
+                this.emitMutation({
+                    action: { $set: 'delete' },
+                })
                 try {
                     await this.dependencies.storage.modules.overview.deletePage(
                         { url: incoming.event.url },
@@ -148,22 +156,46 @@ export default class Logic extends UILogic<State, Event> {
                     })
                 } finally {
                     this.emitMutation({
-                        deletingFinishedAt: { $set: this.getNow() },
+                        actionFinishedAt: { $set: this.getNow() },
                     })
                 }
             },
         )
     }
 
-    togglePageStar({
+    async togglePageStar({
         event: { url },
-    }: IncomingUIEvent<State, Event, 'togglePageStar'>): UIMutation<State> {
-        return {
-            pages: state => {
-                const page = state.get(url)!
-                return state.set(url, { ...page, isStarred: !page.isStarred })
+        previousState: { pages },
+    }: IncomingUIEvent<State, Event, 'togglePageStar'>) {
+        await executeUITask<State, 'actionState', void>(
+            this,
+            'actionState',
+            async () => {
+                this.emitMutation({
+                    action: { $set: 'togglePageStar' },
+                })
+                try {
+                    const page = pages.get(url)!
+                    const isStarred = !page.isStarred
+                    await this.dependencies.storage.modules.overview.setPageStar(
+                        {
+                            url,
+                            isStarred,
+                        },
+                    )
+                    this.emitMutation({
+                        pages: state => {
+                            const page = state.get(url)!
+                            return state.set(url, { ...page, isStarred })
+                        },
+                    })
+                } finally {
+                    this.emitMutation({
+                        actionFinishedAt: { $set: this.getNow() },
+                    })
+                }
             },
-        }
+        )
     }
 
     toggleResultPress({
@@ -181,10 +213,10 @@ export default class Logic extends UILogic<State, Event> {
     }
 }
 
-// export function shouldShowDeletingStatus(state: State, now?: number) {
+// export function shouldShowActionStatus(state: State, now?: number) {
 //     const THRESHOLD = 1000 * 5
 //     return (
-//         state.deletingState === 'running' ||
+//         state.actionState === 'running' ||
 //         ((now || Date.now()) - state.deletingFinishedAt) <= THRESHOLD
 //     )
 // }
