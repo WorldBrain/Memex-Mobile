@@ -8,5 +8,6 @@ export default StyleSheet.create({
     },
     link: {
         paddingVertical: 15,
+        textDecorationLine: 'none',
     },
 })

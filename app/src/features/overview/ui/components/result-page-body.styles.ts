@@ -11,13 +11,16 @@ export default StyleSheet.create({
     },
     titleText: {
         fontWeight: '700',
-        fontSize: 16,
+        fontSize: 14,
+        letterSpacing: 0.7,
         flexWrap: 'wrap',
         overflow: 'hidden',
         color: '#3A2F45',
+        fontFamily: 'Poppins',
     },
     linkText: {
         color: '#3A2F45',
         fontSize: 14,
+        marginBottom: 9,
     },
 })

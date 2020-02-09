@@ -5,6 +5,7 @@ import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import SettingsMenu from '../../components/settings-menu'
 import SettingsLink from '../../components/settings-link'
+import OutLink from '../../components/out-link'
 
 interface Props extends NavigationProps {
     services: UIServices<'localStorage' | 'sync'>
@@ -46,15 +47,19 @@ export default class SettingsMenuScreen extends NavigationScreen<
                 <SettingsLink onPress={this.navigateTo('Onboarding')}>
                     Tutorial
                 </SettingsLink>
-                <SettingsLink onPress={this.navigateTo('Onboarding')}>
-                    Feature Roadmap
-                </SettingsLink>
-                <SettingsLink
-                    onPress={this.navigateTo('Onboarding')}
+                <OutLink
+                    url={
+                        'https://www.notion.so/worldbrain/Release-Notes-Roadmap-262a367f7a2a48ff8115d2c71f700c14'
+                    }
+                >
+                    Changelog & Feature Roadmap
+                </OutLink>
+                <OutLink
+                    url={'https://community.worldbrain.io/c/bug-reports'}
                     skipBottomBorder
                 >
                     Report Bugs
-                </SettingsLink>
+                </OutLink>
             </SettingsMenu>
         )
     }

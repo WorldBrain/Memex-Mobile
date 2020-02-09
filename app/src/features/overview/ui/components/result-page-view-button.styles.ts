@@ -9,7 +9,8 @@ export default StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 20,
+        paddingLeft: 20,
+        paddingRight: 15,
         paddingVertical: 5,
         flexDirection: 'row',
     },
@@ -37,12 +38,12 @@ export default StyleSheet.create({
     date: {
         color: '#3A2F45',
         fontSize: 12,
-        marginTop: 5,
     },
     tagContainer: {
         marginTop: 10,
     },
     text: {
         color: 'white',
+        width: '90%',
     },
 })

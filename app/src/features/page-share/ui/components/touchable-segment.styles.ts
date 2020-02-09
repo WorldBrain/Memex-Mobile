@@ -12,16 +12,17 @@ export default StyleSheet.create({
         flex: 1,
     },
     mainText: {
-        color: '#545454',
-        fontWeight: '400',
-        fontSize: 16,
+        color: '#3a2f45',
+        fontWeight: '700',
+        fontSize: 14,
+        fontFamily: 'Poppins',
     },
     border: {
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
     },
     starIcon: {
-        width: 25,
-        height: 25,
+        width: 15,
+        height: 15,
     },
 })

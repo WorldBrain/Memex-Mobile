@@ -2,21 +2,34 @@ import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
     container: {
+        fontFamily: 'Poppins',
         top: 30,
-        maxHeight: 50,
+        maxHeight: 30,
         width: '100%',
-        padding: 25,
+        marginTop: 10,
+        paddingHorizontal: 15,
+        paddingVertical: 20,
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: 'white',
+        borderBottomColor: '#DADADA',
+        borderBottomWidth: 1,
     },
     btnContainer: {
         flex: 1,
+        height: 15,
+        width: 20,
+    },
+    logoContainer: {
+        flex: 1,
+        height: 24,
+        width: 24,
     },
     text: {
         flex: 10,
+        fontFamily: 'Poppins',
         textAlign: 'center',
         fontWeight: 'bold',
         color: 'black',
@@ -26,12 +39,11 @@ export default StyleSheet.create({
         width: '100%',
     },
     emptyView: {
-        width: '10%',
+        flex: 1,
+        width: 20,
     },
     settingsIcon: {
-        marginRight: 10,
-        height: 20,
-        marginVertical: 30,
-        width: '10%',
+        height: '100%',
+        width: '100%',
     },
 })

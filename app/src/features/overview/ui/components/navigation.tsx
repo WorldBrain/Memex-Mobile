@@ -4,29 +4,45 @@ import {
     Text,
     GestureResponderEvent,
     TouchableOpacity,
+    Image,
 } from 'react-native'
 
-import SettingsIcon from '../img/settings-icon.svg'
-import ExitIcon from '../img/exit-icon.svg'
 import styles from './navigation.styles'
+const ExitIcon = require('../img/closeIcon.png')
+const SettingsIcon = require('../img/menuIcon.png')
+const MemexIcon = require('../img/MemexIcon.png')
 
 export interface Props {
-    onSettingsPress: (e: GestureResponderEvent) => void
+    onSettingsPress: () => void
     icon: 'exit' | 'settings'
 }
 
 const Navigation: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
-        <View style={styles.emptyView} />
+        <View style={styles.logoContainer}>
+            <Image
+                resizeMode="contain"
+                source={MemexIcon}
+                style={styles.settingsIcon}
+            />
+        </View>
         <Text style={styles.text}>{props.children}</Text>
         <TouchableOpacity
             style={styles.btnContainer}
             onPress={props.onSettingsPress}
         >
             {props.icon === 'exit' ? (
-                <ExitIcon style={styles.settingsIcon} />
+                <Image
+                    resizeMode="contain"
+                    source={ExitIcon}
+                    style={styles.settingsIcon}
+                />
             ) : (
-                <SettingsIcon style={styles.settingsIcon} />
+                <Image
+                    resizeMode="contain"
+                    source={SettingsIcon}
+                    style={styles.settingsIcon}
+                />
             )}
         </TouchableOpacity>
     </View>

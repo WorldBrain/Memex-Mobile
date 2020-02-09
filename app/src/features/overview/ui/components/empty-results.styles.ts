@@ -9,9 +9,12 @@ export default StyleSheet.create({
         alignItems: 'center',
     },
     text: {
-        fontSize: 16,
+        fontSize: 18,
+        fontFamily: 'Poppins',
         textAlign: 'center',
-        marginBottom: 20,
+        fontWeight: '600',
+        marginBottom: 10,
+        marginTop: 40,
     },
     subText: {
         color: '#83838f',

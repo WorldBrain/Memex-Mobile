@@ -1,29 +1,26 @@
 import React from 'react'
-import { Text } from 'react-native'
+import { Text, View } from 'react-native'
 
 import styles from './result-note-body.styles'
 
 export interface Props {
     noteText?: string
     commentText?: string
+    date: string
 }
 
 const ResultNoteBody: React.StatelessComponent<Props> = props => (
-    <>
+    <View style={styles.Container}>
         {props.noteText && (
-            <Text
-                style={[
-                    styles.noteText,
-                    props.commentText ? styles.noteSpace : null,
-                ]}
-            >
-                {props.noteText}
+            <Text style={styles.noteText}>
+                <Text style={styles.text}>{props.noteText}</Text>
             </Text>
         )}
         {props.commentText && (
             <Text style={styles.commentText}>{props.commentText}</Text>
         )}
-    </>
+        <Text style={styles.date}>{props.date}</Text>
+    </View>
 )
 
 export default ResultNoteBody
