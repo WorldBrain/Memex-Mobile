@@ -34,11 +34,12 @@ const ResultPage: React.StatelessComponent<Props &
     InteractionProps> = props => (
     <View>
         <Container
+            renderTags={() => <Tags tags={props.tags} />}
             renderFooter={() => (
                 <Footer {...props}>
                     <DeleteBtn onPress={props.onDeletePress} />
                     <TagBtn onPress={props.onTagPress} disabled />
-                    <CommentBtn onPress={props.onCommentPress} disabled />
+                    <CommentBtn onPress={props.onCommentPress} />
                     {props.isStarred ? (
                         <FullStarBtn onPress={props.onStarPress} />
                     ) : (
@@ -46,7 +47,6 @@ const ResultPage: React.StatelessComponent<Props &
                     )}
                 </Footer>
             )}
-            renderTags={() => <Tags tags={props.tags} />}
         >
             <Body {...props} />
         </Container>

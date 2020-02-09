@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { UIPage } from 'src/features/overview/types'
+import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
 import { UITaskState, UIStorageModules } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
@@ -26,7 +26,7 @@ export type Event = UIEvent<{
 }>
 
 export interface LogicDependencies {
-    storage: UIStorageModules<'metaPicker' | 'overview'>
+    storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
     pageSize?: number
     getNow?: () => number
 }
@@ -75,7 +75,11 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        const { metaPicker, overview } = this.dependencies.storage.modules
+        const {
+            metaPicker,
+            overview,
+            pageEditor,
+        } = this.dependencies.storage.modules
         const mobileList = await metaPicker.findListsByNames({
             names: [MOBILE_LIST_NAME],
         })
@@ -101,6 +105,8 @@ export default class Logic extends UILogic<State, Event> {
                 url: listEntry.pageUrl,
             })
 
+            const notes = await pageEditor.findNotes({ url: listEntry.pageUrl })
+
             entries.push([
                 listEntry.pageUrl,
                 {
@@ -117,6 +123,15 @@ export default class Logic extends UILogic<State, Event> {
                     }),
                     date: moment(listEntry.createdAt).fromNow(),
                     tags: tags.map(tag => tag.name),
+                    notes: notes.map<UINote>(note => ({
+                        url: note.url,
+                        isStarred: note.isStarred,
+                        commentText: note.comment || undefined,
+                        noteText: note.body,
+                        date: note.lastEdited
+                            ? note.lastEdited.toDateString()
+                            : note.createdWhen?.toDateString(),
+                    })),
                 },
             ])
         }

@@ -22,6 +22,7 @@ class NotesList extends React.PureComponent<Props> {
             onEditPress={this.props.initNoteEdit(item)}
             clearBackground={this.props.clearBackground}
             key={index}
+            hideFooter
             {...item}
         />
     )
