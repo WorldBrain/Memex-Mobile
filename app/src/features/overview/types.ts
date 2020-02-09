@@ -21,6 +21,7 @@ export interface UIPage extends UIResult {
     favIcon?: string
     titleText: string
     isResultPressed?: boolean
+    tags: string[]
 }
 
 export interface UIPageWithNotes extends UIPage {

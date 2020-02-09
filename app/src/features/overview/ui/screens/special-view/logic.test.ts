@@ -15,6 +15,7 @@ const UI_PAGE_1: UIPage = {
     titleText: 'This is a test page',
     date: 'a few seconds ago',
     isStarred: false,
+    tags: [],
 }
 const UI_PAGE_2: UIPage = {
     url: 'test.com.bla',
@@ -22,6 +23,7 @@ const UI_PAGE_2: UIPage = {
     titleText: 'This is a test page bla',
     date: 'a few seconds ago',
     isStarred: false,
+    tags: [],
 }
 
 describe('pages view UI logic tests', () => {
@@ -80,7 +82,16 @@ describe('pages view UI logic tests', () => {
             couldHaveMore: false,
             actionState: 'pristine',
             actionFinishedAt: 0,
-            pages: new Map([['test.com', { ...UI_PAGE_1, isStarred: true }]]),
+            pages: new Map([
+                [
+                    'test.com',
+                    {
+                        ...UI_PAGE_1,
+                        isStarred: true,
+                        tags: INTEGRATION_TEST_DATA.tags,
+                    },
+                ],
+            ]),
         })
     })
 

@@ -157,7 +157,7 @@ describe('SyncScreen', () => {
         expect(navigation.popRequests()).toEqual([
             {
                 type: 'navigate',
-                target: 'MVPOverview',
+                target: 'Pairing',
             },
         ])
     })

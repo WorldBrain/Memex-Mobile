@@ -94,27 +94,33 @@ export default class Logic extends UILogic<State, Event> {
         if (listEntries.length < this.pageSize) {
             couldHaveMore = false
         }
-        const entries: Array<[string, UIPage]> = await Promise.all(
-            listEntries.map(
-                async (listEntry): Promise<[string, UIPage]> => [
-                    listEntry.pageUrl,
-                    {
+
+        const entries: Array<[string, UIPage]> = []
+        for (const listEntry of listEntries) {
+            const tags = await metaPicker.findTagsByPage({
+                url: listEntry.pageUrl,
+            })
+
+            entries.push([
+                listEntry.pageUrl,
+                {
+                    url: listEntry.pageUrl,
+                    pageUrl: listEntry.fullUrl,
+                    titleText:
+                        (
+                            await overview.findPage({
+                                url: listEntry.pageUrl,
+                            })
+                        )?.fullTitle || '<Missing title>',
+                    isStarred: await overview.isPageStarred({
                         url: listEntry.pageUrl,
-                        pageUrl: listEntry.fullUrl,
-                        titleText:
-                            (
-                                await overview.findPage({
-                                    url: listEntry.pageUrl,
-                                })
-                            )?.fullTitle || '<Missing title>',
-                        isStarred: await overview.isPageStarred({
-                            url: listEntry.pageUrl,
-                        }),
-                        date: moment(listEntry.createdAt).fromNow(),
-                    },
-                ],
-            ),
-        )
+                    }),
+                    date: moment(listEntry.createdAt).fromNow(),
+                    tags: tags.map(tag => tag.name),
+                },
+            ])
+        }
+
         this.emitMutation({
             pages: {
                 $set: new Map<string, UIPage>([
