@@ -35,8 +35,8 @@ const ResultPage: React.StatelessComponent<Props &
             renderFooter={() => (
                 <Footer {...props}>
                     <DeleteBtn onPress={props.onDeletePress} />
-                    <TagBtn onPress={props.onTagPress} />
-                    <CommentBtn onPress={props.onCommentPress} />
+                    <TagBtn onPress={props.onTagPress} disabled />
+                    <CommentBtn onPress={props.onCommentPress} disabled />
                     {props.isStarred ? (
                         <FullStarBtn onPress={props.onStarPress} />
                     ) : (

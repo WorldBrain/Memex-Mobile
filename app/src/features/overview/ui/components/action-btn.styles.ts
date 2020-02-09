@@ -9,4 +9,7 @@ export default StyleSheet.create({
         height: 16,
         opacity: 0.3,
     },
+    iconDisabled: {
+        opacity: 0.1,
+    },
 })
