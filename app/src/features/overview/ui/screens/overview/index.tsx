@@ -62,7 +62,6 @@ export default class OverviewMenu extends NavigationScreen<
     }
 
     private renderResults() {
-        // console.log(this.state)
         if (this.state.showCollectionsView) {
             return (
                 <CollectionsView

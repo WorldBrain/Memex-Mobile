@@ -7,6 +7,7 @@ import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
+import EmptyResults from '../../components/empty-results'
 
 type Props = NavigationProps & LogicDependencies
 
@@ -65,6 +66,7 @@ export default class SpecialView extends NavigationScreen<Props, State, Event> {
                     data={selectors.results(this.state)}
                     showsVerticalScrollIndicator={false}
                     keyExtractor={(item, index) => index.toString()}
+                    ListEmptyComponent={EmptyResults}
                 />
             </View>
         )
