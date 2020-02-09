@@ -2,7 +2,8 @@ import React from 'react'
 
 import { NavigationScreen, NavigationProps } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
-import Filters from 'src/features/overview/ui/components/menu'
+import Filters from '../../components/menu'
+import Navigation from '../../components/navigation'
 import PagesView from '../pages-view'
 import NotesView from '../notes-view'
 import SpecialView from '../special-view'
@@ -10,7 +11,6 @@ import CollectionsView from '../collections-view'
 import SideMenuScreen from '../side-menu'
 import { ResultType } from 'src/features/overview/types'
 import { View, Text } from 'react-native'
-import includes from 'lodash/includes'
 
 interface Props extends NavigationProps {}
 
@@ -36,7 +36,7 @@ export default class OverviewMenu extends NavigationScreen<
         const { selectedResultType } = this.state
         if (
             this.state.selectedResultType &&
-            includes(filterAcceptedTypes, selectedResultType)
+            filterAcceptedTypes.includes(selectedResultType)
         ) {
             return (
                 <Filters
@@ -50,21 +50,14 @@ export default class OverviewMenu extends NavigationScreen<
                 />
             )
         }
-        // TODO: Move to a separate component
         return (
-            <View
-                style={{
-                    flex: 1,
-                    maxHeight: 150,
-                    backgroundColor: '#fff',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: 0,
-                    margin: 0,
-                }}
+            <Navigation
+                onBackPress={() =>
+                    this.props.navigation.navigate('MVPOverview')
+                }
             >
-                <Text>Recently Saved</Text>
-            </View>
+                Recently Saved
+            </Navigation>
         )
     }
 
