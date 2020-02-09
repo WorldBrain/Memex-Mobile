@@ -10,8 +10,6 @@ export default StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: '#eaeae9',
         backgroundColor: 'white',
     },
     btnContainer: {
@@ -26,7 +24,7 @@ export default StyleSheet.create({
         marginTop: 55,
         height: 80,
     },
-    backIcon: {
+    settingsIcon: {
         width: 10,
         height: 20,
         marginVertical: 30,

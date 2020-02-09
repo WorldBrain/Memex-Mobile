@@ -2,29 +2,32 @@ import React from 'react'
 import {
     View,
     Text,
-    Image,
     GestureResponderEvent,
     TouchableOpacity,
 } from 'react-native'
 
+import SettingsIcon from '../img/settings-icon.svg'
+import ExitIcon from '../img/exit-icon.svg'
 import styles from './navigation.styles'
 
 export interface Props {
-    onBackPress: (e: GestureResponderEvent) => void
+    onSettingsPress: (e: GestureResponderEvent) => void
+    icon: 'exit' | 'settings'
 }
 
 const Navigation: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
+        <Text style={styles.text}>{props.children}</Text>
         <TouchableOpacity
             style={styles.btnContainer}
-            onPress={props.onBackPress}
+            onPress={props.onSettingsPress}
         >
-            <Image
-                style={styles.backIcon}
-                source={require('src/ui/img/arrow-prev.png')}
-            />
+            {props.icon === 'exit' ? (
+                <ExitIcon style={styles.settingsIcon} />
+            ) : (
+                <SettingsIcon style={styles.settingsIcon} />
+            )}
         </TouchableOpacity>
-        <Text style={styles.text}>{props.children}</Text>
     </View>
 )
 

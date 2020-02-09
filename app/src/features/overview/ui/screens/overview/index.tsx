@@ -68,9 +68,10 @@ export default class OverviewMenu extends NavigationScreen<
         }
         return (
             <Navigation
-                onBackPress={() =>
-                    this.props.navigation.navigate('MVPOverview')
+                onSettingsPress={() =>
+                    this.props.navigation.navigate('SettingsMenu')
                 }
+                icon="settings"
             >
                 Recently Saved
             </Navigation>
@@ -122,7 +123,7 @@ export default class OverviewMenu extends NavigationScreen<
             <>
                 {this.renderNavigation()}
                 {this.renderResults()}
-                {this.renderSideMenu()}
+                {/* {this.renderSideMenu()} */}
             </>
         )
     }

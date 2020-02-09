@@ -18,6 +18,7 @@ import Pairing from 'src/features/overview/ui/screens/pairing-screen'
 import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
 import Sync from 'src/features/sync/ui/screens/sync'
 import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
+import SettingsMenu from 'src/features/settings-menu/ui/screens/settings-menu'
 
 export type NavigationContainerCreator = (
     deps: UIDependencies,
@@ -49,6 +50,9 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             MVPOverview: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
             }) => <MVPOverview {...props} {...deps} />,
+            SettingsMenu: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <SettingsMenu {...props} {...deps} />,
             Sync: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
             }) => <Sync {...props} {...deps} />,
