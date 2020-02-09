@@ -8,6 +8,7 @@ import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 import EmptyResults from '../../components/empty-results'
+import LoadingBalls from 'src/ui/components/loading-balls'
 
 type Props = NavigationProps & LogicDependencies
 
@@ -44,6 +45,10 @@ export default class SpecialView extends NavigationScreen<Props, State, Event> {
         this.processEvent('toggleResultPress', { url })
     }
 
+    private handleScrollToEnd = () => {
+        this.processEvent('loadMore', {})
+    }
+
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
         <ResultPage
             buttonLabel={'Visit >'}
@@ -57,9 +62,13 @@ export default class SpecialView extends NavigationScreen<Props, State, Event> {
         />
     )
 
-    render() {
+    private renderList() {
+        if (this.state.loadState === 'running') {
+            return <LoadingBalls style={styles.mainLoadSpinner} />
+        }
+
         return (
-            <View style={styles.container}>
+            <>
                 <FlatList
                     style={styles.pageList}
                     renderItem={this.renderPage}
@@ -67,8 +76,16 @@ export default class SpecialView extends NavigationScreen<Props, State, Event> {
                     showsVerticalScrollIndicator={false}
                     keyExtractor={(item, index) => index.toString()}
                     ListEmptyComponent={EmptyResults}
+                    onScrollEndDrag={this.handleScrollToEnd}
                 />
-            </View>
+                {this.state.loadMoreState === 'running' && (
+                    <LoadingBalls style={styles.loadMoreSpinner} />
+                )}
+            </>
         )
+    }
+
+    render() {
+        return <View style={styles.container}>{this.renderList()}</View>
     }
 }

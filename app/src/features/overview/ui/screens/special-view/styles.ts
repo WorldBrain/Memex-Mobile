@@ -12,4 +12,11 @@ export default StyleSheet.create({
         width: '100%',
         marginBottom: 0,
     },
+    mainLoadSpinner: {
+        marginTop: 155,
+    },
+    loadMoreSpinner: {
+        position: 'absolute',
+        bottom: 60,
+    },
 })
