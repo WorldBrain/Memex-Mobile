@@ -3,16 +3,21 @@ import { StyleSheet } from 'react-native'
 export default StyleSheet.create({
     favIcon: {},
     title: {
-        flex: 1,
         flexDirection: 'row',
         marginBottom: 5,
+        flexWrap: 'wrap',
+        overflow: 'hidden',
+        width: '100%',
     },
     titleText: {
-        fontWeight: '500',
-        fontSize: 18,
+        fontWeight: '700',
+        fontSize: 16,
+        flexWrap: 'wrap',
+        overflow: 'hidden',
+        color: '#3A2F45',
     },
     linkText: {
-        color: '#b0b0b0',
-        fontSize: 16,
+        color: '#3A2F45',
+        fontSize: 14,
     },
 })

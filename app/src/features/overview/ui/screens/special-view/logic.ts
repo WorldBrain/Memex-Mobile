@@ -111,13 +111,22 @@ export default class Logic extends UILogic<State, Event> {
                 listEntry.pageUrl,
                 {
                     url: listEntry.pageUrl,
-                    pageUrl: listEntry.fullUrl,
+                    domain: (
+                        await overview.findPage({
+                            url: listEntry.pageUrl,
+                        })
+                    )?.domain,
+                    fullUrl: (
+                        await overview.findPage({
+                            url: listEntry.pageUrl,
+                        })
+                    )?.fullUrl,
                     titleText:
                         (
                             await overview.findPage({
                                 url: listEntry.pageUrl,
                             })
-                        )?.fullTitle || '<Missing title>',
+                        )?.fullTitle || listEntry.pageUrl,
                     isStarred: await overview.isPageStarred({
                         url: listEntry.pageUrl,
                     }),

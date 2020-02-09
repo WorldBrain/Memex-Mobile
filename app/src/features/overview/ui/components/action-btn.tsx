@@ -5,6 +5,7 @@ import {
     ButtonProps,
     TouchableOpacity,
     ImageSourcePropType,
+    View,
 } from 'react-native'
 
 import styles from './action-btn.styles'
@@ -22,6 +23,7 @@ const ActionBtn: React.StatelessComponent<Props & OwnProps> = props => (
         disabled={props.disabled}
     >
         <Image
+            resizeMode="contain"
             source={props.iconSource}
             style={[styles.icon, props.disabled ? styles.iconDisabled : null]}
         />

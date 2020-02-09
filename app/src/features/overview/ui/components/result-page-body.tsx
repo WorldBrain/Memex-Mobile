@@ -14,6 +14,8 @@ export interface Props {
     favIcon?: string
     titleText: string
     pageUrl: string
+    domain: string
+    fullUrl: string
     onResultPress?: NativeTouchEventHandler
 }
 
@@ -28,9 +30,13 @@ const ResultPageBody: React.StatelessComponent<Props> = props => (
                             source={{ uri: props.favIcon }}
                         />
                     )}
-                    <Text style={styles.titleText}>{props.titleText}</Text>
+                    <Text numberOfLines={1} style={styles.titleText}>
+                        {props.titleText}
+                    </Text>
                 </View>
-                <Text style={styles.linkText}>{props.pageUrl}</Text>
+                <Text numberOfLines={1} style={styles.linkText}>
+                    {props.domain}
+                </Text>
             </View>
         </TouchableWithoutFeedback>
     </>

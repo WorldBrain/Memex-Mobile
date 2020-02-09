@@ -10,10 +10,7 @@ export interface Props {
 
 const ResultFooter: React.StatelessComponent<Props> = props => (
     <View style={styles.footer}>
-        <Text style={styles.date}>{props.date}</Text>
-        {!props.hideButtons && (
-            <View style={styles.actionBtns}>{props.children}</View>
-        )}
+        {!props.hideButtons && <View>{props.children}</View>}
     </View>
 )
 

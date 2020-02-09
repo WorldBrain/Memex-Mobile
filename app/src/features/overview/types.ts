@@ -11,13 +11,18 @@ export interface UICollection {
 }
 
 export interface UIResult {
+    domain: string
     url: string
     date: string
     isStarred?: boolean
+    fullUrl: string
 }
 
 export interface UIPage extends UIResult {
+    notes: UINote[]
     pageUrl: string
+    domain: string
+    fullUrl: string
     favIcon?: string
     titleText: string
     isResultPressed?: boolean
@@ -37,6 +42,7 @@ export interface Page {
     url: string
     text: string
     lang?: string
+    pageUrl: string
     domain: string
     fullUrl: string
     hostname: string

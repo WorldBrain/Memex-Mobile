@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, ListRenderItem, View, Alert } from 'react-native'
+import { FlatList, ListRenderItem, View, Alert, Linking } from 'react-native'
 import Logic, { State, Event } from './logic'
 import {
     StatefulUIElement,
@@ -43,8 +43,11 @@ export default class PagesView extends NavigationScreen<Props, State, Event> {
         this.processEvent('togglePageStar', { url })
     }
 
+    private HandleVisitPress = ({ url }: UIPage) => () => {}
+
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
         <ResultPage
+            onVisitPress={this.HandleVisitPress(item)}
             onDeletePress={this.initHandleDeletePress(item)}
             onStarPress={this.initHandlePageStar(item)}
             onCommentPress={this.navToPageEditor(item, 'notes')}

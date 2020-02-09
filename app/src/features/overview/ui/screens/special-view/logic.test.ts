@@ -12,6 +12,8 @@ import { Page } from '@worldbrain/memex-storage/lib/mobile-app/features/overview
 const UI_PAGE_1: UIPage = {
     url: 'test.com',
     pageUrl: 'test.com',
+    notes: [],
+    domain: 'test.com',
     titleText: 'This is a test page',
     date: 'a few seconds ago',
     isStarred: false,
@@ -20,6 +22,8 @@ const UI_PAGE_1: UIPage = {
 const UI_PAGE_2: UIPage = {
     url: 'test.com.bla',
     pageUrl: 'test.com.bla',
+    notes: [],
+    domain: 'test.com.bla',
     titleText: 'This is a test page bla',
     date: 'a few seconds ago',
     isStarred: false,

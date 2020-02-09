@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, ListRenderItem, View, Alert } from 'react-native'
+import { FlatList, ListRenderItem, View, Alert, Linking } from 'react-native'
 import Logic, { State, Event, LogicDependencies } from './logic'
 import { NavigationScreen, NavigationProps } from 'src/ui/types'
 import styles from './styles'
@@ -45,13 +45,19 @@ export default class SpecialView extends NavigationScreen<Props, State, Event> {
         this.processEvent('toggleResultPress', { url })
     }
 
+    HandleVisitPress = ({ fullUrl }: UIPage) => () => {
+        Linking.openURL(fullUrl)
+        console.log(fullUrl)
+    }
+
     private handleScrollToEnd = () => {
         this.processEvent('loadMore', {})
     }
 
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
         <ResultPage
-            buttonLabel={'Visit >'}
+            buttonLabel={'Visit'}
+            onVisitPress={this.HandleVisitPress(item)}
             onResultPress={this.initHandleResultPress(item)}
             onDeletePress={this.initHandleDeletePress(item)}
             onStarPress={this.initHandlePageStar(item)}

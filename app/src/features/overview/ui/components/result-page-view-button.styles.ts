@@ -6,15 +6,43 @@ export default StyleSheet.create({
     container: {
         backgroundColor: '#667BCC',
         width: '100%',
-        height: 39,
         flex: 1,
-        paddingLeft: 10,
-        justifyContent: 'center',
-        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+        flexDirection: 'row',
+    },
+    touchContainer: {
+        flexDirection: 'column',
+        paddingTop: 20,
+        paddingBottom: 20,
+        paddingLeft: 20,
+    },
+    contentContainer: {
+        flexDirection: 'column',
+        paddingTop: 20,
+        flex: 1,
+        paddingBottom: 20,
+        paddingLeft: 20,
+    },
+    resultContainer: {
+        flexDirection: 'row',
+        maxWidth: '100%',
+        justifyContent: 'space-between',
+    },
+    actionContainer: {
+        height: '100%',
+    },
+    date: {
+        color: '#3A2F45',
+        fontSize: 12,
+        marginTop: 5,
+    },
+    tagContainer: {
+        marginTop: 10,
     },
     text: {
-        fontWeight: '500',
-        fontSize: 18,
         color: 'white',
     },
 })

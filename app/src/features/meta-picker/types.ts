@@ -23,6 +23,7 @@ export interface List {
 export interface ListEntry {
     listId: number
     pageUrl: string
+    domain: string
     fullUrl: string
     createdAt: Date
 }
