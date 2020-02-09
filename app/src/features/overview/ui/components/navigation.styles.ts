@@ -8,7 +8,7 @@ export default StyleSheet.create({
         padding: 25,
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: 'white',
     },
@@ -23,10 +23,15 @@ export default StyleSheet.create({
         fontSize: 18,
         marginTop: 55,
         height: 80,
+        width: '100%',
+    },
+    emptyView: {
+        width: '10%',
     },
     settingsIcon: {
-        width: 10,
+        marginRight: 10,
         height: 20,
         marginVertical: 30,
+        width: '10%',
     },
 })

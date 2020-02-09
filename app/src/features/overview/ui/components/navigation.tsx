@@ -17,6 +17,7 @@ export interface Props {
 
 const Navigation: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
+        <View style={styles.emptyView} />
         <Text style={styles.text}>{props.children}</Text>
         <TouchableOpacity
             style={styles.btnContainer}
