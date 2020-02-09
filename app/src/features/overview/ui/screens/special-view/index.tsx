@@ -75,7 +75,16 @@ export default class SpecialView extends NavigationScreen<Props, State, Event> {
                     data={selectors.results(this.state)}
                     showsVerticalScrollIndicator={false}
                     keyExtractor={(item, index) => index.toString()}
-                    ListEmptyComponent={EmptyResults}
+                    ListEmptyComponent={
+                        <EmptyResults
+                            goToPairing={() =>
+                                this.props.navigation.navigate('Sync')
+                            }
+                            goToTutorial={() =>
+                                this.props.navigation.navigate('Onboarding')
+                            }
+                        />
+                    }
                     onScrollEndDrag={this.handleScrollToEnd}
                 />
                 {this.state.loadMoreState === 'running' && (

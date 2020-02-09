@@ -25,7 +25,7 @@ export default class SyncScreen extends NavigationScreen<
     }
 
     private handleCancelBtnPress = () => {
-        this.props.navigation.navigate('MVPOverview')
+        this.props.navigation.navigate('Overview')
     }
 
     handleDoSync = async ({ initialMessage }: { initialMessage: string }) => {

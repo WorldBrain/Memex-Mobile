@@ -59,7 +59,7 @@ export default class SyncScreenLogic extends UILogic<
         >(storageKeys.syncKey)
 
         if (syncKey) {
-            this.dependencies.navigation.navigate('MVPOverview')
+            this.dependencies.navigation.navigate('Pairing')
             return
         }
 
@@ -155,7 +155,7 @@ export default class SyncScreenLogic extends UILogic<
     }
 
     confirmSuccess() {
-        this.dependencies.navigation.navigate('MVPOverview')
+        this.dependencies.navigation.navigate('Overview')
     }
 
     setSyncStatus(

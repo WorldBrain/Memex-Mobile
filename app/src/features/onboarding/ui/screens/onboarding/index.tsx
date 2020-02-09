@@ -25,18 +25,26 @@ export default class OnboardingScreen extends NavigationScreen<
     }
 
     private renderOnboardingStage(
-        props: Omit<
-            OnboardingLayoutProps,
-            'onNextPress' | 'onBackPress' | 'onSkipPress' | 'screenIndex'
+        props: Partial<
+            Omit<
+                OnboardingLayoutProps,
+                'onNextPress' | 'onBackPress' | 'screenIndex'
+            >
         >,
     ) {
         return (
             <OnboardingLayout
-                {...props}
+                {...(props as any)}
                 screenIndex={this.state.onboardingStage}
                 onNextPress={() => this.processEvent('goToNextStage', {})}
                 onBackPress={() => this.processEvent('goToPrevStage', {})}
-                onSkipPress={() => this.processEvent('finishOnboarding', {})}
+                onSkipPress={() => {
+                    if (props.onSkipPress) {
+                        props.onSkipPress()
+                    } else {
+                        this.processEvent('goToLastStage', {})
+                    }
+                }}
             />
         )
     }
@@ -57,6 +65,10 @@ export default class OnboardingScreen extends NavigationScreen<
                 return this.renderOnboardingStage({
                     showBackBtn: true,
                     children: <SyncOnboarding />,
+                    onSkipPress: () =>
+                        this.processEvent('finishOnboarding', {
+                            nextView: 'Overview',
+                        }),
                 })
         }
     }

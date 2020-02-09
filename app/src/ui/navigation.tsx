@@ -57,7 +57,7 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             }) => <Pairing {...props} {...deps} />,
         },
         {
-            initialRouteName: 'MVPOverview',
+            initialRouteName: 'Overview',
         },
     )
 

@@ -9,8 +9,14 @@ export default StyleSheet.create({
         alignItems: 'center',
     },
     text: {
-        fontSize: 25,
+        fontSize: 16,
         textAlign: 'center',
-        lineHeight: 40,
+        marginBottom: 20,
+    },
+    subText: {
+        color: '#83838f',
+    },
+    linkText: {
+        textDecorationLine: 'underline',
     },
 })
