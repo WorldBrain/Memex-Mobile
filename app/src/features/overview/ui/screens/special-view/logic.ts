@@ -2,13 +2,15 @@ import moment from 'moment'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
-import { UITaskState, UIStorageModules } from 'src/ui/types'
+import { UITaskState, UIStorageModules, NavigationProps } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
+import delay from 'src/utils/delay'
 
 export interface State {
     loadState: UITaskState
+    reloadState: UITaskState
     loadMoreState: UITaskState
     couldHaveMore: boolean
     pages: Map<string, UIPage>
@@ -18,6 +20,7 @@ export interface State {
     actionFinishedAt: number
 }
 export type Event = UIEvent<{
+    reload: {}
     loadMore: {}
     setPages: { pages: UIPage[] }
     deletePage: { url: string }
@@ -25,26 +28,27 @@ export type Event = UIEvent<{
     toggleResultPress: { url: string }
 }>
 
-export interface LogicDependencies {
+export interface Props extends NavigationProps {
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
     pageSize?: number
     getNow?: () => number
 }
+
 export default class Logic extends UILogic<State, Event> {
-    private dependencies: LogicDependencies
     private pageSize: number
     getNow: () => number
 
-    constructor(dependencies: LogicDependencies) {
+    constructor(private props: Props) {
         super()
-        this.dependencies = dependencies
-        this.pageSize = dependencies.pageSize || 20
-        this.getNow = dependencies.getNow || (() => Date.now())
+
+        this.pageSize = props.pageSize || 20
+        this.getNow = props.getNow || (() => Date.now())
     }
 
     getInitialState(): State {
         return {
             loadState: 'pristine',
+            reloadState: 'pristine',
             loadMoreState: 'pristine',
             couldHaveMore: true,
             actionState: 'pristine',
@@ -53,10 +57,20 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+    async init() {
         await loadInitial<State>(this, async () => {
-            await this.doLoadMore(incoming.previousState)
+            await this.doLoadMore(this.getInitialState())
         })
+    }
+
+    async reload() {
+        await executeUITask<State, 'reloadState', void>(
+            this,
+            'reloadState',
+            async () => {
+                await this.doLoadMore(this.getInitialState())
+            },
+        )
     }
 
     async loadMore(incoming: IncomingUIEvent<State, Event, 'loadMore'>) {
@@ -75,11 +89,7 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        const {
-            metaPicker,
-            overview,
-            pageEditor,
-        } = this.dependencies.storage.modules
+        const { metaPicker, overview, pageEditor } = this.props.storage.modules
         const mobileList = await metaPicker.findListsByNames({
             names: [MOBILE_LIST_NAME],
         })
@@ -175,9 +185,9 @@ export default class Logic extends UILogic<State, Event> {
                     action: { $set: 'delete' },
                 })
                 try {
-                    await this.dependencies.storage.modules.overview.deletePage(
-                        { url: incoming.event.url },
-                    )
+                    await this.props.storage.modules.overview.deletePage({
+                        url: incoming.event.url,
+                    })
                     this.emitMutation({
                         pages: state => {
                             state.delete(incoming.event.url)
@@ -207,12 +217,10 @@ export default class Logic extends UILogic<State, Event> {
                 try {
                     const page = pages.get(url)!
                     const isStarred = !page.isStarred
-                    await this.dependencies.storage.modules.overview.setPageStar(
-                        {
-                            url,
-                            isStarred,
-                        },
-                    )
+                    await this.props.storage.modules.overview.setPageStar({
+                        url,
+                        isStarred,
+                    })
                     this.emitMutation({
                         pages: state => {
                             const page = state.get(url)!

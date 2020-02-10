@@ -1,7 +1,15 @@
 import React from 'react'
-import { FlatList, ListRenderItem, View, Alert, Linking } from 'react-native'
-import Logic, { State, Event, LogicDependencies } from './logic'
-import { NavigationScreen, NavigationProps } from 'src/ui/types'
+import {
+    FlatList,
+    ListRenderItem,
+    View,
+    Alert,
+    Linking,
+    NativeSyntheticEvent,
+    NativeScrollEvent,
+} from 'react-native'
+import Logic, { State, Event, Props } from './logic'
+import { NavigationScreen } from 'src/ui/types'
 import styles from './styles'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
@@ -9,8 +17,7 @@ import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 import EmptyResults from '../../components/empty-results'
 import LoadingBalls from 'src/ui/components/loading-balls'
-
-type Props = NavigationProps & LogicDependencies
+import * as scrollHelpers from 'src/utils/scroll-helpers'
 
 export default class SpecialView extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -45,19 +52,25 @@ export default class SpecialView extends NavigationScreen<Props, State, Event> {
         this.processEvent('toggleResultPress', { url })
     }
 
-    HandleVisitPress = ({ fullUrl }: UIPage) => () => {
+    private handleVisitPress = ({ fullUrl }: UIPage) => () => {
         Linking.openURL(fullUrl)
-        console.log(fullUrl)
     }
 
-    private handleScrollToEnd = () => {
-        this.processEvent('loadMore', {})
+    private handleScrollToEnd = ({
+        nativeEvent,
+    }: NativeSyntheticEvent<NativeScrollEvent>) => {
+        if (scrollHelpers.isAtTop(nativeEvent)) {
+            return this.processEvent('reload', {})
+        }
+
+        if (scrollHelpers.isAtBottom(nativeEvent)) {
+            return this.processEvent('loadMore', {})
+        }
     }
 
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
         <ResultPage
-            buttonLabel={'Visit'}
-            onVisitPress={this.HandleVisitPress(item)}
+            onVisitPress={this.handleVisitPress(item)}
             onResultPress={this.initHandleResultPress(item)}
             onDeletePress={this.initHandleDeletePress(item)}
             onStarPress={this.initHandlePageStar(item)}
@@ -75,6 +88,9 @@ export default class SpecialView extends NavigationScreen<Props, State, Event> {
 
         return (
             <>
+                {this.state.reloadState === 'running' && (
+                    <LoadingBalls style={styles.reloadSpinner} />
+                )}
                 <FlatList
                     style={styles.pageList}
                     renderItem={this.renderPage}

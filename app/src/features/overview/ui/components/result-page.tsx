@@ -1,10 +1,10 @@
 import React from 'react'
+import { View, TouchableWithoutFeedback, Text } from 'react-native'
 
 import Container from './result-container'
 import Body, { Props as BodyProps } from './result-page-body'
-import Comments, { Props as CommentProps } from './result-note-body'
 import Footer, { Props as FooterProps } from './result-footer'
-import Tags, { Props as TagsProps } from './result-page-tags'
+import Tags from './result-page-tags'
 import {
     DeleteBtn,
     FullTagBtn,
@@ -14,20 +14,10 @@ import {
     StarBtn,
     FullStarBtn,
 } from './action-btns'
-import { NativeTouchEventHandler } from '../../types'
-import { View, TouchableWithoutFeedback, Text } from 'react-native'
+import { NativeTouchEventHandler, UIPage } from '../../types'
 import styles from './result-page-view-button.styles'
-import { UINote } from 'src/features/overview/types'
 
-export interface Props extends FooterProps, BodyProps {
-    notes: UINote[]
-    tags: string[]
-    buttonLabel?: string
-    isStarred?: boolean
-    isResultPressed?: boolean
-    domain: string
-    fullUrl: string
-}
+export interface Props extends FooterProps, BodyProps, UIPage {}
 
 export interface InteractionProps {
     onResultPress?: NativeTouchEventHandler
@@ -75,14 +65,12 @@ const ResultPage: React.StatelessComponent<Props &
             </View>
         </Container>
         {props.isResultPressed && (
-            <TouchableWithoutFeedback>
-                <View style={styles.container}>
-                    <Text onPress={props.onVisitPress} style={styles.text}>
-                        {props.buttonLabel}
-                    </Text>
-                    <DeleteBtn onPress={props.onDeletePress} />
-                </View>
-            </TouchableWithoutFeedback>
+            <View style={styles.container}>
+                <Text onPress={props.onVisitPress} style={styles.text}>
+                    Visit
+                </Text>
+                <DeleteBtn onPress={props.onDeletePress} />
+            </View>
         )}
     </View>
 )

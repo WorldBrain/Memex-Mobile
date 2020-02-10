@@ -19,4 +19,7 @@ export default StyleSheet.create({
         position: 'absolute',
         bottom: 60,
     },
+    reloadSpinner: {
+        marginVertical: 50,
+    },
 })

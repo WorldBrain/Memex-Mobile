@@ -1,20 +1,14 @@
 import React from 'react'
 
-import { storageKeys } from '../../../../../../app.json'
-import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
-import Logic, { State, Event } from './logic'
+import { NavigationScreen } from 'src/ui/types'
+import Logic, { Props, State, Event } from './logic'
 import Filters from '../../components/menu'
 import Navigation from '../../components/navigation'
 import PagesView from '../pages-view'
 import NotesView from '../notes-view'
 import SpecialView from '../special-view'
 import CollectionsView from '../collections-view'
-import SideMenuScreen from '../side-menu'
 import { ResultType } from 'src/features/overview/types'
-
-interface Props extends NavigationProps {
-    services: UIServices<'localStorage'>
-}
 
 export default class OverviewMenu extends NavigationScreen<
     Props,
@@ -22,21 +16,7 @@ export default class OverviewMenu extends NavigationScreen<
     Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic() })
-    }
-
-    componentDidMount() {
-        this.navToOnboardingIfNeeded()
-    }
-
-    private async navToOnboardingIfNeeded() {
-        const showOnboarding = await this.props.services.localStorage.get<
-            boolean
-        >(storageKeys.showOnboarding)
-
-        if (showOnboarding || showOnboarding === null) {
-            this.props.navigation.navigate('Onboarding')
-        }
+        super(props, { logic: new Logic(props) })
     }
 
     private setResultType = (resultType: ResultType) =>
@@ -101,29 +81,11 @@ export default class OverviewMenu extends NavigationScreen<
         }
     }
 
-    private renderSideMenu() {
-        if (!this.state.showSideMenu) {
-            return null
-        }
-
-        return (
-            <SideMenuScreen
-                {...this.props}
-                hideMenu={() =>
-                    this.processEvent('setShowSideMenu', {
-                        show: false,
-                    })
-                }
-            />
-        )
-    }
-
     render() {
         return (
             <>
                 {this.renderNavigation()}
                 {this.renderResults()}
-                {/* {this.renderSideMenu()} */}
             </>
         )
     }
