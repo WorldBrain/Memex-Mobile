@@ -10,6 +10,7 @@ import { UIPage } from 'src/features/overview/types'
 import { Page } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/types'
 
 const UI_PAGE_1: UIPage = {
+    fullUrl: 'https://www.test.com',
     url: 'test.com',
     pageUrl: 'test.com',
     notes: [],
@@ -20,6 +21,7 @@ const UI_PAGE_1: UIPage = {
     tags: [],
 }
 const UI_PAGE_2: UIPage = {
+    fullUrl: 'https://www.test.com.bla',
     url: 'test.com.bla',
     pageUrl: 'test.com.bla',
     notes: [],
@@ -65,6 +67,7 @@ describe('pages view UI logic tests', () => {
         await element.init()
         expect(element.state).toEqual({
             loadState: 'done',
+            reloadState: 'pristine',
             loadMoreState: 'pristine',
             couldHaveMore: false,
             actionState: 'pristine',
@@ -82,6 +85,7 @@ describe('pages view UI logic tests', () => {
         await element.init()
         expect(element.state).toEqual({
             loadState: 'done',
+            reloadState: 'pristine',
             loadMoreState: 'pristine',
             couldHaveMore: false,
             actionState: 'pristine',
@@ -126,6 +130,7 @@ describe('pages view UI logic tests', () => {
         await element.init()
         expect(element.state).toEqual({
             loadState: 'done',
+            reloadState: 'pristine',
             loadMoreState: 'pristine',
             couldHaveMore: true,
             actionState: 'pristine',
@@ -136,6 +141,7 @@ describe('pages view UI logic tests', () => {
         await element.processEvent('loadMore', {})
         expect(element.state).toEqual({
             loadState: 'done',
+            reloadState: 'pristine',
             loadMoreState: 'done',
             couldHaveMore: true,
             actionState: 'pristine',
@@ -149,6 +155,21 @@ describe('pages view UI logic tests', () => {
         await element.processEvent('loadMore', {})
         expect(element.state).toEqual({
             loadState: 'done',
+            reloadState: 'pristine',
+            loadMoreState: 'done',
+            couldHaveMore: false,
+            actionState: 'pristine',
+            actionFinishedAt: 0,
+            pages: new Map([
+                ['test.com.bla', UI_PAGE_2],
+                ['test.com', UI_PAGE_1],
+            ]),
+        })
+
+        await element.processEvent('reload', {})
+        expect(element.state).toEqual({
+            loadState: 'done',
+            reloadState: 'done',
             loadMoreState: 'done',
             couldHaveMore: false,
             actionState: 'pristine',
@@ -176,6 +197,7 @@ describe('pages view UI logic tests', () => {
         })
         expect(element.state).toEqual({
             loadState: 'done',
+            reloadState: 'pristine',
             loadMoreState: 'pristine',
             couldHaveMore: false,
             action: 'delete',
