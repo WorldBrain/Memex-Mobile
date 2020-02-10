@@ -60,7 +60,10 @@ export default class MetaPickerScreen extends NavigationScreen<
     )
 
     private handleInputText = (text: string) => {
-        this.processEvent('suggestEntries', { text })
+        this.processEvent('suggestEntries', {
+            text,
+            selected: this.props.initEntries,
+        })
     }
 
     render() {

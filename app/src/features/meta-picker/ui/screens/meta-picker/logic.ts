@@ -11,7 +11,7 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    suggestEntries: { text: string }
+    suggestEntries: { text: string; selected: string[] }
     addEntry: { entry: MetaTypeShape }
     setEntries: { entries: MetaTypeShape[] }
     toggleEntryChecked: { name: string }
@@ -27,8 +27,6 @@ export interface Props extends NavigationProps {
 }
 
 export default class Logic extends UILogic<State, Event> {
-    private suggestRunning?: Promise<void>
-
     constructor(private props: Props) {
         super()
     }
@@ -56,11 +54,14 @@ export default class Logic extends UILogic<State, Event> {
                   })
         const entries = new Map<string, MetaTypeShape>()
 
-        results.forEach(res => {
-            entries.set(res.name, res)
-        })
         this.props.initEntries.forEach(name => {
             entries.set(name, { name, isChecked: true })
+        })
+
+        results.forEach(res => {
+            if (!this.props.initEntries.includes(res.name)) {
+                entries.set(res.name, res)
+            }
         })
 
         this.emitMutation({
@@ -70,24 +71,8 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    private mergeExistingEntries(
-        prevState: State,
-        newEntries: [string, MetaTypeShape][],
-    ): [string, MetaTypeShape][] {
-        return newEntries.map(([name, result]) => {
-            const currentEntry = prevState.entries.get(name)
-
-            const isChecked = currentEntry
-                ? currentEntry.isChecked
-                : result.isChecked || this.props.initEntries.includes(name)
-
-            return [name, { name, isChecked }]
-        })
-    }
-
     async suggestEntries({
-        event: { text },
-        previousState,
+        event: { text, selected },
     }: IncomingUIEvent<State, Event, 'suggestEntries'>) {
         await executeUITask<State, 'loadState', void>(
             this,
@@ -95,20 +80,12 @@ export default class Logic extends UILogic<State, Event> {
             async () => {
                 this.emitMutation({ inputText: { $set: text } })
 
-                if (this.suggestRunning) {
-                    await this.suggestRunning
-                    this.suggestRunning = undefined
-                }
-
-                this.suggestRunning = this.suggestNewEntries(
-                    previousState,
-                    text,
-                )
+                await this.suggestNewEntries(text, selected)
             },
         )
     }
 
-    async suggestNewEntries(prevState: State, text: string) {
+    async suggestNewEntries(text: string, selected: string[]) {
         const { metaPicker } = this.props.storage.modules
         const collection =
             this.props.type === 'collections' ? 'customLists' : 'tags'
@@ -117,14 +94,26 @@ export default class Logic extends UILogic<State, Event> {
             collection,
             query: { name: text },
         })
-        const entries = results.map(res => [res.name, res]) as [
+        const entries = results
+            .filter(res => !selected.includes(res.name))
+            .map(res => [res.name, { ...res, isChecked: false }]) as [
             string,
             MetaTypeShape,
         ][]
 
+        const selectedEntries: [string, MetaTypeShape][] = selected.map(
+            name => [
+                name,
+                {
+                    name,
+                    isChecked: true,
+                },
+            ],
+        )
+
         this.emitMutation({
             entries: {
-                $set: new Map(this.mergeExistingEntries(prevState, entries)),
+                $set: new Map([...selectedEntries, ...entries]),
             },
         })
     }
