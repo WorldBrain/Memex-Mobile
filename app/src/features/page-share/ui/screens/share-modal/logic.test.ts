@@ -304,25 +304,6 @@ describe('share modal UI logic tests', () => {
         expect(newState.isStarred).toBe(true)
     })
 
-    it('should be able to set tags to add', async (context: {
-        storage: Storage
-    }) => {
-        const { logic, initialState: state } = await setup(context)
-        const testTags = ['a', 'b', 'c']
-
-        expect(state.tagsToAdd.length).toBe(0)
-        const nextStateA = logic.withMutation(
-            state,
-            logic.setTagsToAdd({
-                event: { values: testTags },
-                previousState: state,
-            }),
-        )
-
-        expect(nextStateA.tagsToAdd.length).toBe(testTags.length)
-        expect(nextStateA.tagsToAdd).toEqual(testTags)
-    })
-
     it('should be able to set lists to add', async (context: {
         storage: Storage
     }) => {

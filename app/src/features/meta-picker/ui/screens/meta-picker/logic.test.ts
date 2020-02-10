@@ -1,4 +1,4 @@
-import Logic, { State, Event, LogicDependencies } from './logic'
+import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 
 const testEntries = [
@@ -8,14 +8,14 @@ const testEntries = [
     { name: 'testD', isChecked: false },
 ]
 
-const DEFAULT_DEPS: Partial<LogicDependencies> = {
+const DEFAULT_DEPS: Partial<Props> = {
     initEntries: [],
     url: 'test.com',
 }
 
 describe('meta picker UI logic tests', () => {
-    function setup(deps: Partial<LogicDependencies>) {
-        const logic = new Logic(deps as LogicDependencies)
+    function setup(deps: Partial<Props>) {
+        const logic = new Logic(deps as Props)
         const element = new FakeStatefulUIElement<State, Event>(logic)
         const state = logic.getInitialState()
 

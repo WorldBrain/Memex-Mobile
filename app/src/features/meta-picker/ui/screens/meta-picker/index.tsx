@@ -1,33 +1,16 @@
 import React from 'react'
 import { View, FlatList, ListRenderItem } from 'react-native'
 
-import {
-    NavigationScreen,
-    NavigationProps,
-    UIStorageModules,
-} from 'src/ui/types'
-import Logic, { State, Event } from './logic'
+import { NavigationScreen } from 'src/ui/types'
+import Logic, { Props, State, Event } from './logic'
 import MetaPicker from '../../components/meta-picker'
 import MetaPickerEntry from '../../components/meta-picker-entry'
 import MetaPickerEmptyRow from '../../components/meta-picker-empty'
 import SearchAddInput from '../../components/search-add-input'
 import * as selectors from './selectors'
-import {
-    MetaType,
-    MetaTypeShape,
-    MetaTypeName,
-} from 'src/features/meta-picker/types'
+import { MetaTypeShape, MetaTypeName } from 'src/features/meta-picker/types'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './styles'
-
-interface Props extends NavigationProps {
-    storage: UIStorageModules<'metaPicker'>
-    url: string
-    type: MetaType
-    isSyncLoading: boolean
-    initEntries: string[]
-    onEntryPress: (item: MetaTypeShape) => void
-}
 
 export default class MetaPickerScreen extends NavigationScreen<
     Props,

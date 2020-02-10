@@ -1,9 +1,8 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { UITaskState, UIStorageModules } from 'src/ui/types'
+import { UITaskState, UIStorageModules, NavigationProps } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MetaTypeShape, MetaType } from 'src/features/meta-picker/types'
-import delay from 'src/utils/delay'
 
 export interface State {
     inputText: string
@@ -18,9 +17,11 @@ export type Event = UIEvent<{
     toggleEntryChecked: { name: string }
 }>
 
-export interface LogicDependencies {
-    initEntries: string[]
+export interface Props extends NavigationProps {
+    onEntryPress: (item: MetaTypeShape) => void
     storage: UIStorageModules<'metaPicker'>
+    isSyncLoading: boolean
+    initEntries: string[]
     type: MetaType
     url: string
 }
@@ -28,7 +29,7 @@ export interface LogicDependencies {
 export default class Logic extends UILogic<State, Event> {
     private suggestRunning?: Promise<void>
 
-    constructor(private dependencies: LogicDependencies) {
+    constructor(private props: Props) {
         super()
     }
 
@@ -38,33 +39,33 @@ export default class Logic extends UILogic<State, Event> {
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
-            await this.loadInitEntries(incoming.previousState)
+            await this.loadInitEntries()
         })
     }
 
-    private async loadInitEntries(prevState: State) {
-        const { metaPicker } = this.dependencies.storage.modules
+    private async loadInitEntries() {
+        const { metaPicker } = this.props.storage.modules
 
         const results =
-            this.dependencies.type === 'tags'
+            this.props.type === 'tags'
                 ? await metaPicker.findTagSuggestions({
-                      url: this.dependencies.url,
+                      url: this.props.url,
                   })
                 : await metaPicker.findListSuggestions({
-                      url: this.dependencies.url,
+                      url: this.props.url,
                   })
+        const entries = new Map<string, MetaTypeShape>()
 
-        const entries = [
-            ...results.map(res => [res.name, res]),
-            ...this.dependencies.initEntries.map(name => [
-                name,
-                { name, isChecked: true },
-            ]),
-        ] as [string, MetaTypeShape][]
+        results.forEach(res => {
+            entries.set(res.name, res)
+        })
+        this.props.initEntries.forEach(name => {
+            entries.set(name, { name, isChecked: true })
+        })
 
         this.emitMutation({
             entries: {
-                $set: new Map(this.mergeExistingEntries(prevState, entries)),
+                $set: entries,
             },
         })
     }
@@ -75,10 +76,10 @@ export default class Logic extends UILogic<State, Event> {
     ): [string, MetaTypeShape][] {
         return newEntries.map(([name, result]) => {
             const currentEntry = prevState.entries.get(name)
-            const isChecked =
-                (currentEntry && currentEntry.isChecked) ||
-                result.isChecked ||
-                this.dependencies.initEntries.includes(name)
+
+            const isChecked = currentEntry
+                ? currentEntry.isChecked
+                : result.isChecked || this.props.initEntries.includes(name)
 
             return [name, { name, isChecked }]
         })
@@ -108,11 +109,11 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async suggestNewEntries(prevState: State, text: string) {
-        const { metaPicker } = this.dependencies.storage.modules
+        const { metaPicker } = this.props.storage.modules
         const collection =
-            this.dependencies.type === 'collections' ? 'customLists' : 'tags'
+            this.props.type === 'collections' ? 'customLists' : 'tags'
 
-        const results = await metaPicker.suggest(this.dependencies.url, {
+        const results = await metaPicker.suggest(this.props.url, {
             collection,
             query: { name: text },
         })
@@ -126,15 +127,6 @@ export default class Logic extends UILogic<State, Event> {
                 $set: new Map(this.mergeExistingEntries(prevState, entries)),
             },
         })
-    }
-
-    setEntries(
-        incoming: IncomingUIEvent<State, Event, 'setEntries'>,
-    ): UIMutation<State> {
-        const entries = new Map<string, MetaTypeShape>()
-        incoming.event.entries.forEach(entry => entries.set(entry.name, entry))
-
-        return { entries: { $set: entries } }
     }
 
     addEntry(

@@ -1,13 +1,8 @@
 import React from 'react'
 
-import {
-    NavigationScreen,
-    NavigationProps,
-    UIServices,
-    UIStorageModules,
-} from 'src/ui/types'
+import { NavigationScreen } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
-import Logic, { State, Event, LogicDependencies } from './logic'
+import Logic, { Props, State, Event } from './logic'
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
 import AddCollection from '../../components/add-collections-segment'
 import ShareModal from '../../components/share-modal'
@@ -15,8 +10,6 @@ import ActionBar from '../../components/action-bar-segment'
 import NoteInput from '../../components/note-input-segment'
 import StarPage from '../../components/star-page-segment'
 import AddTags from '../../components/add-tags-segment'
-
-type Props = NavigationProps & LogicDependencies
 
 export default class ShareModalScreen extends NavigationScreen<
     Props,
@@ -48,7 +41,7 @@ export default class ShareModalScreen extends NavigationScreen<
     }
 
     private handleMetaPickerEntryPress = async (entry: MetaTypeShape) => {
-        this.processEvent('metaPickerEntryPress', { entry })
+        await this.processEvent('metaPickerEntryPress', { entry })
     }
 
     private handleNoteTextChange = (value: string) => {
