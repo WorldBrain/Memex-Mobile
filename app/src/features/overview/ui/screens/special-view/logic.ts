@@ -1,12 +1,12 @@
 import moment from 'moment'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import { AppState, AppStateStatus } from 'react-native'
 
 import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
 import { UITaskState, UIStorageModules, NavigationProps } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
-import delay from 'src/utils/delay'
 
 export interface State {
     loadState: UITaskState
@@ -22,6 +22,7 @@ export interface State {
 export type Event = UIEvent<{
     reload: {}
     loadMore: {}
+    changeAppState: { nextState: AppStateStatus }
     setPages: { pages: UIPage[] }
     deletePage: { url: string }
     togglePageStar: { url: string }
@@ -57,10 +58,24 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async init() {
+    async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+        const handleAppStatusChange = (nextState: AppStateStatus) => {
+            this.processUIEvent('changeAppState', {
+                ...incoming,
+                event: { nextState },
+            })
+        }
+        AppState.addEventListener('change', handleAppStatusChange)
+
         await loadInitial<State>(this, async () => {
             await this.doLoadMore(this.getInitialState())
         })
+    }
+
+    changeAppState(incoming: IncomingUIEvent<State, Event, 'changeAppState'>) {
+        if (incoming.event.nextState === 'active') {
+            return this.processUIEvent('reload', { ...incoming })
+        }
     }
 
     async reload() {
