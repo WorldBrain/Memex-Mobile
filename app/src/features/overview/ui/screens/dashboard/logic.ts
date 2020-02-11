@@ -1,4 +1,3 @@
-import moment from 'moment'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { AppState, AppStateStatus } from 'react-native'
 
@@ -7,6 +6,7 @@ import { UITaskState, UIStorageModules, NavigationProps } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
+import { timeFromNow } from 'src/utils/time-helpers'
 
 export interface State {
     loadState: UITaskState
@@ -145,17 +145,19 @@ export default class Logic extends UILogic<State, Event> {
                     pageUrl: page!.url,
                     titleText: page!.fullTitle || page.url,
                     isStarred: !!page!.isStarred,
-                    date: moment(listEntry.createdAt).fromNow(),
+                    date: timeFromNow(listEntry.createdAt),
                     tags: tags.map(tag => tag.name),
                     lists: lists.map(list => list.name),
                     notes: notes.map<UINote>(note => ({
+                        domain: page!.domain,
+                        fullUrl: page!.url,
                         url: note.url,
                         isStarred: note.isStarred,
                         commentText: note.comment || undefined,
                         noteText: note.body,
                         date: note.lastEdited
-                            ? note.lastEdited.toDateString()
-                            : note.createdWhen?.toDateString(),
+                            ? timeFromNow(note.lastEdited)
+                            : timeFromNow(note.createdWhen!),
                     })),
                 },
             ])
