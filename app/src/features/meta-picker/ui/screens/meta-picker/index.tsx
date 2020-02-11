@@ -43,6 +43,7 @@ export default class MetaPickerScreen extends NavigationScreen<
         } else {
             await this.processEvent('toggleEntryChecked', {
                 name: item.name,
+                selected: this.props.initEntries,
             })
         }
     }

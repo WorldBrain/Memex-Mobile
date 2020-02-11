@@ -11,10 +11,10 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    toggleEntryChecked: { name: string }
-    setEntries: { entries: MetaTypeShape[] }
     suggestEntries: { text: string; selected: string[] }
     addEntry: { entry: MetaTypeShape; selected: string[] }
+    toggleEntryChecked: { name: string; selected: string[] }
+    setEntries: { entries: MetaTypeShape[] }
 }>
 
 export interface Props extends NavigationProps {
@@ -117,17 +117,19 @@ export default class Logic extends UILogic<State, Event> {
         return this.loadInitEntries([entry.name, ...selected])
     }
 
-    toggleEntryChecked({
-        event: { name },
-    }: IncomingUIEvent<State, Event, 'toggleEntryChecked'>): UIMutation<State> {
-        return {
-            entries: state => {
-                const oldEntry = state.get(name)!
-                return state.set(name, {
-                    ...oldEntry,
-                    isChecked: !oldEntry.isChecked,
-                })
-            },
+    async toggleEntryChecked({
+        event: { name, selected },
+        previousState,
+    }: IncomingUIEvent<State, Event, 'toggleEntryChecked'>) {
+        const entry = previousState.entries.get(name)!
+
+        if (entry.isChecked) {
+            const i = selected.indexOf(name)
+            selected = [...selected.slice(0, i), ...selected.slice(i + 1)]
+        } else {
+            selected = [name, ...selected]
         }
+
+        return this.loadInitEntries(selected)
     }
 }
