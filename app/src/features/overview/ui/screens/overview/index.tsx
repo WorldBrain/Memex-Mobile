@@ -6,7 +6,7 @@ import Filters from '../../components/menu'
 import Navigation from '../../components/navigation'
 import PagesView from '../pages-view'
 import NotesView from '../notes-view'
-import SpecialView from '../special-view'
+import Dashboard from '../dashboard'
 import CollectionsView from '../collections-view'
 import { ResultType } from 'src/features/overview/types'
 
@@ -77,7 +77,7 @@ export default class OverviewMenu extends NavigationScreen<
             case 'pages':
                 return <PagesView {...this.props} />
             default:
-                return <SpecialView {...this.props} />
+                return <Dashboard {...this.props} />
         }
     }
 

@@ -19,7 +19,7 @@ import EmptyResults from '../../components/empty-results'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 
-export default class SpecialView extends NavigationScreen<Props, State, Event> {
+export default class Dashboard extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
         super(props, { logic: new Logic(props) })
     }
