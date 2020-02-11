@@ -1,13 +1,8 @@
 import React from 'react'
-import { Text } from 'react-native'
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake'
 
 import { NavigationScreen } from 'src/ui/types'
-import SyncScreenLogic, {
-    SyncScreenState,
-    SyncScreenEvent,
-    SyncScreenDependencies,
-} from './logic'
+import Logic, { SyncScreenState, SyncScreenEvent, Props } from './logic'
 import SetupStage from '../../components/sync-setup-stage'
 import LoadingStage from '../../components/sync-loading-stage'
 import InfoStage from '../../components/sync-info-stage'
@@ -16,12 +11,16 @@ import ErrorStage from '../../components/sync-error-stage'
 import ScanQRStage from '../../components/sync-scan-qr-stage'
 
 export default class SyncScreen extends NavigationScreen<
-    SyncScreenDependencies,
+    Props,
     SyncScreenState,
     SyncScreenEvent
 > {
-    constructor(props: SyncScreenDependencies) {
-        super(props, { logic: new SyncScreenLogic(props) })
+    constructor(props: Props) {
+        super(props, { logic: new Logic(props) })
+    }
+
+    static defaultProps: Partial<Props> = {
+        syncStallTimeout: 1000 * 60 * 20,
     }
 
     private handleCancelBtnPress = () => {

@@ -9,7 +9,7 @@ import { FakeNavigation } from 'src/tests/navigation'
 import { LocalStorageService } from 'src/services/local-storage'
 import { TestLogicContainer } from 'src/tests/ui-logic'
 import SyncScreenLogic, {
-    SyncScreenDependencies,
+    Props,
     SyncScreenState,
     SyncScreenEvent,
 } from './logic'
@@ -33,7 +33,7 @@ describe('SyncScreen', () => {
     }
 
     function setup(
-        dependencies?: SyncScreenDependencies & {
+        dependencies?: Props & {
             navigation: FakeNavigation
         },
     ) {
