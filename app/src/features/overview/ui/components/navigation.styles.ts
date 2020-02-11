@@ -1,12 +1,11 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Platform } from 'react-native'
 
 export default StyleSheet.create({
     container: {
         fontFamily: 'Poppins',
-        top: 30,
-        maxHeight: 30,
+        top: Platform.OS === 'ios' ? 30 : 0,
+        maxHeight: 60,
         width: '100%',
-        marginTop: 10,
         paddingHorizontal: 15,
         paddingVertical: 20,
         flex: 1,

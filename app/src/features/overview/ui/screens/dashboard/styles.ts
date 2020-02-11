@@ -1,8 +1,8 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Platform } from 'react-native'
 
 export default StyleSheet.create({
     container: {
-        marginTop: 30,
+        marginTop: Platform.OS === 'ios' ? 30 : 0,
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'flex-start',

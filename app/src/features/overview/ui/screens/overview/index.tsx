@@ -48,10 +48,10 @@ export default class OverviewMenu extends NavigationScreen<
         }
         return (
             <Navigation
+                icon="settings"
                 onSettingsPress={() =>
                     this.props.navigation.navigate('SettingsMenu')
                 }
-                icon="settings"
             >
                 Recently Saved
             </Navigation>

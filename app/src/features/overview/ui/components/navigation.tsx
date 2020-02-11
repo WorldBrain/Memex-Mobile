@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-    View,
-    Text,
-    GestureResponderEvent,
-    TouchableOpacity,
-    Image,
-} from 'react-native'
+import { View, Text, TouchableOpacity, Image } from 'react-native'
 
 import styles from './navigation.styles'
 const ExitIcon = require('../img/closeIcon.png')
