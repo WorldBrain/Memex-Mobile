@@ -1,15 +1,14 @@
 import React from 'react'
 
-import { NavigationScreen, NavigationProps } from 'src/ui/types'
-import Logic, { State, Event } from './logic'
-import Filters from 'src/features/overview/ui/components/menu'
+import { NavigationScreen } from 'src/ui/types'
+import Logic, { Props, State, Event } from './logic'
+import Filters from '../../components/menu'
+import Navigation from '../../components/navigation'
 import PagesView from '../pages-view'
 import NotesView from '../notes-view'
+import Dashboard from '../dashboard'
 import CollectionsView from '../collections-view'
-import SideMenuScreen from '../side-menu'
 import { ResultType } from 'src/features/overview/types'
-
-interface Props extends NavigationProps {}
 
 export default class OverviewMenu extends NavigationScreen<
     Props,
@@ -17,7 +16,7 @@ export default class OverviewMenu extends NavigationScreen<
     Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic() })
+        super(props, { logic: new Logic(props) })
     }
 
     private setResultType = (resultType: ResultType) =>
@@ -27,6 +26,37 @@ export default class OverviewMenu extends NavigationScreen<
         this.processEvent('setShowCollectionsView', {
             show: !this.state.showCollectionsView,
         })
+
+    private renderNavigation() {
+        const filterAcceptedTypes = ['pages', 'notes']
+        const { selectedResultType } = this.state
+        if (
+            this.state.selectedResultType &&
+            filterAcceptedTypes.includes(selectedResultType)
+        ) {
+            return (
+                <Filters
+                    selected={this.state.selectedResultType}
+                    setResultType={this.setResultType}
+                    showCollectionsView={this.state.showCollectionsView}
+                    toggleCollectionsView={this.toggleCollectionsView}
+                    toggleMenuView={() =>
+                        this.processEvent('setShowSideMenu', { show: true })
+                    }
+                />
+            )
+        }
+        return (
+            <Navigation
+                icon="settings"
+                onSettingsPress={() =>
+                    this.props.navigation.navigate('SettingsMenu')
+                }
+            >
+                Recently Saved
+            </Navigation>
+        )
+    }
 
     private renderResults() {
         if (this.state.showCollectionsView) {
@@ -41,47 +71,21 @@ export default class OverviewMenu extends NavigationScreen<
                 />
             )
         }
-
         switch (this.state.selectedResultType) {
             case 'notes':
                 return <NotesView {...this.props} />
             case 'pages':
-            default:
                 return <PagesView {...this.props} />
+            default:
+                return <Dashboard {...this.props} />
         }
-    }
-
-    private renderSideMenu() {
-        if (!this.state.showSideMenu) {
-            return null
-        }
-
-        return (
-            <SideMenuScreen
-                {...this.props}
-                hideMenu={() =>
-                    this.processEvent('setShowSideMenu', {
-                        show: false,
-                    })
-                }
-            />
-        )
     }
 
     render() {
         return (
             <>
-                <Filters
-                    selected={this.state.selectedResultType}
-                    setResultType={this.setResultType}
-                    showCollectionsView={this.state.showCollectionsView}
-                    toggleCollectionsView={this.toggleCollectionsView}
-                    toggleMenuView={() =>
-                        this.processEvent('setShowSideMenu', { show: true })
-                    }
-                />
+                {this.renderNavigation()}
                 {this.renderResults()}
-                {this.renderSideMenu()}
             </>
         )
     }

@@ -2,14 +2,16 @@ import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
     errorTextContainer: {
-        marginBottom: 30,
+        top: '11%',
+        padding: 20,
     },
     helpContainer: {
-        // flex: 1,
-        // minWidth: '100%',
+        top: '14%',
+        display: 'flex',
+        flexDirection: 'column',
     },
     titleText: {
-        top: 30,
+        top: '10%',
         fontSize: 25,
         fontWeight: 'bold',
         marginBottom: 25,
@@ -28,16 +30,18 @@ export default StyleSheet.create({
     helpEntry: {
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
-        minWidth: '100%',
-        maxWidth: '100%',
+        maxWidth: '90%',
         maxHeight: 50,
     },
     helpEntryText: {
         fontSize: 17,
-        marginLeft: 15,
-        // lineHeight: 22,
+        paddingHorizontal: 15,
+        paddingVertical: 20,
+        alignItems: 'center',
+        textAlign: 'center',
+        lineHeight: 25,
     },
     helpEntryArrow: {
         color: '#c5c5c7',
@@ -55,7 +59,17 @@ export default StyleSheet.create({
     },
     errorText: {
         fontSize: 18,
-        color: 'black',
+        color: '#fe7b7b',
         textAlign: 'center',
+    },
+    cancelContainer: {
+        position: 'relative',
+        top: '20%',
+        display: 'flex',
+        alignItems: 'center',
+    },
+    cancelButton: {
+        textAlign: 'center',
+        width: '100%',
     },
 })

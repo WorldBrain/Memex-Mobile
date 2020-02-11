@@ -10,12 +10,15 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    finishOnboarding: {}
+    finishOnboarding: { nextView: 'Sync' | 'Overview' }
+    goToLastStage: {}
     goToNextStage: {}
     goToPrevStage: {}
 }>
 
 export default class OnboardingScreenLogic extends UILogic<State, Event> {
+    static MAX_ONBOARDING_STAGE: OnboardingStage = 3
+
     constructor(
         private options: NavigationProps & {
             services: UIServices<'localStorage'>
@@ -38,14 +41,26 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
         }
     }
 
-    private async finishOnboarding() {
+    async finishOnboarding(
+        incoming: IncomingUIEvent<State, Event, 'finishOnboarding'>,
+    ) {
         await this.options.services.localStorage.set(
             storageKeys.showOnboarding,
             false,
         )
 
-        await this.options.navigation.navigate('Sync')
-        return {}
+        await this.options.navigation.navigate(incoming.event.nextView)
+    }
+
+    goToLastStage(
+        incoming: IncomingUIEvent<State, Event, 'goToLastStage'>,
+    ): UIMutation<State> {
+        return {
+            onboardingStage: {
+                $set: (OnboardingScreenLogic.MAX_ONBOARDING_STAGE -
+                    1) as OnboardingStage,
+            },
+        }
     }
 
     goToNextStage(
@@ -54,8 +69,11 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
         const nextStage = (incoming.previousState.onboardingStage +
             1) as OnboardingStage
 
-        if (nextStage > 2) {
-            this.finishOnboarding()
+        if (nextStage >= OnboardingScreenLogic.MAX_ONBOARDING_STAGE) {
+            this.processUIEvent('finishOnboarding', {
+                ...incoming,
+                event: { nextView: 'Sync' },
+            })
             return {}
         }
 

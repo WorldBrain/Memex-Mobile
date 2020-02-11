@@ -25,6 +25,7 @@ export async function executeUITask<
         return [true, returned]
     } catch (e) {
         logic.emitMutation({ [key]: { $set: 'error' } } as any)
+        console.error(e)
         return [false]
     }
 }

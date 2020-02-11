@@ -3,7 +3,7 @@ import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
 export type NativeTouchEventHandler = (
     ev: NativeSyntheticEvent<NativeTouchEvent>,
 ) => void
-export type ResultType = 'pages' | 'notes'
+export type ResultType = 'special' | 'pages' | 'notes'
 
 export interface UICollection {
     id: number
@@ -11,15 +11,23 @@ export interface UICollection {
 }
 
 export interface UIResult {
+    domain: string
     url: string
     date: string
     isStarred?: boolean
+    fullUrl: string
 }
 
 export interface UIPage extends UIResult {
+    notes: UINote[]
     pageUrl: string
+    domain: string
+    fullUrl: string
     favIcon?: string
     titleText: string
+    isResultPressed?: boolean
+    tags: string[]
+    lists: string[]
 }
 
 export interface UIPageWithNotes extends UIPage {
@@ -35,6 +43,7 @@ export interface Page {
     url: string
     text: string
     lang?: string
+    pageUrl: string
     domain: string
     fullUrl: string
     hostname: string

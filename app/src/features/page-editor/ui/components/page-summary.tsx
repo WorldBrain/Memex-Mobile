@@ -20,7 +20,7 @@ const MainLayout: React.StatelessComponent<Props> = props => (
         <TouchableOpacity onPress={props.onBackPress}>
             <Image
                 style={styles.backIcon}
-                source={require('src/ui/img/arrow-prev.png')}
+                source={require('src/ui/img/arrow-back.png')}
             />
         </TouchableOpacity>
         <View style={styles.pageBodyContainer}>

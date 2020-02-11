@@ -23,7 +23,7 @@ export default class RePairScreen extends NavigationScreen<Props, {}, Event> {
     }
 
     private handleBackPress = () => {
-        this.props.navigation.navigate('MVPOverview')
+        this.props.navigation.navigate('Overview')
     }
 
     render() {

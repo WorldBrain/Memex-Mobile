@@ -9,7 +9,7 @@ export default StyleSheet.create({
         borderBottomWidth: 3,
         borderBottomColor: '#dadada',
         height: 80,
-        marginTop: 15,
+        marginTop: 30,
         padding: 15,
     },
 })

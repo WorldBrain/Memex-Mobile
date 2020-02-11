@@ -8,12 +8,12 @@ export class FakeStatefulUIElement<
 
     constructor(public logic: UILogic<State, Event>) {
         this.state = logic.getInitialState()
-    }
-
-    async init() {
         this.logic.events.addListener('mutation', mutation =>
             this.processMutation(mutation),
         )
+    }
+
+    async init() {
         await this.processEvent('init', undefined, { optional: true })
     }
 

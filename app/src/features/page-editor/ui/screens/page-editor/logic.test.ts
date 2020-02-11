@@ -1,45 +1,22 @@
 import Logic from './logic'
-import initTestData from './test-data'
-import { EditorMode } from 'src/features/page-editor/types'
 
-const data = initTestData()
+const data = {
+    mode: 'tags',
+    page: {
+        date: '5 mins ago',
+        pageUrl: 'https://test.com',
+        url: 'https://test.com',
+        titleText: 'This is a test page',
+    },
+}
 
 describe('page editor UI logic tests', () => {
     function setup() {
-        const logic = new Logic()
+        const logic = new Logic({})
         const state = logic.getInitialState()
 
         return { logic, state }
     }
-
-    it('should be able to set editor mode', () => {
-        const { logic, state } = setup()
-
-        const modes: EditorMode[] = ['collections', 'notes', 'tags']
-        let previousState = state
-
-        for (const mode of modes) {
-            const newState = logic.withMutation(
-                state,
-                logic.setEditorMode({ event: { mode }, previousState }),
-            )
-            expect(newState.mode).toEqual(mode)
-            previousState = newState
-        }
-    })
-
-    it('should be able to set editor page', () => {
-        const { logic, state } = setup()
-
-        const testPage = { ...data.page, titleText: 'some different text' }
-        expect(state.page).toMatchObject(data.page)
-
-        const newStateA = logic.withMutation(
-            state,
-            logic.setPage({ event: { page: testPage }, previousState: state }),
-        )
-        expect(newStateA.page).toMatchObject(testPage)
-    })
 
     it('should be able to show + hide note adder', () => {
         const { logic, state } = setup()
@@ -85,10 +62,9 @@ describe('page editor UI logic tests', () => {
         const testText = 'this is a test'
         const testPage = { ...data.page, notes: [] }
 
-        const newStateA = logic.withMutation(
-            state,
-            logic.setPage({ event: { page: testPage }, previousState: state }),
-        )
+        const newStateA = logic.withMutation(state, {
+            page: { $set: testPage },
+        })
         expect(newStateA.page.notes.length).toBe(0)
 
         const newStateB = logic.withMutation(

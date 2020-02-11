@@ -80,6 +80,14 @@ export default class MVPOverviewMenu extends NavigationScreen<
                             style={styles.btn}
                             secondary
                         />
+                        <Button
+                            title="Dashboard"
+                            onPress={() =>
+                                this.props.navigation.navigate('Overview')
+                            }
+                            style={styles.btn}
+                            secondary
+                        />
                         {this.state.isSynced ? (
                             <Button
                                 title="✔ App successfully paired"

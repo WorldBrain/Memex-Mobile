@@ -2,9 +2,12 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { UIPageWithNotes as Page } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
-import testData from './test-data'
+import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
+import { loadInitial } from 'src/ui/utils'
+import { Spec } from 'immutability-helper'
 
 export interface State {
+    loadState: UITaskState
     showNoteAdder: boolean
     noteAdderInput: string
     page: Page
@@ -15,25 +18,37 @@ export type Event = UIEvent<{
     setShowNoteAdder: { show: boolean }
     setEditorMode: { mode: EditorMode }
     setInputText: { text: string }
+    removeEntry: { name: string }
+    createEntry: { name: string }
     saveNote: { text: string }
     setPage: { page: Page }
 }>
 
+export interface Props extends NavigationProps {
+    storage: UIStorageModules<'metaPicker'>
+}
+
 export default class Logic extends UILogic<State, Event> {
+    constructor(private props: Props) {
+        super()
+    }
+
     getInitialState(): State {
-        return testData()
+        return {
+            loadState: 'pristine',
+            mode: 'tags',
+            page: {} as any,
+            noteAdderInput: '',
+            showNoteAdder: false,
+        }
     }
 
-    setEditorMode(
-        incoming: IncomingUIEvent<State, Event, 'setEditorMode'>,
-    ): UIMutation<State> {
-        return { mode: { $set: incoming.event.mode } }
-    }
-
-    setPage(
-        incoming: IncomingUIEvent<State, Event, 'setPage'>,
-    ): UIMutation<State> {
-        return { page: { $set: incoming.event.page } }
+    async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+        await loadInitial<State>(this, async () => {
+            const page = this.props.navigation.getParam('page', {})
+            const mode = this.props.navigation.getParam('mode', 'tags')
+            this.emitMutation({ page: { $set: page }, mode: { $set: mode } })
+        })
     }
 
     setShowNoteAdder(
@@ -46,6 +61,82 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'setInputText'>,
     ): UIMutation<State> {
         return { noteAdderInput: { $set: incoming.event.text } }
+    }
+
+    async removeEntry({
+        event: { name },
+        previousState,
+    }: IncomingUIEvent<State, Event, 'removeEntry'>) {
+        const { metaPicker } = this.props.storage.modules
+        const url = previousState.page.url
+
+        const mutation: Spec<State, never> = {}
+
+        if (previousState.mode === 'tags') {
+            this.emitMutation({
+                page: state => {
+                    const i = state.tags.indexOf(name)
+
+                    const tags = [
+                        ...state.tags.slice(0, i),
+                        ...state.tags.slice(i + 1),
+                    ]
+
+                    return { ...state, tags }
+                },
+            })
+            await metaPicker.deleteTag({ url, name })
+        } else {
+            this.emitMutation({
+                page: state => {
+                    const i = state.lists.indexOf(name)
+
+                    const lists = [
+                        ...state.lists.slice(0, i),
+                        ...state.lists.slice(i + 1),
+                    ]
+
+                    return { ...state, lists }
+                },
+            })
+            await metaPicker.deletePageEntryByName({ url, name })
+        }
+    }
+
+    async createEntry({
+        event: { name },
+        previousState,
+    }: IncomingUIEvent<State, Event, 'createEntry'>) {
+        const { metaPicker } = this.props.storage.modules
+        const url = previousState.page.url
+
+        if (previousState.mode === 'tags') {
+            this.emitMutation({
+                page: state => ({
+                    ...state,
+                    tags: [...state.tags, name],
+                }),
+            })
+            await metaPicker.createTag({ url, name })
+        } else {
+            this.emitMutation({
+                page: state => ({
+                    ...state,
+                    lists: [...state.lists, name],
+                }),
+            })
+            const lists = await metaPicker.findListsByNames({ names: [name] })
+
+            let listId
+            if (!lists.length) {
+                const { object } = await metaPicker.createList({ name })
+                listId = object.id
+            } else {
+                listId = lists[0].id
+            }
+
+            await metaPicker.createPageListEntry({ pageUrl: url, listId })
+        }
     }
 
     saveNote(
@@ -61,6 +152,8 @@ export default class Logic extends UILogic<State, Event> {
                         url: page.url,
                         date: 'now',
                         commentText: incoming.event.text,
+                        domain: page.domain,
+                        fullUrl: page.fullUrl,
                     },
                 ],
             }),

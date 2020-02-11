@@ -22,7 +22,7 @@ const OnboardingLayout: React.StatelessComponent<Props> = props => (
         <View style={styles.mainContainer}>
             <ProgressBalls count={3} selectedIndex={props.screenIndex} />
 
-            {props.screenIndex == 2 ? (
+            {props.screenIndex === 2 ? (
                 <View style={styles.btnContainer}>
                     <Button
                         title="◂"

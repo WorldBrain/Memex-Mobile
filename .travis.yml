@@ -62,7 +62,7 @@ jobs:
 
 env:
   global:
-    - APP_NAME="Memex Mobile"
+    - APP_NAME="Memex Go"
     - 'DEVELOPER_NAME="iPhone Distribution: WorldBrain UG (haftungsbeschränkt)"'
     - PROFILE_NAME="travis"
     - ANDROID_API_LEVEL=28
