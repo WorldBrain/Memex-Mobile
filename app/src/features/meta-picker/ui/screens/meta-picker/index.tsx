@@ -33,13 +33,16 @@ export default class MetaPickerScreen extends NavigationScreen<
     private initHandleEntryPress = ({
         canAdd,
         ...item
-    }: MetaTypeShape) => () => {
+    }: MetaTypeShape) => async () => {
         this.props.onEntryPress(item)
 
         if (canAdd) {
-            this.processEvent('addEntry', { entry: item })
+            await this.processEvent('addEntry', {
+                entry: item,
+                selected: this.props.initEntries,
+            })
         } else {
-            this.processEvent('toggleEntryChecked', {
+            await this.processEvent('toggleEntryChecked', {
                 name: item.name,
             })
         }
