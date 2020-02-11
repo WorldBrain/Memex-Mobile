@@ -24,8 +24,9 @@ export default class SpecialView extends NavigationScreen<Props, State, Event> {
         super(props, { logic: new Logic(props) })
     }
 
-    private navToPageEditor = (page: UIPage, mode: EditorMode) => () =>
+    private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', { page, mode })
+    }
 
     private initHandleDeletePress = (page: UIPage) => () =>
         Alert.alert(

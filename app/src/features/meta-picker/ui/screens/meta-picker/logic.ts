@@ -3,7 +3,6 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { UITaskState, UIStorageModules, NavigationProps } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MetaTypeShape, MetaType } from 'src/features/meta-picker/types'
-import { Spec } from 'immutability-helper'
 
 export interface State {
     inputText: string

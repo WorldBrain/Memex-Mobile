@@ -1,15 +1,14 @@
 import React from 'react'
 
-import { NavigationScreen, NavigationProps } from 'src/ui/types'
-import Logic, { State, Event } from './logic'
+import { NavigationScreen } from 'src/ui/types'
+import Logic, { Props, State, Event } from './logic'
 import MainLayout from '../../components/main-layout'
 import Footer from '../../components/footer'
 import NoteAdder from '../../components/note-adder'
 import ExistingNotes from '../../components/existing-notes'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
-
-interface Props extends NavigationProps {}
+import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
 
 export default class PageEditorScreen extends NavigationScreen<
     Props,
@@ -17,19 +16,7 @@ export default class PageEditorScreen extends NavigationScreen<
     Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic() })
-    }
-
-    componentDidMount() {
-        super.componentDidMount()
-
-        const mode = this.props.navigation.getParam('mode', 'tags')
-        this.processEvent('setEditorMode', { mode })
-
-        const page = this.props.navigation.getParam('page')
-        if (page != null) {
-            this.processEvent('setPage', { page })
-        }
+        super(props, { logic: new Logic(props) })
     }
 
     private handleNewNoteAdd = () => {
@@ -40,6 +27,14 @@ export default class PageEditorScreen extends NavigationScreen<
     private handleHideNoteAdder = () => {
         this.processEvent('setShowNoteAdder', { show: false })
         this.processEvent('setInputText', { text: '' })
+    }
+
+    private handleEntryPress = (entry: MetaTypeShape) => {
+        if (entry.isChecked) {
+            return this.processEvent('removeEntry', { name: entry.name })
+        } else {
+            return this.processEvent('createEntry', { name: entry.name })
+        }
     }
 
     private renderNoteAdder() {
@@ -76,9 +71,22 @@ export default class PageEditorScreen extends NavigationScreen<
     }
 
     private renderMetaPicker(type: MetaType) {
+        const initEntries =
+            type === 'tags' ? this.state.page.tags : this.state.page.lists
+
+        if (this.state.loadState !== 'done') {
+            return null
+        }
+
         return (
             <>
-                <MetaPicker type={type} {...this.props} />
+                <MetaPicker
+                    {...this.props}
+                    initEntries={initEntries}
+                    type={type}
+                    url={this.state.page.url}
+                    onEntryPress={this.handleEntryPress}
+                />
                 <Footer>Every action is auto-saved</Footer>
             </>
         )

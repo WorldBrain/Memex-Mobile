@@ -19,7 +19,6 @@ export default class MetaPickerScreen extends NavigationScreen<
 > {
     static defaultProps: Partial<Props> = {
         onEntryPress: (item: MetaTypeShape) => undefined,
-        initEntries: [],
     }
 
     constructor(props: Props) {

@@ -27,6 +27,7 @@ export interface UIPage extends UIResult {
     titleText: string
     isResultPressed?: boolean
     tags: string[]
+    lists: string[]
 }
 
 export interface UIPageWithNotes extends UIPage {

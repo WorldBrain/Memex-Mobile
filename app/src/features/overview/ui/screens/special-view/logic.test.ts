@@ -19,6 +19,7 @@ const UI_PAGE_1: UIPage = {
     date: 'a few seconds ago',
     isStarred: false,
     tags: [],
+    lists: [],
 }
 const UI_PAGE_2: UIPage = {
     fullUrl: 'https://www.test.com.bla',
@@ -30,9 +31,10 @@ const UI_PAGE_2: UIPage = {
     date: 'a few seconds ago',
     isStarred: false,
     tags: [],
+    lists: [],
 }
 
-describe('pages view UI logic tests', () => {
+describe('dashboard screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     function setup(options: LogicDependencies) {
@@ -97,6 +99,7 @@ describe('pages view UI logic tests', () => {
                         ...UI_PAGE_1,
                         isStarred: true,
                         tags: INTEGRATION_TEST_DATA.tags,
+                        lists: [INTEGRATION_TEST_DATA.lists[0]],
                     },
                 ],
             ]),

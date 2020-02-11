@@ -132,6 +132,9 @@ export default class Logic extends UILogic<State, Event> {
             })
 
             const notes = await pageEditor.findNotes({ url: listEntry.pageUrl })
+            const lists = await metaPicker.findListsByPage({
+                url: listEntry.pageUrl,
+            })
 
             entries.push([
                 listEntry.pageUrl,
@@ -144,6 +147,7 @@ export default class Logic extends UILogic<State, Event> {
                     isStarred: !!page!.isStarred,
                     date: moment(listEntry.createdAt).fromNow(),
                     tags: tags.map(tag => tag.name),
+                    lists: lists.map(list => list.name),
                     notes: notes.map<UINote>(note => ({
                         url: note.url,
                         isStarred: note.isStarred,
