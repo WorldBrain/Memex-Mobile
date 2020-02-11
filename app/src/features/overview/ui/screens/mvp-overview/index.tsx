@@ -122,7 +122,6 @@ export default class MVPOverviewMenu extends NavigationScreen<
                     </View>
                 </View>
                 <View style={styles.footer}>
-                    <Text style={styles.versionText}>Version {version}</Text>
                     <Text
                         style={styles.versionText}
                         onPress={this.handleConsolePress}

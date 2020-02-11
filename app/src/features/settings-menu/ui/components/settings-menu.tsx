@@ -35,7 +35,6 @@ const SettingsMenu: React.StatelessComponent<Props> = props => (
                     onPress={props.onDevicePairedPress}
                 />
             )}
-            <Text style={styles.versionText}>Version {props.versionCode}</Text>
         </View>
     </View>
 )
