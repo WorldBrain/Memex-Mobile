@@ -32,16 +32,23 @@ const SyncErrorStage: React.StatelessComponent<Props> = props => (
             </View>
             <Text style={styles.helpEntryText}>
                 If you run into troubles while syncing, check out the{' '}
+                <Link href="https://www.notion.so/worldbrain/d1ccb11785774c389c621b44f65bb543">
+                    Troubleshooting Help
+                </Link>
+                <Text style={styles.helpEntryText}> or </Text>
+                <Link href="https://community.worldbrain.io/c/bug-reports">
+                    Contact Support
+                </Link>
+                <Text style={styles.helpEntryText}>.</Text>
             </Text>
-            <Link href="https://www.notion.so/worldbrain/d1ccb11785774c389c621b44f65bb543">
-                Troubleshooting Help
-            </Link>
-            <Text style={styles.helpEntryText}>or</Text>
-            <Link href="https://community.worldbrain.io/c/bug-reports">
-                Contact Support
-            </Link>
-            <Text style={styles.helpEntryText}>.</Text>
-            <Button title="Cancel" onPress={props.onCancelBtnPress} empty />
+        </View>
+        <View style={styles.cancelContainer}>
+            <Button
+                style={styles.cancelButton}
+                title="Cancel"
+                onPress={props.onCancelBtnPress}
+                empty
+            />
         </View>
     </EmptyLayout>
 )

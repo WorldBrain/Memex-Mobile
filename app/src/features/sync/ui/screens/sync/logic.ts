@@ -97,7 +97,7 @@ export default class SyncScreenLogic extends UILogic<
                 status: { $set: 'failure' },
                 errMsg: {
                     $set:
-                        'Sync has stalled. Please try again on a different connection.',
+                        'Sync experienced a timeout. Please try again on a different connection.',
                 },
             })
         }, this.props.syncStallTimeout)
