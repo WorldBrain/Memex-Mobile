@@ -1,7 +1,7 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 import { start } from 'repl'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     favIcon: {},
     container: {
         backgroundColor: '#667BCC',
@@ -9,23 +9,20 @@ export default StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingLeft: 20,
-        paddingRight: 15,
-        paddingVertical: 5,
+        paddingLeft: '1.3rem',
+        paddingRight: '1rem',
+        paddingVertical: '0.5rem',
         flexDirection: 'row',
     },
     touchContainer: {
         flexDirection: 'column',
-        paddingTop: 20,
-        paddingBottom: 20,
-        paddingLeft: 20,
     },
     contentContainer: {
         flexDirection: 'column',
-        paddingTop: 20,
+        paddingTop: '1.6rem',
         flex: 1,
-        paddingBottom: 20,
-        paddingLeft: 20,
+        paddingBottom: '1.3rem',
+        paddingLeft: '1.3rem',
     },
     resultContainer: {
         flexDirection: 'row',
@@ -35,12 +32,8 @@ export default StyleSheet.create({
     actionContainer: {
         height: '100%',
     },
-    date: {
-        color: '#3A2F45',
-        fontSize: 12,
-    },
     tagContainer: {
-        marginTop: 10,
+        marginTop: '0.6rem',
     },
     text: {
         color: 'white',

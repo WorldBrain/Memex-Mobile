@@ -1,8 +1,9 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     Container: {
-        padding: 20,
+        padding: '1.2rem',
+        width: '100%',
     },
     noteText: {
         marginBottom: 5,

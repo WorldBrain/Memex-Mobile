@@ -13,7 +13,9 @@ const OnboardingFeature: React.StatelessComponent<Props> = props => (
     <View style={styles.mainContainer}>
         <View style={styles.imgContainer}>{props.children}</View>
         <View style={styles.textContainer}>
-            <Text style={styles.optional}>{props.optional}</Text>
+            {props.optional && (
+                <Text style={styles.optional}>{props.optional}</Text>
+            )}
             <Text style={styles.headingText}>{props.headingText}</Text>
             <Text style={styles.secondaryText}>{props.secondaryText}</Text>
         </View>

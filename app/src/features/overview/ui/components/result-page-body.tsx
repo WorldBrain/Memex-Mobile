@@ -17,12 +17,13 @@ export interface Props {
     domain: string
     fullUrl: string
     onResultPress?: NativeTouchEventHandler
+    date: string
 }
 
 const ResultPageBody: React.StatelessComponent<Props> = props => (
     <>
         <TouchableWithoutFeedback onPress={props.onResultPress}>
-            <View>
+            <View style={styles.contentBox}>
                 <View style={styles.title}>
                     {props.favIcon && (
                         <Image
@@ -37,6 +38,7 @@ const ResultPageBody: React.StatelessComponent<Props> = props => (
                 <Text numberOfLines={1} style={styles.linkText}>
                     {props.domain}
                 </Text>
+                <Text style={styles.date}>{props.date}</Text>
             </View>
         </TouchableWithoutFeedback>
     </>

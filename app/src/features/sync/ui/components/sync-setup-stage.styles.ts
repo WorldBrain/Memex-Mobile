@@ -1,17 +1,17 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     boldText: {
         fontWeight: 'bold',
     },
     instructionText: {
         position: 'relative',
-        top: 60,
-        fontSize: 20,
-        lineHeight: 30,
+        top: '5rem',
+        fontSize: '1.5rem',
+        lineHeight: '2rem',
         textAlign: 'center',
-        marginLeft: '5%',
-        marginRight: '5%',
+        marginLeft: '7%',
+        marginRight: '7%',
     },
     mainImgContainer: {
         flex: 1,
@@ -19,14 +19,14 @@ export default StyleSheet.create({
         alignItems: 'center',
         height: '100%',
         width: '100%',
-        top: 30,
+        top: '4rem',
     },
     mainImg: {
         width: '90%',
         height: '80%',
-        marginRight: 100,
-        marginLeft: 100,
-        marginTop: 30,
+        marginRight: '8rem',
+        marginLeft: '8rem',
+        marginTop: '5rem',
         display: 'flex',
         justifyContent: 'center',
     },

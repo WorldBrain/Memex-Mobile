@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     container: {
         marginTop: 30,
         flex: 1,

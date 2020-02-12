@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     container: {
         minWidth: '75%',
         borderBottomColor: '#E0E0E0',
@@ -9,5 +9,7 @@ export default StyleSheet.create({
     link: {
         paddingVertical: 15,
         textDecorationLine: 'none',
+        color: '$textColor',
+        fontSize: '1.25rem',
     },
 })

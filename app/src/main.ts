@@ -5,7 +5,8 @@ import '@react-native-firebase/auth'
 import '@react-native-firebase/functions'
 import * as Keychain from 'react-native-keychain'
 
-import { Platform } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
+import { Platform, Dimensions } from 'react-native'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
 import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
@@ -43,6 +44,16 @@ export async function main() {
             database: 'memex',
         },
     })
+
+    const { height, width } = Dimensions.get('window')
+    const entireScreenWidth = Dimensions.get('window').width
+
+    EStyleSheet.build({
+        $textColor: '#3a2f45',
+        $greenColor: '#5cd9a6',
+        $rem: entireScreenWidth / 30,
+    })
+
     const serverStorage = await createServerStorage()
 
     const localStorage = new LocalStorageService({

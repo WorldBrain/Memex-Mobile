@@ -1,10 +1,10 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     stepText: {
         position: 'relative',
-        top: 30,
-        fontSize: 25,
+        top: '10%',
+        fontSize: '3rem',
         textTransform: 'uppercase',
         fontWeight: 'bold',
         textAlign: 'center',

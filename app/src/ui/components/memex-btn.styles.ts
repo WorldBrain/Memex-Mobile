@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     button: {
         flex: 1,
         justifyContent: 'center',
@@ -8,7 +8,7 @@ export default StyleSheet.create({
         backgroundColor: '#5CD9A6',
         borderRadius: 25,
         width: '85%',
-        maxHeight: 50,
+        maxHeight: '3.5rem',
     },
     buttonSecondary: {
         backgroundColor: '#5671CF',
@@ -33,13 +33,14 @@ export default StyleSheet.create({
     },
     buttonBigText: {
         color: '#3A2F45',
-        fontSize: 40,
+        fontSize: '3rem',
+        textAlignVertical: 'center',
     },
     text: {
         color: 'white',
         textAlign: 'center',
         fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: '1.3rem',
     },
     textWarn: {
         color: 'white',

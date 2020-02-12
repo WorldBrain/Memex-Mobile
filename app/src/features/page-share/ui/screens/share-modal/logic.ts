@@ -1,5 +1,7 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { SyncReturnValue } from '@worldbrain/storex-sync'
+import EStyleSheet from 'react-native-extended-stylesheet'
+import { Platform, Dimensions } from 'react-native'
 
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
 import {
@@ -78,6 +80,15 @@ export default class Logic extends UILogic<State, Event> {
         this.syncRunning = this.props.services.sync.continuousSync.forceIncrementalSync()
 
         this.syncRunning.catch(this.handleSyncError)
+
+        const { height, width } = Dimensions.get('window')
+        const entireScreenWidth = Dimensions.get('window').width
+
+        EStyleSheet.build({
+            $textColor: '#3a2f45',
+            $greenColor: '#5cd9a6',
+            $rem: entireScreenWidth / 30,
+        })
 
         await loadInitial<State>(this, async () => {
             let mutation: UIMutation<State> = {}

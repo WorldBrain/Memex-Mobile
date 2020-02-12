@@ -39,7 +39,6 @@ const ResultPage: React.StatelessComponent<Props &
                 >
                     <View style={styles.contentContainer}>
                         <Body {...props} />
-                        <Text style={styles.date}>{props.date}</Text>
                         <Tags tags={props.tags} />
                     </View>
                 </TouchableWithoutFeedback>

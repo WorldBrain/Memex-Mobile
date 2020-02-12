@@ -1,14 +1,14 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
         backgroundColor: 'white',
         justifyContent: 'flex-start',
         position: 'absolute',
-        left: 15,
-        right: 15,
+        left: '2%',
+        right: '2%',
         top: 10,
         bottom: 200,
         borderRadius: 10,

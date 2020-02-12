@@ -20,7 +20,9 @@ const Navigation: React.StatelessComponent<Props> = props => (
                 style={styles.settingsIcon}
             />
         </View>
-        <Text style={styles.text}>{props.children}</Text>
+        <View style={styles.textContainer}>
+            <Text style={styles.text}>{props.children}</Text>
+        </View>
         <TouchableOpacity
             style={styles.btnContainer}
             onPress={props.onSettingsPress}

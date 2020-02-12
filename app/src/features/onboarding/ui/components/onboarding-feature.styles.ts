@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     mainContainer: {
         flex: 1,
         flexDirection: 'column',
@@ -8,6 +8,7 @@ export default StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: '3rem',
     },
     imgContainer: {
         flex: 1,
@@ -16,6 +17,7 @@ export default StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '100%',
+        marginBottom: '2rem',
     },
     textContainer: {
         position: 'relative',
@@ -28,25 +30,26 @@ export default StyleSheet.create({
     optional: {
         position: 'relative',
         fontWeight: 'bold',
-        color: '#5cd9a6',
+        color: '$greenColor',
         textAlign: 'center',
-        fontSize: 30,
+        fontSize: '2rem',
+        marginTop: '-2.5rem',
     },
     headingText: {
         position: 'relative',
         fontWeight: 'bold',
-        color: '#3A2F45',
+        color: '$textColor',
         textAlign: 'center',
-        fontSize: 28,
-        top: '3%',
+        fontSize: '2rem',
+        marginTop: '0.5rem',
         width: '100%',
     },
     secondaryText: {
         position: 'relative',
         color: '#3A2F45',
         textAlign: 'center',
-        fontSize: 20,
-        marginTop: 25,
-        lineHeight: 30,
+        fontSize: '1.5rem',
+        top: '1rem',
+        lineHeight: '2.3rem',
     },
 })

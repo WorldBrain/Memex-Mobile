@@ -1,12 +1,11 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     footer: {
         flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        paddingVertical: 18,
-        paddingHorizontal: 15,
+        justifyContent: 'space-between',
+        paddingVertical: '1.1rem',
+        paddingHorizontal: '1.1rem',
         height: '100%',
     },
 })

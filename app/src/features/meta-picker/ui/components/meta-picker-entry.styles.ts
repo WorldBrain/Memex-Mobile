@@ -1,42 +1,43 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 15,
+        padding: '1rem',
     },
     containerBorder: {
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
     },
     entry: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        paddingHorizontal: '1rem',
+        paddingVertical: '0.3rem',
         borderRadius: 5,
     },
     entryBackground: {
         backgroundColor: '#83c9f4',
     },
     entryText: {
-        fontSize: 18,
-        color: '#545454',
+        fontSize: '1.2rem',
+        color: '$textColor',
         fontWeight: '400',
     },
     emptyRowText: {
         width: '100%',
         textAlign: 'center',
-        fontSize: 18,
+        fontSize: '1.4rem',
+        color: '$textColor',
     },
     addText: {
-        fontSize: 18,
+        fontSize: '1.2rem',
         fontWeight: 'bold',
     },
     checkmark: {
-        width: 25,
-        height: 25,
+        width: '2.2rem',
+        height: '2.2rem',
     },
     checkmarkHidden: {
         display: 'none',
