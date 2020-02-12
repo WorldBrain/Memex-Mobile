@@ -22,6 +22,8 @@ export default StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         width: '90%',
+        textAlign: 'center',
+        alignItems: 'center',
     },
     optional: {
         position: 'relative',

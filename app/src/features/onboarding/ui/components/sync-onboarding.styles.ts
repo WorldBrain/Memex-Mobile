@@ -5,6 +5,7 @@ export default StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         marginTop: '10%',
+        justifyContent: 'center',
     },
     checkList: {
         maxWidth: '80%',
