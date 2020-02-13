@@ -19,6 +19,7 @@ const NoteInput: React.StatelessComponent<Props> = props => (
             placeholder="Add Note"
             multiline
             editable={!props.disabled}
+            placeholderTextColor={'#3a2f45'}
         />
     </View>
 )

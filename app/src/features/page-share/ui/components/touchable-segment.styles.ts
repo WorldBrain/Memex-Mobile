@@ -6,15 +6,16 @@ export default EStyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 15,
+        paddingHorizontal: '1.5rem',
     },
     outter: {
         flex: 1,
+        justifyContent: 'center',
     },
     mainText: {
         color: '#3a2f45',
-        fontWeight: '700',
-        fontSize: 14,
+        fontWeight: '600',
+        fontSize: '1.2rem',
         fontFamily: 'Poppins',
     },
     border: {
@@ -22,7 +23,7 @@ export default EStyleSheet.create({
         borderBottomColor: '#eaeae9',
     },
     starIcon: {
-        width: 15,
-        height: 15,
+        width: '1.3rem',
+        height: '1.3rem',
     },
 })

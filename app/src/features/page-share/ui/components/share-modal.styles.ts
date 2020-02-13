@@ -9,7 +9,7 @@ export default EStyleSheet.create({
         position: 'absolute',
         left: '2%',
         right: '2%',
-        top: 10,
+        top: '0rem',
         bottom: 200,
         borderRadius: 10,
         height: '50%',

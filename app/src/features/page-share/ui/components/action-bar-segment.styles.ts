@@ -8,13 +8,21 @@ export default EStyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 15,
+        paddingHorizontal: '1.5rem',
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
-        height: 50,
+        height: '4rem',
+    },
+    buttonText: {
+        fontSize: '1.3rem',
+        color: '#007AFF',
+    },
+    buttonTextDisabled: {
+        fontSize: '1.3rem',
+        color: '#C4C4C4',
     },
     mainText: {
-        fontSize: 18,
+        fontSize: '1rem',
         fontWeight: 'bold',
     },
 })

@@ -7,6 +7,7 @@ export default EStyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: '1rem',
+        paddingHorizontal: '1.5rem',
     },
     containerBorder: {
         borderBottomWidth: 1,
@@ -21,7 +22,7 @@ export default EStyleSheet.create({
         backgroundColor: '#83c9f4',
     },
     entryText: {
-        fontSize: '1.2rem',
+        fontSize: '1.4rem',
         color: '$textColor',
         fontWeight: '400',
     },
