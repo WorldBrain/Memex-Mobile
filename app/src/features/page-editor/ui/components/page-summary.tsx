@@ -8,7 +8,7 @@ import {
 
 import PageBody, {
     Props as PageBodyProps,
-} from 'src/features/overview/ui/components/result-page-body'
+} from 'src/features/page-editor/ui/components/page-body-summary'
 import styles from './page-summary.styles'
 
 export interface Props extends PageBodyProps {
