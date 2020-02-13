@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { AppRegistry, View, Text } from 'react-native'
+import { AppRegistry, Dimensions } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
 import { name as appName, shareExtName } from '../../app.json'
 import {
@@ -18,6 +19,14 @@ export class UI {
     private setupResolve!: (dependencies: UIDependencies) => void
 
     constructor() {
+        const entireScreenWidth = Dimensions.get('screen').width
+
+        EStyleSheet.build({
+            $textColor: '#3a2f45',
+            $greenColor: '#5cd9a6',
+            $rem: entireScreenWidth / 30,
+        })
+
         const setupPromise = new Promise<UIDependencies>(resolve => {
             this.setupResolve = resolve
         })

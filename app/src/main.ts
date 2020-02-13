@@ -3,10 +3,8 @@ globalThis.process.version = '1.1.1'
 import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'
 import '@react-native-firebase/functions'
-import * as Keychain from 'react-native-keychain'
 
-import EStyleSheet from 'react-native-extended-stylesheet'
-import { Platform, Dimensions } from 'react-native'
+import { Platform } from 'react-native'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
 import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
@@ -26,10 +24,7 @@ import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
 import { KeychainPackage } from './services/keychain/keychain'
-import {
-    insertIntegrationTestData,
-    checkIntegrationTestData,
-} from './tests/shared-fixtures/integration'
+import { insertIntegrationTestData } from './tests/shared-fixtures/integration'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -43,15 +38,6 @@ export async function main() {
             location: 'Shared',
             database: 'memex',
         },
-    })
-
-    const { height, width } = Dimensions.get('window')
-    const entireScreenWidth = Dimensions.get('window').width
-
-    EStyleSheet.build({
-        $textColor: '#3a2f45',
-        $greenColor: '#5cd9a6',
-        $rem: entireScreenWidth / 30,
     })
 
     const serverStorage = await createServerStorage()
