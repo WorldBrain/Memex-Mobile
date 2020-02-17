@@ -144,6 +144,7 @@ export default class SyncScreenLogic extends UILogic<
         } finally {
             SyncScreenLogic.logSyncStats(timeBefore, syncProgress)
             sync.initialSync.events.removeAllListeners('progress')
+            clearTimeout(timerId)
         }
     }
 
