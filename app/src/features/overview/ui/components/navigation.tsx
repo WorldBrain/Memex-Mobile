@@ -17,7 +17,7 @@ const Navigation: React.StatelessComponent<Props> = props => (
             <Image
                 resizeMode="contain"
                 source={MemexIcon}
-                style={styles.settingsIcon}
+                style={styles.logoIcon}
             />
         </View>
         <View style={styles.textContainer}>

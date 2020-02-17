@@ -18,7 +18,8 @@ export default EStyleSheet.create({
         borderBottomWidth: 1,
     },
     btnContainer: {
-        height: '1rem',
+        marginBottom: 5,
+        height: '1.7rem',
         width: '1.7rem',
         display: 'flex',
         alignItems: 'flex-end',
@@ -48,6 +49,10 @@ export default EStyleSheet.create({
         width: 20,
     },
     settingsIcon: {
+        height: '60%',
+        width: '100%',
+    },
+    logoIcon: {
         height: '100%',
         width: '100%',
     },
