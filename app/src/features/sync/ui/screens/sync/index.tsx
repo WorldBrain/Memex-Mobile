@@ -20,7 +20,7 @@ export default class SyncScreen extends NavigationScreen<
     }
 
     static defaultProps: Partial<Props> = {
-        syncStallTimeout: 1000 * 60 * 2,
+        syncStallTimeout: 1000 * 60 * 7,
     }
 
     private handleCancelBtnPress = () => {
