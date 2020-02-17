@@ -20,14 +20,14 @@ export default EStyleSheet.create({
     btnContainer: {
         marginBottom: 5,
         height: '1.7rem',
-        width: '1.7rem',
+        width: '3rem',
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'flex-end',
     },
     logoContainer: {
         height: '1.7rem',
-        width: '1.7rem',
+        width: '3rem',
         display: 'flex',
         alignItems: 'flex-end',
         justifyContent: 'flex-end',
