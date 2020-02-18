@@ -5,28 +5,36 @@
 1. Go to the `app/` directory
 1. Run `yarn`
 
-*additional required steps if intending to run on iOS:*
+_additional required steps if intending to run on iOS:_
+
 1. Go to the `app/ios` directory
 1. Install Cocoapods if not already installed: https://cocoapods.org/
 1. Run `pod install`
 
 ## Running on Android
 
+0. Add Firebase credentials in `app/android/app/google-services.json`
 1. In one terminal, run `yarn start`
-2. In another terminal, run `yarn react-native run-android`
+1. In another terminal, run `yarn react-native run-android`
 
 **Note:**
 _If your Android SDK or AVDs are not configured properly, you may have to manually start an emulator instance for the above commands to work._
 
 ## Running on iOS (requires macOS)
 
+0. Add Firebase credentials:
+
+   0.1. for main app: `app/ios/app/GoogleService-Info.plist`
+
+   0.2. for share extension: `app/ios/MemexShare/GoogleService-Info.plist`
+
 1. In one terminal, run `yarn start`
-2. In another terminal, run `open app/ios/app.xcworkspace` to open the XCode workspace **(important that you don't open `app/ios/app.xcodeproj`)**
-3. In the menu bar, go to `Product > Destination`
+1. In another terminal, run `open app/ios/app.xcworkspace` to open the XCode workspace **(important that you don't open `app/ios/app.xcodeproj`)**
+1. In the menu bar, go to `Product > Destination`
 
    3.1. Choose a connected iPhone or one of the simulators
 
-4. Press the "Play" button in the top left
+1. Press the "Play" button in the top left
 
 ## Set up app reload on source code change
 
@@ -42,7 +50,7 @@ _Assumes the above steps have been followed and app is currently running in iOS 
 
 Often I've encountered issues where things either crash on build or at runtime citing missing dependencies, mainly on iOS. If this happens, I would advise trying to re-install all the needed deps and trying again. You can copy and paste the following snippets, running them from the repo root:
 
-***Clean and reset your git repo + submodules***
+**_Clean and reset your git repo + submodules_**
 
 ```
 git clean -xfd
@@ -55,14 +63,14 @@ git submodule update --init --recursive
 **Note:**
 _Running the above should automatically remove your NPM deps and CocoaPods._
 
-***Clean and re-install your NPM deps***
+**_Clean and re-install your NPM deps_**
 
 ```
 rm -rf node_modules/
 yarn
 ```
 
-***Re-install all CocoaPods***
+**_Re-install all CocoaPods_**
 
 ```
 cd ios/
@@ -70,7 +78,7 @@ pod install
 cd ..
 ```
 
-***Clean XCode build caches***
+**_Clean XCode build caches_**
 
 Choose `Product > Clean` in the XCode menu bar.
 
