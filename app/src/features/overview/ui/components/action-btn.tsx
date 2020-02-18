@@ -30,4 +30,21 @@ const ActionBtn: React.StatelessComponent<Props & OwnProps> = props => (
     </TouchableOpacity>
 )
 
-export default ActionBtn
+const ActionBarBtn: React.StatelessComponent<Props & OwnProps> = props => (
+    <TouchableOpacity
+        style={styles.actionBarBtn}
+        onPress={props.onPress}
+        disabled={props.disabled}
+    >
+        <Image
+            resizeMode="contain"
+            source={props.iconSource}
+            style={[
+                styles.iconBarButton,
+                props.disabled ? styles.iconDisabled : null,
+            ]}
+        />
+    </TouchableOpacity>
+)
+
+export { ActionBtn, ActionBarBtn }

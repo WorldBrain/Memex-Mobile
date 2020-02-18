@@ -8,12 +8,15 @@ export default EStyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingLeft: '1.3rem',
-        paddingRight: '2rem',
+        paddingRight: '1.1rem',
         paddingVertical: '0.5rem',
+        flexDirection: 'row',
+    },
+    actionBarItems: {
+        display: 'flex',
         flexDirection: 'row',
     },
     text: {
         color: 'white',
-        width: '90%',
     },
 })

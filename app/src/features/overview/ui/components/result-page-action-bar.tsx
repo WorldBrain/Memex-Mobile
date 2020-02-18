@@ -17,8 +17,10 @@ const ResultPageActionBar: React.StatelessComponent<Props> = props => (
         <Text onPress={props.onVisitPress} style={styles.text}>
             Visit
         </Text>
-        <ListBtn onPress={props.onListsPress} />
-        <DeleteBtn onPress={props.onDeletePress} />
+        <View style={styles.actionBarItems}>
+            <ListBtn onPress={props.onListsPress} />
+            <DeleteBtn onPress={props.onDeletePress} />
+        </View>
     </View>
 )
 

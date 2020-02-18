@@ -14,4 +14,15 @@ export default EStyleSheet.create({
     iconDisabled: {
         opacity: 0.1,
     },
+    actionBarBtn: {
+        padding: '0.4rem',
+        width: '2.1rem',
+        height: '2.1rem',
+        marginLeft: '0.7rem',
+    },
+    iconBarButton: {
+        opacity: 1,
+        width: 'auto',
+        height: '85%',
+    },
 })
