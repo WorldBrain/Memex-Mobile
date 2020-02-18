@@ -6,8 +6,7 @@ export default EStyleSheet.create({
         fontFamily: 'Poppins',
         top: Platform.OS === 'ios' ? 20 : 0,
         width: '100%',
-        paddingHorizontal: '1.3rem',
-        paddingBottom: '1%',
+        paddingHorizontal: '1rem',
         paddingTop: '1rem',
         marginTop: '1rem',
         height: '4rem',
@@ -20,11 +19,11 @@ export default EStyleSheet.create({
     },
     btnContainer: {
         marginBottom: 5,
-        height: '1.7rem',
+        height: '3rem',
         width: '3rem',
         display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'flex-end',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     logoContainer: {
         height: '1.7rem',
@@ -50,8 +49,8 @@ export default EStyleSheet.create({
         width: 20,
     },
     settingsIcon: {
-        height: '60%',
-        width: '100%',
+        height: '40%',
+        width: '40%',
     },
     logoIcon: {
         height: '100%',
