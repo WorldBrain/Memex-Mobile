@@ -17,9 +17,10 @@ const NoteInput: React.StatelessComponent<Props> = props => (
             onChangeText={props.onChange}
             textAlignVertical="top"
             placeholder="Add Note"
-            multiline
             editable={!props.disabled}
             placeholderTextColor={'#3a2f45'}
+            multiline
+            autoFocus
         />
     </View>
 )
