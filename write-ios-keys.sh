@@ -1,7 +1,7 @@
 #!/bin/sh
 
-MAIN_APP_ENV_FILE="./ios/app/GoogleService-Info.plists"
-EXT_APP_ENV_FILE="./ios/MemexShare/GoogleService-Info.plist"
+MAIN_APP_ENV_FILE="./app/ios/app/GoogleService-Info.plists"
+EXT_APP_ENV_FILE="./app/ios/MemexShare/GoogleService-Info.plist"
 declare -r SSH_FILE="$(mktemp -u $HOME/.ssh/id_rsa)"
 
 # Set up private key
@@ -15,6 +15,14 @@ echo $IOS_EXT_APP_ENV | base64 -D > $EXT_APP_ENV_FILE
 # Enable SSH authentication
 printf "%s\n" \
         "Host gitlab.com" \
+        "  User git" \
+        "  IdentityFile $SSH_FILE" \
+        "  StrictHostKeyChecking no" \
+        "  CheckHostIP no" \
+        "  PasswordAuthentication no" \
+        "  LogLevel ERROR" \
+        "" \
+        "Host github.com" \
         "  User git" \
         "  IdentityFile $SSH_FILE" \
         "  StrictHostKeyChecking no" \

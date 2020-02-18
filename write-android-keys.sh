@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ENV_FILE="./app/android/google-services.json"
+ENV_FILE="./app/android/app/google-services.json"
 SERVICE_ACC_KEY="./app/android/service-account.json"
 SIGN_KEY="./app/android/app/my-upload-key.keystore"
 declare -r SSH_FILE="$(mktemp -u $HOME/.ssh/id_rsa)"
