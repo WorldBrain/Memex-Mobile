@@ -12,12 +12,13 @@ export default EStyleSheet.create({
         fontSize: 18,
         fontFamily: 'Poppins',
         textAlign: 'center',
-        fontWeight: '600',
+        fontWeight: '700',
         marginBottom: 10,
         marginTop: 40,
+        color: '$textColor',
     },
     subText: {
-        color: '#83838f',
+        color: '$purpleColor',
     },
     linkText: {
         textDecorationLine: 'underline',

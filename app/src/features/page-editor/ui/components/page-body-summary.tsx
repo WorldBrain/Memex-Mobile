@@ -5,6 +5,7 @@ import {
     Text,
     ImageSourcePropType,
     TouchableWithoutFeedback,
+    Linking,
 } from 'react-native'
 import { NativeTouchEventHandler } from 'src/features/overview/types'
 
@@ -16,13 +17,15 @@ export interface Props {
     pageUrl: string
     domain: string
     fullUrl: string
-    onResultPress?: NativeTouchEventHandler
+    onResultPress: () => void
     date: string
 }
 
 const ResultPageBody: React.StatelessComponent<Props> = props => (
     <>
-        <TouchableWithoutFeedback onPress={props.onResultPress}>
+        <TouchableWithoutFeedback
+            onPress={() => Linking.openURL(props.fullUrl)}
+        >
             <View style={styles.contentBox}>
                 <View style={styles.title}>
                     {props.favIcon && (

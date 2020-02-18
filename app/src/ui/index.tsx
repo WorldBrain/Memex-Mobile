@@ -24,6 +24,7 @@ export class UI {
         EStyleSheet.build({
             $textColor: '#3a2f45',
             $greenColor: '#5cd9a6',
+            $purpleColor: '#72727f',
             $rem: entireScreenWidth / 30,
         })
 

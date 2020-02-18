@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, ListRenderItem } from 'react-native'
+import { FlatList, ListRenderItem, View, Text } from 'react-native'
 
 import styles from './result-page-with-notes.styles'
 import ResultNote from './result-note'
@@ -29,12 +29,25 @@ class NotesList extends React.PureComponent<Props> {
 
     render() {
         return (
-            <FlatList
-                renderItem={this.renderNote}
-                data={this.props.notes}
-                keyExtractor={(item, index) => index.toString()}
-                style={styles.list}
-            />
+            <View>
+                {this.props.notes.length === 0 ? (
+                    <View style={styles.noResultsContainer}>
+                        <Text style={styles.noResultsTitle}>
+                            No Annotations Yet
+                        </Text>
+                        <Text style={styles.noResultsSubTitle}>
+                            Add them by visiting the page.
+                        </Text>
+                    </View>
+                ) : (
+                    <FlatList
+                        renderItem={this.renderNote}
+                        data={this.props.notes}
+                        keyExtractor={(item, index) => index.toString()}
+                        style={styles.list}
+                    />
+                )}
+            </View>
         )
     }
 }
