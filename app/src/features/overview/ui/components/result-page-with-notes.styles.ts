@@ -20,9 +20,14 @@ export default EStyleSheet.create({
         fontSize: '1rem',
         fontWeight: '500',
         color: '$purpleColor',
+        textAlign: 'center',
     },
     list: {
         minWidth: '100%',
         marginBottom: 50,
+    },
+    link: {
+        textDecorationLine: 'underline',
+        fontWeight: '600',
     },
 })
