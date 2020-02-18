@@ -1,6 +1,6 @@
 #!/bin/sh
 
-MAIN_APP_ENV_FILE="./app/ios/app/GoogleService-Info.plists"
+MAIN_APP_ENV_FILE="./app/ios/app/GoogleService-Info.plist"
 EXT_APP_ENV_FILE="./app/ios/MemexShare/GoogleService-Info.plist"
 declare -r SSH_FILE="$(mktemp -u $HOME/.ssh/id_rsa)"
 
