@@ -17,7 +17,7 @@ AAB_PATH = "./android/app/build/outputs/bundle/release/app.aab"
 ANDROID_SERVICE_JSON_PATH = "./android/service-account.json"
 
 before_all do
-    ensure_git_status_clean
+    # ensure_git_status_clean
     git_pull
 end
 
@@ -67,7 +67,7 @@ platform :ios do
     desc 'Ship to Testflight.'
     lane :beta do
         setup_travis
-        ensure_git_branch(branch: 'master')
+        # ensure_git_branch(branch: 'master')
         build
         reset_pass
         pilot(
@@ -92,7 +92,7 @@ platform :android do
 
     desc 'Ship to Playstore Beta.'
     lane :beta do
-        ensure_git_branch(branch: 'master')
+        # ensure_git_branch(branch: 'master')
         build
         supply(
             track: 'beta',

@@ -1,5 +1,6 @@
 #!/bin/sh
 
+ENV_FILE="./app/android/app/google-services.json"
 SERVICE_ACC_KEY="./app/android/service-account.json"
 SIGN_KEY="./app/android/app/my-upload-key.keystore"
 declare -r SSH_FILE="$(mktemp -u $HOME/.ssh/id_rsa)"
@@ -15,6 +16,9 @@ chmod 400 $SIGN_KEY
 # Set up Google Play service account config
 echo $ANDROID_SERVICE_JSON | base64 -d > $SERVICE_ACC_KEY
 chmod 400 $SERVICE_ACC_KEY
+
+# Set up Firebase env file
+echo $ANDROID_APP_ENV | base64 -d > $ENV_FILE
 
 # Enable SSH authentication
 printf "%s\n" \
