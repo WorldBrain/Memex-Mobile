@@ -60,3 +60,8 @@ fastlane/report.xml
 
 android/service-account.json
 android/metadata
+
+# Firebase keys
+android/app/google-services.json
+ios/app/GoogleService-Info.plist
+ios/MemexShare/GoogleService-Info.plist
