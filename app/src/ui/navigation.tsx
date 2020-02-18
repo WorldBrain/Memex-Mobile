@@ -11,7 +11,7 @@ import {
 
 import { UIDependencies } from './types'
 import ShareModal from 'src/features/page-share/ui/screens/share-modal'
-import Overview from 'src/features/overview/ui/screens/overview'
+import Dashboard from 'src/features/overview/ui/screens/dashboard'
 import DebugConsole from 'src/features/overview/ui/screens/debug-console'
 import MVPOverview from 'src/features/overview/ui/screens/mvp-overview'
 import Pairing from 'src/features/overview/ui/screens/pairing-screen'
@@ -43,7 +43,7 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             }) => <PageEditor {...props} {...deps} />,
             Overview: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
-            }) => <Overview {...props} {...deps} />,
+            }) => <Dashboard {...props} {...deps} />,
             DebugConsole: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
             }) => <DebugConsole {...props} {...deps} />,
