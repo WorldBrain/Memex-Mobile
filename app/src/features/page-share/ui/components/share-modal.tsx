@@ -1,5 +1,5 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, Dimensions } from 'react-native'
 import Modal from 'react-native-modalbox'
 
 import styles from './share-modal.styles'

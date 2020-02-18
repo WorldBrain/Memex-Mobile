@@ -1,22 +1,11 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     footer: {
-        flex: 1,
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 15,
-    },
-    date: {
-        flex: 1,
-        color: '#b0b0b0',
-        fontSize: 13,
-    },
-    actionBtns: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+        paddingVertical: '1.1rem',
+        paddingHorizontal: '1.1rem',
+        height: '100%',
     },
 })

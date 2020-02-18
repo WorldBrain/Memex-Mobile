@@ -1,15 +1,16 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     container: {},
     editorContainer: {
-        height: '90%',
+        height: '100%',
     },
     pageContainer: {
         borderBottomWidth: 3,
         borderBottomColor: '#dadada',
-        height: 80,
-        marginTop: 15,
-        padding: 15,
+        height: 70,
+        marginTop: '2.3rem',
+        paddingBottom: '1rem',
+        paddingHorizontal: '1rem',
     },
 })

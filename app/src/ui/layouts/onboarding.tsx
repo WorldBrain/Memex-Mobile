@@ -21,16 +21,40 @@ const OnboardingLayout: React.StatelessComponent<Props> = props => (
 
         <View style={styles.mainContainer}>
             <ProgressBalls count={3} selectedIndex={props.screenIndex} />
-            <View style={styles.btnContainer}>
-                <Button
-                    title="<"
-                    onPress={props.onBackPress}
-                    hidden={!props.showBackBtn}
-                    empty
-                />
-                <Button title=">" onPress={props.onNextPress} smallWidth />
-                <Button title="Skip" onPress={props.onSkipPress} empty />
-            </View>
+
+            {props.screenIndex === 2 ? (
+                <View style={styles.btnContainer}>
+                    <Button
+                        title="◂"
+                        onPress={props.onBackPress}
+                        hidden={!props.showBackBtn}
+                        bigText
+                        empty
+                    />
+                    <Button
+                        title="Setup Sync"
+                        onPress={props.onNextPress}
+                        smallWidth
+                    />
+                    <Button title="Skip" onPress={props.onSkipPress} empty />
+                </View>
+            ) : (
+                <View style={styles.btnContainer}>
+                    <Button
+                        title="◂"
+                        onPress={props.onBackPress}
+                        hidden={!props.showBackBtn}
+                        bigText
+                        empty
+                    />
+                    <Button
+                        title="Next"
+                        onPress={props.onNextPress}
+                        smallWidth
+                    />
+                    <Button title="Skip" onPress={props.onSkipPress} empty />
+                </View>
+            )}
         </View>
     </EmptyLayout>
 )

@@ -1,8 +1,8 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     background: {
-        backgroundColor: '#5671CF',
+        backgroundColor: '#fff',
     },
     btnContainer: {
         flex: 1,
@@ -15,7 +15,7 @@ export default StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         position: 'absolute',
-        bottom: 15,
-        height: 150,
+        bottom: '5%',
+        height: 100,
     },
 })

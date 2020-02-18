@@ -1,45 +1,55 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     mainContainer: {
         flex: 1,
         flexDirection: 'column',
         width: '100%',
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: '3rem',
     },
     imgContainer: {
         flex: 1,
         flexDirection: 'column',
         position: 'relative',
-        top: '8%',
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '100%',
+        marginBottom: '2rem',
     },
     textContainer: {
+        position: 'relative',
         flex: 1,
         flexDirection: 'column',
         width: '90%',
+        textAlign: 'center',
+        alignItems: 'center',
+    },
+    optional: {
+        position: 'relative',
+        fontWeight: 'bold',
+        color: '$greenColor',
+        textAlign: 'center',
+        fontSize: '2rem',
+        marginTop: '-2.5rem',
     },
     headingText: {
+        position: 'relative',
         fontWeight: 'bold',
-        color: 'white',
+        color: '$textColor',
         textAlign: 'center',
-        fontSize: 30,
-        marginTop: 40,
-    },
-    betaText: {
-        fontWeight: 'bold',
-        color: '#5ac6a4',
-        textAlign: 'center',
-        fontSize: 30,
-        marginBottom: 20,
+        fontSize: '2rem',
+        marginTop: '0.5rem',
+        width: '100%',
     },
     secondaryText: {
-        color: 'white',
+        position: 'relative',
+        color: '#3A2F45',
         textAlign: 'center',
-        fontSize: 18,
-        marginTop: 15,
+        fontSize: '1.5rem',
+        top: '1rem',
+        lineHeight: '2.3rem',
     },
 })

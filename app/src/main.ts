@@ -3,7 +3,6 @@ globalThis.process.version = '1.1.1'
 import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'
 import '@react-native-firebase/functions'
-import * as Keychain from 'react-native-keychain'
 
 import { Platform } from 'react-native'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
@@ -25,10 +24,7 @@ import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
 import { KeychainPackage } from './services/keychain/keychain'
-import {
-    insertIntegrationTestData,
-    checkIntegrationTestData,
-} from './tests/shared-fixtures/integration'
+import { insertIntegrationTestData } from './tests/shared-fixtures/integration'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -43,6 +39,7 @@ export async function main() {
             database: 'memex',
         },
     })
+
     const serverStorage = await createServerStorage()
 
     const localStorage = new LocalStorageService({

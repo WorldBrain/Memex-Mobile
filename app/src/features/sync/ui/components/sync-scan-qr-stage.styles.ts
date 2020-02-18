@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     cameraViewContainer: {
         position: 'relative',
-        top: 50,
+        top: 60,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',

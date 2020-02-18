@@ -1,10 +1,10 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     titleText: {
         position: 'absolute',
-        top: '8%',
-        fontSize: 25,
+        top: '10%',
+        fontSize: '2rem',
         width: '70%',
         textAlign: 'center',
         fontWeight: 'bold',
@@ -12,11 +12,11 @@ export default StyleSheet.create({
     },
     subtitleText: {
         position: 'relative',
-        top: 20,
-        fontSize: 18,
-        marginBottom: 30,
-        marginTop: 30,
-        marginHorizontal: 50,
+        top: '1rem',
+        fontSize: '1rem',
+        marginBottom: '2rem',
+        marginTop: '2rem',
+        marginHorizontal: '3rem',
         textAlign: 'center',
     },
     children: {

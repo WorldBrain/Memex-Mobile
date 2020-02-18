@@ -1,12 +1,12 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        width: 80,
+        width: '8rem',
     },
     ballSelected: {
         backgroundColor: '#36362f',
@@ -14,7 +14,7 @@ export default StyleSheet.create({
     ball: {
         backgroundColor: '#c4c4c4',
         borderRadius: 25,
-        width: 15,
-        height: 15,
+        width: '1rem',
+        height: '1rem',
     },
 })

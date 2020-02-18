@@ -2,8 +2,14 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { SyncReturnValue } from '@worldbrain/storex-sync'
 
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
-import { UITaskState, UIServices, UIStorageModules } from 'src/ui/types'
+import {
+    UITaskState,
+    UIServices,
+    UIStorageModules,
+    NavigationProps,
+} from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 
 export interface State {
     loadState: UITaskState
@@ -33,11 +39,10 @@ export type Event = UIEvent<{
     setPageUrl: { url: string }
     setPageStar: { value: boolean }
     setStatusText: { value: string }
-    setTagsToAdd: { values: string[] }
     setCollectionsToAdd: { values: string[] }
 }>
 
-export interface LogicDependencies {
+export interface Props extends NavigationProps {
     services: UIServices<'sync' | 'shareExt'>
     storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
 }
@@ -45,7 +50,7 @@ export interface LogicDependencies {
 export default class Logic extends UILogic<State, Event> {
     private syncRunning!: Promise<void | SyncReturnValue>
 
-    constructor(private dependencies: LogicDependencies) {
+    constructor(private props: Props) {
         super()
     }
 
@@ -70,16 +75,16 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init() {
-        this.syncRunning = this.dependencies.services.sync.continuousSync.forceIncrementalSync()
+        this.syncRunning = this.props.services.sync.continuousSync.forceIncrementalSync()
 
         this.syncRunning.catch(this.handleSyncError)
 
-        await loadInitial(this, async () => {
+        await loadInitial<State>(this, async () => {
             let mutation: UIMutation<State> = {}
             let url: string
 
             try {
-                url = await this.dependencies.services.shareExt.getSharedUrl()
+                url = await this.props.services.shareExt.getSharedUrl()
             } catch (err) {
                 this.emitMutation({
                     ...mutation,
@@ -93,7 +98,7 @@ export default class Logic extends UILogic<State, Event> {
                 pageUrl: { $set: url },
             }
 
-            const { overview, metaPicker } = this.dependencies.storage.modules
+            const { overview, metaPicker } = this.props.storage.modules
             const isStarred = await overview.isPageStarred({ url })
             const tags = await metaPicker.findTagsByPage({ url })
             const collections = await metaPicker.findListsByPage({ url })
@@ -137,12 +142,6 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'setPageStar'>,
     ): UIMutation<State> {
         return { isStarred: { $set: incoming.event.value } }
-    }
-
-    setTagsToAdd(
-        incoming: IncomingUIEvent<State, Event, 'setTagsToAdd'>,
-    ): UIMutation<State> {
-        return { tagsToAdd: { $set: incoming.event.values } }
     }
 
     setCollectionsToAdd(
@@ -192,41 +191,50 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async save(incoming: IncomingUIEvent<State, Event, 'save'>) {
-        return executeUITask(this, 'saveState', async () => {
-            await this.storePage(incoming.previousState)
-            try {
-                await this.syncRunning
-                await this.dependencies.services.sync.continuousSync.forceIncrementalSync()
-            } catch (error) {
-                this.handleSyncError(error)
-            } finally {
-                this.emitMutation(
-                    this.setModalVisible({
-                        event: { shown: false },
-                        previousState: incoming.previousState,
-                    }),
-                )
-            }
-        })
+        return executeUITask<State, 'saveState', void>(
+            this,
+            'saveState',
+            async () => {
+                await this.storePage(incoming.previousState)
+                try {
+                    await this.syncRunning
+                    await this.props.services.sync.continuousSync.forceIncrementalSync()
+                } catch (error) {
+                    this.handleSyncError(error)
+                } finally {
+                    this.emitMutation(
+                        this.setModalVisible({
+                            event: { shown: false },
+                            previousState: incoming.previousState,
+                        }),
+                    )
+                }
+            },
+        )
     }
 
     async setMetaViewType(
         incoming: IncomingUIEvent<State, Event, 'setMetaViewType'>,
     ) {
-        return executeUITask(this, 'syncState', async () => {
-            this.emitMutation({ metaViewShown: { $set: incoming.event.type } })
+        return executeUITask<State, 'syncState', void>(
+            this,
+            'syncState',
+            async () => {
+                this.emitMutation({
+                    metaViewShown: { $set: incoming.event.type },
+                })
 
-            await this.syncRunning
-        })
+                await this.syncRunning
+            },
+        )
     }
 
     metaPickerEntryPress(
         incoming: IncomingUIEvent<State, Event, 'metaPickerEntryPress'>,
     ) {
-        const { entry } = incoming.event
         const event = {
-            event: { name: entry.name },
-            previousState: incoming.previousState,
+            ...incoming,
+            event: { name: incoming.event.entry.name },
         }
 
         const mutation =
@@ -238,11 +246,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async storePage(state: State, customTimestamp?: number) {
-        const {
-            overview,
-            metaPicker,
-            pageEditor,
-        } = this.dependencies.storage.modules
+        const { overview, metaPicker, pageEditor } = this.props.storage.modules
 
         await overview.createPage({
             url: state.pageUrl,
@@ -251,14 +255,16 @@ export default class Logic extends UILogic<State, Event> {
             fullTitle: '',
         })
         await overview.visitPage({ url: state.pageUrl })
+
         await overview.setPageStar({
             url: state.pageUrl,
             isStarred: state.isStarred,
         })
 
+        await metaPicker.createMobileListIfAbsent()
         await metaPicker.setPageLists({
             url: state.pageUrl,
-            lists: state.collectionsToAdd,
+            lists: [...state.collectionsToAdd, MOBILE_LIST_NAME],
         })
         await metaPicker.setPageTags({
             url: state.pageUrl,

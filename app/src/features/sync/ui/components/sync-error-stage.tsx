@@ -4,6 +4,7 @@ import { Text, View } from 'react-native'
 import EmptyLayout from 'src/ui/layouts/empty'
 import Button from 'src/ui/components/memex-btn'
 import styles from './sync-error-stage.styles'
+import Link from 'src/ui/components/link'
 
 export interface Props {
     onBtnPress: () => void
@@ -29,18 +30,26 @@ const SyncErrorStage: React.StatelessComponent<Props> = props => (
             <View style={styles.bottomBorder}>
                 <Text style={styles.helpHeader}>Help</Text>
             </View>
-            <HelpEntry>Wifi connection</HelpEntry>
-            <HelpEntry>Account credentials</HelpEntry>
-            <HelpEntry>Known bugs</HelpEntry>
-            <HelpEntry>Extension version</HelpEntry>
+            <Text style={styles.helpEntryText}>
+                If you run into troubles while syncing, check out the{' '}
+                <Link href="https://www.notion.so/worldbrain/d1ccb11785774c389c621b44f65bb543">
+                    Troubleshooting Help
+                </Link>
+                <Text style={styles.helpEntryText}> or </Text>
+                <Link href="https://community.worldbrain.io/c/bug-reports">
+                    Contact Support
+                </Link>
+                <Text style={styles.helpEntryText}>.</Text>
+            </Text>
         </View>
-        <Button title="Try Again" onPress={props.onBtnPress!} />
-        <Button
-            title="Send support request"
-            onPress={props.onSupportBtnPress!}
-            empty
-        />
-        <Button title="Cancel" onPress={props.onCancelBtnPress} empty />
+        <View style={styles.cancelContainer}>
+            <Button
+                style={styles.cancelButton}
+                title="Cancel"
+                onPress={props.onCancelBtnPress}
+                empty
+            />
+        </View>
     </EmptyLayout>
 )
 

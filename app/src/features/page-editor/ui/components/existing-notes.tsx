@@ -20,7 +20,7 @@ export interface Props extends NoteListProps {
 const ExistingNotes: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
         {props.noteAdder}
-        <View style={styles.headContainer}>
+        {/* <View style={styles.headContainer}>
             <Image
                 style={styles.countIcon}
                 source={require('src/features/overview/ui/img/comment-full.png')}
@@ -32,7 +32,7 @@ const ExistingNotes: React.StatelessComponent<Props> = props => (
                     source={require('src/ui/img/plus.png')}
                 />
             </TouchableOpacity>
-        </View>
+        </View> */}
         <View style={styles.noteListContainer}>
             <NoteList clearBackground {...props} />
         </View>

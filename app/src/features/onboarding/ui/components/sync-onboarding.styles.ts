@@ -1,10 +1,11 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     mainContainer: {
         flex: 1,
         flexDirection: 'column',
         marginTop: '10%',
+        justifyContent: 'center',
     },
     checkList: {
         maxWidth: '80%',
@@ -19,5 +20,11 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         marginLeft: 43,
         marginBottom: 20,
+    },
+    mainImg: {
+        height: '60%',
+        position: 'absolute',
+        top: '15%',
+        // position: 'absolute',
     },
 })

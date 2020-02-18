@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     mainContent: {
         height: '100%',
         width: '90%',
@@ -21,10 +21,10 @@ export default StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         width: '80%',
-        bottom: 30,
+        bottom: 50,
     },
     btn: {
-        marginVertical: 10,
+        marginVertical: 7,
         width: '100%',
     },
     versionText: {

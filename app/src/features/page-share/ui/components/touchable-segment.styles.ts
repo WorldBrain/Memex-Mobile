@@ -1,27 +1,29 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 15,
+        paddingHorizontal: '1.5rem',
     },
     outter: {
         flex: 1,
+        justifyContent: 'center',
     },
     mainText: {
-        color: '#545454',
-        fontWeight: '400',
-        fontSize: 16,
+        color: '#3a2f45',
+        fontWeight: '600',
+        fontSize: '1.2rem',
+        fontFamily: 'Poppins',
     },
     border: {
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
     },
     starIcon: {
-        width: 25,
-        height: 25,
+        width: '1.3rem',
+        height: '1.3rem',
     },
 })

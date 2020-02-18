@@ -23,4 +23,5 @@ export interface ListEntry {
     listId: string
     url: string
     createdAt: Date
+    pageUrl: string
 }

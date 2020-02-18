@@ -1,12 +1,28 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
-    commentText: {},
-    noteText: {
-        padding: 2,
-        backgroundColor: '#93fed7',
+export default EStyleSheet.create({
+    Container: {
+        padding: '1.2rem',
+        width: '100%',
     },
-    noteSpace: {
-        marginBottom: 15,
+    noteText: {
+        marginBottom: 5,
+        fontSize: 14,
+        overflow: 'hidden',
+        color: '#3A2F45',
+        lineHeight: 20,
+    },
+    text: {
+        backgroundColor: '#93fed7',
+        paddingHorizontal: 10,
+    },
+    commentText: {
+        marginBottom: 10,
+        color: '#3A2F45',
+        fontSize: 14,
+    },
+    date: {
+        fontSize: 12,
+        color: '#3A2F45',
     },
 })

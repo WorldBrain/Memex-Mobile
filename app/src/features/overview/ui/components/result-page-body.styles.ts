@@ -1,18 +1,34 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     favIcon: {},
+    contentBox: {
+        minHeight: '5rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+    },
     title: {
-        flex: 1,
         flexDirection: 'row',
-        marginBottom: 5,
+        flexWrap: 'wrap',
+        overflow: 'hidden',
     },
     titleText: {
-        fontWeight: '500',
-        fontSize: 18,
+        fontWeight: '700',
+        fontSize: '1.1rem',
+        letterSpacing: 0.6,
+        flexWrap: 'wrap',
+        overflow: 'hidden',
+        color: '#3A2F45',
+        fontFamily: 'Poppins',
     },
     linkText: {
-        color: '#b0b0b0',
-        fontSize: 16,
+        color: '#3A2F45',
+        letterSpacing: 0.6,
+        fontSize: '1.1rem',
+        marginBottom: '0.3rem',
+    },
+    date: {
+        color: '#3A2F45',
+        fontSize: '0.9rem',
     },
 })

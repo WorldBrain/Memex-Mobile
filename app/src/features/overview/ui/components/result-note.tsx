@@ -15,24 +15,24 @@ export interface InteractionProps {
     onDeletePress: NativeTouchEventHandler
     onEditPress: NativeTouchEventHandler
     onStarPress: NativeTouchEventHandler
+    hideFooter?: boolean
 }
 
-const ResultNote: React.StatelessComponent<
-    Props & InteractionProps
-> = props => (
+const ResultNote: React.StatelessComponent<Props &
+    InteractionProps> = props => (
     <Container
         isNote={!props.clearBackground}
-        renderFooter={() => (
-            <Footer {...props}>
-                <DeleteBtn onPress={props.onDeletePress} />
-                <EditBtn onPress={props.onEditPress} />
-                {props.isStarred ? (
-                    <FullStarBtn onPress={props.onStarPress} />
-                ) : (
-                    <StarBtn onPress={props.onStarPress} />
-                )}
-            </Footer>
-        )}
+        // renderFooter={() => (
+        //     <Footer {...props} hideButtons={props.hideFooter}>
+        //         <DeleteBtn onPress={props.onDeletePress} />
+        //         <EditBtn onPress={props.onEditPress} />
+        //         {props.isStarred ? (
+        //             <FullStarBtn onPress={props.onStarPress} />
+        //         ) : (
+        //             <StarBtn onPress={props.onStarPress} />
+        //         )}
+        //     </Footer>
+        // )}
     >
         <Body {...props} />
     </Container>

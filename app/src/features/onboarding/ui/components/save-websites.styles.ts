@@ -1,18 +1,19 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     shareImg: {
         position: 'absolute',
-        left: 25,
-        top: '15%',
-        width: 100,
+        right: '55%',
+        top: '35%',
+        height: 120,
+        width: 120,
     },
     mockupImg: {
         width: '70%',
         height: '85%',
         position: 'absolute',
         display: 'flex',
-        top: '0%',
-        right: '-15%',
+        top: '15%',
+        right: '-17%',
     },
 })

@@ -19,10 +19,12 @@ export type SyncScreenEvent = UIEvent<{
     confirmSuccess: {}
 }>
 
-export interface SyncScreenDependencies extends NavigationProps {
+export interface Props extends NavigationProps {
     services: UIServices<'localStorage' | 'sync' | 'auth' | 'keychain'>
     suppressErrorLogging?: boolean
+    syncStallTimeout?: number
 }
+
 export default class SyncScreenLogic extends UILogic<
     SyncScreenState,
     SyncScreenEvent
@@ -42,7 +44,7 @@ export default class SyncScreenLogic extends UILogic<
         console.log(`INIT SYNC - objects count: #${syncProgress.objectCount}`)
     }
 
-    constructor(private dependencies: SyncScreenDependencies) {
+    constructor(private props: Props) {
         super()
     }
 
@@ -54,12 +56,12 @@ export default class SyncScreenLogic extends UILogic<
     }
 
     async init() {
-        const syncKey = await this.dependencies.services.localStorage.get<
-            boolean
-        >(storageKeys.syncKey)
+        const syncKey = await this.props.services.localStorage.get<boolean>(
+            storageKeys.syncKey,
+        )
 
         if (syncKey) {
-            this.dependencies.navigation.navigate('MVPOverview')
+            this.props.navigation.navigate('Pairing')
             return
         }
 
@@ -77,50 +79,59 @@ export default class SyncScreenLogic extends UILogic<
     }
 
     async saveFirebaseTokenToKeychain() {
-        const {
-            token,
-        } = await this.dependencies.services.auth.generateLoginToken()
+        const { token } = await this.props.services.auth.generateLoginToken()
 
         if (!token || !token.length) {
             throw new Error('Could not get Firebase Auth token')
         }
 
-        await this.dependencies.services.keychain.setLogin({
+        await this.props.services.keychain.setLogin({
             username: appGroup,
             password: token,
         })
     }
 
+    private detectStall = () =>
+        setTimeout(() => {
+            this.emitMutation({
+                status: { $set: 'failure' },
+                errMsg: {
+                    $set:
+                        'Sync experienced a timeout. Please try again on a different connection.',
+                },
+            })
+        }, this.props.syncStallTimeout)
+
     async doSync(
         incoming: IncomingUIEvent<SyncScreenState, SyncScreenEvent, 'doSync'>,
     ) {
+        const { sync, localStorage } = this.props.services
+
         this.emitMutation({ status: { $set: 'syncing' } })
         const timeBefore = Date.now()
         let syncProgress: FastSyncProgress = {} as FastSyncProgress
 
-        this.dependencies.services.sync.initialSync.events.addListener(
-            'progress',
-            ({ progress }) => (syncProgress = progress),
-        )
+        let timerId = this.detectStall()
+
+        sync.initialSync.events.addListener('progress', ({ progress }) => {
+            syncProgress = progress
+
+            clearTimeout(timerId)
+            timerId = this.detectStall()
+        })
 
         try {
-            await this.dependencies.services.sync.initialSync.answerInitialSync(
-                {
-                    initialMessage: incoming.event.initialMessage,
-                },
-            )
-            await this.dependencies.services.sync.initialSync.waitForInitialSync()
-            await this.dependencies.services.localStorage.set(
-                storageKeys.syncKey,
-                true,
-            )
-            await this.dependencies.services.sync.continuousSync.setup()
+            await sync.initialSync.answerInitialSync({
+                initialMessage: incoming.event.initialMessage,
+            })
+            await sync.initialSync.waitForInitialSync()
+            await localStorage.set(storageKeys.syncKey, true)
+            await sync.continuousSync.setup()
 
             await this.saveFirebaseTokenToKeychain()
-
             await this.emitMutation({ status: { $set: 'success' } })
         } catch (e) {
-            if (!this.dependencies.suppressErrorLogging) {
+            if (!this.props.suppressErrorLogging) {
                 console.error('Error during initial sync')
                 console.error(e)
             }
@@ -132,6 +143,8 @@ export default class SyncScreenLogic extends UILogic<
             })
         } finally {
             SyncScreenLogic.logSyncStats(timeBefore, syncProgress)
+            sync.initialSync.events.removeAllListeners('progress')
+            clearTimeout(timerId)
         }
     }
 
@@ -148,14 +161,11 @@ export default class SyncScreenLogic extends UILogic<
     async skipSync() {
         this.emitMutation({ status: { $set: 'success' } })
 
-        await this.dependencies.services.localStorage.set(
-            storageKeys.syncKey,
-            true,
-        )
+        await this.props.services.localStorage.set(storageKeys.syncKey, true)
     }
 
     confirmSuccess() {
-        this.dependencies.navigation.navigate('MVPOverview')
+        this.props.navigation.navigate('Overview')
     }
 
     setSyncStatus(

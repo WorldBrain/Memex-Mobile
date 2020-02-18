@@ -8,7 +8,7 @@ import {
 
 import PageBody, {
     Props as PageBodyProps,
-} from 'src/features/overview/ui/components/result-page-body'
+} from 'src/features/page-editor/ui/components/page-body-summary'
 import styles from './page-summary.styles'
 
 export interface Props extends PageBodyProps {
@@ -20,7 +20,7 @@ const MainLayout: React.StatelessComponent<Props> = props => (
         <TouchableOpacity onPress={props.onBackPress}>
             <Image
                 style={styles.backIcon}
-                source={require('src/ui/img/arrow-prev.png')}
+                source={require('src/ui/img/arrow-back.png')}
             />
         </TouchableOpacity>
         <View style={styles.pageBodyContainer}>

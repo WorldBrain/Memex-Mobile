@@ -1,12 +1,17 @@
-import { StyleSheet } from 'react-native'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
-export default StyleSheet.create({
+export default EStyleSheet.create({
     actionBtn: {
-        marginHorizontal: 4,
+        padding: '0.4rem',
+        width: '2.05rem',
+        height: '2.05rem',
     },
     icon: {
-        width: 16,
-        height: 16,
-        opacity: 0.3,
+        opacity: 0.8,
+        width: '90%',
+        height: '90%',
+    },
+    iconDisabled: {
+        opacity: 0.1,
     },
 })
