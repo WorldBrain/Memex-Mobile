@@ -18,7 +18,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends NavigationProps {
-    onEntryPress: (item: MetaTypeShape) => void
+    onEntryPress: (item: MetaTypeShape) => Promise<void>
     storage: UIStorageModules<'metaPicker'>
     isSyncLoading: boolean
     initEntries: string[]

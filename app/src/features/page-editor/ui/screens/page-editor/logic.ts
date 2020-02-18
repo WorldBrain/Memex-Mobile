@@ -4,7 +4,6 @@ import { UIPageWithNotes as Page } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
-import { Spec } from 'immutability-helper'
 
 export interface State {
     loadState: UITaskState
@@ -69,8 +68,6 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'removeEntry'>) {
         const { metaPicker } = this.props.storage.modules
         const url = previousState.page.url
-
-        const mutation: Spec<State, never> = {}
 
         if (previousState.mode === 'tags') {
             this.emitMutation({

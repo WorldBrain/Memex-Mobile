@@ -18,7 +18,7 @@ export default class MetaPickerScreen extends NavigationScreen<
     Event
 > {
     static defaultProps: Partial<Props> = {
-        onEntryPress: (item: MetaTypeShape) => undefined,
+        onEntryPress: async (item: MetaTypeShape) => undefined,
     }
 
     constructor(props: Props) {
@@ -33,7 +33,7 @@ export default class MetaPickerScreen extends NavigationScreen<
         canAdd,
         ...item
     }: MetaTypeShape) => async () => {
-        this.props.onEntryPress(item)
+        await this.props.onEntryPress(item)
 
         if (canAdd) {
             await this.processEvent('addEntry', {

@@ -78,6 +78,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
             onStarPress={this.initHandlePageStar(item)}
             onCommentPress={this.navToPageEditor(item, 'notes')}
             onTagPress={this.navToPageEditor(item, 'tags')}
+            onListsPress={this.navToPageEditor(item, 'collections')}
             key={index}
             {...item}
         />
