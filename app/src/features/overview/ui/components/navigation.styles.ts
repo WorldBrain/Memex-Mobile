@@ -48,12 +48,4 @@ export default EStyleSheet.create({
         flex: 1,
         width: 20,
     },
-    settingsIcon: {
-        height: '40%',
-        width: '40%',
-    },
-    logoIcon: {
-        height: '100%',
-        width: '100%',
-    },
 })

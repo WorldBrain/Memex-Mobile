@@ -16,7 +16,7 @@ import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 import EmptyResults from '../../components/empty-results'
-import Navigation from '../../components/navigation'
+import DashboardNav from '../../components/dashboard-navigation'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 
@@ -122,14 +122,14 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
     render() {
         return (
             <>
-                <Navigation
+                <DashboardNav
                     icon="settings"
-                    onSettingsPress={() =>
+                    onRightIconPress={() =>
                         this.props.navigation.navigate('SettingsMenu')
                     }
                 >
                     Recently Saved
-                </Navigation>
+                </DashboardNav>
                 <View style={styles.container}>{this.renderList()}</View>
             </>
         )
