@@ -16,7 +16,7 @@ export default EStyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
     },
-    text: {
+    leftText: {
         color: 'white',
     },
 })

@@ -1,26 +1,18 @@
 import React from 'react'
-import { View, Text } from 'react-native'
-
-import { NativeTouchEventHandler } from '../../types'
-import { DeleteBtn, ListBtn } from './action-btns'
+import { View } from 'react-native'
 
 import styles from './result-page-action-bar.styles'
 
 export interface Props {
-    onDeletePress: NativeTouchEventHandler
-    onListsPress: NativeTouchEventHandler
-    onVisitPress: NativeTouchEventHandler
+    renderLeftSection?: (style: any) => JSX.Element
 }
 
 const ResultPageActionBar: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
-        <Text onPress={props.onVisitPress} style={styles.text}>
-            Visit
-        </Text>
-        <View style={styles.actionBarItems}>
-            <ListBtn onPress={props.onListsPress} />
-            <DeleteBtn onPress={props.onDeletePress} />
-        </View>
+        {props.renderLeftSection
+            ? props.renderLeftSection(styles.leftText)
+            : null}
+        <View style={styles.actionBarItems}>{props.children}</View>
     </View>
 )
 
