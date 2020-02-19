@@ -58,7 +58,11 @@ export default class PageEditorScreen extends NavigationScreen<
             <ExistingNotes
                 noteAdder={this.renderNoteAdder()}
                 initNoteDelete={n => () => console.log(n)}
-                initNoteEdit={n => () => console.log(n)}
+                initNoteEdit={note => () =>
+                    this.props.navigation.navigate('NoteEditor', {
+                        highlightText: note.noteText,
+                        noteText: note.commentText,
+                    })}
                 initNoteStar={n => () => console.log(n)}
                 initNotePress={n => () =>
                     this.processEvent('toggleNotePress', { url: n.url })}
