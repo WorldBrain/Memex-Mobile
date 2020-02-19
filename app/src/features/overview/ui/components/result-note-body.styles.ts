@@ -1,7 +1,7 @@
 import EStyleSheet from 'react-native-extended-stylesheet'
 
 export default EStyleSheet.create({
-    Container: {
+    container: {
         padding: '1.2rem',
         width: '100%',
     },

@@ -12,6 +12,9 @@ export default EStyleSheet.create({
         paddingVertical: '0.5rem',
         flexDirection: 'row',
     },
+    containerNoLeftSection: {
+        justifyContent: 'flex-end',
+    },
     actionBarItems: {
         display: 'flex',
         flexDirection: 'row',

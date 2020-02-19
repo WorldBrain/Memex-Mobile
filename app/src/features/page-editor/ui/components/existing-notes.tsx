@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-    View,
-    Text,
-    Image,
-    GestureResponderEvent,
-    TouchableOpacity,
-} from 'react-native'
+import { View, GestureResponderEvent } from 'react-native'
 
 import NoteList, {
     Props as NoteListProps,

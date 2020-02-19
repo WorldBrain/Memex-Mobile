@@ -8,7 +8,12 @@ export interface Props {
 }
 
 const ResultPageActionBar: React.StatelessComponent<Props> = props => (
-    <View style={styles.container}>
+    <View
+        style={[
+            styles.container,
+            props.renderLeftSection ? null : styles.containerNoLeftSection,
+        ]}
+    >
         {props.renderLeftSection
             ? props.renderLeftSection(styles.leftText)
             : null}

@@ -19,6 +19,7 @@ export type Event = UIEvent<{
     setInputText: { text: string }
     removeEntry: { name: string }
     createEntry: { name: string }
+    toggleNotePress: { url: string }
     saveNote: { text: string }
     setPage: { page: Page }
 }>
@@ -48,6 +49,30 @@ export default class Logic extends UILogic<State, Event> {
             const mode = this.props.navigation.getParam('mode', 'tags')
             this.emitMutation({ page: { $set: page }, mode: { $set: mode } })
         })
+    }
+
+    toggleNotePress(
+        incoming: IncomingUIEvent<State, Event, 'toggleNotePress'>,
+    ): UIMutation<State> {
+        return {
+            page: state => {
+                const noteIndex = state.notes.findIndex(
+                    note => note.url === incoming.event.url,
+                )
+                return {
+                    ...state,
+                    notes: [
+                        ...state.notes.slice(0, noteIndex),
+                        {
+                            ...state.notes[noteIndex],
+                            isNotePressed: !state.notes[noteIndex]
+                                .isNotePressed,
+                        },
+                        ...state.notes.slice(noteIndex + 1),
+                    ],
+                }
+            },
+        }
     }
 
     setShowNoteAdder(

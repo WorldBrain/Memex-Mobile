@@ -10,7 +10,7 @@ export interface Props {
 }
 
 const ResultNoteBody: React.StatelessComponent<Props> = props => (
-    <View style={styles.Container}>
+    <View {...props} style={styles.container}>
         {props.noteText != null && props.noteText.trim().length > 0 && (
             <Text style={styles.noteText}>
                 <Text style={styles.text}>{props.noteText}</Text>
