@@ -113,13 +113,16 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        const listEntries: ListEntry[] = await metaPicker.findRecentListEntries(
+        let listEntries: ListEntry[] = await metaPicker.findRecentListEntries(
             mobileList[0].id,
             {
                 skip: prevState.pages.size,
                 limit: this.pageSize,
             },
         )
+
+        listEntries = listEntries.filter(entry => !!entry.pageUrl)
+
         if (listEntries.length < this.pageSize) {
             couldHaveMore = false
         }
