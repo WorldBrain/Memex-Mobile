@@ -25,6 +25,7 @@ import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
 import { KeychainPackage } from './services/keychain/keychain'
 import { insertIntegrationTestData } from './tests/shared-fixtures/integration'
+import { runMigrations } from 'src/utils/quick-and-dirty-migrations'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -54,21 +55,18 @@ export async function main() {
         sharedSyncLog: serverStorage.modules.sharedSyncLog,
         keychain: new KeychainPackage({ server: 'worldbrain.io' }),
     })
-    await setStorageMiddleware({
-        services,
-        storage,
-    })
+    const dependencies = { storage, services }
 
-    await setupBackgroundSync({ services })
-    await setupFirebaseAuth({ services })
-
+    await setStorageMiddleware(dependencies)
+    await setupBackgroundSync(dependencies)
+    await setupFirebaseAuth(dependencies)
     await services.sync.continuousSync.setup()
+    await runMigrations(dependencies)
 
-    ui.initialize({ dependencies: { storage, services } })
+    ui.initialize({ dependencies })
 
     Object.assign(globalThis, {
-        services,
-        storage,
+        ...dependencies,
         selfTests: await createSelfTests({
             storage,
             services,
