@@ -10,6 +10,7 @@ import ActionBar from '../../components/action-bar-segment'
 import NoteInput from '../../components/note-input-segment'
 import StarPage from '../../components/star-page-segment'
 import AddTags from '../../components/add-tags-segment'
+import UnsupportedApp from '../../components/unsupported-app'
 
 export default class ShareModalScreen extends NavigationScreen<
     Props,
@@ -105,6 +106,25 @@ export default class ShareModalScreen extends NavigationScreen<
         )
     }
 
+    private renderUnsupportedApp() {
+        return (
+            <>
+                <ActionBar onCancelPress={this.handleModalClose} />
+                <UnsupportedApp />
+            </>
+        )
+    }
+
+    private renderModalContent() {
+        if (this.state.isUnsupportedApplication) {
+            return this.renderUnsupportedApp()
+        }
+
+        return this.state.metaViewShown
+            ? this.renderMetaPicker()
+            : this.renderInputs()
+    }
+
     render() {
         return (
             <ShareModal
@@ -112,9 +132,7 @@ export default class ShareModalScreen extends NavigationScreen<
                 onClosed={this.props.services.shareExt.close}
                 stretched={!!this.state.metaViewShown}
             >
-                {this.state.metaViewShown
-                    ? this.renderMetaPicker()
-                    : this.renderInputs()}
+                {this.renderModalContent()}
             </ShareModal>
         )
     }
