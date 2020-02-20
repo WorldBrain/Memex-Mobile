@@ -101,7 +101,7 @@ export default class NoteEditorScreen extends NavigationScreen<
                         </TouchableOpacity>
                     )}
                 >
-                    Edit Note
+                    {this.state.mode === 'create' ? 'Add Note' : 'Edit Note'}
                 </Navigation>
                 <View style={styles.container}>
                     {this.renderHighlightText()}

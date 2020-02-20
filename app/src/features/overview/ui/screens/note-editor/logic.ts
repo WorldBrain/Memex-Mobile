@@ -6,6 +6,7 @@ export interface State {
     highlightText: string | null
     highlightTextLines?: number
     showAllText: boolean
+    mode: 'create' | 'update'
 }
 
 export type Event = UIEvent<{
@@ -27,6 +28,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(): State {
+        const mode = this.props.navigation.getParam('mode', 'update')
         const noteText = this.props.navigation.getParam('noteText', '')
         const highlightText = this.props.navigation.getParam(
             'highlightText',
@@ -34,6 +36,7 @@ export default class Logic extends UILogic<State, Event> {
         )
 
         return {
+            mode,
             noteText,
             highlightText,
             showAllText: false,
