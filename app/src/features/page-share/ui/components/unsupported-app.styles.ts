@@ -4,9 +4,18 @@ export default EStyleSheet.create({
     container: {
         padding: 15,
     },
+    mainText: {
+        marginTop: 20,
+        textAlign: 'center',
+        lineHeight: 25,
+        fontSize: 16,
+        fontWeight: '700',
+        fontFamily: 'Poppins',
+    },
     text: {
-        marginVertical: 10,
-        textAlign: 'left',
+        marginTop: 10,
+        fontFamily: 'Poppins',
+        textAlign: 'center',
         lineHeight: 25,
         fontSize: 16,
     },

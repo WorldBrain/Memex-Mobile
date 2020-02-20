@@ -7,12 +7,10 @@ export interface Props {}
 
 const UnsupportedApp: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
-        <Text style={styles.text}>
-            This application is currently unsupported by Memex Go.
+        <Text style={styles.mainText}>
+            This application is currently unsupported
         </Text>
-        <Text style={styles.text}>
-            Please see LINK_TO_ISSUE for further discussion and plans.
-        </Text>
+        <Text style={styles.text}>Fixing this is high up on our roadmap</Text>
     </View>
 )
 
