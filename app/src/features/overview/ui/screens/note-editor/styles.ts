@@ -17,6 +17,7 @@ export default EStyleSheet.create({
     highlightText: {
         backgroundColor: '#93fed7',
         paddingHorizontal: 10,
+        lineHeight: 20,
     },
     noteInputContainer: {
         flex: 1,
