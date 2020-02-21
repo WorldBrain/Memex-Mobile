@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image } from 'react-native'
+import { Image, TouchableOpacity } from 'react-native'
 
 import Navigation, { Props as NavProps } from './navigation'
 import styles from './dashboard-navigation.styles'
@@ -9,6 +9,7 @@ const MemexIcon = require('../img/MemexIcon.png')
 
 export interface Props extends NavProps {
     icon: 'exit' | 'settings'
+    onRightIconPress: () => void
 }
 
 const DashboardNavigation: React.StatelessComponent<Props> = props => (
@@ -21,21 +22,18 @@ const DashboardNavigation: React.StatelessComponent<Props> = props => (
                 style={styles.logoIcon}
             />
         )}
-        renderRightIcon={() =>
-            props.icon === 'exit' ? (
+        renderRightIcon={() => (
+            <TouchableOpacity
+                style={styles.settingsContainer}
+                onPress={props.onRightIconPress}
+            >
                 <Image
                     resizeMode="contain"
-                    source={ExitIcon}
+                    source={props.icon === 'exit' ? ExitIcon : SettingsIcon}
                     style={styles.settingsIcon}
                 />
-            ) : (
-                <Image
-                    resizeMode="contain"
-                    source={SettingsIcon}
-                    style={styles.settingsIcon}
-                />
-            )
-        }
+            </TouchableOpacity>
+        )}
     />
 )
 

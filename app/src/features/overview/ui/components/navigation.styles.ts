@@ -3,13 +3,13 @@ import { Platform } from 'react-native'
 
 export default EStyleSheet.create({
     container: {
+        flex: 1,
         fontFamily: 'Poppins',
         top: Platform.OS === 'ios' ? 20 : 0,
         width: '100%',
-        paddingHorizontal: '1rem',
-        paddingTop: '1rem',
+        padding: '1rem',
         marginTop: '1rem',
-        height: '4rem',
+        maxHeight: '4rem',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -17,20 +17,13 @@ export default EStyleSheet.create({
         borderBottomColor: '#DADADA',
         borderBottomWidth: 1,
     },
-    btnContainer: {
-        marginBottom: 5,
+    rightBtnContainer: {
         height: '3rem',
         width: '3rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
     },
-    logoContainer: {
+    leftBtnContainer: {
         height: '1.7rem',
         width: '3rem',
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'flex-end',
     },
     textContainer: {
         display: 'flex',

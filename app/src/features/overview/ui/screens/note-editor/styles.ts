@@ -1,5 +1,4 @@
 import EStyleSheet from 'react-native-extended-stylesheet'
-import { Platform } from 'react-native'
 
 export default EStyleSheet.create({
     backIcon: {
@@ -7,6 +6,10 @@ export default EStyleSheet.create({
         height: 20,
         marginRight: 20,
         marginLeft: 5,
+    },
+    saveIcon: {
+        width: 20,
+        height: 30,
     },
     container: {
         top: 50,

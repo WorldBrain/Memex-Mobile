@@ -34,6 +34,7 @@ export default class PageEditorScreen extends NavigationScreen<
 
         return () =>
             this.props.navigation.navigate('NoteEditor', {
+                pageUrl: this.state.page.fullUrl,
                 mode: 'create',
             })
     }
@@ -45,8 +46,10 @@ export default class PageEditorScreen extends NavigationScreen<
                     this.processEvent('deleteNote', { url: n.url })}
                 initNoteEdit={note => () =>
                     this.props.navigation.navigate('NoteEditor', {
+                        pageUrl: this.state.page.fullUrl,
                         highlightText: note.noteText,
                         noteText: note.commentText,
+                        noteUrl: note.url,
                         mode: 'update',
                     })}
                 initNotePress={n => () =>

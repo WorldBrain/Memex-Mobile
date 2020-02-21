@@ -1,12 +1,13 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
-import { NavigationProps, UIStorageModules } from 'src/ui/types'
+import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
+import { executeUITask } from 'src/ui/utils'
 
 export interface State {
     noteText: string
     highlightText: string | null
     highlightTextLines?: number
     showAllText: boolean
-    mode: 'create' | 'update'
+    saveState: UITaskState
 }
 
 export type Event = UIEvent<{
@@ -23,12 +24,21 @@ export interface Props extends NavigationProps {
 export default class Logic extends UILogic<State, Event> {
     static HIGHLIGHT_MAX_LINES = 4
 
+    pageUrl: string
+    noteUrl?: string
+    mode: 'create' | 'update'
+    initNoteText: string
+
     constructor(private props: Props) {
         super()
+
+        this.mode = props.navigation.getParam('mode', 'update')
+        this.pageUrl = props.navigation.getParam('pageUrl')
+        this.noteUrl = props.navigation.getParam('noteUrl')
+        this.initNoteText = props.navigation.getParam('noteText', '')
     }
 
     getInitialState(): State {
-        const mode = this.props.navigation.getParam('mode', 'update')
         const noteText = this.props.navigation.getParam('noteText', '')
         const highlightText = this.props.navigation.getParam(
             'highlightText',
@@ -36,14 +46,14 @@ export default class Logic extends UILogic<State, Event> {
         )
 
         return {
-            mode,
             noteText,
             highlightText,
             showAllText: false,
+            saveState: 'pristine',
         }
     }
 
-    changeInputText(
+    changeNoteText(
         incoming: IncomingUIEvent<State, Event, 'changeNoteText'>,
     ): UIMutation<State> {
         return {
@@ -51,10 +61,31 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async saveNote(incoming: IncomingUIEvent<State, Event, 'saveNote'>) {
+    async saveNote({
+        previousState: state,
+    }: IncomingUIEvent<State, Event, 'saveNote'>) {
         const { pageEditor } = this.props.storage.modules
 
-        console.log('TODO: save note:', incoming.previousState.noteText)
+        await executeUITask<State, 'saveState', void>(
+            this,
+            'saveState',
+            async () => {
+                if (this.mode === 'create') {
+                    return pageEditor.createNote({
+                        pageUrl: this.pageUrl,
+                        comment: state.noteText,
+                        pageTitle: '',
+                    })
+                } else {
+                    return pageEditor.updateNoteText({
+                        url: this.noteUrl!,
+                        text: state.noteText,
+                    })
+                }
+            },
+        )
+
+        this.props.navigation.navigate('Overview')
     }
 
     setHighlightTextLines(

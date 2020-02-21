@@ -23,8 +23,14 @@ export default class NoteEditorScreen extends NavigationScreen<
         super(props, { logic: new Logic(props) })
     }
 
+    private get disableInputs(): boolean {
+        return this.state.saveState === 'running'
+    }
+
     private handleBackBtnPress = () =>
         this.props.navigation.navigate('Overview')
+
+    private handleSaveBtnPress = () => this.processEvent('saveNote', {})
 
     private handleHighlightTextLayoutChange = ({
         nativeEvent,
@@ -85,7 +91,10 @@ export default class NoteEditorScreen extends NavigationScreen<
             <>
                 <Navigation
                     renderLeftIcon={() => (
-                        <TouchableOpacity onPress={this.handleBackBtnPress}>
+                        <TouchableOpacity
+                            onPress={this.handleBackBtnPress}
+                            disabled={this.disableInputs}
+                        >
                             <Image
                                 style={styles.backIcon}
                                 source={require('src/ui/img/arrow-back.png')}
@@ -93,23 +102,29 @@ export default class NoteEditorScreen extends NavigationScreen<
                         </TouchableOpacity>
                     )}
                     renderRightIcon={() => (
-                        <TouchableOpacity onPress={this.handleBackBtnPress}>
+                        <TouchableOpacity
+                            onPress={this.handleSaveBtnPress}
+                            disabled={this.disableInputs}
+                        >
                             <Image
-                                style={styles.backIcon}
+                                style={styles.saveIcon}
                                 source={require('src/ui/img/tick.png')}
                             />
                         </TouchableOpacity>
                     )}
                 >
-                    {this.state.mode === 'create' ? 'Add Note' : 'Edit Note'}
+                    {(this.logic as Logic).mode === 'create'
+                        ? 'Add Note'
+                        : 'Edit Note'}
                 </Navigation>
                 <View style={styles.container}>
                     {this.renderHighlightText()}
                     <NoteInput
-                        onChange={this.handleInputChange}
-                        value={this.state.noteText}
-                        className={styles.noteInput}
                         containerClassName={styles.noteInputContainer}
+                        onChange={this.handleInputChange}
+                        disabled={this.disableInputs}
+                        className={styles.noteInput}
+                        value={this.state.noteText}
                     />
                 </View>
             </>

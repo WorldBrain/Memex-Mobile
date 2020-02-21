@@ -1,31 +1,24 @@
 import React from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text } from 'react-native'
 
 import styles from './navigation.styles'
 
 export interface Props {
     renderLeftIcon?: () => JSX.Element
     renderRightIcon?: () => JSX.Element
-    onRightIconPress?: () => void
 }
 
-const Navigation: React.StatelessComponent<Props> = ({
-    onRightIconPress = () => undefined,
-    ...props
-}) => (
+const Navigation: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
-        <View style={styles.logoContainer}>
+        <View style={styles.leftBtnContainer}>
             {props.renderLeftIcon && props.renderLeftIcon()}
         </View>
         <View style={styles.textContainer}>
             <Text style={styles.text}>{props.children}</Text>
         </View>
-        <TouchableOpacity
-            style={styles.btnContainer}
-            onPress={onRightIconPress}
-        >
+        <View style={styles.rightBtnContainer}>
             {props.renderRightIcon && props.renderRightIcon()}
-        </TouchableOpacity>
+        </View>
     </View>
 )
 
