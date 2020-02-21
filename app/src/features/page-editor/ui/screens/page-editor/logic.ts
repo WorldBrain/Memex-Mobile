@@ -7,14 +7,11 @@ import { loadInitial } from 'src/ui/utils'
 
 export interface State {
     loadState: UITaskState
-    showNoteAdder: boolean
-    noteAdderInput: string
     page: Page
     mode: EditorMode
 }
 
 export type Event = UIEvent<{
-    setShowNoteAdder: { show: boolean }
     setEditorMode: { mode: EditorMode }
     setInputText: { text: string }
     removeEntry: { name: string }
@@ -38,8 +35,6 @@ export default class Logic extends UILogic<State, Event> {
             loadState: 'pristine',
             mode: 'tags',
             page: {} as any,
-            noteAdderInput: '',
-            showNoteAdder: false,
         }
     }
 
@@ -74,19 +69,6 @@ export default class Logic extends UILogic<State, Event> {
             },
         }
     }
-
-    setShowNoteAdder(
-        incoming: IncomingUIEvent<State, Event, 'setShowNoteAdder'>,
-    ): UIMutation<State> {
-        return { showNoteAdder: { $set: incoming.event.show } }
-    }
-
-    setInputText(
-        incoming: IncomingUIEvent<State, Event, 'setInputText'>,
-    ): UIMutation<State> {
-        return { noteAdderInput: { $set: incoming.event.text } }
-    }
-
     async removeEntry({
         event: { name },
         previousState,

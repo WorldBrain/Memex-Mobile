@@ -37,7 +37,8 @@ class NotesList extends React.PureComponent<Props> {
                             No Annotations Yet
                         </Text>
                         <Text style={styles.noResultsSubTitle}>
-                            Add new notes by visiting the page or {'\n'}via the{' '}
+                            Add new notes by visiting the page or {'\n'}
+                            via the{' '}
                             <Text
                                 style={styles.link}
                                 onPress={() =>

@@ -5,8 +5,7 @@ import { NavigationScreen } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import MainLayout from '../../components/main-layout'
 import Footer from '../../components/footer'
-import NoteAdder from '../../components/note-adder'
-import ExistingNotes from '../../components/existing-notes'
+import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
@@ -20,16 +19,6 @@ export default class PageEditorScreen extends NavigationScreen<
         super(props, { logic: new Logic(props) })
     }
 
-    private handleNewNoteAdd = () => {
-        this.processEvent('saveNote', { text: this.state.noteAdderInput })
-        this.handleHideNoteAdder()
-    }
-
-    private handleHideNoteAdder = () => {
-        this.processEvent('setShowNoteAdder', { show: false })
-        this.processEvent('setInputText', { text: '' })
-    }
-
     private handleEntryPress = (entry: MetaTypeShape) => {
         if (entry.isChecked) {
             return this.processEvent('removeEntry', { name: entry.name })
@@ -38,38 +27,20 @@ export default class PageEditorScreen extends NavigationScreen<
         }
     }
 
-    private renderNoteAdder() {
-        if (!this.state.showNoteAdder) {
-            return null
-        }
-
-        return (
-            <NoteAdder
-                onChange={text => this.processEvent('setInputText', { text })}
-                value={this.state.noteAdderInput}
-                onCancelPress={this.handleHideNoteAdder}
-                onSavePress={this.handleNewNoteAdd}
-            />
-        )
-    }
-
     private renderNotes() {
         return (
-            <ExistingNotes
-                noteAdder={this.renderNoteAdder()}
+            <NotesList
                 initNoteDelete={n => () => console.log(n)}
                 initNoteEdit={note => () =>
                     this.props.navigation.navigate('NoteEditor', {
                         highlightText: note.noteText,
                         noteText: note.commentText,
+                        mode: 'update',
                     })}
-                initNoteStar={n => () => console.log(n)}
                 initNotePress={n => () =>
                     this.processEvent('toggleNotePress', { url: n.url })}
-                onAddNotePress={() =>
-                    this.processEvent('setShowNoteAdder', { show: true })
-                }
                 notes={this.state.page.notes}
+                clearBackground
             />
         )
     }

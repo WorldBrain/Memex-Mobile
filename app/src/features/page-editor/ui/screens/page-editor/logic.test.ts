@@ -18,44 +18,6 @@ describe('page editor UI logic tests', () => {
         return { logic, state }
     }
 
-    it('should be able to show + hide note adder', () => {
-        const { logic, state } = setup()
-
-        const newStateA = logic.withMutation(
-            state,
-            logic.setShowNoteAdder({
-                event: { show: true },
-                previousState: state,
-            }),
-        )
-        expect(newStateA.showNoteAdder).toBe(true)
-
-        const newStateB = logic.withMutation(
-            state,
-            logic.setShowNoteAdder({
-                event: { show: false },
-                previousState: newStateA,
-            }),
-        )
-        expect(newStateB.showNoteAdder).toBe(false)
-    })
-
-    it('should be able to set note adder input text', () => {
-        const { logic, state } = setup()
-
-        const testText = 'this is a test'
-
-        expect(state.noteAdderInput).not.toEqual(testText)
-        const newStateA = logic.withMutation(
-            state,
-            logic.setInputText({
-                event: { text: testText },
-                previousState: state,
-            }),
-        )
-        expect(newStateA.noteAdderInput).toEqual(testText)
-    })
-
     it('should be able to set save notes', () => {
         const { logic, state } = setup()
 
