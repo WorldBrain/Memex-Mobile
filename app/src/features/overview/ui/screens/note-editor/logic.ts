@@ -1,3 +1,5 @@
+import { Alert } from 'react-native'
+
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
@@ -11,8 +13,9 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    changeNoteText: { value: string }
+    goBack: {}
     saveNote: {}
+    changeNoteText: { value: string }
     setHighlightTextLines: { lines: number }
     setShowAllText: { show: boolean }
 }>
@@ -50,6 +53,20 @@ export default class Logic extends UILogic<State, Event> {
             highlightText,
             showAllText: false,
             saveState: 'pristine',
+        }
+    }
+
+    goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
+        if (previousState.noteText.trim() !== this.initNoteText.trim()) {
+            Alert.alert('Discard Changes?', `You've made unsaved changes`, [
+                {
+                    text: 'Discard',
+                    onPress: () => this.props.navigation.navigate('Overview'),
+                },
+                { text: 'Continue' },
+            ])
+        } else {
+            this.props.navigation.navigate('Overview')
         }
     }
 

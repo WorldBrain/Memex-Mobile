@@ -27,8 +27,7 @@ export default class NoteEditorScreen extends NavigationScreen<
         return this.state.saveState === 'running'
     }
 
-    private handleBackBtnPress = () =>
-        this.props.navigation.navigate('Overview')
+    private handleBackBtnPress = () => this.processEvent('goBack', {})
 
     private handleSaveBtnPress = () => this.processEvent('saveNote', {})
 
