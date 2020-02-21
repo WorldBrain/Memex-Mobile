@@ -156,7 +156,10 @@ export default class Logic extends UILogic<State, Event> {
                         commentText: note.comment || undefined,
                         noteText: note.body,
                         isNotePressed: false,
-                        isEdited: !!note.lastEdited,
+                        isEdited:
+                            note.lastEdited &&
+                            note.lastEdited.getTime() !==
+                                note.createdWhen!.getTime(),
                         date: note.lastEdited
                             ? timeFromNow(note.lastEdited)
                             : timeFromNow(note.createdWhen!),
