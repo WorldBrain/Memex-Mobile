@@ -41,7 +41,8 @@ export default class PageEditorScreen extends NavigationScreen<
     private renderNotes() {
         return (
             <NotesList
-                initNoteDelete={n => () => console.log(n)}
+                initNoteDelete={n => () =>
+                    this.processEvent('deleteNote', { url: n.url })}
                 initNoteEdit={note => () =>
                     this.props.navigation.navigate('NoteEditor', {
                         highlightText: note.noteText,

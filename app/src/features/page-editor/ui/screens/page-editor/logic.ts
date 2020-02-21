@@ -12,17 +12,18 @@ export interface State {
 }
 
 export type Event = UIEvent<{
+    toggleNotePress: { url: string }
     setEditorMode: { mode: EditorMode }
     setInputText: { text: string }
     removeEntry: { name: string }
     createEntry: { name: string }
-    toggleNotePress: { url: string }
+    deleteNote: { url: string }
     saveNote: { text: string }
     setPage: { page: Page }
 }>
 
 export interface Props extends NavigationProps {
-    storage: UIStorageModules<'metaPicker'>
+    storage: UIStorageModules<'metaPicker' | 'pageEditor'>
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -54,6 +55,7 @@ export default class Logic extends UILogic<State, Event> {
                 const noteIndex = state.notes.findIndex(
                     note => note.url === incoming.event.url,
                 )
+
                 return {
                     ...state,
                     notes: [
@@ -69,6 +71,7 @@ export default class Logic extends UILogic<State, Event> {
             },
         }
     }
+
     async removeEntry({
         event: { name },
         previousState,
@@ -140,6 +143,35 @@ export default class Logic extends UILogic<State, Event> {
             }
 
             await metaPicker.createPageListEntry({ pageUrl: url, listId })
+        }
+    }
+
+    async deleteNote({
+        event: { url },
+        previousState,
+    }: IncomingUIEvent<State, Event, 'deleteNote'>) {
+        this.emitMutation({
+            page: state => {
+                const noteIndex = state.notes.findIndex(
+                    note => note.url === url,
+                )
+
+                return {
+                    ...state,
+                    notes: [
+                        ...state.notes.slice(0, noteIndex),
+                        ...state.notes.slice(noteIndex + 1),
+                    ],
+                }
+            },
+        })
+
+        const { pageEditor } = this.props.storage.modules
+
+        try {
+            await pageEditor.deleteNoteByUrl({ url })
+        } catch (error) {
+            this.emitMutation({ page: { $set: previousState.page } })
         }
     }
 
