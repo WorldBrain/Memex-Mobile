@@ -16,9 +16,11 @@ export interface Props {
 
 const SettingsMenu: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
-        <DashboardNav onRightIconPress={props.onExitPress} icon="exit">
-            Menu
-        </DashboardNav>
+        <DashboardNav
+            onRightIconPress={props.onExitPress}
+            icon="exit"
+            titleText="Menu"
+        />
         <View style={styles.mainContainer}>
             <Button
                 title={props.isPaired ? 'Sync Now' : 'Setup Sync With Computer'}

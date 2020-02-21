@@ -89,6 +89,11 @@ export default class NoteEditorScreen extends NavigationScreen<
         return (
             <>
                 <Navigation
+                    titleText={
+                        (this.logic as Logic).mode === 'create'
+                            ? 'Add Note'
+                            : 'Edit Note'
+                    }
                     renderLeftIcon={() => (
                         <TouchableOpacity
                             onPress={this.handleBackBtnPress}
@@ -111,11 +116,7 @@ export default class NoteEditorScreen extends NavigationScreen<
                             />
                         </TouchableOpacity>
                     )}
-                >
-                    {(this.logic as Logic).mode === 'create'
-                        ? 'Add Note'
-                        : 'Edit Note'}
-                </Navigation>
+                />
                 <View style={styles.container}>
                     {this.renderHighlightText()}
                     <NoteInput

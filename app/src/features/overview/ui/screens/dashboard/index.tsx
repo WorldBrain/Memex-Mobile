@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+    Image,
     FlatList,
     ListRenderItem,
     View,
@@ -19,6 +20,7 @@ import EmptyResults from '../../components/empty-results'
 import DashboardNav from '../../components/dashboard-navigation'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 export default class Dashboard extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -68,6 +70,10 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         if (scrollHelpers.isAtBottom(nativeEvent)) {
             return this.processEvent('loadMore', {})
         }
+    }
+
+    private handleListsFilterPress = () => {
+        this.props.navigation.navigate('ListsFilter')
     }
 
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
@@ -124,11 +130,17 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
             <>
                 <DashboardNav
                     icon="settings"
+                    titleText="Recently Saved"
                     onRightIconPress={() =>
                         this.props.navigation.navigate('SettingsMenu')
                     }
                 >
-                    Recently Saved
+                    <TouchableOpacity onPress={this.handleListsFilterPress}>
+                        <Image
+                            style={styles.dropdownArrow}
+                            source={require('src/ui/img/dropdown.png')}
+                        />
+                    </TouchableOpacity>
                 </DashboardNav>
                 <View style={styles.container}>{this.renderList()}</View>
             </>

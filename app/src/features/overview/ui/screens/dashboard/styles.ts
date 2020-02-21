@@ -9,6 +9,7 @@ export default EStyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
+    dropdownArrow: {},
     pageList: {
         width: '100%',
         marginBottom: 0,

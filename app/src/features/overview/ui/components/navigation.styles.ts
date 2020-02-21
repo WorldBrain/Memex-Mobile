@@ -28,6 +28,7 @@ export default EStyleSheet.create({
     textContainer: {
         display: 'flex',
         alignItems: 'center',
+        flexDirection: 'row',
         justifyContent: 'center',
     },
     text: {
