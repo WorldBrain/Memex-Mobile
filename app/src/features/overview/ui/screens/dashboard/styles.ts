@@ -24,4 +24,18 @@ export default EStyleSheet.create({
     reloadSpinner: {
         marginVertical: 50,
     },
+    collectionTitleContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontWeight: '700',
+    },
+    collectionTitle: {
+        fontFamily: 'Poppins',
+        fontWeight: '700',
+        marginRight: 5,
+        color: '$textColor',
+        fontSize: '1.2rem',
+    },
 })

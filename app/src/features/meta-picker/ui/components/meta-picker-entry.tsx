@@ -35,13 +35,16 @@ const MetaPickerEntry: React.StatelessComponent<Props> = props => (
             >
                 <Text style={styles.entryText}>{props.text}</Text>
             </View>
-            <Image
-                style={[
-                    styles.checkmark,
-                    props.isChecked ? null : styles.checkmarkHidden,
-                ]}
-                source={require('src/ui/img/tick.png')}
-            />
+            <View style={styles.checkMarkContainer}>
+                <Image
+                    resizeMode="contain"
+                    style={[
+                        styles.checkmark,
+                        props.isChecked ? null : styles.checkmarkHidden,
+                    ]}
+                    source={require('src/ui/img/tick.png')}
+                />
+            </View>
         </View>
     </TouchableOpacity>
 )

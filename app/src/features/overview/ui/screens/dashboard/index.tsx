@@ -8,6 +8,7 @@ import {
     Linking,
     NativeSyntheticEvent,
     NativeScrollEvent,
+    Text,
 } from 'react-native'
 import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
@@ -141,12 +142,17 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
             <>
                 <DashboardNav
                     icon="settings"
-                    titleText={this.renderNavTitle()}
                     onRightIconPress={() =>
                         this.props.navigation.navigate('SettingsMenu')
                     }
                 >
-                    <TouchableOpacity onPress={this.handleListsFilterPress}>
+                    <TouchableOpacity
+                        style={styles.collectionTitleContainer}
+                        onPress={this.handleListsFilterPress}
+                    >
+                        <Text style={styles.collectionTitle}>
+                            {this.renderNavTitle()}
+                        </Text>
                         <Image
                             style={styles.dropdownArrow}
                             source={require('src/ui/img/dropdown.png')}

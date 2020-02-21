@@ -13,6 +13,7 @@ import { NavigationScreen } from 'src/ui/types'
 import NoteInput from 'src/features/page-share/ui/components/note-input-segment'
 import styles from './styles'
 import * as selectors from './selectors'
+import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
 
 export default class NoteEditorScreen extends NavigationScreen<
     Props,
@@ -98,9 +99,11 @@ export default class NoteEditorScreen extends NavigationScreen<
                         <TouchableOpacity
                             onPress={this.handleBackBtnPress}
                             disabled={this.disableInputs}
+                            style={navigationStyles.btnContainer}
                         >
                             <Image
-                                style={styles.backIcon}
+                                resizeMode="contain"
+                                style={navigationStyles.backIcon}
                                 source={require('src/ui/img/arrow-back.png')}
                             />
                         </TouchableOpacity>
@@ -109,9 +112,11 @@ export default class NoteEditorScreen extends NavigationScreen<
                         <TouchableOpacity
                             onPress={this.handleSaveBtnPress}
                             disabled={this.disableInputs}
+                            style={navigationStyles.btnContainer}
                         >
                             <Image
-                                style={styles.saveIcon}
+                                resizeMode="contain"
+                                style={navigationStyles.checkIcon}
                                 source={require('src/ui/img/tick.png')}
                             />
                         </TouchableOpacity>

@@ -5,6 +5,9 @@ export default EStyleSheet.create({
         flex: 1,
         flexDirection: 'column',
     },
+    listFilterContainer: {
+        marginTop: '10%',
+    },
     list: {
         marginHorizontal: 30,
     },

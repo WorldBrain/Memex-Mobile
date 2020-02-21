@@ -25,6 +25,5 @@ export default EStyleSheet.create({
         color: '#3A2F45',
         letterSpacing: 0.6,
         fontSize: '1.1rem',
-        marginBottom: '0.3rem',
     },
 })

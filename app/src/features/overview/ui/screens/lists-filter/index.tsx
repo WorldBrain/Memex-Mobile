@@ -4,6 +4,8 @@ import {
     FlatList,
     ListRenderItem,
     GestureResponderEvent,
+    TouchableOpacity,
+    Image,
 } from 'react-native'
 
 import { NavigationScreen } from 'src/ui/types'
@@ -19,6 +21,7 @@ import MetaPickerEntry from 'src/features/meta-picker/ui/components/meta-picker-
 import LoadingBalls from 'src/ui/components/loading-balls'
 import SearchInput from 'src/features/meta-picker/ui/components/search-add-input'
 import { MetaTypeShape, MetaTypeName } from 'src/features/meta-picker/types'
+import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
 
 export default class ListsFilter extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -53,34 +56,41 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
                 <Navigation
                     titleText="Collections"
                     renderLeftIcon={() => (
-                        <Button
-                            title="Back"
-                            empty
+                        <TouchableOpacity
                             onPress={() =>
                                 this.props.navigation.navigate('Overview', {
                                     selectedList: this.state.selectedEntryName,
                                 })
                             }
-                        />
+                            style={navigationStyles.btnContainer}
+                        >
+                            <Image
+                                style={navigationStyles.backIcon}
+                                resizeMode="contain"
+                                source={require('src/ui/img/arrow-back.png')}
+                            />
+                        </TouchableOpacity>
                     )}
                 />
                 <MetaPicker>
-                    <SearchInput
-                        placeholder="Search Collections"
-                        onChange={this.handleInputChange}
-                        value={this.state.inputValue}
-                    />
-                    {this.state.loadState === 'running' ? (
-                        <View style={styles.loadingBallContainer}>
-                            <LoadingBalls style={styles.loadingBalls} />
-                        </View>
-                    ) : (
-                        <FlatList
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={this.renderPickerEntry}
-                            data={this.state.entries}
+                    <View style={styles.listFilterContainer}>
+                        <SearchInput
+                            placeholder="Search Collections"
+                            onChange={this.handleInputChange}
+                            value={this.state.inputValue}
                         />
-                    )}
+                        {this.state.loadState === 'running' ? (
+                            <View style={styles.loadingBallContainer}>
+                                <LoadingBalls style={styles.loadingBalls} />
+                            </View>
+                        ) : (
+                            <FlatList
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={this.renderPickerEntry}
+                                data={this.state.entries}
+                            />
+                        )}
+                    </View>
                 </MetaPicker>
             </>
         )

@@ -15,7 +15,9 @@ const Navigation: React.StatelessComponent<Props> = props => (
             {props.renderLeftIcon && props.renderLeftIcon()}
         </View>
         <View style={styles.textContainer}>
-            <Text style={styles.text}>{props.titleText}</Text>
+            <Text numberOfLines={1} style={styles.text}>
+                {props.titleText}
+            </Text>
             {props.children}
         </View>
         <View style={styles.rightBtnContainer}>

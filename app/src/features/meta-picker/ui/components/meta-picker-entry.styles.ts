@@ -36,9 +36,14 @@ export default EStyleSheet.create({
         fontSize: '1.2rem',
         fontWeight: 'bold',
     },
-    checkmark: {
+    checkMarkContainer: {
         width: '2.2rem',
-        height: '2.2rem',
+        height: 'auto',
+        padding: '0.3rem',
+    },
+    checkmark: {
+        width: '100%',
+        height: '100%',
     },
     checkmarkHidden: {
         display: 'none',
