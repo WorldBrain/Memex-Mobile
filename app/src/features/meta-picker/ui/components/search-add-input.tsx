@@ -6,7 +6,7 @@ import styles from './search-add-input.styles'
 
 export interface Props {
     value: string
-    type: MetaTypeName
+    placeholder: string
     onChange: (text: string) => void
 }
 
@@ -16,7 +16,7 @@ const SearchAddInput: React.StatelessComponent<Props> = props => (
             style={styles.textInput}
             value={props.value}
             onChangeText={props.onChange}
-            placeholder={`Search & Add ${props.type}`}
+            placeholder={props.placeholder}
             placeholderTextColor="#36362f"
             autoCapitalize="none"
         />
