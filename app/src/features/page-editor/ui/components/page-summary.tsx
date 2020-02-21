@@ -13,6 +13,7 @@ import styles from './page-summary.styles'
 
 export interface Props extends PageBodyProps {
     onBackPress: (e: GestureResponderEvent) => void
+    onAddPress?: (e: GestureResponderEvent) => void
 }
 
 const MainLayout: React.StatelessComponent<Props> = props => (
@@ -26,6 +27,14 @@ const MainLayout: React.StatelessComponent<Props> = props => (
         <View style={styles.pageBodyContainer}>
             <PageBody {...props} />
         </View>
+        {props.onAddPress && (
+            <TouchableOpacity onPress={props.onAddPress}>
+                <Image
+                    style={styles.backIcon}
+                    source={require('src/ui/img/plus.png')}
+                />
+            </TouchableOpacity>
+        )}
     </View>
 )
 

@@ -27,6 +27,17 @@ export default class PageEditorScreen extends NavigationScreen<
         }
     }
 
+    private initHandleAddNotePress = () => {
+        if (this.state.mode !== 'notes') {
+            return undefined
+        }
+
+        return () =>
+            this.props.navigation.navigate('NoteEditor', {
+                mode: 'create',
+            })
+    }
+
     private renderNotes() {
         return (
             <NotesList
@@ -67,7 +78,7 @@ export default class PageEditorScreen extends NavigationScreen<
         )
     }
 
-    renderEditor() {
+    private renderEditor() {
         switch (this.state.mode) {
             case 'notes':
                 return this.renderNotes()
@@ -83,6 +94,7 @@ export default class PageEditorScreen extends NavigationScreen<
             <MainLayout
                 {...this.state.page}
                 onBackPress={e => this.props.navigation.navigate('Overview')}
+                onAddPress={this.initHandleAddNotePress()}
             >
                 {this.renderEditor()}
             </MainLayout>
