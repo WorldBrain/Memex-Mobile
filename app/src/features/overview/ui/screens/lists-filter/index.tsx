@@ -57,7 +57,9 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
                             title="Back"
                             empty
                             onPress={() =>
-                                this.props.navigation.navigate('Overview')
+                                this.props.navigation.navigate('Overview', {
+                                    selectedList: this.state.selectedEntryName,
+                                })
                             }
                         />
                     )}

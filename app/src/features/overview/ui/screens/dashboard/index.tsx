@@ -21,6 +21,7 @@ import DashboardNav from '../../components/dashboard-navigation'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 
 export default class Dashboard extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -73,7 +74,9 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
     }
 
     private handleListsFilterPress = () => {
-        this.props.navigation.navigate('ListsFilter')
+        this.props.navigation.navigate('ListsFilter', {
+            selectedList: this.state.selectedListName,
+        })
     }
 
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
@@ -125,12 +128,20 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         )
     }
 
+    private renderNavTitle(): string {
+        if (this.state.selectedListName !== MOBILE_LIST_NAME) {
+            return this.state.selectedListName
+        }
+
+        return 'Recently Saved'
+    }
+
     render() {
         return (
             <>
                 <DashboardNav
                     icon="settings"
-                    titleText="Recently Saved"
+                    titleText={this.renderNavTitle()}
                     onRightIconPress={() =>
                         this.props.navigation.navigate('SettingsMenu')
                     }

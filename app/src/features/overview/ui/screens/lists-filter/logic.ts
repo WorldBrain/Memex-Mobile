@@ -5,6 +5,7 @@ import { NavigationProps, UITaskState, UIStorageModules } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { UICollection } from 'src/features/overview/types'
 import { Spec } from 'immutability-helper'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 
 export interface Props extends NavigationProps {
     storage: UIStorageModules<'metaPicker' | 'pageEditor'>
@@ -37,7 +38,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init() {
-        const selectedListName = this.props.navigation.getParam('selected')
+        const selectedListName = this.props.navigation.getParam('selectedList')
 
         await loadInitial<State>(this, async () => {
             const { metaPicker } = this.props.storage.modules
@@ -70,7 +71,7 @@ export default class Logic extends UILogic<State, Event> {
             isChecked: false,
         })
 
-        const mutation: Spec<State, never> = {
+        this.emitMutation({
             entries: {
                 $set: [
                     ...previousState.entries.slice(0, index).map(setUnchecked),
@@ -78,13 +79,10 @@ export default class Logic extends UILogic<State, Event> {
                     ...previousState.entries.slice(index + 1).map(setUnchecked),
                 ],
             },
-        }
-
-        if (!item.isChecked) {
-            mutation.selectedEntryName = { $set: item.name }
-        }
-
-        this.emitMutation(mutation)
+            selectedEntryName: {
+                $set: !item.isChecked ? item.name : MOBILE_LIST_NAME,
+            },
+        })
 
         if (this.props.onEntryPressed) {
             return this.props.onEntryPressed(item, index)
