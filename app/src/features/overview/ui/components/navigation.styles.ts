@@ -45,7 +45,7 @@ export default EStyleSheet.create({
         fontSize: '1.2rem',
     },
     btnContainer: {
-        padding: '1rem',
+        padding: '1.2rem',
     },
     backIcon: {
         width: '90%',
@@ -69,7 +69,7 @@ export default EStyleSheet.create({
         width: '90%',
     },
     logoIcon: {
-        height: '90%',
-        width: '90%',
+        height: '100%',
+        width: '100%',
     },
 })

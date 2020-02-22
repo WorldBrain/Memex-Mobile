@@ -32,7 +32,10 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
         item: MetaTypeShape,
         index: number,
     ) => async () => {
-        this.processEvent('toggleEntryChecked', { item, index })
+        await this.processEvent('toggleEntryChecked', { item, index })
+        this.props.navigation.navigate('Overview', {
+            selectedList: await this.state.selectedEntryName,
+        })
     }
 
     private handleInputChange = (value: string) =>

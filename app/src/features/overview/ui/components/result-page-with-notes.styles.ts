@@ -24,7 +24,7 @@ export default EStyleSheet.create({
     },
     list: {
         minWidth: '100%',
-        marginBottom: 50,
+        height: '100%',
     },
     link: {
         textDecorationLine: 'underline',

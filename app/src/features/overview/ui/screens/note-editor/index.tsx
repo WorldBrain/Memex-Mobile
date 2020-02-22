@@ -5,6 +5,7 @@ import {
     Image,
     TouchableOpacity,
     LayoutChangeEvent,
+    ScrollView,
 } from 'react-native'
 
 import Navigation from '../../components/navigation'
@@ -122,7 +123,7 @@ export default class NoteEditorScreen extends NavigationScreen<
                         </TouchableOpacity>
                     )}
                 />
-                <View style={styles.container}>
+                <ScrollView style={styles.container}>
                     {this.renderHighlightText()}
                     <NoteInput
                         containerClassName={styles.noteInputContainer}
@@ -131,7 +132,7 @@ export default class NoteEditorScreen extends NavigationScreen<
                         className={styles.noteInput}
                         value={this.state.noteText}
                     />
-                </View>
+                </ScrollView>
             </>
         )
     }

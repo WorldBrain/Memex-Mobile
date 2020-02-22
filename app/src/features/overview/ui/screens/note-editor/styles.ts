@@ -3,9 +3,10 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 export default EStyleSheet.create({
     container: {
         position: 'relative',
-        top: '1rem',
+        top: '1.5rem',
         flex: 1,
         width: '100%',
+        height: '100%',
         flexDirection: 'column',
     },
     highlightTextContainer: {
@@ -20,7 +21,6 @@ export default EStyleSheet.create({
         paddingHorizontal: '0.4rem',
         paddingLeft: '0.6rem',
         width: 'auto',
-        fontWeight: '600',
         color: '$textColor',
         alignSelf: 'flex-start',
     },
@@ -28,7 +28,13 @@ export default EStyleSheet.create({
         flex: 1,
         padding: '1.5rem',
         maxHeight: '40%',
+        minHeight: 200,
         borderBottomWidth: 0,
+        marginBottom: '150%',
+    },
+    showMoreText: {
+        paddingLeft: '1.5rem',
+        padding: '0.5rem',
     },
     noteInput: {
         backgroundColor: '#F1F1F1',
