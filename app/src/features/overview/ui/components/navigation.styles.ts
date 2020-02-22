@@ -3,54 +3,70 @@ import { Platform } from 'react-native'
 
 export default EStyleSheet.create({
     container: {
+        flex: 1,
         fontFamily: 'Poppins',
         top: Platform.OS === 'ios' ? 20 : 0,
         width: '100%',
-        paddingHorizontal: '1rem',
-        paddingTop: '1rem',
+        height: '100%',
+        paddingVertical: '1rem',
         marginTop: '1rem',
-        height: '4rem',
+        maxHeight: '4rem',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'white',
         borderBottomColor: '#DADADA',
         borderBottomWidth: 1,
     },
-    btnContainer: {
-        marginBottom: 5,
-        height: '3rem',
-        width: '3rem',
+    rightBtnContainer: {
+        height: '4rem',
+        width: '15%',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
     },
-    logoContainer: {
-        height: '1.7rem',
-        width: '3rem',
+    leftBtnContainer: {
+        height: '4rem',
+        width: '15%',
         display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
     },
     textContainer: {
         display: 'flex',
         alignItems: 'center',
+        flexDirection: 'row',
         justifyContent: 'center',
+        width: '70%',
     },
     text: {
         fontFamily: 'Poppins',
         textAlign: 'center',
         fontWeight: 'bold',
-        color: 'black',
+        color: '$textColor',
         fontSize: '1.2rem',
     },
-    emptyView: {
-        flex: 1,
-        width: 20,
+    btnContainer: {
+        padding: '1.2rem',
+    },
+    backIcon: {
+        width: '90%',
+        height: '90%',
+    },
+    addIcon: {
+        width: '90%',
+        height: '90%',
+    },
+    checkIcon: {
+        width: '85%',
+        height: '85%',
+    },
+    settingsContainer: {
+        position: 'relative',
+        height: '85%',
+        width: '85%',
     },
     settingsIcon: {
-        height: '40%',
-        width: '40%',
+        height: '90%',
+        width: '90%',
     },
     logoIcon: {
         height: '100%',

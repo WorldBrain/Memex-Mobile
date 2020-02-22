@@ -7,24 +7,23 @@ import { loadInitial } from 'src/ui/utils'
 
 export interface State {
     loadState: UITaskState
-    showNoteAdder: boolean
-    noteAdderInput: string
     page: Page
     mode: EditorMode
 }
 
 export type Event = UIEvent<{
-    setShowNoteAdder: { show: boolean }
+    toggleNotePress: { url: string }
     setEditorMode: { mode: EditorMode }
     setInputText: { text: string }
     removeEntry: { name: string }
     createEntry: { name: string }
+    deleteNote: { url: string }
     saveNote: { text: string }
     setPage: { page: Page }
 }>
 
 export interface Props extends NavigationProps {
-    storage: UIStorageModules<'metaPicker'>
+    storage: UIStorageModules<'metaPicker' | 'pageEditor'>
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -37,8 +36,6 @@ export default class Logic extends UILogic<State, Event> {
             loadState: 'pristine',
             mode: 'tags',
             page: {} as any,
-            noteAdderInput: '',
-            showNoteAdder: false,
         }
     }
 
@@ -50,16 +47,29 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    setShowNoteAdder(
-        incoming: IncomingUIEvent<State, Event, 'setShowNoteAdder'>,
+    toggleNotePress(
+        incoming: IncomingUIEvent<State, Event, 'toggleNotePress'>,
     ): UIMutation<State> {
-        return { showNoteAdder: { $set: incoming.event.show } }
-    }
+        return {
+            page: state => {
+                const noteIndex = state.notes.findIndex(
+                    note => note.url === incoming.event.url,
+                )
 
-    setInputText(
-        incoming: IncomingUIEvent<State, Event, 'setInputText'>,
-    ): UIMutation<State> {
-        return { noteAdderInput: { $set: incoming.event.text } }
+                return {
+                    ...state,
+                    notes: [
+                        ...state.notes.slice(0, noteIndex),
+                        {
+                            ...state.notes[noteIndex],
+                            isNotePressed: !state.notes[noteIndex]
+                                .isNotePressed,
+                        },
+                        ...state.notes.slice(noteIndex + 1),
+                    ],
+                }
+            },
+        }
     }
 
     async removeEntry({
@@ -133,6 +143,35 @@ export default class Logic extends UILogic<State, Event> {
             }
 
             await metaPicker.createPageListEntry({ pageUrl: url, listId })
+        }
+    }
+
+    async deleteNote({
+        event: { url },
+        previousState,
+    }: IncomingUIEvent<State, Event, 'deleteNote'>) {
+        this.emitMutation({
+            page: state => {
+                const noteIndex = state.notes.findIndex(
+                    note => note.url === url,
+                )
+
+                return {
+                    ...state,
+                    notes: [
+                        ...state.notes.slice(0, noteIndex),
+                        ...state.notes.slice(noteIndex + 1),
+                    ],
+                }
+            },
+        })
+
+        const { pageEditor } = this.props.storage.modules
+
+        try {
+            await pageEditor.deleteNoteByUrl({ url })
+        } catch (error) {
+            this.emitMutation({ page: { $set: previousState.page } })
         }
     }
 

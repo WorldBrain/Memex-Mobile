@@ -11,20 +11,20 @@ export default EStyleSheet.create({
     noResultsTitle: {
         fontSize: '1.5rem',
         fontFamily: 'Poppins',
-        marginBottom: '5%',
+        marginBottom: '0.5rem',
         marginTop: '15%',
         fontWeight: '700',
         color: '$textColor',
     },
     noResultsSubTitle: {
-        fontSize: '1rem',
+        fontSize: '1.2rem',
         fontWeight: '500',
         color: '$purpleColor',
         textAlign: 'center',
     },
     list: {
         minWidth: '100%',
-        marginBottom: 50,
+        height: '100%',
     },
     link: {
         textDecorationLine: 'underline',

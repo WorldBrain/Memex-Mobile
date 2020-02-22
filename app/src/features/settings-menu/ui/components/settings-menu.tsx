@@ -1,8 +1,8 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 
 import styles from './settings-menu.styles'
-import Navigation from 'src/features/overview/ui/components/navigation'
+import DashboardNav from 'src/features/overview/ui/components/dashboard-navigation'
 import Button from 'src/ui/components/memex-btn'
 
 export interface Props {
@@ -16,9 +16,11 @@ export interface Props {
 
 const SettingsMenu: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
-        <Navigation onSettingsPress={props.onExitPress} icon="exit">
-            Menu
-        </Navigation>
+        <DashboardNav
+            onRightIconPress={props.onExitPress}
+            icon="exit"
+            titleText="Menu"
+        />
         <View style={styles.mainContainer}>
             <Button
                 title={props.isPaired ? 'Sync Now' : 'Setup Sync With Computer'}

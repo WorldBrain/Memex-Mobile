@@ -1,7 +1,7 @@
 import EStyleSheet from 'react-native-extended-stylesheet'
 
 export default EStyleSheet.create({
-    Container: {
+    container: {
         padding: '1.2rem',
         width: '100%',
     },
@@ -21,8 +21,18 @@ export default EStyleSheet.create({
         color: '#3A2F45',
         fontSize: 14,
     },
+    dateContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     date: {
         fontSize: 12,
         color: '#3A2F45',
+    },
+    lastEdited: {
+        fontSize: 10,
+        color: 'black',
+        marginRight: 5,
     },
 })

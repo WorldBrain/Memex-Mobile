@@ -12,19 +12,23 @@ import {
     CommentBtn,
     FullCommentBtn,
     StarBtn,
+    ListBtn,
     FullStarBtn,
 } from './action-btns'
-import ActionBar, { Props as ActionBarProps } from './result-page-action-bar'
+import ActionBar from './result-page-action-bar'
 import { NativeTouchEventHandler, UIPage } from '../../types'
 import styles from './result-page-view-button.styles'
 
 export interface Props extends FooterProps, BodyProps, UIPage {}
 
-export interface InteractionProps extends ActionBarProps {
-    onResultPress?: NativeTouchEventHandler
+export interface InteractionProps {
     onTagPress: NativeTouchEventHandler
-    onCommentPress: NativeTouchEventHandler
     onStarPress: NativeTouchEventHandler
+    onListsPress: NativeTouchEventHandler
+    onVisitPress: NativeTouchEventHandler
+    onDeletePress: NativeTouchEventHandler
+    onResultPress?: NativeTouchEventHandler
+    onCommentPress: NativeTouchEventHandler
 }
 
 const ResultPage: React.StatelessComponent<Props &
@@ -62,7 +66,18 @@ const ResultPage: React.StatelessComponent<Props &
                 </View>
             </View>
         </Container>
-        {props.isResultPressed && <ActionBar {...props} />}
+        {props.isResultPressed && (
+            <ActionBar
+                renderLeftSection={style => (
+                    <Text onPress={props.onVisitPress} style={style}>
+                        Visit
+                    </Text>
+                )}
+            >
+                <ListBtn onPress={props.onListsPress} />
+                <DeleteBtn onPress={props.onDeletePress} />
+            </ActionBar>
+        )}
     </View>
 )
 

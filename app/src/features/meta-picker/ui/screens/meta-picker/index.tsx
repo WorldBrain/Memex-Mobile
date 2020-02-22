@@ -73,9 +73,9 @@ export default class MetaPickerScreen extends NavigationScreen<
         return (
             <MetaPicker>
                 <SearchAddInput
-                    type={this.metaTypeName}
                     value={selectors.inputText(this.state)}
                     onChange={this.handleInputText}
+                    placeholder={`Search & Add ${this.metaTypeName}`}
                 />
                 {this.props.isSyncLoading ||
                 this.state.loadState === 'running' ? (

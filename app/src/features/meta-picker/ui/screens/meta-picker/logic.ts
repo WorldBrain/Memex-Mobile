@@ -90,12 +90,12 @@ export default class Logic extends UILogic<State, Event> {
         )
     }
 
-    async suggestNewEntries(text: string, selected: string[]) {
+    private async suggestNewEntries(text: string, selected: string[]) {
         const { metaPicker } = this.props.storage.modules
         const collection =
             this.props.type === 'collections' ? 'customLists' : 'tags'
 
-        const results = await metaPicker.suggest(this.props.url, {
+        const results = await metaPicker.suggest({
             collection,
             query: { name: text },
         })

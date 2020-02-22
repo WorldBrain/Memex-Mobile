@@ -14,7 +14,7 @@ export interface State {
     loadMoreState: UITaskState
     couldHaveMore: boolean
     pages: Map<string, UIPage>
-
+    selectedListName: string
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
@@ -47,6 +47,11 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(): State {
+        const selectedListName = this.props.navigation.getParam(
+            'selectedList',
+            MOBILE_LIST_NAME,
+        )
+
         return {
             loadState: 'pristine',
             reloadState: 'pristine',
@@ -55,6 +60,7 @@ export default class Logic extends UILogic<State, Event> {
             actionState: 'pristine',
             actionFinishedAt: 0,
             pages: new Map(),
+            selectedListName,
         }
     }
 
@@ -106,7 +112,7 @@ export default class Logic extends UILogic<State, Event> {
 
         const { metaPicker, overview, pageEditor } = this.props.storage.modules
         const mobileList = await metaPicker.findListsByNames({
-            names: [MOBILE_LIST_NAME],
+            names: [prevState.selectedListName],
         })
         if (!mobileList.length) {
             this.emitMutation({ couldHaveMore: { $set: false } })
@@ -158,6 +164,11 @@ export default class Logic extends UILogic<State, Event> {
                         isStarred: note.isStarred,
                         commentText: note.comment || undefined,
                         noteText: note.body,
+                        isNotePressed: false,
+                        isEdited:
+                            note.lastEdited &&
+                            note.lastEdited.getTime() !==
+                                note.createdWhen!.getTime(),
                         date: note.lastEdited
                             ? timeFromNow(note.lastEdited)
                             : timeFromNow(note.createdWhen!),

@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+    Image,
     FlatList,
     ListRenderItem,
     View,
@@ -7,6 +8,7 @@ import {
     Linking,
     NativeSyntheticEvent,
     NativeScrollEvent,
+    Text,
 } from 'react-native'
 import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
@@ -16,9 +18,11 @@ import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 import EmptyResults from '../../components/empty-results'
-import Navigation from '../../components/navigation'
+import DashboardNav from '../../components/dashboard-navigation'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 
 export default class Dashboard extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -70,6 +74,12 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         }
     }
 
+    private handleListsFilterPress = () => {
+        this.props.navigation.navigate('ListsFilter', {
+            selectedList: this.state.selectedListName,
+        })
+    }
+
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
         <ResultPage
             onVisitPress={this.handleVisitPress(item)}
@@ -119,17 +129,36 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         )
     }
 
+    private renderNavTitle(): string {
+        if (this.state.selectedListName !== MOBILE_LIST_NAME) {
+            return this.state.selectedListName
+        }
+
+        return 'Recently Saved'
+    }
+
     render() {
         return (
             <>
-                <Navigation
+                <DashboardNav
                     icon="settings"
-                    onSettingsPress={() =>
+                    onRightIconPress={() =>
                         this.props.navigation.navigate('SettingsMenu')
                     }
                 >
-                    Recently Saved
-                </Navigation>
+                    <TouchableOpacity
+                        style={styles.collectionTitleContainer}
+                        onPress={this.handleListsFilterPress}
+                    >
+                        <Text style={styles.collectionTitle}>
+                            {this.renderNavTitle()}
+                        </Text>
+                        <Image
+                            style={styles.dropdownArrow}
+                            source={require('src/ui/img/dropdown.png')}
+                        />
+                    </TouchableOpacity>
+                </DashboardNav>
                 <View style={styles.container}>{this.renderList()}</View>
             </>
         )

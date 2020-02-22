@@ -1,82 +1,82 @@
-import Logic from './logic'
+import Logic, { State, Event } from './logic'
+import { TestLogicContainer } from 'src/tests/ui-logic'
 
-const data = {
-    mode: 'tags',
-    page: {
-        date: '5 mins ago',
-        pageUrl: 'https://test.com',
-        url: 'https://test.com',
-        titleText: 'This is a test page',
-    },
+const testText = 'this is a test'
+const testPage = {
+    date: '5 mins ago',
+    pageUrl: 'https://test.com',
+    url: 'https://test.com',
+    titleText: 'This is a test page',
+    notes: [],
 }
 
 describe('page editor UI logic tests', () => {
     function setup() {
-        const logic = new Logic({})
-        const state = logic.getInitialState()
+        const logic = new Logic({
+            storage: {
+                modules: {
+                    pageEditor: { deleteNoteByUrl: async () => undefined },
+                },
+            },
+        } as any)
+        const logicContainer = new TestLogicContainer<State, Event>(logic)
 
-        return { logic, state }
+        return { logic, logicContainer }
     }
 
-    it('should be able to show + hide note adder', () => {
-        const { logic, state } = setup()
+    it('should be able to set save notes', async () => {
+        const { logicContainer } = setup()
 
-        const newStateA = logic.withMutation(
-            state,
-            logic.setShowNoteAdder({
-                event: { show: true },
-                previousState: state,
-            }),
-        )
-        expect(newStateA.showNoteAdder).toBe(true)
-
-        const newStateB = logic.withMutation(
-            state,
-            logic.setShowNoteAdder({
-                event: { show: false },
-                previousState: newStateA,
-            }),
-        )
-        expect(newStateB.showNoteAdder).toBe(false)
-    })
-
-    it('should be able to set note adder input text', () => {
-        const { logic, state } = setup()
-
-        const testText = 'this is a test'
-
-        expect(state.noteAdderInput).not.toEqual(testText)
-        const newStateA = logic.withMutation(
-            state,
-            logic.setInputText({
-                event: { text: testText },
-                previousState: state,
-            }),
-        )
-        expect(newStateA.noteAdderInput).toEqual(testText)
-    })
-
-    it('should be able to set save notes', () => {
-        const { logic, state } = setup()
-
-        const testText = 'this is a test'
-        const testPage = { ...data.page, notes: [] }
-
-        const newStateA = logic.withMutation(state, {
-            page: { $set: testPage },
+        logicContainer.logic.emitMutation({
+            page: { $set: testPage as any },
         })
-        expect(newStateA.page.notes.length).toBe(0)
+        expect(logicContainer.state.page.notes.length).toBe(0)
 
-        const newStateB = logic.withMutation(
-            state,
-            logic.saveNote({
-                event: { text: testText },
-                previousState: state,
-            }),
-        )
+        await logicContainer.processEvent('saveNote', { text: testText })
 
-        expect(newStateB.page.notes.length).toBe(1)
-        const note = newStateB.page.notes[newStateB.page.notes.length - 1]
+        expect(logicContainer.state.page.notes.length).toBe(1)
+        const note =
+            logicContainer.state.page.notes[
+                logicContainer.state.page.notes.length - 1
+            ]
         expect(note.commentText).toEqual(testText)
+    })
+
+    it('should be able to toggle note being pressed', async () => {
+        const { logicContainer } = setup()
+
+        logicContainer.logic.emitMutation({
+            page: { $set: testPage as any },
+        })
+        expect(logicContainer.state.page.notes.length).toBe(0)
+
+        await logicContainer.processEvent('saveNote', { text: testText })
+
+        expect(logicContainer.state.page.notes[0].isNotePressed).toBe(undefined)
+        const { url } = logicContainer.state.page.notes[0]
+
+        await logicContainer.processEvent('toggleNotePress', { url })
+
+        expect(logicContainer.state.page.notes[0].isNotePressed).toBe(true)
+
+        await logicContainer.processEvent('toggleNotePress', { url })
+
+        expect(logicContainer.state.page.notes[0].isNotePressed).toBe(false)
+    })
+
+    it('should be able to delete notes', async () => {
+        const { logicContainer } = setup()
+
+        logicContainer.logic.emitMutation({
+            page: { $set: testPage as any },
+        })
+        expect(logicContainer.state.page.notes.length).toBe(0)
+
+        await logicContainer.processEvent('saveNote', { text: testText })
+        expect(logicContainer.state.page.notes.length).toBe(1)
+        await logicContainer.processEvent('deleteNote', {
+            url: logicContainer.state.page.notes[0].url,
+        })
+        expect(logicContainer.state.page.notes.length).toBe(0)
     })
 })

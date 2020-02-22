@@ -6,6 +6,7 @@ export default EStyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
+        height: 50,
     },
     sectionText: {
         fontSize: 18,

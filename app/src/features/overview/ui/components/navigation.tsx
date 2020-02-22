@@ -1,46 +1,28 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, Image } from 'react-native'
+import { View, Text } from 'react-native'
 
 import styles from './navigation.styles'
-const ExitIcon = require('../img/closeIcon.png')
-const SettingsIcon = require('../img/menuIcon.png')
-const MemexIcon = require('../img/MemexIcon.png')
 
 export interface Props {
-    onSettingsPress: () => void
-    icon: 'exit' | 'settings'
+    titleText: string
+    renderLeftIcon?: () => JSX.Element
+    renderRightIcon?: () => JSX.Element
 }
 
 const Navigation: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
-        <View style={styles.logoContainer}>
-            <Image
-                resizeMode="contain"
-                source={MemexIcon}
-                style={styles.logoIcon}
-            />
+        <View style={styles.leftBtnContainer}>
+            {props.renderLeftIcon && props.renderLeftIcon()}
         </View>
         <View style={styles.textContainer}>
-            <Text style={styles.text}>{props.children}</Text>
+            <Text numberOfLines={1} style={styles.text}>
+                {props.titleText}
+            </Text>
+            {props.children}
         </View>
-        <TouchableOpacity
-            style={styles.btnContainer}
-            onPress={props.onSettingsPress}
-        >
-            {props.icon === 'exit' ? (
-                <Image
-                    resizeMode="contain"
-                    source={ExitIcon}
-                    style={styles.settingsIcon}
-                />
-            ) : (
-                <Image
-                    resizeMode="contain"
-                    source={SettingsIcon}
-                    style={styles.settingsIcon}
-                />
-            )}
-        </TouchableOpacity>
+        <View style={styles.rightBtnContainer}>
+            {props.renderRightIcon && props.renderRightIcon()}
+        </View>
     </View>
 )
 

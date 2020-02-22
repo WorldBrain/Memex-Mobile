@@ -2,7 +2,6 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 
 export default EStyleSheet.create({
     container: {
-        margin: '1rem',
         marginHorizontal: '1.5rem',
         borderRadius: 5,
         backgroundColor: '#f1f1f1',

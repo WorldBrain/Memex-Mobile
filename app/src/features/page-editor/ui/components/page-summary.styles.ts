@@ -5,14 +5,13 @@ export default EStyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        width: '90%',
-        marginTop: '1.5rem',
     },
-    pageBodyContainer: {},
     backIcon: {
-        width: 15,
-        height: 20,
-        marginRight: 20,
-        marginLeft: 5,
+        width: '1.5rem',
+        height: '1.5rem',
+    },
+    addIcon: {
+        width: '1.5rem',
+        height: '1.5rem',
     },
 })

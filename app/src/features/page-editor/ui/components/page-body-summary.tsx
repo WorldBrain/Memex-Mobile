@@ -3,11 +3,9 @@ import {
     View,
     Image,
     Text,
-    ImageSourcePropType,
     TouchableWithoutFeedback,
     Linking,
 } from 'react-native'
-import { NativeTouchEventHandler } from 'src/features/overview/types'
 
 import styles from './page-body-summary.styles'
 
@@ -17,7 +15,6 @@ export interface Props {
     pageUrl: string
     domain: string
     fullUrl: string
-    onResultPress: () => void
     date: string
 }
 

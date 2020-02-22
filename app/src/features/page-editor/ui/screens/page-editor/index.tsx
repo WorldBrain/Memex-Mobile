@@ -1,11 +1,11 @@
+// tslint:disable:no-console
 import React from 'react'
 
 import { NavigationScreen } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import MainLayout from '../../components/main-layout'
 import Footer from '../../components/footer'
-import NoteAdder from '../../components/note-adder'
-import ExistingNotes from '../../components/existing-notes'
+import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
@@ -19,16 +19,6 @@ export default class PageEditorScreen extends NavigationScreen<
         super(props, { logic: new Logic(props) })
     }
 
-    private handleNewNoteAdd = () => {
-        this.processEvent('saveNote', { text: this.state.noteAdderInput })
-        this.handleHideNoteAdder()
-    }
-
-    private handleHideNoteAdder = () => {
-        this.processEvent('setShowNoteAdder', { show: false })
-        this.processEvent('setInputText', { text: '' })
-    }
-
     private handleEntryPress = (entry: MetaTypeShape) => {
         if (entry.isChecked) {
             return this.processEvent('removeEntry', { name: entry.name })
@@ -37,35 +27,35 @@ export default class PageEditorScreen extends NavigationScreen<
         }
     }
 
-    private renderNoteAdder() {
-        if (!this.state.showNoteAdder) {
-            return null
+    private initHandleAddNotePress = () => {
+        if (this.state.mode !== 'notes') {
+            return undefined
         }
 
-        return (
-            <NoteAdder
-                onChange={text => this.processEvent('setInputText', { text })}
-                value={this.state.noteAdderInput}
-                onCancelPress={this.handleHideNoteAdder}
-                onSavePress={this.handleNewNoteAdd}
-            />
-        )
+        return () =>
+            this.props.navigation.navigate('NoteEditor', {
+                pageUrl: this.state.page.fullUrl,
+                mode: 'create',
+            })
     }
 
     private renderNotes() {
         return (
-            <ExistingNotes
-                noteAdder={this.renderNoteAdder()}
-                // tslint:disable-next-line
-                initNoteDelete={n => () => console.log(n)}
-                // tslint:disable-next-line
-                initNoteEdit={n => () => console.log(n)}
-                // tslint:disable-next-line
-                initNoteStar={n => () => console.log(n)}
-                onAddNotePress={() =>
-                    this.processEvent('setShowNoteAdder', { show: true })
-                }
+            <NotesList
+                initNoteDelete={n => () =>
+                    this.processEvent('deleteNote', { url: n.url })}
+                initNoteEdit={note => () =>
+                    this.props.navigation.navigate('NoteEditor', {
+                        pageUrl: this.state.page.fullUrl,
+                        highlightText: note.noteText,
+                        noteText: note.commentText,
+                        noteUrl: note.url,
+                        mode: 'update',
+                    })}
+                initNotePress={n => () =>
+                    this.processEvent('toggleNotePress', { url: n.url })}
                 notes={this.state.page.notes}
+                clearBackground
             />
         )
     }
@@ -92,7 +82,7 @@ export default class PageEditorScreen extends NavigationScreen<
         )
     }
 
-    renderEditor() {
+    private renderEditor() {
         switch (this.state.mode) {
             case 'notes':
                 return this.renderNotes()
@@ -108,6 +98,7 @@ export default class PageEditorScreen extends NavigationScreen<
             <MainLayout
                 {...this.state.page}
                 onBackPress={e => this.props.navigation.navigate('Overview')}
+                onAddPress={this.initHandleAddNotePress()}
             >
                 {this.renderEditor()}
             </MainLayout>
