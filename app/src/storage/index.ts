@@ -2,15 +2,17 @@ import { ConnectionOptions } from 'typeorm'
 import StorageManager from '@worldbrain/storex'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
 import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
+import { ChangeWatchMiddleware } from '@worldbrain/storex-middleware-change-watcher'
 import { extractUrlParts, normalizeUrl } from '@worldbrain/memex-url-utils'
-
-import defaultConnectionOpts from './default-connection-opts'
-import { Storage } from './types'
 import { createStorexPlugins } from '@worldbrain/memex-storage/lib/mobile-app/plugins'
-import { SettingsStorage } from 'src/features/settings/storage'
 import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
 import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
 import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
+import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/lib/sync/constants'
+
+import defaultConnectionOpts from './default-connection-opts'
+import { Storage } from './types'
+import { SettingsStorage } from 'src/features/settings/storage'
 import { Services } from 'src/services/types'
 import { createServerStorageManager } from './server'
 import { createSharedSyncLog } from 'src/services/sync/shared-sync-log'
@@ -31,7 +33,10 @@ export async function createStorage({
         ...typeORMConnectionOpts,
     } as ConnectionOptions
 
-    const backend = new TypeORMStorageBackend({ connectionOptions })
+    const backend = new TypeORMStorageBackend({
+        connectionOptions,
+        legacyMemexCompatibility: true,
+    })
 
     for (const plugin of createStorexPlugins()) {
         backend.use(plugin)
@@ -66,7 +71,13 @@ export async function setStorageMiddleware(options: {
     storage: Storage
     services: Services
 }) {
+    const syncedCollections = new Set(SYNCED_COLLECTIONS)
     options.storage.manager.setMiddleware([
+        new ChangeWatchMiddleware({
+            storageManager: options.storage.manager,
+            shouldWatchCollection: collection =>
+                syncedCollections.has(collection),
+        }),
         await options.services.sync.createSyncLoggingMiddleware(),
     ])
 }

@@ -35,6 +35,12 @@
             "@worldbrain/storex-backend-firestore/lib/*": [
                 "external/@worldbrain/storex-backend-firestore/ts/*"
             ],
+            "@worldbrain/storex-middleware-change-watcher": [
+                "external/@worldbrain/storex-middleware-change-watcher/ts"
+            ],
+            "@worldbrain/storex-middleware-change-watcher/lib/*": [
+                "external/@worldbrain/storex-middleware-change-watcher/ts/*"
+            ],
             "@worldbrain/storex-sync": ["external/@worldbrain/storex-sync/ts"],
             "@worldbrain/storex-sync/lib/*": [
                 "external/@worldbrain/storex-sync/ts/*"

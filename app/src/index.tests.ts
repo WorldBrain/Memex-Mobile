@@ -78,6 +78,30 @@ export function makeStorageTestFactory() {
                 },
             })
 
+            const signalTransportFactory = lazyMemorySignalTransportFactory()
+            const sharedSyncLog = await createMemorySharedSyncLog()
+
+            // const navigation = new FakeNavigation()
+            const auth = new MemoryAuthService()
+            const localStorage = new LocalStorageService({
+                settingsStorage: new MockSettingsStorage(),
+            })
+            const services = await createServices({
+                devicePlatform: 'integration-tests',
+                auth,
+                storage,
+                signalTransportFactory,
+                sharedSyncLog,
+                localStorage,
+                disableSyncEncryption: true,
+                keychain: new MockKeychainPackage(),
+            })
+            await setStorageMiddleware({
+                services,
+                storage,
+            })
+            services.sync.initialSync.wrtc = wrtc
+
             try {
                 await test.call(this, { storage })
             } finally {
