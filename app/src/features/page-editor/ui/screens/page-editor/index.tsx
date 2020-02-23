@@ -43,7 +43,7 @@ export default class PageEditorScreen extends NavigationScreen<
         return (
             <NotesList
                 initNoteDelete={n => () =>
-                    this.processEvent('deleteNote', { url: n.url })}
+                    this.processEvent('confirmNoteDelete', { url: n.url })}
                 initNoteEdit={note => () =>
                     this.props.navigation.navigate('NoteEditor', {
                         pageUrl: this.state.page.fullUrl,
@@ -64,10 +64,6 @@ export default class PageEditorScreen extends NavigationScreen<
         const initEntries =
             type === 'tags' ? this.state.page.tags : this.state.page.lists
 
-        if (this.state.loadState !== 'done') {
-            return null
-        }
-
         return (
             <>
                 <MetaPicker
@@ -83,6 +79,10 @@ export default class PageEditorScreen extends NavigationScreen<
     }
 
     private renderEditor() {
+        if (this.state.loadState !== 'done') {
+            return null
+        }
+
         switch (this.state.mode) {
             case 'notes':
                 return this.renderNotes()
@@ -99,6 +99,7 @@ export default class PageEditorScreen extends NavigationScreen<
                 {...this.state.page}
                 onBackPress={e => this.props.navigation.navigate('Overview')}
                 onAddPress={this.initHandleAddNotePress()}
+                titleText={this.state.page.pageUrl}
             >
                 {this.renderEditor()}
             </MainLayout>

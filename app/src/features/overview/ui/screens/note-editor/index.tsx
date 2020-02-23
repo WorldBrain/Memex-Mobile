@@ -112,12 +112,20 @@ export default class NoteEditorScreen extends NavigationScreen<
                     renderRightIcon={() => (
                         <TouchableOpacity
                             onPress={this.handleSaveBtnPress}
-                            disabled={this.disableInputs}
                             style={navigationStyles.btnContainer}
+                            disabled={
+                                this.disableInputs ||
+                                !this.state.noteText.trim().length
+                            }
                         >
                             <Image
                                 resizeMode="contain"
-                                style={navigationStyles.checkIcon}
+                                style={
+                                    this.disableInputs ||
+                                    !this.state.noteText.trim().length
+                                        ? navigationStyles.disabled
+                                        : navigationStyles.checkIcon
+                                }
                                 source={require('src/ui/img/tick.png')}
                             />
                         </TouchableOpacity>

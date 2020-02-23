@@ -30,7 +30,10 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
     }
 
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
-        this.props.navigation.navigate('PageEditor', { page, mode })
+        this.props.navigation.navigate('PageEditor', {
+            pageUrl: page.fullUrl,
+            mode,
+        })
     }
 
     private initHandleDeletePress = (page: UIPage) => () =>
@@ -66,7 +69,9 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         nativeEvent,
     }: NativeSyntheticEvent<NativeScrollEvent>) => {
         if (scrollHelpers.isAtTop(nativeEvent)) {
-            return this.processEvent('reload', {})
+            return this.processEvent('reload', {
+                initList: this.state.selectedListName,
+            })
         }
 
         if (scrollHelpers.isAtBottom(nativeEvent)) {
@@ -77,6 +82,18 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
     private handleListsFilterPress = () => {
         this.props.navigation.navigate('ListsFilter', {
             selectedList: this.state.selectedListName,
+        })
+    }
+
+    private handleLogoPress = () => {
+        if (this.state.selectedListName === MOBILE_LIST_NAME) {
+            return
+        }
+        this.processEvent('setFilteredListName', {
+            name: MOBILE_LIST_NAME,
+        })
+        this.processEvent('reload', {
+            initList: MOBILE_LIST_NAME,
         })
     }
 
@@ -142,6 +159,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
             <>
                 <DashboardNav
                     icon="settings"
+                    onLeftIconPress={this.handleLogoPress}
                     onRightIconPress={() =>
                         this.props.navigation.navigate('SettingsMenu')
                     }

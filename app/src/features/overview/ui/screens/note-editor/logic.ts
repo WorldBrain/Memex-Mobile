@@ -56,17 +56,23 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
+    private navigateBack = () =>
+        this.props.navigation.navigate('PageEditor', {
+            mode: 'notes',
+            pageUrl: this.pageUrl,
+        })
+
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
         if (previousState.noteText.trim() !== this.initNoteText.trim()) {
             Alert.alert('Discard Changes?', `You've made unsaved changes`, [
                 {
                     text: 'Discard',
-                    onPress: () => this.props.navigation.navigate('Overview'),
+                    onPress: this.navigateBack,
                 },
                 { text: 'Continue' },
             ])
         } else {
-            this.props.navigation.navigate('Overview')
+            this.navigateBack()
         }
     }
 
@@ -102,7 +108,7 @@ export default class Logic extends UILogic<State, Event> {
             },
         )
 
-        this.props.navigation.navigate('Overview')
+        this.navigateBack()
     }
 
     setHighlightTextLines(
