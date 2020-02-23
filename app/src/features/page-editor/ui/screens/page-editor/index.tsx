@@ -99,6 +99,7 @@ export default class PageEditorScreen extends NavigationScreen<
                 {...this.state.page}
                 onBackPress={e => this.props.navigation.navigate('Overview')}
                 onAddPress={this.initHandleAddNotePress()}
+                titleText={this.state.page.pageUrl}
             >
                 {this.renderEditor()}
             </MainLayout>

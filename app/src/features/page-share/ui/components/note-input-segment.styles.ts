@@ -10,7 +10,7 @@ export default EStyleSheet.create({
     textInput: {
         height: '100%',
         width: '100%',
-        paddingTop: 20,
+        paddingTop: 15,
         paddingBottom: 10,
         paddingHorizontal: 20,
         color: '$textColor',

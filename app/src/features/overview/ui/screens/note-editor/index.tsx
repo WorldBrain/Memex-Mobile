@@ -120,7 +120,12 @@ export default class NoteEditorScreen extends NavigationScreen<
                         >
                             <Image
                                 resizeMode="contain"
-                                style={navigationStyles.checkIcon}
+                                style={
+                                    this.disableInputs ||
+                                    !this.state.noteText.trim().length
+                                        ? navigationStyles.disabled
+                                        : navigationStyles.checkIcon
+                                }
                                 source={require('src/ui/img/tick.png')}
                             />
                         </TouchableOpacity>

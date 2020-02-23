@@ -12,6 +12,7 @@ export default EStyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
         height: '4rem',
+        marginBottom: '0.5rem',
     },
     buttonText: {
         fontSize: '1.3rem',

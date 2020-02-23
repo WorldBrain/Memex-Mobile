@@ -59,6 +59,9 @@ export default EStyleSheet.create({
         width: '85%',
         height: '85%',
     },
+    disabled: {
+        display: 'none',
+    },
     settingsContainer: {
         position: 'relative',
         height: '85%',
