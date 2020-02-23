@@ -68,5 +68,42 @@ export function registerSingleDeviceSyncTests(
                 )
             },
         )
+
+        it(
+            maybeMarkTestDescription(
+                'should result in the same end storage state after an initial sync',
+                options.mark,
+            ),
+            async ({ createDevice }) => {
+                const devices = await Promise.all([
+                    createDevice(),
+                    createDevice(),
+                ])
+                devices[0].auth.setUser(TEST_USER)
+
+                await test(devices[0])
+                const firstDeviceStorageContents = await getStorageContents(
+                    devices[0].storage.manager,
+                    {
+                        exclude: new Set(['syncDeviceInfo']),
+                    },
+                )
+
+                await doInitialSync({
+                    source: devices[0],
+                    target: devices[1],
+                })
+
+                const secondDeviceStorageContents = await getStorageContents(
+                    devices[1].storage.manager,
+                    {
+                        exclude: new Set(['syncDeviceInfo']),
+                    },
+                )
+                expect(firstDeviceStorageContents).toEqual(
+                    secondDeviceStorageContents,
+                )
+            },
+        )
     })
 }

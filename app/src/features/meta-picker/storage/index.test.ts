@@ -375,7 +375,7 @@ describe('meta picker StorageModule', () => {
         )
     })
 
-    it('should be able to set a page to only given tags (delete existing, add missing)', async ({
+    it('should be able to set a page to only given lists (delete existing, add missing)', async ({
         storage: {
             modules: { metaPicker, overview },
         },
