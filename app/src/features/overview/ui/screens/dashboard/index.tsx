@@ -30,7 +30,10 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
     }
 
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
-        this.props.navigation.navigate('PageEditor', { page, mode })
+        this.props.navigation.navigate('PageEditor', {
+            pageUrl: page.fullUrl,
+            mode,
+        })
     }
 
     private initHandleDeletePress = (page: UIPage) => () =>

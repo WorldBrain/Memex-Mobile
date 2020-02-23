@@ -64,10 +64,6 @@ export default class PageEditorScreen extends NavigationScreen<
         const initEntries =
             type === 'tags' ? this.state.page.tags : this.state.page.lists
 
-        if (this.state.loadState !== 'done') {
-            return null
-        }
-
         return (
             <>
                 <MetaPicker
@@ -83,6 +79,10 @@ export default class PageEditorScreen extends NavigationScreen<
     }
 
     private renderEditor() {
+        if (this.state.loadState !== 'done') {
+            return null
+        }
+
         switch (this.state.mode) {
             case 'notes':
                 return this.renderNotes()

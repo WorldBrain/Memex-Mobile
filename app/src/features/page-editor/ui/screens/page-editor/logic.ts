@@ -1,10 +1,16 @@
 import { Alert } from 'react-native'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { UIPageWithNotes as Page } from 'src/features/overview/types'
+import { UIPageWithNotes as Page, UINote } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
-import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
+import {
+    NavigationProps,
+    UIStorageModules,
+    UITaskState,
+    UIServices,
+} from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
+import { timeFromNow } from 'src/utils/time-helpers'
 
 export interface State {
     loadState: UITaskState
@@ -24,7 +30,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends NavigationProps {
-    storage: UIStorageModules<'metaPicker' | 'pageEditor'>
+    storage: UIStorageModules<'metaPicker' | 'pageEditor' | 'overview'>
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -42,10 +48,48 @@ export default class Logic extends UILogic<State, Event> {
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
-            const page = this.props.navigation.getParam('page', {})
             const mode = this.props.navigation.getParam('mode', 'tags')
+            const pageUrl = this.props.navigation.getParam('pageUrl')
+            const page = await this.loadPageData(pageUrl)
+
             this.emitMutation({ page: { $set: page }, mode: { $set: mode } })
         })
+    }
+
+    private async loadPageData(url: string): Promise<Page> {
+        const { overview, pageEditor } = this.props.storage.modules
+        const storedPage = await overview.findPage({ url })
+
+        if (!storedPage) {
+            throw new Error('No page found in DB for given route.')
+        }
+
+        const notes = await pageEditor.findNotes({ url })
+
+        return {
+            ...storedPage,
+            titleText: storedPage.fullTitle,
+            date: 'a minute ago',
+            tags: [],
+            lists: [],
+            pageUrl: storedPage.url,
+            // TODO: unify this map fn with the identical one in DashboardLogic
+            notes: notes.map<UINote>(note => ({
+                domain: storedPage.domain,
+                fullUrl: url,
+                url: note.url,
+                isStarred: note.isStarred,
+                commentText: note.comment || undefined,
+                noteText: note.body,
+                isNotePressed: false,
+                isEdited:
+                    note.lastEdited &&
+                    note.lastEdited.getTime() !== note.createdWhen!.getTime(),
+                date: note.lastEdited
+                    ? timeFromNow(note.lastEdited)
+                    : timeFromNow(note.createdWhen!),
+            })),
+        } as Page
     }
 
     toggleNotePress(
