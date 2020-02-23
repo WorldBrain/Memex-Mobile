@@ -194,7 +194,7 @@ describe('meta picker StorageModule', () => {
         expect(before.length).toBe(after.length + 1)
         expect(after).not.toContain(data.tags[0])
 
-        metaPicker.deleteTagsByPage({ url: page.url })
+        await metaPicker.deleteTagsByPage({ url: page.url })
         expect(await metaPicker.findTagsByPage({ url: page.url })).toEqual([])
     })
 

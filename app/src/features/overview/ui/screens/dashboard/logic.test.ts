@@ -1,4 +1,4 @@
-import Logic, { State, Event, LogicDependencies } from './logic'
+import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { Storage } from 'src/storage/types'
@@ -39,10 +39,12 @@ const UI_PAGE_2: UIPage = {
 describe('dashboard screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    function setup(options: LogicDependencies) {
+    function setup(
+        options: Omit<Props, 'navigation'> & { navigation: FakeNavigation },
+    ) {
         const logic = new Logic({
             ...options,
-            navigation: new FakeNavigation(),
+            navigation: options.navigation as any,
         })
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
@@ -51,25 +53,25 @@ describe('dashboard screen UI logic tests', () => {
 
     async function createRecentlyVisitedPage(
         page: Omit<Page, 'domain' | 'hostname'>,
-        { storage }: { storage: Storage },
+        dependencies: { storage: Storage },
     ) {
-        await storage.modules.overview.createPage(page)
-        await addToMobileList(page.url, { storage })
+        await dependencies.storage.modules.overview.createPage(page)
+        await addToMobileList(page.url, dependencies)
     }
 
     async function addToMobileList(
         pageUrl: string,
-        { storage }: { storage: Storage },
+        dependencies: { storage: Storage },
     ) {
-        const mobileListId = await storage.modules.metaPicker.createMobileListIfAbsent()
-        await storage.modules.metaPicker.createPageListEntry({
+        const mobileListId = await dependencies.storage.modules.metaPicker.createMobileListIfAbsent()
+        await dependencies.storage.modules.metaPicker.createPageListEntry({
             listId: mobileListId,
             pageUrl,
         })
     }
 
-    it('should load correctly without any saved pages', async ({ storage }) => {
-        const { element } = setup({ storage })
+    it('should load correctly without any saved pages', async dependencies => {
+        const { element } = setup(dependencies)
 
         await element.init()
         expect(element.state).toEqual({
@@ -84,11 +86,11 @@ describe('dashboard screen UI logic tests', () => {
         })
     })
 
-    it('should load correctly with saved pages', async ({ storage }) => {
-        const { element } = setup({ storage })
+    it('should load correctly with saved pages', async dependencies => {
+        const { element } = setup(dependencies)
 
-        await insertIntegrationTestData({ storage })
-        await addToMobileList(INTEGRATION_TEST_DATA.pages[0].url, { storage })
+        await insertIntegrationTestData(dependencies)
+        await addToMobileList(INTEGRATION_TEST_DATA.pages[0].url, dependencies)
 
         await element.init()
         expect(element.state).toEqual({
@@ -113,8 +115,9 @@ describe('dashboard screen UI logic tests', () => {
         })
     })
 
-    it('should paginate correctly', async ({ storage }) => {
-        const { element } = setup({ storage, pageSize: 1 })
+    it('should paginate correctly', async dependencies => {
+        const { storage } = dependencies
+        const { element } = setup({ ...dependencies, pageSize: 1 })
 
         await storage.modules.overview.createPage(
             INTEGRATION_TEST_DATA.pages[0],
@@ -195,8 +198,9 @@ describe('dashboard screen UI logic tests', () => {
         })
     })
 
-    it('should be able to delete pages', async ({ storage }) => {
-        const { element } = setup({ storage })
+    it('should be able to delete pages', async dependencies => {
+        const { storage } = dependencies
+        const { element } = setup(dependencies)
 
         await createRecentlyVisitedPage(INTEGRATION_TEST_DATA.pages[0], {
             storage,
@@ -227,13 +231,14 @@ describe('dashboard screen UI logic tests', () => {
             await storage.manager.collection('pages').findObjects({}),
         ).toEqual([])
 
-        const { element: secondElement } = setup({ storage })
+        const { element: secondElement } = setup(dependencies)
         await secondElement.init()
         expect(secondElement.state.pages).toEqual(new Map([]))
     })
 
-    it('should be able to star + unstar pages', async ({ storage }) => {
-        const { element } = setup({ storage })
+    it('should be able to star + unstar pages', async dependencies => {
+        const { storage } = dependencies
+        const { element } = setup(dependencies)
 
         const { url } = INTEGRATION_TEST_DATA.pages[0]
         await createRecentlyVisitedPage(INTEGRATION_TEST_DATA.pages[0], {

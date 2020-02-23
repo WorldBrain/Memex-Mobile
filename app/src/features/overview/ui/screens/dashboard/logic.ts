@@ -146,6 +146,10 @@ export default class Logic extends UILogic<State, Event> {
         const entries: Array<[string, UIPage]> = []
         for (const listEntry of listEntries) {
             const page = await overview.findPage({ url: listEntry.pageUrl })
+            if (!page) {
+                continue
+            }
+
             const tags = await metaPicker.findTagsByPage({
                 url: listEntry.pageUrl,
             })
@@ -159,11 +163,11 @@ export default class Logic extends UILogic<State, Event> {
                 listEntry.pageUrl,
                 {
                     url: listEntry.pageUrl,
-                    domain: page!.domain,
-                    fullUrl: page!.fullUrl,
-                    pageUrl: page!.url,
-                    titleText: page!.fullTitle || page.url,
-                    isStarred: !!page!.isStarred,
+                    domain: page.domain,
+                    fullUrl: page.fullUrl,
+                    pageUrl: page.url,
+                    titleText: page.fullTitle || page.url,
+                    isStarred: !!page.isStarred,
                     date: timeFromNow(listEntry.createdAt),
                     tags: tags.map(tag => tag.name),
                     lists: lists.map(list => list.name),

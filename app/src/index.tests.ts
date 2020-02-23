@@ -45,6 +45,8 @@ export function makeStorageTestFactory() {
     type TestFunction = (context: TestContext) => Promise<void>
     interface TestContext {
         storage: Storage
+        services: Services
+        navigation: FakeNavigation
     }
 
     function factory(description: string, test?: TestFunction): void
@@ -81,7 +83,7 @@ export function makeStorageTestFactory() {
             const signalTransportFactory = lazyMemorySignalTransportFactory()
             const sharedSyncLog = await createMemorySharedSyncLog()
 
-            // const navigation = new FakeNavigation()
+            const navigation = new FakeNavigation()
             const auth = new MemoryAuthService()
             const localStorage = new LocalStorageService({
                 settingsStorage: new MockSettingsStorage(),
@@ -103,7 +105,7 @@ export function makeStorageTestFactory() {
             services.sync.initialSync.wrtc = wrtc
 
             try {
-                await test.call(this, { storage })
+                await test.call(this, { storage, services, navigation })
             } finally {
             }
         })
