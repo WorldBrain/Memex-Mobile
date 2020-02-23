@@ -11,6 +11,7 @@ const MemexIcon = require('../img/MemexIcon.png')
 export interface Props extends NavProps {
     icon: 'exit' | 'settings'
     onRightIconPress: () => void
+    onLeftIconPress?: () => void
     titleText: string
 }
 
@@ -18,7 +19,10 @@ const DashboardNavigation: React.StatelessComponent<Props> = props => (
     <Navigation
         {...props}
         renderLeftIcon={() => (
-            <TouchableOpacity style={navigationStyles.btnContainer}>
+            <TouchableOpacity
+                style={navigationStyles.btnContainer}
+                onPress={props.onLeftIconPress}
+            >
                 <Image
                     resizeMode="contain"
                     source={MemexIcon}

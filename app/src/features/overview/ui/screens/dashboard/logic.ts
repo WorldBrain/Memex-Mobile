@@ -20,13 +20,14 @@ export interface State {
     actionFinishedAt: number
 }
 export type Event = UIEvent<{
-    reload: {}
+    reload: { initList?: string }
     loadMore: {}
     changeAppState: { nextState: AppStateStatus }
     setPages: { pages: UIPage[] }
     deletePage: { url: string }
     togglePageStar: { url: string }
     toggleResultPress: { url: string }
+    setFilteredListName: { name: string }
 }>
 
 export interface Props extends NavigationProps {
@@ -46,11 +47,10 @@ export default class Logic extends UILogic<State, Event> {
         this.getNow = props.getNow || (() => Date.now())
     }
 
-    getInitialState(): State {
-        const selectedListName = this.props.navigation.getParam(
-            'selectedList',
-            MOBILE_LIST_NAME,
-        )
+    getInitialState(initList?: string): State {
+        const selectedListName =
+            initList ??
+            this.props.navigation.getParam('selectedList', MOBILE_LIST_NAME)
 
         return {
             loadState: 'pristine',
@@ -84,12 +84,22 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async reload() {
+    setFilteredListName(
+        incoming: IncomingUIEvent<State, Event, 'setFilteredListName'>,
+    ): UIMutation<State> {
+        return {
+            selectedListName: { $set: incoming.event.name },
+        }
+    }
+
+    async reload(incoming: IncomingUIEvent<State, Event, 'reload'>) {
         await executeUITask<State, 'reloadState', void>(
             this,
             'reloadState',
             async () => {
-                await this.doLoadMore(this.getInitialState())
+                await this.doLoadMore(
+                    this.getInitialState(incoming.event.initList),
+                )
             },
         )
     }
