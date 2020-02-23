@@ -1,29 +1,10 @@
-import {
-    makeMultiDeviceTestFactory,
-    MultiDeviceTestDevice,
-} from 'src/index.tests'
+import { makeMultiDeviceTestFactory, TestDevice } from 'src/index.tests'
 import {
     insertIntegrationTestData,
     checkIntegrationTestData,
 } from 'src/tests/shared-fixtures/integration'
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
-
-async function doInitialSync(params: {
-    source: MultiDeviceTestDevice
-    target: MultiDeviceTestDevice
-}) {
-    const {
-        initialMessage,
-    } = await params.source.services.sync.initialSync.requestInitialSync()
-    await params.target.services.sync.initialSync.answerInitialSync({
-        initialMessage,
-    })
-    await Promise.all(
-        [params.source, params.target].map(device =>
-            device.services.sync.initialSync.waitForInitialSync(),
-        ),
-    )
-}
+import { doInitialSync } from './index.tests'
 
 describe('SyncService', () => {
     const it = makeMultiDeviceTestFactory()
