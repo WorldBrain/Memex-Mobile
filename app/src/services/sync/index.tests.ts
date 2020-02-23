@@ -4,6 +4,7 @@ import {
     SingleDeviceTestFunction,
     TestDevice,
     makeMultiDeviceTestFactory,
+    maybeMarkTestDescription,
 } from '../../index.tests'
 
 export async function doInitialSync(params: {
@@ -23,39 +24,49 @@ export async function doInitialSync(params: {
     )
 }
 
-export function registerSingleDeviceSyncTests(test: SingleDeviceTestFunction) {
+export function registerSingleDeviceSyncTests(
+    test: SingleDeviceTestFunction,
+    options: { mark: boolean | undefined },
+) {
     const it = makeMultiDeviceTestFactory()
 
     describe('Sync tests', () => {
-        it('should result in the same end storage state after a continuous sync', async ({
-            createDevice,
-        }) => {
-            const devices = await Promise.all([createDevice(), createDevice()])
-            devices[0].auth.setUser(TEST_USER)
+        it(
+            maybeMarkTestDescription(
+                'should result in the same end storage state after a continuous sync',
+                options.mark,
+            ),
+            async ({ createDevice }) => {
+                const devices = await Promise.all([
+                    createDevice(),
+                    createDevice(),
+                ])
+                devices[0].auth.setUser(TEST_USER)
 
-            await doInitialSync({
-                source: devices[0],
-                target: devices[1],
-            })
+                await doInitialSync({
+                    source: devices[0],
+                    target: devices[1],
+                })
 
-            await test(devices[0])
-            const firstDeviceStorageContents = await getStorageContents(
-                devices[0].storage.manager,
-                {
-                    exclude: new Set(['clientSyncLogEntry']),
-                },
-            )
-            await devices[0].services.sync.continuousSync.forceIncrementalSync()
-            await devices[1].services.sync.continuousSync.forceIncrementalSync()
-            const secondDeviceStorageContents = await getStorageContents(
-                devices[1].storage.manager,
-                {
-                    exclude: new Set(['clientSyncLogEntry']),
-                },
-            )
-            expect(firstDeviceStorageContents).toEqual(
-                secondDeviceStorageContents,
-            )
-        })
+                await test(devices[0])
+                const firstDeviceStorageContents = await getStorageContents(
+                    devices[0].storage.manager,
+                    {
+                        exclude: new Set(['clientSyncLogEntry']),
+                    },
+                )
+                await devices[0].services.sync.continuousSync.forceIncrementalSync()
+                await devices[1].services.sync.continuousSync.forceIncrementalSync()
+                const secondDeviceStorageContents = await getStorageContents(
+                    devices[1].storage.manager,
+                    {
+                        exclude: new Set(['clientSyncLogEntry']),
+                    },
+                )
+                expect(firstDeviceStorageContents).toEqual(
+                    secondDeviceStorageContents,
+                )
+            },
+        )
     })
 }

@@ -31,6 +31,7 @@ export interface MultiDeviceTestContext {
 
 export interface SingleDeviceTestOptions {
     debugSql?: boolean
+    mark?: boolean
 }
 export type SingleDeviceTestFunction = (device: TestDevice) => Promise<void>
 export type SingleDeviceTestFactory = ((
@@ -68,52 +69,58 @@ export function makeStorageTestFactory() {
         }
 
         describe(description, () => {
-            it('should work on a single device', async function(this: any) {
-                const storage = await createStorage({
-                    typeORMConnectionOpts: {
-                        type: 'sqlite',
-                        database: ':memory:',
-                        name: `connection-${connIterator++}`,
-                        logging: options.debugSql,
-                    },
-                })
-
-                const signalTransportFactory = lazyMemorySignalTransportFactory()
-                const sharedSyncLog = await createMemorySharedSyncLog()
-
-                const navigation = new FakeNavigation()
-                const auth = new MemoryAuthService()
-                const localStorage = new LocalStorageService({
-                    settingsStorage: new MockSettingsStorage(),
-                })
-                const services = await createServices({
-                    devicePlatform: 'integration-tests',
-                    auth,
-                    storage,
-                    signalTransportFactory,
-                    sharedSyncLog,
-                    localStorage,
-                    disableSyncEncryption: true,
-                    keychain: new MockKeychainPackage(),
-                })
-                await setStorageMiddleware({
-                    services,
-                    storage,
-                })
-                services.sync.initialSync.wrtc = wrtc
-
-                try {
-                    await test.call(this, {
-                        storage,
-                        services,
-                        navigation,
-                        auth,
+            it(
+                maybeMarkTestDescription(
+                    'should work on a single device',
+                    options?.mark,
+                ),
+                async function(this: any) {
+                    const storage = await createStorage({
+                        typeORMConnectionOpts: {
+                            type: 'sqlite',
+                            database: ':memory:',
+                            name: `connection-${connIterator++}`,
+                            logging: options.debugSql,
+                        },
                     })
-                } finally {
-                }
-            })
 
-            registerSingleDeviceSyncTests(test)
+                    const signalTransportFactory = lazyMemorySignalTransportFactory()
+                    const sharedSyncLog = await createMemorySharedSyncLog()
+
+                    const navigation = new FakeNavigation()
+                    const auth = new MemoryAuthService()
+                    const localStorage = new LocalStorageService({
+                        settingsStorage: new MockSettingsStorage(),
+                    })
+                    const services = await createServices({
+                        devicePlatform: 'integration-tests',
+                        auth,
+                        storage,
+                        signalTransportFactory,
+                        sharedSyncLog,
+                        localStorage,
+                        disableSyncEncryption: true,
+                        keychain: new MockKeychainPackage(),
+                    })
+                    await setStorageMiddleware({
+                        services,
+                        storage,
+                    })
+                    services.sync.initialSync.wrtc = wrtc
+
+                    try {
+                        await test.call(this, {
+                            storage,
+                            services,
+                            navigation,
+                            auth,
+                        })
+                    } finally {
+                    }
+                },
+            )
+
+            registerSingleDeviceSyncTests(test, { mark: options?.mark })
         })
     }
 
@@ -211,4 +218,11 @@ export async function createMemorySharedSyncLog() {
     })
     await sharedStorageManager.finishInitialization()
     return sharedSyncLog
+}
+
+export function maybeMarkTestDescription(
+    description: string,
+    mark: boolean | undefined,
+) {
+    return mark ? description + '!!!' : description
 }
