@@ -1,3 +1,4 @@
+import { Alert } from 'react-native'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { UIPageWithNotes as Page } from 'src/features/overview/types'
@@ -17,7 +18,7 @@ export type Event = UIEvent<{
     setInputText: { text: string }
     removeEntry: { name: string }
     createEntry: { name: string }
-    deleteNote: { url: string }
+    confirmNoteDelete: { url: string }
     saveNote: { text: string }
     setPage: { page: Page }
 }>
@@ -146,10 +147,19 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async deleteNote({
+    async confirmNoteDelete({
         event: { url },
-        previousState,
-    }: IncomingUIEvent<State, Event, 'deleteNote'>) {
+    }: IncomingUIEvent<State, Event, 'confirmNoteDelete'>) {
+        Alert.alert('Delete Note?', `You cannot get this back`, [
+            {
+                text: 'Delete',
+                onPress: () => this.deleteNote(url),
+            },
+            { text: 'Cancel' },
+        ])
+    }
+
+    private async deleteNote(url: string) {
         this.emitMutation({
             page: state => {
                 const noteIndex = state.notes.findIndex(
@@ -168,11 +178,7 @@ export default class Logic extends UILogic<State, Event> {
 
         const { pageEditor } = this.props.storage.modules
 
-        try {
-            await pageEditor.deleteNoteByUrl({ url })
-        } catch (error) {
-            this.emitMutation({ page: { $set: previousState.page } })
-        }
+        await pageEditor.deleteNoteByUrl({ url })
     }
 
     saveNote(
