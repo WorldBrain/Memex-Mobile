@@ -14,4 +14,8 @@ export class FakeNavigation {
         this.requests = []
         return requests
     }
+
+    getParam(name: string, defaultVal?: any) {
+        return defaultVal || null
+    }
 }

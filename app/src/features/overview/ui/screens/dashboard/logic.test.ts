@@ -2,12 +2,14 @@ import Logic, { State, Event, LogicDependencies } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { Storage } from 'src/storage/types'
+import { FakeNavigation } from 'src/tests/navigation'
 import {
     insertIntegrationTestData,
     INTEGRATION_TEST_DATA,
 } from 'src/tests/shared-fixtures/integration'
 import { UIPage } from 'src/features/overview/types'
 import { Page } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/types'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 
 const UI_PAGE_1: UIPage = {
     fullUrl: 'https://www.test.com',
@@ -38,7 +40,10 @@ describe('dashboard screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     function setup(options: LogicDependencies) {
-        const logic = new Logic(options)
+        const logic = new Logic({
+            ...options,
+            navigation: new FakeNavigation(),
+        })
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
         return { element }
@@ -71,6 +76,7 @@ describe('dashboard screen UI logic tests', () => {
             loadState: 'done',
             reloadState: 'pristine',
             loadMoreState: 'pristine',
+            selectedListName: MOBILE_LIST_NAME,
             couldHaveMore: false,
             actionState: 'pristine',
             actionFinishedAt: 0,
@@ -92,6 +98,7 @@ describe('dashboard screen UI logic tests', () => {
             couldHaveMore: false,
             actionState: 'pristine',
             actionFinishedAt: 0,
+            selectedListName: MOBILE_LIST_NAME,
             pages: new Map([
                 [
                     'test.com',
@@ -139,6 +146,7 @@ describe('dashboard screen UI logic tests', () => {
             actionState: 'pristine',
             actionFinishedAt: 0,
             pages: new Map([['test.com.bla', UI_PAGE_2]]),
+            selectedListName: MOBILE_LIST_NAME,
         })
 
         await element.processEvent('loadMore', {})
@@ -149,6 +157,7 @@ describe('dashboard screen UI logic tests', () => {
             couldHaveMore: true,
             actionState: 'pristine',
             actionFinishedAt: 0,
+            selectedListName: MOBILE_LIST_NAME,
             pages: new Map([
                 ['test.com.bla', UI_PAGE_2],
                 ['test.com', UI_PAGE_1],
@@ -163,6 +172,7 @@ describe('dashboard screen UI logic tests', () => {
             couldHaveMore: false,
             actionState: 'pristine',
             actionFinishedAt: 0,
+            selectedListName: MOBILE_LIST_NAME,
             pages: new Map([
                 ['test.com.bla', UI_PAGE_2],
                 ['test.com', UI_PAGE_1],
@@ -177,6 +187,7 @@ describe('dashboard screen UI logic tests', () => {
             couldHaveMore: false,
             actionState: 'pristine',
             actionFinishedAt: 0,
+            selectedListName: MOBILE_LIST_NAME,
             pages: new Map([
                 ['test.com.bla', UI_PAGE_2],
                 ['test.com', UI_PAGE_1],
@@ -206,6 +217,7 @@ describe('dashboard screen UI logic tests', () => {
             action: 'delete',
             actionState: 'done',
             actionFinishedAt: expect.any(Number),
+            selectedListName: MOBILE_LIST_NAME,
             pages: new Map([]),
         })
         expect(element.state.actionFinishedAt).toBeGreaterThan(
