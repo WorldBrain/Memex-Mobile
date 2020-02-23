@@ -63,20 +63,4 @@ describe('page editor UI logic tests', () => {
 
         expect(logicContainer.state.page.notes[0].isNotePressed).toBe(false)
     })
-
-    it('should be able to delete notes', async () => {
-        const { logicContainer } = setup()
-
-        logicContainer.logic.emitMutation({
-            page: { $set: testPage as any },
-        })
-        expect(logicContainer.state.page.notes.length).toBe(0)
-
-        await logicContainer.processEvent('saveNote', { text: testText })
-        expect(logicContainer.state.page.notes.length).toBe(1)
-        await logicContainer.processEvent('deleteNote', {
-            url: logicContainer.state.page.notes[0].url,
-        })
-        expect(logicContainer.state.page.notes.length).toBe(0)
-    })
 })
