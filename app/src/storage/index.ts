@@ -71,6 +71,7 @@ export async function createStorage({
 export async function setStorageMiddleware(options: {
     storage: Storage
     services: Services
+    enableAutoSync?: boolean
     extraPostChangeWatcher?: (
         context: StorageOperationEvent<'post'>,
     ) => void | Promise<void>
@@ -82,6 +83,9 @@ export async function setStorageMiddleware(options: {
             shouldWatchCollection: collection =>
                 syncedCollections.has(collection),
             postprocessOperation: async context => {
+                if (options.enableAutoSync) {
+                    await options.services.sync.handleStorageChange(context)
+                }
                 if (options.extraPostChangeWatcher) {
                     await options.extraPostChangeWatcher(context)
                 }
