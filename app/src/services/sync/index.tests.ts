@@ -33,7 +33,7 @@ export function registerSingleDeviceSyncTests(
     describe('Sync tests', () => {
         it(
             maybeMarkTestDescription(
-                'should result in the same end storage state after a continuous sync',
+                'should result in the same end storage state after a incremental sync',
                 options.mark,
             ),
             async ({ createDevice }) => {

@@ -20,6 +20,7 @@ import {
     MemexClientSyncLogStorage,
     MemexSyncInfoStorage,
 } from 'src/features/sync/storage'
+import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 
 export interface CreateStorageOptions {
     typeORMConnectionOpts: ConnectionOptions
@@ -70,6 +71,9 @@ export async function createStorage({
 export async function setStorageMiddleware(options: {
     storage: Storage
     services: Services
+    extraPostChangeWatcher?: (
+        context: StorageOperationEvent<'post'>,
+    ) => void | Promise<void>
 }) {
     const syncedCollections = new Set(SYNCED_COLLECTIONS)
     options.storage.manager.setMiddleware([
@@ -77,6 +81,11 @@ export async function setStorageMiddleware(options: {
             storageManager: options.storage.manager,
             shouldWatchCollection: collection =>
                 syncedCollections.has(collection),
+            postprocessOperation: async context => {
+                if (options.extraPostChangeWatcher) {
+                    await options.extraPostChangeWatcher(context)
+                }
+            },
         }),
         await options.services.sync.createSyncLoggingMiddleware(),
     ])

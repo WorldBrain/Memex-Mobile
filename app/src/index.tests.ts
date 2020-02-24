@@ -15,6 +15,7 @@ import { FakeNavigation } from './tests/navigation'
 import { MockSettingsStorage } from './features/settings/storage/mock-storage'
 import { MockKeychainPackage } from './services/keychain/mock-keychain-package'
 import { registerSingleDeviceSyncTests } from './services/sync/index.tests'
+import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 
 export interface TestDevice {
     storage: Storage
@@ -26,8 +27,14 @@ export type MultiDeviceTestFunction = (
     context: MultiDeviceTestContext,
 ) => Promise<void>
 export interface MultiDeviceTestContext {
-    createDevice(options?: { debugSql?: boolean }): Promise<TestDevice>
+    createDevice: TestDeviceFactory
 }
+export type TestDeviceFactory = (options?: {
+    debugSql?: boolean
+    extraPostChangeWatcher?: (
+        context: StorageOperationEvent<'post'>,
+    ) => void | Promise<void>
+}) => Promise<TestDevice>
 
 export interface SingleDeviceTestOptions {
     debugSql?: boolean
@@ -145,7 +152,7 @@ export function makeMultiDeviceTestFactory() {
             }> = []
             const sharedSyncLog = await createMemorySharedSyncLog()
 
-            const createDevice = async (options?: { debugSql?: boolean }) => {
+            const createDevice: TestDeviceFactory = async options => {
                 const storage = await createStorage({
                     typeORMConnectionOpts: {
                         type: 'sqlite',
@@ -173,6 +180,7 @@ export function makeMultiDeviceTestFactory() {
                 await setStorageMiddleware({
                     services,
                     storage,
+                    extraPostChangeWatcher: options?.extraPostChangeWatcher,
                 })
                 services.sync.initialSync.wrtc = wrtc
 
