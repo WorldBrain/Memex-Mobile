@@ -12,7 +12,6 @@ export interface Props extends NavProps {
     icon: 'exit' | 'settings'
     onRightIconPress: () => void
     onLeftIconPress?: () => void
-    titleText: string
 }
 
 const DashboardNavigation: React.StatelessComponent<Props> = props => (
