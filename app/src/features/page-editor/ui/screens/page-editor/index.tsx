@@ -1,4 +1,3 @@
-// tslint:disable:no-console
 import React from 'react'
 
 import { NavigationScreen } from 'src/ui/types'
