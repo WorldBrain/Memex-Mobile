@@ -39,4 +39,4 @@
 	url = https://github.com/WorldBrain/simple-peer.git
 [submodule "app/external/@worldbrain/storex-middleware-change-watcher"]
 	path = app/external/@worldbrain/storex-middleware-change-watcher
-	url = git@github.com:WorldBrain/storex-middleware-change-watcher.git
+	url = https://github.com/WorldBrain/storex-middleware-change-watcher.git
