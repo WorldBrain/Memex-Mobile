@@ -54,113 +54,65 @@ describe('meta picker UI logic tests', () => {
         expect([...element.state.entries.values()]).toEqual(testEntries)
     })
 
-    // it('should be able to set entries', () => {
-    //     const { logic, state } = setup()
-    //     expect(state.entries.size).toBe(0)
+    it('should be able to add new checked entries', async () => {
+        const { element } = setup({
+            ...DEFAULT_DEPS,
+            type: 'collections',
+            storage: {
+                modules: {
+                    metaPicker: { findListSuggestions: () => [] } as any,
+                },
+            },
+        })
 
-    //     const entries = new Map()
-    //     testEntries.forEach(e => entries.set(e.name, e))
+        const testEntry = { name: 'testZ', isChecked: true }
 
-    //     const nextStateA = logic.withMutation(
-    //         state,
-    //         logic.setEntries({
-    //             event: { entries: testEntries },
-    //             previousState: state,
-    //         }),
-    //     )
+        expect(element.state.entries.size).toBe(0)
+        await element.processEvent('addEntry', {
+            entry: testEntry,
+            selected: [],
+        })
+        expect(element.state.entries.size).toBe(1)
+        expect([...element.state.entries.values()]).toEqual([testEntry])
+    })
 
-    //     expect(nextStateA.entries.size).toBe(testEntries.length)
-    //     expect([...nextStateA.entries.keys()]).toEqual(
-    //         expect.arrayContaining(testEntries.map(e => e.name)),
-    //     )
-    //     expect([...nextStateA.entries.values()]).toEqual(
-    //         expect.arrayContaining(testEntries),
-    //     )
-    // })
+    it('should be able to toggle checked entries', async () => {
+        const findListSuggestions = async (args: { url: string }) => testEntries
+        let suggestValue = [testEntries[2]]
 
-    // it('should be able to add new checked entries', () => {
-    //     const { logic, state } = setup()
-    //     expect(state.entries.size).toBe(0)
-    //     const testEntry = 'test entry'
+        const { element } = setup({
+            ...DEFAULT_DEPS,
+            type: 'collections',
+            storage: {
+                modules: {
+                    metaPicker: {
+                        findListSuggestions,
+                        suggest: async () => suggestValue,
+                    } as any,
+                },
+            },
+        })
 
-    //     const nextStateA = logic.withMutation(
-    //         state,
-    //         logic.addEntry({
-    //             event: { entry: { isChecked: false, name: testEntry } },
-    //             previousState: state,
-    //         }),
-    //     )
+        await element.init()
 
-    //     expect(nextStateA.entries.size).toBe(1)
-    //     expect([...nextStateA.entries.keys()]).toEqual(
-    //         expect.arrayContaining([testEntry]),
-    //     )
-    //     expect([...nextStateA.entries.values()]).toEqual(
-    //         expect.arrayContaining([{ isChecked: true, name: testEntry }]),
-    //     )
-    // })
+        expect(element.state.entries.size).toBe(4)
+        await element.processEvent('suggestEntries', {
+            text: 'test',
+            selected: [testEntries[2].name],
+        })
+        expect(element.state.entries.size).toBe(1)
+        expect([...element.state.entries.values()]).toEqual([testEntries[2]])
 
-    // it('should be able to toggle checked entries', () => {
-    //     const { logic, state } = setup()
-    //     expect(state.entries.size).toBe(0)
+        suggestValue = [testEntries[0], testEntries[1]]
 
-    //     const entries = new Map()
-    //     testEntries.forEach(e => entries.set(e.name, e))
-
-    //     const nextStateA = logic.withMutation(
-    //         state,
-    //         logic.setEntries({
-    //             event: { entries: testEntries },
-    //             previousState: state,
-    //         }),
-    //     )
-
-    //     expect(nextStateA.entries.size).toBe(testEntries.length)
-    //     const testEntry = [...nextStateA.entries.values()][0]
-
-    //     const toggleState = () =>
-    //         logic.withMutation(
-    //             nextStateA,
-    //             logic.toggleEntryChecked({
-    //                 event: { name: testEntry.name },
-    //                 previousState: nextStateA,
-    //             }),
-    //         )
-
-    //     // First toggle - flipped state
-    //     expect(toggleState().entries.get(testEntry.name)).toMatchObject({
-    //         ...testEntry,
-    //         isChecked: !testEntry.isChecked,
-    //     })
-
-    //     // Second toggle - back to original state
-    //     expect(toggleState().entries.get(testEntry.name)).toMatchObject(
-    //         testEntry,
-    //     )
-    // })
-
-    // it('should be able to set loading state', () => {
-    //     const { logic, state } = setup()
-    //     expect(state.isLoading).toBe(false)
-
-    //     const nextStateA = logic.withMutation(
-    //         state,
-    //         logic.setIsLoading({
-    //             event: { value: true },
-    //             previousState: state,
-    //         }),
-    //     )
-
-    //     expect(nextStateA.isLoading).toBe(true)
-
-    //     const nextStateB = logic.withMutation(
-    //         state,
-    //         logic.setIsLoading({
-    //             event: { value: false },
-    //             previousState: nextStateA,
-    //         }),
-    //     )
-
-    //     expect(nextStateB.isLoading).toBe(false)
-    // })
+        await element.processEvent('suggestEntries', {
+            text: 'test',
+            selected: [testEntries[2].name],
+        })
+        expect(element.state.entries.size).toBe(2)
+        expect([...element.state.entries.values()]).toEqual([
+            testEntries[0],
+            testEntries[1],
+        ])
+    })
 })

@@ -1,8 +1,7 @@
 import React from 'react'
 import { TextInput, View } from 'react-native'
 
-import { MetaTypeName } from '../../types'
-import styles from './search-add-input.styles'
+import styles from './suggest-input.styles'
 
 export interface Props {
     value: string
@@ -10,7 +9,7 @@ export interface Props {
     onChange: (text: string) => void
 }
 
-const SearchAddInput: React.StatelessComponent<Props> = props => (
+const SuggestInput: React.StatelessComponent<Props> = props => (
     <View style={styles.container}>
         <TextInput
             style={styles.textInput}
@@ -23,4 +22,4 @@ const SearchAddInput: React.StatelessComponent<Props> = props => (
     </View>
 )
 
-export default SearchAddInput
+export default SuggestInput
