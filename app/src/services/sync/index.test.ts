@@ -1,29 +1,11 @@
-import {
-    makeMultiDeviceTestFactory,
-    MultiDeviceTestDevice,
-} from 'src/index.tests'
+import { makeMultiDeviceTestFactory, TestDevice } from 'src/index.tests'
 import {
     insertIntegrationTestData,
     checkIntegrationTestData,
 } from 'src/tests/shared-fixtures/integration'
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
-
-async function doInitialSync(params: {
-    source: MultiDeviceTestDevice
-    target: MultiDeviceTestDevice
-}) {
-    const {
-        initialMessage,
-    } = await params.source.services.sync.initialSync.requestInitialSync()
-    await params.target.services.sync.initialSync.answerInitialSync({
-        initialMessage,
-    })
-    await Promise.all(
-        [params.source, params.target].map(device =>
-            device.services.sync.initialSync.waitForInitialSync(),
-        ),
-    )
-}
+import { doInitialSync } from './index.tests'
+import { AUTO_SYNC_COLLECTIONS } from './constants'
 
 describe('SyncService', () => {
     const it = makeMultiDeviceTestFactory()
@@ -109,5 +91,18 @@ describe('SyncService', () => {
             source: devices[0],
             target: devices[1],
         })
+    })
+
+    it('should correctly detect which collections to auto-sync', async ({
+        createDevice,
+    }) => {
+        const device = await createDevice()
+        const expected: typeof AUTO_SYNC_COLLECTIONS = {}
+        for (const collection of Object.keys(
+            device.storage.manager.registry.collections,
+        )) {
+            expected[collection] = expect.any(Boolean)
+        }
+        expect(AUTO_SYNC_COLLECTIONS).toEqual(expected)
     })
 })

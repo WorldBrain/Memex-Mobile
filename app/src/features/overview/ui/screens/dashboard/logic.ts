@@ -2,17 +2,24 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { AppState, AppStateStatus } from 'react-native'
 
 import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
-import { UITaskState, UIStorageModules, NavigationProps } from 'src/ui/types'
+import {
+    UITaskState,
+    UIStorageModules,
+    UIServices,
+    NavigationProps,
+} from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
 
 export interface State {
+    syncState: UITaskState
     loadState: UITaskState
     reloadState: UITaskState
     loadMoreState: UITaskState
     couldHaveMore: boolean
+    shouldShowSyncRibbon: boolean
     pages: Map<string, UIPage>
     selectedListName: string
     action?: 'delete' | 'togglePageStar'
@@ -20,9 +27,9 @@ export interface State {
     actionFinishedAt: number
 }
 export type Event = UIEvent<{
-    reload: { initList?: string }
+    setSyncRibbonShow: { show: boolean }
+    reload: { initList?: string; triggerSync?: boolean }
     loadMore: {}
-    changeAppState: { nextState: AppStateStatus }
     setPages: { pages: UIPage[] }
     deletePage: { url: string }
     togglePageStar: { url: string }
@@ -32,11 +39,13 @@ export type Event = UIEvent<{
 
 export interface Props extends NavigationProps {
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
-    pageSize?: number
+    services: UIServices<'sync'>
     getNow?: () => number
+    pageSize?: number
 }
 
 export default class Logic extends UILogic<State, Event> {
+    private removeAppChangeListener!: () => void
     private pageSize: number
     getNow: () => number
 
@@ -53,11 +62,13 @@ export default class Logic extends UILogic<State, Event> {
             this.props.navigation.getParam('selectedList', MOBILE_LIST_NAME)
 
         return {
+            syncState: 'pristine',
             loadState: 'pristine',
             reloadState: 'pristine',
             loadMoreState: 'pristine',
             couldHaveMore: true,
             actionState: 'pristine',
+            shouldShowSyncRibbon: false,
             actionFinishedAt: 0,
             pages: new Map(),
             selectedListName,
@@ -65,23 +76,74 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+        this.doSync()
         const handleAppStatusChange = (nextState: AppStateStatus) => {
-            this.processUIEvent('changeAppState', {
-                ...incoming,
-                event: { nextState },
-            })
+            switch (nextState) {
+                case 'active':
+                    return this.processUIEvent('reload', {
+                        ...incoming,
+                        event: {
+                            initList: incoming.previousState.selectedListName,
+                            triggerSync: true,
+                        },
+                    })
+                default:
+                    return
+            }
         }
+
         AppState.addEventListener('change', handleAppStatusChange)
+
+        this.removeAppChangeListener = () =>
+            AppState.removeEventListener('change', handleAppStatusChange)
 
         await loadInitial<State>(this, async () => {
             await this.doLoadMore(this.getInitialState())
         })
     }
 
-    changeAppState(incoming: IncomingUIEvent<State, Event, 'changeAppState'>) {
-        if (incoming.event.nextState === 'active') {
-            return this.processUIEvent('reload', { ...incoming })
+    cleanup() {
+        this.removeAppChangeListener()
+    }
+
+    private async doSync() {
+        const { sync } = this.props.services
+
+        const syncFinishedHandler = ({
+            hasChanges,
+        }: {
+            hasChanges: boolean
+        }) => {
+            if (hasChanges) {
+                this.emitMutation({
+                    shouldShowSyncRibbon: { $set: true },
+                })
+            }
+
+            sync.continuousSync.events.removeListener(
+                'syncFinished',
+                syncFinishedHandler,
+            )
         }
+
+        sync.continuousSync.events.addListener(
+            'syncFinished',
+            syncFinishedHandler,
+        )
+
+        await executeUITask<State, 'syncState', void>(
+            this,
+            'syncState',
+            async () => {
+                await sync.continuousSync.maybeDoIncrementalSync()
+            },
+        )
+    }
+
+    setSyncRibbonShow(
+        incoming: IncomingUIEvent<State, Event, 'setSyncRibbonShow'>,
+    ): UIMutation<State> {
+        return { shouldShowSyncRibbon: { $set: incoming.event.show } }
     }
 
     setFilteredListName(
@@ -93,6 +155,10 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async reload(incoming: IncomingUIEvent<State, Event, 'reload'>) {
+        if (incoming.event.triggerSync) {
+            this.doSync()
+        }
+
         await executeUITask<State, 'reloadState', void>(
             this,
             'reloadState',
@@ -146,6 +212,10 @@ export default class Logic extends UILogic<State, Event> {
         const entries: Array<[string, UIPage]> = []
         for (const listEntry of listEntries) {
             const page = await overview.findPage({ url: listEntry.pageUrl })
+            if (!page) {
+                continue
+            }
+
             const tags = await metaPicker.findTagsByPage({
                 url: listEntry.pageUrl,
             })
@@ -159,11 +229,11 @@ export default class Logic extends UILogic<State, Event> {
                 listEntry.pageUrl,
                 {
                     url: listEntry.pageUrl,
-                    domain: page!.domain,
-                    fullUrl: page!.fullUrl,
-                    pageUrl: page!.url,
-                    titleText: page!.fullTitle || page.url,
-                    isStarred: !!page!.isStarred,
+                    domain: page.domain,
+                    fullUrl: page.fullUrl,
+                    pageUrl: page.url,
+                    titleText: page.fullTitle || page.url,
+                    isStarred: !!page.isStarred,
                     date: timeFromNow(listEntry.createdAt),
                     tags: tags.map(tag => tag.name),
                     lists: lists.map(list => list.name),

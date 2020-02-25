@@ -14,21 +14,42 @@ import { LocalStorageService } from './services/local-storage'
 import { FakeNavigation } from './tests/navigation'
 import { MockSettingsStorage } from './features/settings/storage/mock-storage'
 import { MockKeychainPackage } from './services/keychain/mock-keychain-package'
+import { registerSingleDeviceSyncTests } from './services/sync/index.tests'
+import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 
-export type MultiDeviceTestFunction = (
-    context: MultiDeviceTestContext,
-) => Promise<void>
-export interface MultiDeviceTestContext {
-    createDevice(options?: {
-        debugSql?: boolean
-    }): Promise<MultiDeviceTestDevice>
-}
-export interface MultiDeviceTestDevice {
+export interface TestDevice {
     storage: Storage
     services: Services
     navigation: FakeNavigation
     auth: MemoryAuthService
 }
+export type MultiDeviceTestFunction = (
+    context: MultiDeviceTestContext,
+) => Promise<void>
+export interface MultiDeviceTestContext {
+    createDevice: TestDeviceFactory
+}
+export type TestDeviceFactory = (options?: {
+    debugSql?: boolean
+    extraPostChangeWatcher?: (
+        context: StorageOperationEvent<'post'>,
+    ) => void | Promise<void>
+}) => Promise<TestDevice>
+
+export interface SingleDeviceTestOptions {
+    debugSql?: boolean
+    mark?: boolean
+}
+export type SingleDeviceTestFunction = (device: TestDevice) => Promise<void>
+export type SingleDeviceTestFactory = ((
+    description: string,
+    test?: SingleDeviceTestFunction,
+) => void) &
+    ((
+        description: string,
+        options: SingleDeviceTestOptions,
+        test: SingleDeviceTestFunction,
+    ) => void)
 
 /*
  * Multiple tests throw errors running on the same TypeORM connection. So give each test a different
@@ -39,25 +60,11 @@ export interface MultiDeviceTestDevice {
 let connIterator = 0
 
 export function makeStorageTestFactory() {
-    interface TestOptions {
-        debugSql?: boolean
-    }
-    type TestFunction = (context: TestContext) => Promise<void>
-    interface TestContext {
-        storage: Storage
-    }
-
-    function factory(description: string, test?: TestFunction): void
-    function factory(
+    const factory: SingleDeviceTestFactory = (
         description: string,
-        options: TestOptions,
-        test: TestFunction,
-    ): void
-    function factory(
-        description: string,
-        testOrOptions?: TestOptions | TestFunction,
-        maybeTest?: TestFunction,
-    ): void {
+        testOrOptions?: SingleDeviceTestOptions | SingleDeviceTestFunction,
+        maybeTest?: SingleDeviceTestFunction,
+    ) => {
         const test =
             typeof testOrOptions === 'function' ? testOrOptions : maybeTest
         const options =
@@ -68,20 +75,59 @@ export function makeStorageTestFactory() {
             return
         }
 
-        it(description, async function(this: any) {
-            const storage = await createStorage({
-                typeORMConnectionOpts: {
-                    type: 'sqlite',
-                    database: ':memory:',
-                    name: `connection-${connIterator++}`,
-                    logging: options.debugSql,
-                },
-            })
+        describe(description, () => {
+            it(
+                maybeMarkTestDescription(
+                    'should work on a single device',
+                    options?.mark,
+                ),
+                async function(this: any) {
+                    const storage = await createStorage({
+                        typeORMConnectionOpts: {
+                            type: 'sqlite',
+                            database: ':memory:',
+                            name: `connection-${connIterator++}`,
+                            logging: options.debugSql,
+                        },
+                    })
 
-            try {
-                await test.call(this, { storage })
-            } finally {
-            }
+                    const signalTransportFactory = lazyMemorySignalTransportFactory()
+                    const sharedSyncLog = await createMemorySharedSyncLog()
+
+                    const navigation = new FakeNavigation()
+                    const auth = new MemoryAuthService()
+                    const localStorage = new LocalStorageService({
+                        settingsStorage: new MockSettingsStorage(),
+                    })
+                    const services = await createServices({
+                        devicePlatform: 'integration-tests',
+                        auth,
+                        storage,
+                        signalTransportFactory,
+                        sharedSyncLog,
+                        localStorage,
+                        disableSyncEncryption: true,
+                        keychain: new MockKeychainPackage(),
+                    })
+                    await setStorageMiddleware({
+                        services,
+                        storage,
+                    })
+                    services.sync.initialSync.wrtc = wrtc
+
+                    try {
+                        await test.call(this, {
+                            storage,
+                            services,
+                            navigation,
+                            auth,
+                        })
+                    } finally {
+                    }
+                },
+            )
+
+            registerSingleDeviceSyncTests(test, { mark: options?.mark })
         })
     }
 
@@ -106,7 +152,7 @@ export function makeMultiDeviceTestFactory() {
             }> = []
             const sharedSyncLog = await createMemorySharedSyncLog()
 
-            const createDevice = async (options?: { debugSql?: boolean }) => {
+            const createDevice: TestDeviceFactory = async options => {
                 const storage = await createStorage({
                     typeORMConnectionOpts: {
                         type: 'sqlite',
@@ -134,6 +180,7 @@ export function makeMultiDeviceTestFactory() {
                 await setStorageMiddleware({
                     services,
                     storage,
+                    extraPostChangeWatcher: options?.extraPostChangeWatcher,
                 })
                 services.sync.initialSync.wrtc = wrtc
 
@@ -179,4 +226,11 @@ export async function createMemorySharedSyncLog() {
     })
     await sharedStorageManager.finishInitialization()
     return sharedSyncLog
+}
+
+export function maybeMarkTestDescription(
+    description: string,
+    mark: boolean | undefined,
+) {
+    return mark ? description + '!!!' : description
 }

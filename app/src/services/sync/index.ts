@@ -21,9 +21,14 @@ import {
 } from 'src/features/sync/storage'
 import { PRODUCT_VERSION } from 'src/constants'
 import { TweetNaclSyncEncryption } from '@worldbrain/memex-common/lib/sync/secrets/tweetnacl'
+import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
+import { AUTO_SYNC_TIMEOUT, AUTO_SYNC_COLLECTIONS } from './constants'
+import some from 'lodash/some'
 
 export default class AppSyncService extends SyncService {
     static DEF_CONTINUOUS_SYNC_BATCH_SIZE = 15
+
+    autoSyncTimeout: ReturnType<typeof setTimeout> | null = null
 
     constructor(options: {
         auth: AuthService
@@ -56,9 +61,9 @@ export default class AppSyncService extends SyncService {
                 options.devicePlatform !== 'integration-tests'
                     ? {
                           id: (await generateSecureRandom(8)).toString(),
-                          channelName: (await generateSecureRandom(
-                              40,
-                          )).toString(),
+                          channelName: (
+                              await generateSecureRandom(40)
+                          ).toString(),
                       }
                     : {}
 
@@ -69,6 +74,35 @@ export default class AppSyncService extends SyncService {
                 ...params,
             })
         }
+    }
+
+    handleStorageChange({ info }: StorageOperationEvent<'post'>) {
+        if (
+            !some(
+                info.changes,
+                change => AUTO_SYNC_COLLECTIONS[change.collection],
+            )
+        ) {
+            return
+        }
+
+        this._scheduleAutoSync()
+    }
+
+    _scheduleAutoSync() {
+        if (this.autoSyncTimeout) {
+            clearTimeout(this.autoSyncTimeout)
+        }
+
+        this.autoSyncTimeout = setTimeout(async () => {
+            this.autoSyncTimeout = null
+
+            if (this.continuousSync.runningSync) {
+                return this._scheduleAutoSync()
+            }
+
+            await this.continuousSync.forceIncrementalSync()
+        }, AUTO_SYNC_TIMEOUT)
     }
 }
 
