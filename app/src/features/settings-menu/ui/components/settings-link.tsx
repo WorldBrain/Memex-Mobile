@@ -1,8 +1,7 @@
 import React from 'react'
-import { Text } from 'react-native'
+import { Text, TouchableOpacity } from 'react-native'
 
 import styles from './settings-link.styles'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 
 export interface Props {
     onPress: () => void

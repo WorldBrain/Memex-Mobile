@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Linking } from 'react-native'
+import { View, Text, FlatList } from 'react-native'
 
 import EmptyLayout from 'src/ui/layouts/empty'
 import Button from 'src/ui/components/memex-btn'
@@ -7,7 +7,6 @@ import Logic, { State, Event, LogType } from './logic'
 import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
 import styles from './styles'
 import { LogEntry, DebugConsole } from 'src/utils/debug-console'
-import { FlatList } from 'react-native-gesture-handler'
 
 interface Props extends NavigationProps {
     services: UIServices<'localStorage'>
