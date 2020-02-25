@@ -13,6 +13,7 @@ export interface State {
     reloadState: UITaskState
     loadMoreState: UITaskState
     couldHaveMore: boolean
+    shouldShowSyncRibbon: boolean
     pages: Map<string, UIPage>
     selectedListName: string
     action?: 'delete' | 'togglePageStar'
@@ -58,6 +59,7 @@ export default class Logic extends UILogic<State, Event> {
             loadMoreState: 'pristine',
             couldHaveMore: true,
             actionState: 'pristine',
+            shouldShowSyncRibbon: false,
             actionFinishedAt: 0,
             pages: new Map(),
             selectedListName,

@@ -23,6 +23,7 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import SyncRibbon from '../../components/sync-ribbon'
 
 export default class Dashboard extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -35,6 +36,9 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
             mode,
         })
     }
+
+    private resetDashboard = () =>
+        this.processEvent('reload', { initList: MOBILE_LIST_NAME })
 
     private initHandleDeletePress = (page: UIPage) => () =>
         Alert.alert(
@@ -92,9 +96,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         this.processEvent('setFilteredListName', {
             name: MOBILE_LIST_NAME,
         })
-        this.processEvent('reload', {
-            initList: MOBILE_LIST_NAME,
-        })
+        this.resetDashboard()
     }
 
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
@@ -176,6 +178,9 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
                             source={require('src/ui/img/dropdown.png')}
                         />
                     </TouchableOpacity>
+                    {this.state.shouldShowSyncRibbon && (
+                        <SyncRibbon onPress={this.resetDashboard} />
+                    )}
                 </DashboardNav>
                 <View style={styles.container}>{this.renderList()}</View>
             </>
