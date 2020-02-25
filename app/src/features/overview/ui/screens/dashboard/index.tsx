@@ -8,7 +8,6 @@ import {
     Linking,
     NativeSyntheticEvent,
     NativeScrollEvent,
-    TouchableOpacity,
     Text,
 } from 'react-native'
 import Logic, { State, Event, Props } from './logic'
@@ -22,6 +21,7 @@ import EmptyResults from '../../components/empty-results'
 import DashboardNav from '../../components/dashboard-navigation'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import SyncRibbon from '../../components/sync-ribbon'
 
@@ -156,12 +156,15 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
             return this.state.selectedListName
         }
 
-        return 'Recently Saved'
+        return 'Saved on Mobile'
     }
 
     render() {
         return (
             <>
+                {this.state.shouldShowSyncRibbon && (
+                    <SyncRibbon onPress={this.resetDashboard} />
+                )}
                 <DashboardNav
                     icon="settings"
                     onLeftIconPress={this.handleLogoPress}
@@ -181,10 +184,8 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
                             source={require('src/ui/img/dropdown.png')}
                         />
                     </TouchableOpacity>
-                    {this.state.shouldShowSyncRibbon && (
-                        <SyncRibbon onPress={this.resetDashboard} />
-                    )}
                 </DashboardNav>
+
                 <View style={styles.container}>{this.renderList()}</View>
             </>
         )
