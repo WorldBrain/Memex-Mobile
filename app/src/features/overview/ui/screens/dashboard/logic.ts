@@ -92,7 +92,6 @@ export default class Logic extends UILogic<State, Event> {
             }
         }
 
-        // TODO: On android, when the share modal opens this still gets fired! Need some way to detect share modal
         AppState.addEventListener('change', handleAppStatusChange)
 
         this.removeAppChangeListener = () =>
@@ -110,18 +109,33 @@ export default class Logic extends UILogic<State, Event> {
     private async doSync() {
         const { sync } = this.props.services
 
+        const syncFinishedHandler = ({
+            hasChanges,
+        }: {
+            hasChanges: boolean
+        }) => {
+            if (hasChanges) {
+                this.emitMutation({
+                    shouldShowSyncRibbon: { $set: true },
+                })
+            }
+
+            sync.continuousSync.events.removeListener(
+                'syncFinished',
+                syncFinishedHandler,
+            )
+        }
+
+        sync.continuousSync.events.addListener(
+            'syncFinished',
+            syncFinishedHandler,
+        )
+
         await executeUITask<State, 'syncState', void>(
             this,
             'syncState',
             async () => {
-                console.log('BG SYNC: started')
                 await sync.continuousSync.maybeDoIncrementalSync()
-
-                // TODO: find out how to detect new data came in
-                // if (there is new data) {
-                //   this.emitMutation({ shouldShowSyncRibbon: { $set: true }})
-                // }
-                console.log('BG SYNC: done')
             },
         )
     }
