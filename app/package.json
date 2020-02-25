@@ -62,6 +62,7 @@
         "react-native-unimodules": "^0.7.0",
         "react-native-webrtc": "https://github.com/WorldBrain/react-native-webrtc.git#7392fe76e583f9ff9c5cc010bdf352e6d17803e6",
         "react-navigation": "^3.11.0",
+        "remove-stopwords": "^1.0.3",
         "sqlite3": "^4.0.8",
         "text-encoder-lite": "^2.0.0",
         "tweetnacl": "^1.0.1",
@@ -72,6 +73,7 @@
         "ui-logic-core": "^0.1.1",
         "ui-logic-react": "^0.1.2",
         "url": "^0.11.0",
+        "url-regex": "^5.0.0",
         "user-logic": "^0.0.1",
         "whatwg-url": "^7.1.0"
     },
