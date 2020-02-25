@@ -37,8 +37,10 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         })
     }
 
-    private resetDashboard = () =>
+    private resetDashboard = () => {
+        this.processEvent('setSyncRibbonShow', { show: false })
         this.processEvent('reload', { initList: MOBILE_LIST_NAME })
+    }
 
     private initHandleDeletePress = (page: UIPage) => () =>
         Alert.alert(
@@ -73,7 +75,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         nativeEvent,
     }: NativeSyntheticEvent<NativeScrollEvent>) => {
         if (scrollHelpers.isAtTop(nativeEvent)) {
-            return this.processEvent('reload', {
+            return this.processEvent('reloadAndSync', {
                 initList: this.state.selectedListName,
             })
         }

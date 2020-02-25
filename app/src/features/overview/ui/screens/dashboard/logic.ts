@@ -2,13 +2,19 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { AppState, AppStateStatus } from 'react-native'
 
 import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
-import { UITaskState, UIStorageModules, NavigationProps } from 'src/ui/types'
+import {
+    UITaskState,
+    UIStorageModules,
+    UIServices,
+    NavigationProps,
+} from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
 
 export interface State {
+    syncState: UITaskState
     loadState: UITaskState
     reloadState: UITaskState
     loadMoreState: UITaskState
@@ -21,9 +27,10 @@ export interface State {
     actionFinishedAt: number
 }
 export type Event = UIEvent<{
+    setSyncRibbonShow: { show: boolean }
     reload: { initList?: string }
+    reloadAndSync: { initList?: string }
     loadMore: {}
-    changeAppState: { nextState: AppStateStatus }
     setPages: { pages: UIPage[] }
     deletePage: { url: string }
     togglePageStar: { url: string }
@@ -33,11 +40,13 @@ export type Event = UIEvent<{
 
 export interface Props extends NavigationProps {
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
-    pageSize?: number
+    services: UIServices<'sync'>
     getNow?: () => number
+    pageSize?: number
 }
 
 export default class Logic extends UILogic<State, Event> {
+    private removeAppChangeListener!: () => void
     private pageSize: number
     getNow: () => number
 
@@ -54,6 +63,7 @@ export default class Logic extends UILogic<State, Event> {
             this.props.navigation.getParam('selectedList', MOBILE_LIST_NAME)
 
         return {
+            syncState: 'pristine',
             loadState: 'pristine',
             reloadState: 'pristine',
             loadMoreState: 'pristine',
@@ -67,23 +77,59 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+        this.doSync()
         const handleAppStatusChange = (nextState: AppStateStatus) => {
-            this.processUIEvent('changeAppState', {
-                ...incoming,
-                event: { nextState },
-            })
+            switch (nextState) {
+                case 'active':
+                    return this.processUIEvent('reloadAndSync', {
+                        ...incoming,
+                        event: {
+                            initList: incoming.previousState.selectedListName,
+                        },
+                    })
+                default:
+                    return
+            }
         }
+
+        // TODO: On android, when the share modal opens this still gets fired! Need some way to detect share modal
         AppState.addEventListener('change', handleAppStatusChange)
+
+        this.removeAppChangeListener = () =>
+            AppState.removeEventListener('change', handleAppStatusChange)
 
         await loadInitial<State>(this, async () => {
             await this.doLoadMore(this.getInitialState())
         })
     }
 
-    changeAppState(incoming: IncomingUIEvent<State, Event, 'changeAppState'>) {
-        if (incoming.event.nextState === 'active') {
-            return this.processUIEvent('reload', { ...incoming })
-        }
+    cleanup() {
+        this.removeAppChangeListener()
+    }
+
+    private async doSync() {
+        const { sync } = this.props.services
+
+        await executeUITask<State, 'syncState', void>(
+            this,
+            'syncState',
+            async () => {
+                console.log('BG SYNC: started')
+                await sync.continuousSync.maybeDoIncrementalSync()
+
+                // TODO: find out how to detect new data came in
+                // if (there is new data) {
+                //   this.emitMutation({ shouldShowSyncRibbon: { $set: true }})
+                // }
+                console.log('BG SYNC: done')
+            },
+        )
+    }
+
+    setSyncRibbonShow(
+        incoming: IncomingUIEvent<State, Event, 'setSyncRibbonShow'>,
+    ): UIMutation<State> {
+        return { shouldShowSyncRibbon: { $set: incoming.event.show } }
     }
 
     setFilteredListName(
@@ -92,6 +138,13 @@ export default class Logic extends UILogic<State, Event> {
         return {
             selectedListName: { $set: incoming.event.name },
         }
+    }
+
+    async reloadAndSync(
+        incoming: IncomingUIEvent<State, Event, 'reloadAndSync'>,
+    ) {
+        this.doSync()
+        return this.reload({ ...incoming })
     }
 
     async reload(incoming: IncomingUIEvent<State, Event, 'reload'>) {
