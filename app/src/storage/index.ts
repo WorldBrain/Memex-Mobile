@@ -80,8 +80,9 @@ export async function setStorageMiddleware(options: {
     options.storage.manager.setMiddleware([
         new ChangeWatchMiddleware({
             storageManager: options.storage.manager,
-            shouldWatchCollection: collection =>
-                syncedCollections.has(collection),
+            shouldWatchCollection: collection => {
+                return syncedCollections.has(collection)
+            },
             postprocessOperation: async context => {
                 if (options.enableAutoSync) {
                     await options.services.sync.handleStorageChange(context)

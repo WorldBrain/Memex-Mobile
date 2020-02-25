@@ -85,6 +85,8 @@ export default class AppSyncService extends SyncService {
         ) {
             return
         }
+
+        this._scheduleAutoSync()
     }
 
     _scheduleAutoSync() {
@@ -93,6 +95,8 @@ export default class AppSyncService extends SyncService {
         }
 
         this.autoSyncTimeout = setTimeout(async () => {
+            this.autoSyncTimeout = null
+
             if (this.continuousSync.runningSync) {
                 return this._scheduleAutoSync()
             }
