@@ -24,11 +24,11 @@ const UI_PAGE_1: UIPage = {
     lists: [],
 }
 const UI_PAGE_2: UIPage = {
-    fullUrl: 'https://www.test.com.bla',
-    url: 'test.com.bla',
-    pageUrl: 'test.com.bla',
+    fullUrl: 'https://www.test.com.me',
+    url: 'test.com.me',
+    pageUrl: 'test.com.me',
     notes: [],
-    domain: 'test.com.bla',
+    domain: 'test.com.me',
     titleText: 'This is a test page bla',
     date: 'a few seconds ago',
     isStarred: false,
@@ -127,8 +127,8 @@ describe('dashboard screen UI logic tests', () => {
             INTEGRATION_TEST_DATA.pages[0],
         )
         await storage.modules.overview.createPage({
-            url: INTEGRATION_TEST_DATA.pages[0].url + '.bla',
-            fullUrl: 'https://www.test.com.bla',
+            url: INTEGRATION_TEST_DATA.pages[0].url + '.me',
+            fullUrl: 'https://www.test.com.me',
             fullTitle: 'This is a test page bla',
             text:
                 'Hey there this is some test text with lots of test terms included bla.',
@@ -141,7 +141,7 @@ describe('dashboard screen UI logic tests', () => {
         })
         await storage.modules.metaPicker.createPageListEntry({
             listId: mobileListId,
-            pageUrl: INTEGRATION_TEST_DATA.pages[0].url + '.bla',
+            pageUrl: INTEGRATION_TEST_DATA.pages[0].url + '.me',
         })
 
         await element.init()
@@ -154,7 +154,7 @@ describe('dashboard screen UI logic tests', () => {
             couldHaveMore: true,
             actionState: 'pristine',
             actionFinishedAt: 0,
-            pages: new Map([['test.com.bla', UI_PAGE_2]]),
+            pages: new Map([['test.com.me', UI_PAGE_2]]),
             selectedListName: MOBILE_LIST_NAME,
         })
 
@@ -170,7 +170,7 @@ describe('dashboard screen UI logic tests', () => {
             actionFinishedAt: 0,
             selectedListName: MOBILE_LIST_NAME,
             pages: new Map([
-                ['test.com.bla', UI_PAGE_2],
+                ['test.com.me', UI_PAGE_2],
                 ['test.com', UI_PAGE_1],
             ]),
         })
@@ -187,7 +187,7 @@ describe('dashboard screen UI logic tests', () => {
             actionFinishedAt: 0,
             selectedListName: MOBILE_LIST_NAME,
             pages: new Map([
-                ['test.com.bla', UI_PAGE_2],
+                ['test.com.me', UI_PAGE_2],
                 ['test.com', UI_PAGE_1],
             ]),
         })
@@ -199,14 +199,11 @@ describe('dashboard screen UI logic tests', () => {
             loadState: 'done',
             reloadState: 'done',
             loadMoreState: 'done',
-            couldHaveMore: false,
+            couldHaveMore: true,
             actionState: 'pristine',
             actionFinishedAt: 0,
             selectedListName: MOBILE_LIST_NAME,
-            pages: new Map([
-                ['test.com.bla', UI_PAGE_2],
-                ['test.com', UI_PAGE_1],
-            ]),
+            pages: new Map([['test.com.me', UI_PAGE_2]]),
         })
     })
 
