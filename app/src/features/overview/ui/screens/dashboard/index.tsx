@@ -75,8 +75,9 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         nativeEvent,
     }: NativeSyntheticEvent<NativeScrollEvent>) => {
         if (scrollHelpers.isAtTop(nativeEvent)) {
-            return this.processEvent('reloadAndSync', {
+            return this.processEvent('reload', {
                 initList: this.state.selectedListName,
+                triggerSync: true,
             })
         }
 

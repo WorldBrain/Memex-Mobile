@@ -28,8 +28,7 @@ export interface State {
 }
 export type Event = UIEvent<{
     setSyncRibbonShow: { show: boolean }
-    reload: { initList?: string }
-    reloadAndSync: { initList?: string }
+    reload: { initList?: string; triggerSync?: boolean }
     loadMore: {}
     setPages: { pages: UIPage[] }
     deletePage: { url: string }
@@ -81,10 +80,11 @@ export default class Logic extends UILogic<State, Event> {
         const handleAppStatusChange = (nextState: AppStateStatus) => {
             switch (nextState) {
                 case 'active':
-                    return this.processUIEvent('reloadAndSync', {
+                    return this.processUIEvent('reload', {
                         ...incoming,
                         event: {
                             initList: incoming.previousState.selectedListName,
+                            triggerSync: true,
                         },
                     })
                 default:
@@ -140,14 +140,11 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async reloadAndSync(
-        incoming: IncomingUIEvent<State, Event, 'reloadAndSync'>,
-    ) {
-        this.doSync()
-        return this.reload({ ...incoming })
-    }
-
     async reload(incoming: IncomingUIEvent<State, Event, 'reload'>) {
+        if (incoming.event.triggerSync) {
+            this.doSync()
+        }
+
         await executeUITask<State, 'reloadState', void>(
             this,
             'reloadState',

@@ -75,6 +75,8 @@ describe('dashboard screen UI logic tests', () => {
 
         await element.init()
         expect(element.state).toEqual({
+            syncState: 'done',
+            shouldShowSyncRibbon: false,
             loadState: 'done',
             reloadState: 'pristine',
             loadMoreState: 'pristine',
@@ -94,6 +96,8 @@ describe('dashboard screen UI logic tests', () => {
 
         await element.init()
         expect(element.state).toEqual({
+            syncState: 'done',
+            shouldShowSyncRibbon: false,
             loadState: 'done',
             reloadState: 'pristine',
             loadMoreState: 'pristine',
@@ -142,6 +146,8 @@ describe('dashboard screen UI logic tests', () => {
 
         await element.init()
         expect(element.state).toEqual({
+            syncState: 'done',
+            shouldShowSyncRibbon: false,
             loadState: 'done',
             reloadState: 'pristine',
             loadMoreState: 'pristine',
@@ -154,6 +160,8 @@ describe('dashboard screen UI logic tests', () => {
 
         await element.processEvent('loadMore', {})
         expect(element.state).toEqual({
+            syncState: 'done',
+            shouldShowSyncRibbon: false,
             loadState: 'done',
             reloadState: 'pristine',
             loadMoreState: 'done',
@@ -169,6 +177,8 @@ describe('dashboard screen UI logic tests', () => {
 
         await element.processEvent('loadMore', {})
         expect(element.state).toEqual({
+            syncState: 'done',
+            shouldShowSyncRibbon: false,
             loadState: 'done',
             reloadState: 'pristine',
             loadMoreState: 'done',
@@ -184,6 +194,8 @@ describe('dashboard screen UI logic tests', () => {
 
         await element.processEvent('reload', {})
         expect(element.state).toEqual({
+            syncState: 'done',
+            shouldShowSyncRibbon: false,
             loadState: 'done',
             reloadState: 'done',
             loadMoreState: 'done',
@@ -214,6 +226,8 @@ describe('dashboard screen UI logic tests', () => {
             url,
         })
         expect(element.state).toEqual({
+            syncState: 'done',
+            shouldShowSyncRibbon: false,
             loadState: 'done',
             reloadState: 'pristine',
             loadMoreState: 'pristine',
@@ -264,5 +278,16 @@ describe('dashboard screen UI logic tests', () => {
             false,
         )
         expect(pageC.isStarred).toBe(false)
+    })
+
+    it('reload should be able to trigger sync ', async dependencies => {
+        const { services } = dependencies
+        const { element } = setup(dependencies)
+
+        expect(element.state.syncState).toEqual('pristine')
+        await element.processEvent('reload', {})
+        expect(element.state.syncState).toEqual('pristine')
+        await element.processEvent('reload', { triggerSync: true })
+        expect(element.state.syncState).toEqual('done')
     })
 })
