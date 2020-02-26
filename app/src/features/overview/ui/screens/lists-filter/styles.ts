@@ -10,6 +10,12 @@ export default EStyleSheet.create({
         marginTop: '10%',
         height: '100%',
     },
+    loadingBallContainer: {
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     list: {
         marginHorizontal: 30,
     },
