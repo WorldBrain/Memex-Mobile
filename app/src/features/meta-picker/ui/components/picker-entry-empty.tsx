@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 
-import styles from './meta-picker-entry.styles'
+import styles from './picker-entry.styles'
 import { MetaType } from '../../types'
 
 export interface Props {
