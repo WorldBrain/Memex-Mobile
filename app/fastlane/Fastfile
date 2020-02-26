@@ -86,7 +86,7 @@ platform :android do
         package = load_json(json_path: PACKAGE_JSON_PATH)
 
         gradle(task: 'clean', project_dir: 'android/')
-        gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"] })
+        gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"], "version_code" => package["versionCode"] })
         gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
     end
 
