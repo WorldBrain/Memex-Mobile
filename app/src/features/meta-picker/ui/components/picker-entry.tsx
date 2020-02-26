@@ -7,7 +7,7 @@ import {
     GestureResponderEvent,
 } from 'react-native'
 
-import styles from './meta-picker-entry.styles'
+import styles from './picker-entry.styles'
 
 export interface Props {
     text: string

@@ -3,12 +3,7 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { UIPageWithNotes as Page, UINote } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
-import {
-    NavigationProps,
-    UIStorageModules,
-    UITaskState,
-    UIServices,
-} from 'src/ui/types'
+import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 
@@ -20,13 +15,10 @@ export interface State {
 
 export type Event = UIEvent<{
     toggleNotePress: { url: string }
-    setEditorMode: { mode: EditorMode }
-    setInputText: { text: string }
     removeEntry: { name: string }
     createEntry: { name: string }
     confirmNoteDelete: { url: string }
     saveNote: { text: string }
-    setPage: { page: Page }
 }>
 
 export interface Props extends NavigationProps {

@@ -5,9 +5,10 @@ import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MetaTypeShape, MetaType } from 'src/features/meta-picker/types'
 
 export interface State {
-    inputText: string
     entries: Map<string, MetaTypeShape>
+    inputText: string
     loadState: UITaskState
+    selectedEntryName?: string
 }
 
 export type Event = UIEvent<{
@@ -18,10 +19,14 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends NavigationProps {
-    onEntryPress: (item: MetaTypeShape) => Promise<void>
     storage: UIStorageModules<'metaPicker'>
+    onEntryPress: (item: MetaTypeShape) => Promise<void>
+    suggestInputPlaceholder?: string
     isSyncLoading: boolean
-    initEntries: string[]
+    singleSelect?: boolean
+    initEntries?: string[]
+    initEntry?: string
+    className?: string
     type: MetaType
     url: string
 }
@@ -32,12 +37,26 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(): State {
-        return { loadState: 'pristine', entries: new Map(), inputText: '' }
+        return {
+            loadState: 'pristine',
+            entries: new Map(),
+            inputText: '',
+            selectedEntryName: this.props.initEntry,
+        }
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
-            await this.loadInitEntries(this.props.initEntries)
+            let selected: string[]
+
+            // tslint:disable-next-line: prefer-conditional-expression
+            if (this.props.singleSelect) {
+                selected = this.props.initEntry ? [this.props.initEntry] : []
+            } else {
+                selected = this.props.initEntries ?? []
+            }
+
+            await this.loadInitEntries(selected)
         })
     }
 

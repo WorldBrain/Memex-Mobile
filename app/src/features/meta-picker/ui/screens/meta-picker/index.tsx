@@ -3,10 +3,10 @@ import { View, FlatList, ListRenderItem } from 'react-native'
 
 import { NavigationScreen } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
-import MetaPicker from '../../components/meta-picker'
-import MetaPickerEntry from '../../components/meta-picker-entry'
-import MetaPickerEmptyRow from '../../components/meta-picker-empty'
-import SearchAddInput from '../../components/search-add-input'
+import MetaPicker from '../../components/picker'
+import MetaPickerEntry from '../../components/picker-entry'
+import MetaPickerEmptyRow from '../../components/picker-entry-empty'
+import SuggestInput from '../../components/suggest-input'
 import * as selectors from './selectors'
 import { MetaTypeShape, MetaTypeName } from 'src/features/meta-picker/types'
 import LoadingBalls from 'src/ui/components/loading-balls'
@@ -29,6 +29,22 @@ export default class MetaPickerScreen extends NavigationScreen<
         return this.props.type === 'collections' ? 'Collections' : 'Tags'
     }
 
+    private get initEntries(): string[] {
+        if (this.props.singleSelect) {
+            return this.props.initEntry ? [this.props.initEntry] : []
+        }
+
+        return this.props.initEntries ?? []
+    }
+
+    private get suggestInputPlaceholder(): string {
+        if (this.props.suggestInputPlaceholder) {
+            return this.props.suggestInputPlaceholder
+        }
+
+        return `Search & Add ${this.metaTypeName}`
+    }
+
     private initHandleEntryPress = ({
         canAdd,
         ...item
@@ -38,12 +54,12 @@ export default class MetaPickerScreen extends NavigationScreen<
         if (canAdd) {
             await this.processEvent('addEntry', {
                 entry: item,
-                selected: this.props.initEntries,
+                selected: this.initEntries,
             })
         } else {
             await this.processEvent('toggleEntryChecked', {
                 name: item.name,
-                selected: this.props.initEntries,
+                selected: this.initEntries,
             })
         }
     }
@@ -65,17 +81,17 @@ export default class MetaPickerScreen extends NavigationScreen<
     private handleInputText = (text: string) => {
         this.processEvent('suggestEntries', {
             text,
-            selected: this.props.initEntries,
+            selected: this.initEntries,
         })
     }
 
     render() {
         return (
-            <MetaPicker>
-                <SearchAddInput
-                    value={selectors.inputText(this.state)}
+            <MetaPicker className={this.props.className}>
+                <SuggestInput
                     onChange={this.handleInputText}
-                    placeholder={`Search & Add ${this.metaTypeName}`}
+                    value={selectors.inputText(this.state)}
+                    placeholder={this.suggestInputPlaceholder}
                 />
                 {this.props.isSyncLoading ||
                 this.state.loadState === 'running' ? (
@@ -85,7 +101,7 @@ export default class MetaPickerScreen extends NavigationScreen<
                 ) : (
                     <FlatList
                         renderItem={this.renderPickerEntry}
-                        data={selectors.pickerEntries(this.state)}
+                        data={selectors.pickerEntries(this.state, this.props)}
                         keyExtractor={(item, index) => index.toString()}
                         ListEmptyComponent={
                             <MetaPickerEmptyRow type={this.props.type} />

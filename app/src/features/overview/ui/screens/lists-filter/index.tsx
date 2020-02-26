@@ -1,57 +1,29 @@
 import React from 'react'
-import {
-    View,
-    FlatList,
-    ListRenderItem,
-    GestureResponderEvent,
-    TouchableOpacity,
-    Image,
-} from 'react-native'
+import { TouchableOpacity, Image } from 'react-native'
 
 import { NavigationScreen } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
-import styles from './styles'
-import CollectionEntry from '../../components/collection-entry'
-import { UICollection } from 'src/features/overview/types'
 import Navigation from '../../components/navigation'
-import * as selectors from './selectors'
-import Button from 'src/ui/components/memex-btn'
-import MetaPicker from 'src/features/meta-picker/ui/components/meta-picker'
-import MetaPickerEntry from 'src/features/meta-picker/ui/components/meta-picker-entry'
-import LoadingBalls from 'src/ui/components/loading-balls'
-import SearchInput from 'src/features/meta-picker/ui/components/search-add-input'
-import { MetaTypeShape, MetaTypeName } from 'src/features/meta-picker/types'
+import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
+import { MetaTypeShape } from 'src/features/meta-picker/types'
 import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import styles from './styles'
 
 export default class ListsFilter extends NavigationScreen<Props, State, Event> {
+    private selectedEntryName?: string
+
     constructor(props: Props) {
         super(props, { logic: new Logic(props) })
+
+        this.selectedEntryName = this.props.navigation.getParam('selectedList')
     }
 
-    private initHandleEntryPress = (
-        item: MetaTypeShape,
-        index: number,
-    ) => async () => {
-        await this.processEvent('toggleEntryChecked', { item, index })
+    private handleEntryPress = async (item: MetaTypeShape) => {
         this.props.navigation.navigate('Overview', {
-            selectedList: this.state.selectedEntryName,
+            selectedList: item.isChecked ? MOBILE_LIST_NAME : item.name,
         })
     }
-
-    private handleInputChange = (value: string) =>
-        this.processEvent('setInputValue', { value })
-
-    private renderPickerEntry: ListRenderItem<MetaTypeShape> = ({
-        item,
-        index,
-    }) => (
-        <MetaPickerEntry
-            key={index}
-            text={item.name}
-            isChecked={item.isChecked}
-            onPress={this.initHandleEntryPress(item, index)}
-        />
-    )
 
     render() {
         return (
@@ -62,7 +34,7 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
                         <TouchableOpacity
                             onPress={() =>
                                 this.props.navigation.navigate('Overview', {
-                                    selectedList: this.state.selectedEntryName,
+                                    selectedList: this.selectedEntryName,
                                 })
                             }
                             style={navigationStyles.btnContainer}
@@ -75,26 +47,19 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
                         </TouchableOpacity>
                     )}
                 />
-                <MetaPicker>
-                    <View style={styles.listFilterContainer}>
-                        <SearchInput
-                            placeholder="Search Collections"
-                            onChange={this.handleInputChange}
-                            value={this.state.inputValue}
-                        />
-                        {this.state.loadState === 'running' ? (
-                            <View style={styles.loadingBallContainer}>
-                                <LoadingBalls style={styles.loadingBalls} />
-                            </View>
-                        ) : (
-                            <FlatList
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={this.renderPickerEntry}
-                                data={this.state.entries}
-                            />
-                        )}
-                    </View>
-                </MetaPicker>
+                <MetaPicker
+                    {...this.props}
+                    onEntryPress={this.handleEntryPress}
+                    suggestInputPlaceholder="Search Collections"
+                    className={styles.filterContainer}
+                    singleSelect
+                    type="collections"
+                    initEntry={
+                        this.selectedEntryName === MOBILE_LIST_NAME
+                            ? undefined
+                            : this.selectedEntryName
+                    }
+                />
             </>
         )
     }

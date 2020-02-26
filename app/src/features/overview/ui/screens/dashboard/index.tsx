@@ -8,6 +8,7 @@ import {
     Linking,
     NativeSyntheticEvent,
     NativeScrollEvent,
+    TouchableOpacity,
     Text,
 } from 'react-native'
 import Logic, { State, Event, Props } from './logic'
@@ -21,7 +22,6 @@ import EmptyResults from '../../components/empty-results'
 import DashboardNav from '../../components/dashboard-navigation'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import SyncRibbon from '../../components/sync-ribbon'
 

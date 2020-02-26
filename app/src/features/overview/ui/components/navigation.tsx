@@ -4,7 +4,7 @@ import { View, Text } from 'react-native'
 import styles from './navigation.styles'
 
 export interface Props {
-    titleText: string
+    titleText?: string
     renderLeftIcon?: () => JSX.Element
     renderRightIcon?: () => JSX.Element
 }
@@ -15,9 +15,11 @@ const Navigation: React.StatelessComponent<Props> = props => (
             {props.renderLeftIcon && props.renderLeftIcon()}
         </View>
         <View style={styles.textContainer}>
-            <Text numberOfLines={1} style={styles.text}>
-                {props.titleText}
-            </Text>
+            {props.titleText && (
+                <Text numberOfLines={1} style={styles.text}>
+                    {props.titleText}
+                </Text>
+            )}
             {props.children}
         </View>
         <View style={styles.rightBtnContainer}>
