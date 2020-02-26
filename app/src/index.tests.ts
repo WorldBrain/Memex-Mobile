@@ -31,6 +31,7 @@ export interface MultiDeviceTestContext {
 }
 export type TestDeviceFactory = (options?: {
     debugSql?: boolean
+    enableAutoSync?: boolean
     extraPostChangeWatcher?: (
         context: StorageOperationEvent<'post'>,
     ) => void | Promise<void>
@@ -181,6 +182,7 @@ export function makeMultiDeviceTestFactory() {
                     services,
                     storage,
                     extraPostChangeWatcher: options?.extraPostChangeWatcher,
+                    enableAutoSync: options?.enableAutoSync,
                 })
                 services.sync.initialSync.wrtc = wrtc
 

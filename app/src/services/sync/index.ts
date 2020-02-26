@@ -90,11 +90,11 @@ export default class AppSyncService extends SyncService {
     }
 
     _scheduleAutoSync() {
-        if (this.autoSyncTimeout) {
-            clearTimeout(this.autoSyncTimeout)
+        if (this.autoSyncTimeout !== null) {
+            this._clearTimeout(this.autoSyncTimeout)
         }
 
-        this.autoSyncTimeout = setTimeout(async () => {
+        this.autoSyncTimeout = this._setTimeout(async () => {
             this.autoSyncTimeout = null
 
             if (this.continuousSync.runningSync) {
@@ -104,6 +104,9 @@ export default class AppSyncService extends SyncService {
             await this.continuousSync.forceIncrementalSync()
         }, AUTO_SYNC_TIMEOUT)
     }
+
+    _setTimeout = setTimeout
+    _clearTimeout = clearTimeout
 }
 
 class MemexSyncSettingStore implements SyncSettingsStore {
