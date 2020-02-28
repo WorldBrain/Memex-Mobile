@@ -54,7 +54,7 @@ jobs:
       cache: *android-cache
       before_install:
         - rvm install 2.6.5
-        - bundle install --deployment
+        - bundle install --deployment --gemfile=./app/Gemfile
         - nvm install 10.17.0
         - npm install -g yarn
         - yes | sdkmanager "platforms;android-28"
