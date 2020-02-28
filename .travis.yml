@@ -10,11 +10,13 @@ aliases:
       - "google-gdk-license-.+"
 
   - &android-cache
+    yarn: true
     directories:
       - ~/.cache/yarn
       - ~/.gradle/caches
       - ~/.gradle/wrapper
       - ~/.android/build-cache
+      - ./app/node_modules
 
   - &ios-cache
     directories:
@@ -45,6 +47,9 @@ jobs:
       language: android
       jdk: oraclejdk8
       android: *android
+      before_cache:
+        - rm -f ~/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr ~/.gradle/caches/*/plugin-resolution/
       cache: *android-cache
       before_install:
         - rvm install 2.6.5
