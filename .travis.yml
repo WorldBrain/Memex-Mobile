@@ -11,6 +11,7 @@ aliases:
 
   - &android-cache
     yarn: true
+    bundler: true
     directories:
       - ~/.cache/yarn
       - ~/.gradle/caches
@@ -53,7 +54,7 @@ jobs:
       cache: *android-cache
       before_install:
         - rvm install 2.6.5
-        - gem install fastlane
+        - bundle install --deployment
         - nvm install 10.17.0
         - npm install -g yarn
         - yes | sdkmanager "platforms;android-28"
