@@ -8,12 +8,17 @@ import MetaPickerEntry from '../../components/picker-entry'
 import MetaPickerEmptyRow from '../../components/picker-entry-empty'
 import SuggestInput from '../../components/suggest-input'
 import * as selectors from './selectors'
-import { MetaTypeShape, MetaTypeName } from 'src/features/meta-picker/types'
+import { MetaTypeShape } from 'src/features/meta-picker/types'
+import { getMetaTypeName } from 'src/features/meta-picker/utils'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './styles'
 
+export interface MetaPickerScreenProps extends Props {
+    ref?: (metaPicker: MetaPickerScreen) => void
+}
+
 export default class MetaPickerScreen extends NavigationScreen<
-    Props,
+    MetaPickerScreenProps,
     State,
     Event
 > {
@@ -21,12 +26,12 @@ export default class MetaPickerScreen extends NavigationScreen<
         onEntryPress: async (item: MetaTypeShape) => undefined,
     }
 
-    constructor(props: Props) {
+    constructor(props: MetaPickerScreenProps) {
         super(props, { logic: new Logic(props) })
-    }
 
-    private get metaTypeName(): MetaTypeName {
-        return this.props.type === 'collections' ? 'Collections' : 'Tags'
+        if (props.ref) {
+            props.ref(this)
+        }
     }
 
     private get initEntries(): string[] {
@@ -42,7 +47,7 @@ export default class MetaPickerScreen extends NavigationScreen<
             return this.props.suggestInputPlaceholder
         }
 
-        return `Search & Add ${this.metaTypeName}`
+        return `Search & Add ${getMetaTypeName(this.props.type)}`
     }
 
     private initHandleEntryPress = ({
