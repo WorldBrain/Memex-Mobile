@@ -36,7 +36,7 @@ const SyncLayout: React.StatelessComponent<Props> = ({
                 title={props.btnText}
                 onPress={props.onBtnPress!}
                 disabled={props.disableMainBtn}
-                //__notReallyDisabled
+                // __notReallyDisabled
             />
             <Button
                 title={cancelBtnText}

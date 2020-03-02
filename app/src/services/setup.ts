@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import { appGroup } from '../../app.json'
 import { ServiceStarter } from './types'
 

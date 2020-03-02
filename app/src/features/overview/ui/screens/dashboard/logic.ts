@@ -325,8 +325,8 @@ export default class Logic extends UILogic<State, Event> {
                     })
                     this.emitMutation({
                         pages: state => {
-                            const page = state.get(url)!
-                            return state.set(url, { ...page, isStarred })
+                            const current = state.get(url)!
+                            return state.set(url, { ...current, isStarred })
                         },
                     })
                 } finally {
