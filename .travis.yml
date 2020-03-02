@@ -20,10 +20,12 @@ aliases:
       - ./app/node_modules
 
   - &ios-cache
+    yarn: true
     directories:
       - ~/.rncache
       - ~/Library/Caches/Yarn
       - ~/Library/Caches/CocoaPods
+      - ./app/node_modules
 
   - &test-cache
     yarn: true
