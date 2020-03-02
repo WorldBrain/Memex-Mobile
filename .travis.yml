@@ -41,10 +41,11 @@ jobs:
         - "10"
       install:
         - git submodule update --init --recursive
-        - cd app && yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+        - cd app
+        - yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       script:
-        - cd app && yarn lint
-        - cd app && yarn test
+        - yarn lint
+        - yarn test
     # - stage: ios-beta
     #   if: branch = master AND type = push
     #   os: osx
