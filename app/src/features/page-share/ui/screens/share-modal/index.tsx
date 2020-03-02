@@ -11,15 +11,23 @@ import NoteInput from '../../components/note-input-segment'
 import StarPage from '../../components/star-page-segment'
 import AddTags from '../../components/add-tags-segment'
 import UnsupportedApp from '../../components/unsupported-app'
+import ReloadBtn from '../../components/reload-btn'
 
 export default class ShareModalScreen extends NavigationScreen<
     Props,
     State,
     Event
 > {
+    private metaPicker!: MetaPicker
+
     constructor(props: Props) {
         super(props, { logic: new Logic(props) })
     }
+
+    private calcInitEntries = (): string[] =>
+        this.state.metaViewShown === 'collections'
+            ? this.state.collectionsToAdd
+            : this.state.tagsToAdd
 
     private handleMetaViewTypeSwitch = (type?: MetaType) => (e: any) => {
         this.processEvent('setMetaViewType', { type })
@@ -45,27 +53,35 @@ export default class ShareModalScreen extends NavigationScreen<
         await this.processEvent('metaPickerEntryPress', { entry })
     }
 
+    private handleReloadPress = () =>
+        this.metaPicker.processEvent('reload', {
+            selected: this.calcInitEntries(),
+        })
+
     private handleNoteTextChange = (value: string) => {
         this.processEvent('setNoteText', { value })
     }
 
-    private renderMetaPicker() {
-        const initEntries =
-            this.state.metaViewShown === 'collections'
-                ? this.state.collectionsToAdd
-                : this.state.tagsToAdd
+    private setMetaPickerRef = (metaPicker: MetaPicker) => {
+        this.metaPicker = metaPicker
+    }
 
+    private renderMetaPicker() {
         return (
             <>
                 <ActionBar
                     onCancelPress={this.handleMetaViewTypeSwitch(undefined)}
-                />
+                >
+                    {this.state.statusText}
+                    <ReloadBtn onPress={this.handleReloadPress} />
+                </ActionBar>
                 <MetaPicker
                     isSyncLoading={this.state.syncState === 'running'}
                     onEntryPress={this.handleMetaPickerEntryPress}
-                    initEntries={initEntries}
+                    initEntries={this.calcInitEntries()}
                     type={this.state.metaViewShown}
                     url={this.state.pageUrl}
+                    ref={this.setMetaPickerRef}
                     {...this.props}
                 />
             </>

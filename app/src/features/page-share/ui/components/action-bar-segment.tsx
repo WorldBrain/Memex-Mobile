@@ -2,7 +2,6 @@ import React from 'react'
 import {
     View,
     Text,
-    Button,
     NativeSyntheticEvent,
     NativeTouchEvent,
     Keyboard,
@@ -27,8 +26,8 @@ const ActionBar: React.StatelessComponent<Props> = props => (
             <Text style={styles.placeholderBtn}>Back</Text>
         )}
         <Text style={styles.mainText}>{props.children}</Text>
-        {props.onConfirmPress &&
-            (props.isConfirming ? (
+        {props.onConfirmPress ? (
+            props.isConfirming ? (
                 <TouchableOpacity disabled>
                     <Text style={styles.buttonTextDisabled}>Saving...</Text>
                 </TouchableOpacity>
@@ -36,7 +35,10 @@ const ActionBar: React.StatelessComponent<Props> = props => (
                 <TouchableOpacity onPress={props.onConfirmPress}>
                     <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
-            ))}
+            )
+        ) : (
+            <View />
+        )}
     </View>
 )
 

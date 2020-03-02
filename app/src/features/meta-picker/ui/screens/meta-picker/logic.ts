@@ -16,6 +16,7 @@ export type Event = UIEvent<{
     addEntry: { entry: MetaTypeShape; selected: string[] }
     toggleEntryChecked: { name: string; selected: string[] }
     setEntries: { entries: MetaTypeShape[] }
+    reload: { selected: string[] }
 }>
 
 export interface Props extends NavigationProps {
@@ -47,20 +48,20 @@ export default class Logic extends UILogic<State, Event> {
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
-            let selected: string[]
-
-            // tslint:disable-next-line: prefer-conditional-expression
-            if (this.props.singleSelect) {
-                selected = this.props.initEntry ? [this.props.initEntry] : []
-            } else {
-                selected = this.props.initEntries ?? []
-            }
-
-            await this.loadInitEntries(selected)
+            await this.loadInitEntries()
         })
     }
 
-    private async loadInitEntries(selected: string[]) {
+    private calculateSelectedEntries(): string[] {
+        if (this.props.singleSelect) {
+            return this.props.initEntry ? [this.props.initEntry] : []
+        }
+        return this.props.initEntries ?? []
+    }
+
+    private async loadInitEntries(selected?: string[]) {
+        selected = selected ?? this.calculateSelectedEntries()
+
         const { metaPicker } = this.props.storage.modules
 
         const results =
@@ -78,7 +79,7 @@ export default class Logic extends UILogic<State, Event> {
         })
 
         results.forEach(res => {
-            if (!selected.includes(res.name)) {
+            if (!selected!.includes(res.name)) {
                 entries.set(res.name, res)
             }
         })
@@ -89,6 +90,16 @@ export default class Logic extends UILogic<State, Event> {
             },
             inputText: { $set: '' },
         })
+    }
+
+    async reload(incoming: IncomingUIEvent<State, Event, 'reload'>) {
+        return executeUITask<State, 'loadState', void>(
+            this,
+            'loadState',
+            async () => {
+                await this.loadInitEntries(incoming.event.selected)
+            },
+        )
     }
 
     async suggestEntries({

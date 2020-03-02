@@ -23,7 +23,7 @@ export default EStyleSheet.create({
         color: '#C4C4C4',
     },
     mainText: {
-        fontSize: '1rem',
+        fontSize: '1.3rem',
         fontWeight: 'bold',
     },
 })

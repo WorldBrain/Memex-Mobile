@@ -12,6 +12,7 @@ import {
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import delay from 'src/utils/delay'
+import { getMetaTypeName } from 'src/features/meta-picker/utils'
 
 export interface State {
     saveState: UITaskState
@@ -108,6 +109,7 @@ export default class Logic extends UILogic<State, Event> {
                 this.emitMutation({ isStarred: { $set: isStarred } })
             },
         )
+
         const tagsP = executeUITask<State, 'tagsState', void>(
             this,
             'tagsState',
@@ -119,6 +121,7 @@ export default class Logic extends UILogic<State, Event> {
                 })
             },
         )
+
         const listsP = executeUITask<State, 'collectionsState', void>(
             this,
             'collectionsState',
@@ -134,6 +137,7 @@ export default class Logic extends UILogic<State, Event> {
                 })
             },
         )
+
         await Promise.all([bookmarkP, tagsP, listsP])
     }
 
@@ -245,6 +249,11 @@ export default class Logic extends UILogic<State, Event> {
             async () => {
                 this.emitMutation({
                     metaViewShown: { $set: incoming.event.type },
+                    statusText: {
+                        $set: incoming.event.type
+                            ? getMetaTypeName(incoming.event.type)
+                            : '',
+                    },
                 })
 
                 await this.syncRunning
