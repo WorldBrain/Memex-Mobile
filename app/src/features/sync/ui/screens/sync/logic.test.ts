@@ -66,6 +66,8 @@ describe('SyncScreen', () => {
                 }),
             ]
 
+            expect(1).toBe(2)
+
             expect(
                 userInterfaces.map(ui => ui.logicContainer.state.status),
             ).toEqual(['setup', 'setup'])
