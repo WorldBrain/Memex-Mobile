@@ -3,7 +3,7 @@
 ENV_FILE="./app/android/app/google-services.json"
 SERVICE_ACC_KEY="./app/android/service-account.json"
 SIGN_KEY="./app/android/app/my-upload-key.keystore"
-declare -r SSH_FILE="$(mktemp -u $HOME/.ssh/id_rsa)"
+SSH_FILE="$HOME/.ssh/id_rsa"
 
 # Set up private key
 echo $IOS_REPO_PRIVATE_KEY | base64 -d > $SSH_FILE

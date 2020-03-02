@@ -10,20 +10,44 @@ aliases:
       - "google-gdk-license-.+"
 
   - &android-cache
+    yarn: true
+    bundler: true
     directories:
       - ~/.cache/yarn
       - ~/.gradle/caches
       - ~/.gradle/wrapper
       - ~/.android/build-cache
+      - ./app/node_modules
 
   - &ios-cache
+    yarn: true
     directories:
       - ~/.rncache
       - ~/Library/Caches/Yarn
       - ~/Library/Caches/CocoaPods
+      - ./app/node_modules
+
+  - &test-cache
+    yarn: true
+    directories:
+      - ~/.cache/yarn
+      - ./app/node_modules
 
 jobs:
   include:
+    - stage: lint-and-test
+      if: branch != master
+      language: node_js
+      cache: *test-cache
+      node_js:
+        - "10"
+      install:
+        - git submodule update --init --recursive
+        - cd app
+        - yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+      script:
+        - yarn lint
+        - yarn test --colors
     - stage: ios-beta
       if: branch = master AND type = push
       os: osx
@@ -40,12 +64,14 @@ jobs:
         - "./install-deps-ios.sh"
       script:
         - "./deploy-ios-beta.sh"
-
     - stage: android-beta
       if: branch = master AND type = push
       language: android
       jdk: oraclejdk8
       android: *android
+      before_cache:
+        - rm -f ~/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr ~/.gradle/caches/*/plugin-resolution/
       cache: *android-cache
       before_install:
         - rvm install 2.6.5

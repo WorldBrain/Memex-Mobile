@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { SyncReturnValue } from '@worldbrain/storex-sync'
 

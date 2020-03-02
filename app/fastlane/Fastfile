@@ -2,29 +2,27 @@ fastlane_version '2.140.0'
 
 REPO = "git@github.com:WorldBrain/Memex-Mobile.git"
 REMOTE = "ssh-origin"
+
+TEAM = "5YUPQC9D96"
 MAIN_APP_ID = "io.worldbrain.memex"
 MAIN_APP_PROFILE = "match AppStore io.worldbrain.memex"
 EXT_APP_ID = "io.worldbrain.memex.MemexShare"
 EXT_APP_PROFILE = "match AppStore io.worldbrain.memex.MemexShare"
-ANDROID_APP_ID = "io.worldbrain"
-TEAM = "5YUPQC9D96"
-XCWORKSPACE_PATH = "./ios/app.xcworkspace"
-XCPROJ_PATH = "./ios/app.xcodeproj"
+
 APPLE_USER_ID = "dev@worldbrain.io"
 APPLE_APP_ID = "1471860331"
-PACKAGE_JSON_PATH = "./package.json"
-AAB_PATH = "./android/app/build/outputs/bundle/release/app.aab"
+ANDROID_APP_ID = "io.worldbrain"
+
 ANDROID_SERVICE_JSON_PATH = "./android/service-account.json"
+PACKAGE_JSON_PATH = "./package.json"
+XCWORKSPACE_PATH = "./ios/app.xcworkspace"
+XCPROJ_PATH = "./ios/app.xcodeproj"
+AAB_PATH = "./android/app/build/outputs/bundle/release/app.aab"
+
 
 before_all do
     # ensure_git_status_clean
     git_pull
-end
-
-lane :push_to_git_ssh_remote do
-    branch = git_branch
-    sh("git", "remote", "add", REMOTE, REPO)
-    sh("git", "push", REMOTE, branch)
 end
 
 
@@ -46,7 +44,6 @@ platform :ios do
         package = load_json(json_path: PACKAGE_JSON_PATH)
 
         certificates
-        increment_build_number(xcodeproj: XCPROJ_PATH)
         increment_version_number(xcodeproj: XCPROJ_PATH, version_number: package["version"])
         gym(
             scheme: 'app',
@@ -75,18 +72,16 @@ platform :ios do
             apple_id: APPLE_APP_ID,
             skip_waiting_for_build_processing: true
         )
-        commit_version_bump(message: 'Bump iOS version', xcodeproj: XCPROJ_PATH)
-        push_to_git_ssh_remote
     end
 end
 
 platform :android do
     desc 'Build a new Android application version.'
-    private_lane :build do
+    lane :build do
         package = load_json(json_path: PACKAGE_JSON_PATH)
 
         gradle(task: 'clean', project_dir: 'android/')
-        gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"] })
+        gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"], "version_code" => package["versionCode"] })
         gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
     end
 
@@ -105,7 +100,5 @@ platform :android do
             skip_upload_screenshots: true,
             skip_upload_apk: true
         )
-        git_commit(path: ['./android/gradle.properties'], message: 'Bump Android version')
-        push_to_git_ssh_remote
     end
 end
