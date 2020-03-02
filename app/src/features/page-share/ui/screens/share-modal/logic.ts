@@ -11,11 +11,16 @@ import {
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import delay from 'src/utils/delay'
 
 export interface State {
-    loadState: UITaskState
     saveState: UITaskState
     syncState: UITaskState
+
+    bookmarkState: UITaskState
+    tagsState: UITaskState
+    collectionsState: UITaskState
+
     pageUrl: string
     statusText: string
     noteText: string
@@ -58,9 +63,11 @@ export default class Logic extends UILogic<State, Event> {
     getInitialState(): State {
         return {
             isUnsupportedApplication: false,
-            loadState: 'pristine',
             saveState: 'pristine',
             syncState: 'pristine',
+            bookmarkState: 'pristine',
+            tagsState: 'pristine',
+            collectionsState: 'pristine',
             pageUrl: '',
             isModalShown: true,
             isStarred: false,
@@ -79,40 +86,55 @@ export default class Logic extends UILogic<State, Event> {
         this.syncRunning = this.props.services.sync.continuousSync.forceIncrementalSync()
 
         this.syncRunning.catch(this.handleSyncError)
+        let url: string
 
-        await loadInitial<State>(this, async () => {
-            let mutation: UIMutation<State> = {}
-            let url: string
+        try {
+            url = await this.props.services.shareExt.getSharedUrl()
+        } catch (err) {
+            this.emitMutation({ isUnsupportedApplication: { $set: true } })
+            return
+        }
 
-            try {
-                url = await this.props.services.shareExt.getSharedUrl()
-            } catch (err) {
+        this.emitMutation({ pageUrl: { $set: url } })
+
+        const { overview, metaPicker } = this.props.storage.modules
+
+        const bookmarkP = executeUITask<State, 'bookmarkState', void>(
+            this,
+            'bookmarkState',
+            async () => {
+                const isStarred = await overview.isPageStarred({ url })
+                await delay(2000)
+                this.emitMutation({ isStarred: { $set: isStarred } })
+            },
+        )
+        const tagsP = executeUITask<State, 'tagsState', void>(
+            this,
+            'tagsState',
+            async () => {
+                const tags = await metaPicker.findTagsByPage({ url })
+                await delay(1000)
                 this.emitMutation({
-                    ...mutation,
-                    isUnsupportedApplication: { $set: true },
+                    tagsToAdd: { $set: tags.map(tag => tag.name) },
                 })
-                return
-            }
-
-            mutation = {
-                ...mutation,
-                pageUrl: { $set: url },
-            }
-
-            const { overview, metaPicker } = this.props.storage.modules
-            const isStarred = await overview.isPageStarred({ url })
-            const tags = await metaPicker.findTagsByPage({ url })
-            const collections = await metaPicker.findListsByPage({ url })
-
-            mutation = {
-                ...mutation,
-                isStarred: { $set: isStarred },
-                tagsToAdd: { $set: tags.map(tag => tag.name) },
-                collectionsToAdd: { $set: collections.map(c => c.name) },
-            }
-
-            this.emitMutation(mutation)
-        })
+            },
+        )
+        const listsP = executeUITask<State, 'collectionsState', void>(
+            this,
+            'collectionsState',
+            async () => {
+                const collections = await metaPicker.findListsByPage({
+                    url,
+                })
+                await delay(500)
+                this.emitMutation({
+                    collectionsToAdd: {
+                        $set: collections.map(c => c.name),
+                    },
+                })
+            },
+        )
+        await Promise.all([bookmarkP, tagsP, listsP])
     }
 
     setPageUrl(

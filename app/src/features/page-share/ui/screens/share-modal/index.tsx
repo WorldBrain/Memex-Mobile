@@ -61,11 +61,11 @@ export default class ShareModalScreen extends NavigationScreen<
                     onCancelPress={this.handleMetaViewTypeSwitch(undefined)}
                 />
                 <MetaPicker
-                    type={this.state.metaViewShown}
-                    url={this.state.pageUrl}
+                    isSyncLoading={this.state.syncState === 'running'}
                     onEntryPress={this.handleMetaPickerEntryPress}
                     initEntries={initEntries}
-                    isSyncLoading={this.state.syncState === 'running'}
+                    type={this.state.metaViewShown}
+                    url={this.state.pageUrl}
                     {...this.props}
                 />
             </>
@@ -91,16 +91,19 @@ export default class ShareModalScreen extends NavigationScreen<
                     isStarred={this.state.isStarred}
                     onPress={this.handleStarPress}
                     disabled={this.state.saveState === 'running'}
+                    loading={this.state.bookmarkState !== 'done'}
                 />
                 <AddCollection
                     onPress={this.handleMetaViewTypeSwitch('collections')}
                     count={this.state.collectionsToAdd.length}
                     disabled={this.state.saveState === 'running'}
+                    loading={this.state.collectionsState !== 'done'}
                 />
                 <AddTags
                     onPress={this.handleMetaViewTypeSwitch('tags')}
                     count={this.state.tagsToAdd.length}
                     disabled={this.state.saveState === 'running'}
+                    loading={this.state.tagsState !== 'done'}
                 />
             </>
         )

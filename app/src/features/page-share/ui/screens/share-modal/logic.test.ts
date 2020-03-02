@@ -51,7 +51,9 @@ describe('share modal UI logic tests', () => {
         await element.init()
         try {
             expect(element.state).toEqual({
-                loadState: 'done',
+                collectionsState: 'pristine',
+                bookmarkState: 'pristine',
+                tagsState: 'pristine',
                 saveState: 'pristine',
                 syncState: 'pristine',
                 collectionsToAdd: [],
@@ -77,7 +79,9 @@ describe('share modal UI logic tests', () => {
         await element.init()
         try {
             expect(element.state).toEqual({
-                loadState: 'done',
+                collectionsState: 'done',
+                bookmarkState: 'done',
+                tagsState: 'done',
                 saveState: 'pristine',
                 syncState: 'pristine',
                 collectionsToAdd: [],
@@ -107,7 +111,9 @@ describe('share modal UI logic tests', () => {
         await element.init()
         try {
             expect(element.state).toEqual({
-                loadState: 'done',
+                collectionsState: 'done',
+                bookmarkState: 'done',
+                tagsState: 'done',
                 saveState: 'pristine',
                 syncState: 'pristine',
                 collectionsToAdd: [],
@@ -141,7 +147,9 @@ describe('share modal UI logic tests', () => {
         await element.init()
         try {
             expect(element.state).toEqual({
-                loadState: 'done',
+                collectionsState: 'done',
+                bookmarkState: 'done',
+                tagsState: 'done',
                 saveState: 'pristine',
                 syncState: 'pristine',
                 collectionsToAdd: [],
@@ -176,7 +184,9 @@ describe('share modal UI logic tests', () => {
         await element.init()
         try {
             expect(element.state).toEqual({
-                loadState: 'done',
+                collectionsState: 'done',
+                bookmarkState: 'done',
+                tagsState: 'done',
                 saveState: 'pristine',
                 syncState: 'pristine',
                 collectionsToAdd: ['My list'],

@@ -7,13 +7,15 @@ import {
     GestureResponderEvent,
 } from 'react-native'
 
+import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './touchable-segment.styles'
 
 export interface Props {
     text: string
     skipBottomBorder?: boolean
-    disabled?: boolean
     onPress: (e: GestureResponderEvent) => void
+    disabled?: boolean
+    loading?: boolean
 }
 
 const TouchableSegment: React.StatelessComponent<Props> = props => (
@@ -32,7 +34,7 @@ const TouchableSegment: React.StatelessComponent<Props> = props => (
             ]}
         >
             <Text style={styles.mainText}>{props.text}</Text>
-            {props.children}
+            {props.loading ? <LoadingBalls /> : props.children}
         </View>
     </TouchableOpacity>
 )
