@@ -12,6 +12,7 @@ import StarPage from '../../components/star-page-segment'
 import AddTags from '../../components/add-tags-segment'
 import UnsupportedApp from '../../components/unsupported-app'
 import ReloadBtn from '../../components/reload-btn'
+import LoadingBalls from 'src/ui/components/loading-balls'
 
 export default class ShareModalScreen extends NavigationScreen<
     Props,
@@ -66,14 +67,30 @@ export default class ShareModalScreen extends NavigationScreen<
         this.metaPicker = metaPicker
     }
 
+    private renderTitle() {
+        if (this.state.metaViewShown) {
+            return (
+                <>
+                    {this.state.statusText}
+                    <ReloadBtn onPress={this.handleReloadPress} />
+                </>
+            )
+        }
+
+        if (this.state.loadState === 'running') {
+            return <LoadingBalls />
+        }
+
+        return this.state.statusText
+    }
+
     private renderMetaPicker() {
         return (
             <>
                 <ActionBar
                     onCancelPress={this.handleMetaViewTypeSwitch(undefined)}
                 >
-                    {this.state.statusText}
-                    <ReloadBtn onPress={this.handleReloadPress} />
+                    {this.renderTitle()}
                 </ActionBar>
                 <MetaPicker
                     isSyncLoading={this.state.syncState === 'running'}
@@ -96,7 +113,7 @@ export default class ShareModalScreen extends NavigationScreen<
                     onConfirmPress={this.handleSave}
                     isConfirming={this.state.saveState === 'running'}
                 >
-                    {this.state.statusText}
+                    {this.renderTitle()}
                 </ActionBar>
                 <NoteInput
                     onChange={this.handleNoteTextChange}

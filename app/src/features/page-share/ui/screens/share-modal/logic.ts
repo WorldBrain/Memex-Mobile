@@ -15,6 +15,7 @@ import delay from 'src/utils/delay'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
 
 export interface State {
+    loadState: UITaskState
     saveState: UITaskState
     syncState: UITaskState
 
@@ -64,6 +65,7 @@ export default class Logic extends UILogic<State, Event> {
     getInitialState(): State {
         return {
             isUnsupportedApplication: false,
+            loadState: 'pristine',
             saveState: 'pristine',
             syncState: 'pristine',
             bookmarkState: 'pristine',
@@ -83,7 +85,7 @@ export default class Logic extends UILogic<State, Event> {
         console.log('SYNC ERROR:', err.message)
     }
 
-    async init() {
+    async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         this.syncRunning = this.props.services.sync.continuousSync.forceIncrementalSync()
 
         this.syncRunning.catch(this.handleSyncError)
@@ -99,6 +101,12 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ pageUrl: { $set: url } })
 
         const { overview, metaPicker } = this.props.storage.modules
+
+        const pageP = loadInitial<State>(this, async () => {
+            await delay(2000)
+            await this.storePageInit({ pageUrl: url } as State)
+            this.emitMutation({ statusText: { $set: 'Saved!' } })
+        })
 
         const bookmarkP = executeUITask<State, 'bookmarkState', void>(
             this,
@@ -138,7 +146,7 @@ export default class Logic extends UILogic<State, Event> {
             },
         )
 
-        await Promise.all([bookmarkP, tagsP, listsP])
+        await Promise.all([pageP, bookmarkP, tagsP, listsP])
     }
 
     setPageUrl(
@@ -222,7 +230,7 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'saveState',
             async () => {
-                await this.storePage(incoming.previousState)
+                await this.storePageFinal(incoming.previousState)
                 try {
                     await this.syncRunning
                     await this.props.services.sync.continuousSync.forceIncrementalSync()
@@ -277,8 +285,8 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation(mutation)
     }
 
-    private async storePage(state: State, customTimestamp?: number) {
-        const { overview, metaPicker, pageEditor } = this.props.storage.modules
+    private async storePageInit(state: State) {
+        const { overview } = this.props.storage.modules
 
         await overview.createPage({
             url: state.pageUrl,
@@ -286,7 +294,12 @@ export default class Logic extends UILogic<State, Event> {
             text: '',
             fullTitle: '',
         })
+
         await overview.visitPage({ url: state.pageUrl })
+    }
+
+    private async storePageFinal(state: State, customTimestamp?: number) {
+        const { overview, metaPicker, pageEditor } = this.props.storage.modules
 
         await overview.setPageStar({
             url: state.pageUrl,
