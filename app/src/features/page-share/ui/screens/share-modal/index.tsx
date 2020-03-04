@@ -59,10 +59,12 @@ export default class ShareModalScreen extends NavigationScreen<
         await this.processEvent('metaPickerEntryPress', { entry })
     }
 
-    private handleReloadPress = () =>
+    private handleReloadPress = async () => {
+        await (this.logic as Logic).syncRunning
         this.metaPicker.processEvent('reload', {
             selected: this.calcInitEntries(),
         })
+    }
 
     private handleNoteTextChange = (value: string) => {
         this.processEvent('setNoteText', { value })

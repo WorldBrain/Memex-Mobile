@@ -11,7 +11,6 @@ import {
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
-import delay from 'src/utils/delay'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
 
 export interface State {
@@ -57,7 +56,7 @@ export interface Props extends NavigationProps {
 }
 
 export default class Logic extends UILogic<State, Event> {
-    private syncRunning!: Promise<void | SyncReturnValue>
+    syncRunning!: Promise<void | SyncReturnValue>
 
     constructor(private props: Props) {
         super()
@@ -104,7 +103,6 @@ export default class Logic extends UILogic<State, Event> {
         const { overview, metaPicker } = this.props.storage.modules
 
         const pageP = loadInitial<State>(this, async () => {
-            await delay(2000)
             await this.storePageInit({ pageUrl: url } as State)
             this.emitMutation({ statusText: { $set: 'Saved!' } })
         })
@@ -114,7 +112,6 @@ export default class Logic extends UILogic<State, Event> {
             'bookmarkState',
             async () => {
                 const isStarred = await overview.isPageStarred({ url })
-                await delay(2000)
                 this.emitMutation({ isStarred: { $set: isStarred } })
             },
         )
@@ -124,7 +121,6 @@ export default class Logic extends UILogic<State, Event> {
             'tagsState',
             async () => {
                 const tags = await metaPicker.findTagsByPage({ url })
-                await delay(1000)
                 this.emitMutation({
                     tagsToAdd: { $set: tags.map(tag => tag.name) },
                 })
@@ -138,7 +134,6 @@ export default class Logic extends UILogic<State, Event> {
                 const collections = await metaPicker.findListsByPage({
                     url,
                 })
-                await delay(500)
                 this.emitMutation({
                     collectionsToAdd: {
                         $set: collections.map(c => c.name),
