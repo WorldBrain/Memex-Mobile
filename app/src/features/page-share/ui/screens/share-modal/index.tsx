@@ -13,6 +13,7 @@ import AddTags from '../../components/add-tags-segment'
 import UnsupportedApp from '../../components/unsupported-app'
 import ReloadBtn from '../../components/reload-btn'
 import LoadingBalls from 'src/ui/components/loading-balls'
+import SavingUpdates from '../../components/saving-updates'
 
 export default class ShareModalScreen extends NavigationScreen<
     Props,
@@ -157,6 +158,10 @@ export default class ShareModalScreen extends NavigationScreen<
     }
 
     private renderModalContent() {
+        if (this.state.showSavingPage) {
+            return <SavingUpdates />
+        }
+
         if (this.state.isUnsupportedApplication) {
             return this.renderUnsupportedApp()
         }

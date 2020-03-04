@@ -246,19 +246,16 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'saveState',
             async () => {
+                this.emitMutation({ showSavingPage: { $set: true } })
                 await this.storePageFinal(incoming.previousState)
                 try {
+                    // TODO: abort any running pull sync, do a push sync
                     await this.syncRunning
                     await this.props.services.sync.continuousSync.forceIncrementalSync()
                 } catch (error) {
                     this.handleSyncError(error)
                 } finally {
-                    this.emitMutation(
-                        this.setModalVisible({
-                            event: { shown: false },
-                            previousState: incoming.previousState,
-                        }),
-                    )
+                    this.emitMutation({ isModalShown: { $set: false } })
                 }
             },
         )
