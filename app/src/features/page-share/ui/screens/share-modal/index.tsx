@@ -14,6 +14,7 @@ import UnsupportedApp from '../../components/unsupported-app'
 import ReloadBtn from '../../components/reload-btn'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import SavingUpdates from '../../components/saving-updates'
+import SyncError from '../../components/sync-error'
 
 export default class ShareModalScreen extends NavigationScreen<
     Props,
@@ -159,9 +160,30 @@ export default class ShareModalScreen extends NavigationScreen<
         )
     }
 
+    private renderSyncError() {
+        return (
+            <>
+                <ActionBar
+                    leftBtnText="Undo"
+                    rightBtnText="Close"
+                    onLeftBtnPress={this.handleUndo}
+                    onRightBtnPress={this.handleModalClose}
+                />
+                <SyncError
+                    errorMessage={this.state.errorMessage!}
+                    onReportPress={this.handleModalClose}
+                />
+            </>
+        )
+    }
+
     private renderModalContent() {
         if (this.state.showSavingPage) {
             return <SavingUpdates />
+        }
+
+        if (this.state.errorMessage?.length) {
+            return this.renderSyncError()
         }
 
         if (this.state.isUnsupportedApplication) {

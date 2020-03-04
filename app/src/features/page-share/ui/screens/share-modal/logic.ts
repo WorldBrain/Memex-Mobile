@@ -28,6 +28,7 @@ export interface State {
     collectionsToAdd: string[]
     isStarred: boolean
     isModalShown: boolean
+    errorMessage?: string
     showSavingPage: boolean
     isUnsupportedApplication: boolean
     metaViewShown?: MetaType
@@ -81,14 +82,12 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    private handleSyncError = (err: Error) => {
-        console.log('SYNC ERROR:', err.message)
-    }
-
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         this.syncRunning = this.props.services.sync.continuousSync.forceIncrementalSync()
+        this.syncRunning.catch(err =>
+            this.emitMutation({ errorMessage: { $set: err.message } }),
+        )
 
-        this.syncRunning.catch(this.handleSyncError)
         let url: string
 
         try {

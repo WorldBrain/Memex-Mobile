@@ -17,6 +17,7 @@ describe('share modal UI logic tests', () => {
         storage: Storage
         getSharedText?: () => string
         getSharedUrl?: () => string
+        forceIncrementalSync?: () => Promise<void>
     }) {
         const logic = new Logic({
             services: {
@@ -30,7 +31,9 @@ describe('share modal UI logic tests', () => {
                 } as any) as any,
                 sync: {
                     continuousSync: {
-                        forceIncrementalSync: () => Promise.resolve(),
+                        forceIncrementalSync: options.forceIncrementalSync
+                            ? options.forceIncrementalSync
+                            : () => Promise.resolve(),
                     },
                 },
             } as any,
@@ -86,6 +89,21 @@ describe('share modal UI logic tests', () => {
         } finally {
             await element.cleanup()
         }
+    })
+
+    it('should show error view if sync error encountered', async context => {
+        const errMsg = 'this is a test'
+        const pageUrl = DATA.PAGE_URL_1
+
+        const { element } = await setup({
+            ...context,
+            getSharedUrl: () => pageUrl,
+            forceIncrementalSync: () => Promise.reject(new Error(errMsg)),
+        })
+
+        expect(element.state.errorMessage).toBeUndefined()
+        await element.init()
+        expect(element.state.errorMessage).toEqual(errMsg)
     })
 
     it('should correctly load page starred', async context => {
