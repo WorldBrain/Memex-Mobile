@@ -27,6 +27,33 @@ export default class ShareModalScreen extends NavigationScreen<
         super(props, { logic: new Logic(props) })
     }
 
+    private static arraysAreSame = (a: string[], b: string[]): boolean => {
+        for (const el of a) {
+            if (!b.includes(el)) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    private get isInputDirty(): boolean {
+        const { initValues } = this.logic as Logic
+
+        return (
+            this.state.noteText.length > 0 ||
+            this.state.isStarred !== initValues.isStarred ||
+            !ShareModalScreen.arraysAreSame(
+                this.state.collectionsToAdd,
+                initValues.collectionsToAdd,
+            ) ||
+            !ShareModalScreen.arraysAreSame(
+                this.state.tagsToAdd,
+                initValues.tagsToAdd,
+            )
+        )
+    }
+
     private calcInitEntries = (): string[] =>
         this.state.metaViewShown === 'collections'
             ? this.state.collectionsToAdd
@@ -47,7 +74,11 @@ export default class ShareModalScreen extends NavigationScreen<
     }
 
     private handleSave = () => {
-        this.processEvent('save', {})
+        if (this.isInputDirty) {
+            this.processEvent('save', {})
+        } else {
+            this.handleModalClose()
+        }
         // For whatever reason, calling this seems to result in a crash. Though it still closes as expected without calling it...
         // this.props.services.shareExt.close()
     }
@@ -89,7 +120,11 @@ export default class ShareModalScreen extends NavigationScreen<
             return <LoadingBalls />
         }
 
-        return this.state.statusText
+        if (this.isInputDirty) {
+            return null
+        }
+
+        return 'Saved!'
     }
 
     private renderMetaPicker() {
@@ -118,7 +153,7 @@ export default class ShareModalScreen extends NavigationScreen<
                 <ActionBar
                     leftBtnText="Undo"
                     onLeftBtnPress={this.handleUndo}
-                    rightBtnText="Close"
+                    rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
                     onRightBtnPress={this.handleSave}
                     isConfirming={this.state.saveState === 'running'}
                 >

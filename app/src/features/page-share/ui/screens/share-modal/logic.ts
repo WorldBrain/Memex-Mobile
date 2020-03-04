@@ -58,6 +58,11 @@ export interface Props extends NavigationProps {
 
 export default class Logic extends UILogic<State, Event> {
     syncRunning!: Promise<void | SyncReturnValue>
+    initValues!: {
+        isStarred: boolean
+        tagsToAdd: string[]
+        collectionsToAdd: string[]
+    } = {} as any
 
     constructor(private props: Props) {
         super()
@@ -103,7 +108,6 @@ export default class Logic extends UILogic<State, Event> {
 
         const pageP = loadInitial<State>(this, async () => {
             await this.storePageInit({ pageUrl: url } as State)
-            this.emitMutation({ statusText: { $set: 'Saved!' } })
         })
 
         const bookmarkP = executeUITask<State, 'bookmarkState', void>(
@@ -111,7 +115,9 @@ export default class Logic extends UILogic<State, Event> {
             'bookmarkState',
             async () => {
                 const isStarred = await overview.isPageStarred({ url })
+
                 this.emitMutation({ isStarred: { $set: isStarred } })
+                this.initValues.isStarred = isStarred
             },
         )
 
@@ -120,9 +126,10 @@ export default class Logic extends UILogic<State, Event> {
             'tagsState',
             async () => {
                 const tags = await metaPicker.findTagsByPage({ url })
-                this.emitMutation({
-                    tagsToAdd: { $set: tags.map(tag => tag.name) },
-                })
+                const tagsToAdd = tags.map(tag => tag.name)
+
+                this.emitMutation({ tagsToAdd: { $set: tagsToAdd } })
+                this.initValues.tagsToAdd = tagsToAdd
             },
         )
 
@@ -133,11 +140,14 @@ export default class Logic extends UILogic<State, Event> {
                 const collections = await metaPicker.findListsByPage({
                     url,
                 })
+                const collectionsToAdd = collections.map(c => c.name)
+
                 this.emitMutation({
                     collectionsToAdd: {
-                        $set: collections.map(c => c.name),
+                        $set: collectionsToAdd,
                     },
                 })
+                this.initValues.collectionsToAdd = collectionsToAdd
             },
         )
 
@@ -290,7 +300,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async storePageInit(state: State) {
-        const { overview } = this.props.storage.modules
+        const { overview, metaPicker } = this.props.storage.modules
 
         if ((await overview.findPage({ url: state.pageUrl })) != null) {
             return
@@ -304,6 +314,12 @@ export default class Logic extends UILogic<State, Event> {
         })
 
         await overview.visitPage({ url: state.pageUrl })
+
+        await metaPicker.createMobileListIfAbsent()
+        await metaPicker.setPageLists({
+            url: state.pageUrl,
+            lists: [MOBILE_LIST_NAME],
+        })
     }
 
     private async storePageFinal(state: State, customTimestamp?: number) {
@@ -314,7 +330,6 @@ export default class Logic extends UILogic<State, Event> {
             isStarred: state.isStarred,
         })
 
-        await metaPicker.createMobileListIfAbsent()
         await metaPicker.setPageLists({
             url: state.pageUrl,
             lists: [...state.collectionsToAdd, MOBILE_LIST_NAME],
