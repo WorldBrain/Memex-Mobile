@@ -40,6 +40,10 @@ export default class ShareModalScreen extends NavigationScreen<
         // this.props.services.shareExt.close()
     }
 
+    private handleUndo = () => {
+        return this.processEvent('undoPageSave', {})
+    }
+
     private handleSave = () => {
         this.processEvent('save', {})
         // For whatever reason, calling this seems to result in a crash. Though it still closes as expected without calling it...
@@ -88,12 +92,11 @@ export default class ShareModalScreen extends NavigationScreen<
         return (
             <>
                 <ActionBar
-                    onCancelPress={this.handleMetaViewTypeSwitch(undefined)}
+                    onLeftBtnPress={this.handleMetaViewTypeSwitch(undefined)}
                 >
                     {this.renderTitle()}
                 </ActionBar>
                 <MetaPicker
-                    isSyncLoading={this.state.syncState === 'running'}
                     onEntryPress={this.handleMetaPickerEntryPress}
                     initEntries={this.calcInitEntries()}
                     type={this.state.metaViewShown}
@@ -109,8 +112,10 @@ export default class ShareModalScreen extends NavigationScreen<
         return (
             <>
                 <ActionBar
-                    onCancelPress={this.handleModalClose}
-                    onConfirmPress={this.handleSave}
+                    leftBtnText="Undo"
+                    onLeftBtnPress={this.handleUndo}
+                    rightBtnText="Close"
+                    onRightBtnPress={this.handleSave}
                     isConfirming={this.state.saveState === 'running'}
                 >
                     {this.renderTitle()}
@@ -145,7 +150,7 @@ export default class ShareModalScreen extends NavigationScreen<
     private renderUnsupportedApp() {
         return (
             <>
-                <ActionBar onCancelPress={this.handleModalClose} />
+                <ActionBar onLeftBtnPress={this.handleModalClose} />
                 <UnsupportedApp />
             </>
         )

@@ -12,28 +12,34 @@ import styles from './action-bar-segment.styles'
 
 export interface Props {
     isConfirming?: boolean
-    onCancelPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
-    onConfirmPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
+    onLeftBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
+    onRightBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
+    leftBtnText?: string
+    rightBtnText?: string
 }
 
-const ActionBar: React.StatelessComponent<Props> = props => (
+const ActionBar: React.StatelessComponent<Props> = ({
+    leftBtnText = 'Cancel',
+    rightBtnText = 'Confirm',
+    ...props
+}) => (
     <View style={styles.container} onTouchStart={() => Keyboard.dismiss()}>
-        {props.onCancelPress ? (
-            <TouchableOpacity onPress={props.onCancelPress}>
-                <Text style={styles.buttonText}>Back</Text>
+        {props.onLeftBtnPress ? (
+            <TouchableOpacity onPress={props.onLeftBtnPress}>
+                <Text style={styles.buttonText}>{leftBtnText}</Text>
             </TouchableOpacity>
         ) : (
             <Text style={styles.placeholderBtn}>Back</Text>
         )}
         <Text style={styles.mainText}>{props.children}</Text>
-        {props.onConfirmPress ? (
+        {props.onRightBtnPress ? (
             props.isConfirming ? (
                 <TouchableOpacity disabled>
                     <Text style={styles.buttonTextDisabled}>Saving...</Text>
                 </TouchableOpacity>
             ) : (
-                <TouchableOpacity onPress={props.onConfirmPress}>
-                    <Text style={styles.buttonText}>Save</Text>
+                <TouchableOpacity onPress={props.onRightBtnPress}>
+                    <Text style={styles.buttonText}>{rightBtnText}</Text>
                 </TouchableOpacity>
             )
         ) : (

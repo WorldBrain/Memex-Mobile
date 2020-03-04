@@ -23,7 +23,6 @@ export interface Props extends NavigationProps {
     storage: UIStorageModules<'metaPicker'>
     onEntryPress: (item: MetaTypeShape) => Promise<void>
     suggestInputPlaceholder?: string
-    isSyncLoading: boolean
     singleSelect?: boolean
     initEntries?: string[]
     initEntry?: string

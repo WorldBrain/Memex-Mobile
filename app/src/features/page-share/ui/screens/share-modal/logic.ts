@@ -17,7 +17,6 @@ import { getMetaTypeName } from 'src/features/meta-picker/utils'
 export interface State {
     loadState: UITaskState
     saveState: UITaskState
-    syncState: UITaskState
 
     bookmarkState: UITaskState
     tagsState: UITaskState
@@ -30,12 +29,14 @@ export interface State {
     collectionsToAdd: string[]
     isStarred: boolean
     isModalShown: boolean
+    showSavingPage: boolean
     isUnsupportedApplication: boolean
     metaViewShown?: MetaType
 }
 export type Event = UIEvent<{
     save: {}
 
+    undoPageSave: {}
     metaPickerEntryPress: { entry: MetaTypeShape }
     setMetaViewType: { type?: MetaType }
     setModalVisible: { shown: boolean }
@@ -67,11 +68,11 @@ export default class Logic extends UILogic<State, Event> {
             isUnsupportedApplication: false,
             loadState: 'pristine',
             saveState: 'pristine',
-            syncState: 'pristine',
             bookmarkState: 'pristine',
             tagsState: 'pristine',
             collectionsState: 'pristine',
             pageUrl: '',
+            showSavingPage: false,
             isModalShown: true,
             isStarred: false,
             tagsToAdd: [],
@@ -225,6 +226,21 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
+    async undoPageSave(
+        incoming: IncomingUIEvent<State, Event, 'undoPageSave'>,
+    ) {
+        const { overview } = this.props.storage.modules
+
+        this.emitMutation({ showSavingPage: { $set: true } })
+
+        try {
+            await overview.deletePage({ url: incoming.previousState.pageUrl })
+        } catch (err) {
+        } finally {
+            this.emitMutation({ isModalShown: { $set: false } })
+        }
+    }
+
     async save(incoming: IncomingUIEvent<State, Event, 'save'>) {
         return executeUITask<State, 'saveState', void>(
             this,
@@ -248,25 +264,17 @@ export default class Logic extends UILogic<State, Event> {
         )
     }
 
-    async setMetaViewType(
+    setMetaViewType(
         incoming: IncomingUIEvent<State, Event, 'setMetaViewType'>,
     ) {
-        return executeUITask<State, 'syncState', void>(
-            this,
-            'syncState',
-            async () => {
-                this.emitMutation({
-                    metaViewShown: { $set: incoming.event.type },
-                    statusText: {
-                        $set: incoming.event.type
-                            ? getMetaTypeName(incoming.event.type)
-                            : '',
-                    },
-                })
-
-                await this.syncRunning
+        this.emitMutation({
+            metaViewShown: { $set: incoming.event.type },
+            statusText: {
+                $set: incoming.event.type
+                    ? getMetaTypeName(incoming.event.type)
+                    : '',
             },
-        )
+        })
     }
 
     metaPickerEntryPress(
@@ -285,8 +293,17 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation(mutation)
     }
 
+    private async storePage(state: State, customTimestamp?: number) {
+        await this.storePageInit(state)
+        await this.storePageFinal(state, customTimestamp)
+    }
+
     private async storePageInit(state: State) {
         const { overview } = this.props.storage.modules
+
+        if ((await overview.findPage({ url: state.pageUrl })) != null) {
+            return
+        }
 
         await overview.createPage({
             url: state.pageUrl,

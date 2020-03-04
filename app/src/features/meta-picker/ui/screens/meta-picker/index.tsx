@@ -98,8 +98,7 @@ export default class MetaPickerScreen extends NavigationScreen<
                     value={selectors.inputText(this.state)}
                     placeholder={this.suggestInputPlaceholder}
                 />
-                {this.props.isSyncLoading ||
-                this.state.loadState === 'running' ? (
+                {this.state.loadState === 'running' ? (
                     <View style={styles.loadingBallContainer}>
                         <LoadingBalls style={styles.loadingBalls} />
                     </View>

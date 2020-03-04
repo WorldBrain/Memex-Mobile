@@ -54,7 +54,7 @@ describe('share modal UI logic tests', () => {
         try {
             expect(element.state).toEqual(
                 expect.objectContaining({
-                    pageUrl,
+                    pageUrl: '',
                     tagsToAdd: [],
                     collectionsToAdd: [],
                     isUnsupportedApplication: true,
@@ -175,6 +175,44 @@ describe('share modal UI logic tests', () => {
         }
     })
 
+    it('should be able to undo a page save', async context => {
+        const pageUrl = DATA.PAGE_URL_1
+        const url = DATA.PAGE_URL_1_NORM
+        const { element } = await setup({
+            ...context,
+            getSharedUrl: () => pageUrl,
+        })
+
+        await element.init()
+        expect(element.state).toEqual(
+            expect.objectContaining({
+                isModalShown: true,
+                showSavingPage: false,
+            }),
+        )
+
+        expect(
+            await context.storage.manager
+                .collection('pages')
+                .findObject({ url }),
+        ).toBeTruthy()
+
+        await element.processEvent('undoPageSave', {})
+
+        expect(
+            await context.storage.manager
+                .collection('pages')
+                .findObject({ url }),
+        ).toBeFalsy()
+
+        expect(element.state).toEqual(
+            expect.objectContaining({
+                isModalShown: false,
+                showSavingPage: true,
+            }),
+        )
+    })
+
     it('should be able to set page url', async (context: {
         storage: Storage
     }) => {
@@ -237,10 +275,7 @@ describe('share modal UI logic tests', () => {
     it('should be able to set meta view type', async (context: {
         storage: Storage
     }) => {
-        const { element, logic } = await setup(context)
-        const types: MetaType[] = ['tags', 'collections']
-
-        logic['syncRunning'] = Promise.resolve()
+        const { element } = await setup(context)
 
         expect(element.state.metaViewShown).toBeUndefined()
         expect(element.state.statusText).toEqual('')
