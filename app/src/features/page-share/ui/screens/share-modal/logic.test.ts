@@ -8,6 +8,7 @@ import { FakeStatefulUIElement } from 'src/ui/index.tests'
 
 import * as DATA from './logic.test.data'
 import { List } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
+import { FakeNavigation } from 'src/tests/navigation'
 
 describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -34,6 +35,7 @@ describe('share modal UI logic tests', () => {
                 },
             } as any,
             storage: options.storage,
+            navigation: new FakeNavigation() as any,
         })
         const initialState = logic.getInitialState()
         const element = new FakeStatefulUIElement<State, Event>(logic)
@@ -41,7 +43,7 @@ describe('share modal UI logic tests', () => {
         return { logic, initialState, element }
     }
 
-    it('should load correctly without a URL', async context => {
+    it('should detect unsupported applications (no URL shared)', async context => {
         const { element } = await setup({
             ...context,
             getSharedUrl: () => {
@@ -50,21 +52,15 @@ describe('share modal UI logic tests', () => {
         })
         await element.init()
         try {
-            expect(element.state).toEqual({
-                collectionsState: 'pristine',
-                bookmarkState: 'pristine',
-                tagsState: 'pristine',
-                saveState: 'pristine',
-                syncState: 'pristine',
-                collectionsToAdd: [],
-                isModalShown: true,
-                isUnsupportedApplication: true,
-                isStarred: false,
-                noteText: '',
-                pageUrl: '',
-                statusText: '',
-                tagsToAdd: [],
-            })
+            expect(element.state).toEqual(
+                expect.objectContaining({
+                    pageUrl,
+                    tagsToAdd: [],
+                    collectionsToAdd: [],
+                    isUnsupportedApplication: true,
+                    isStarred: false,
+                }),
+            )
         } finally {
             await element.cleanup()
         }
@@ -78,21 +74,15 @@ describe('share modal UI logic tests', () => {
         })
         await element.init()
         try {
-            expect(element.state).toEqual({
-                collectionsState: 'done',
-                bookmarkState: 'done',
-                tagsState: 'done',
-                saveState: 'pristine',
-                syncState: 'pristine',
-                collectionsToAdd: [],
-                isUnsupportedApplication: false,
-                isModalShown: true,
-                isStarred: false,
-                noteText: '',
-                pageUrl,
-                statusText: '',
-                tagsToAdd: [],
-            })
+            expect(element.state).toEqual(
+                expect.objectContaining({
+                    pageUrl,
+                    tagsToAdd: [],
+                    collectionsToAdd: [],
+                    isUnsupportedApplication: false,
+                    isStarred: false,
+                }),
+            )
         } finally {
             await element.cleanup()
         }
@@ -110,21 +100,15 @@ describe('share modal UI logic tests', () => {
         })
         await element.init()
         try {
-            expect(element.state).toEqual({
-                collectionsState: 'done',
-                bookmarkState: 'done',
-                tagsState: 'done',
-                saveState: 'pristine',
-                syncState: 'pristine',
-                collectionsToAdd: [],
-                isUnsupportedApplication: false,
-                isModalShown: true,
-                isStarred: true,
-                noteText: '',
-                pageUrl,
-                statusText: '',
-                tagsToAdd: [],
-            })
+            expect(element.state).toEqual(
+                expect.objectContaining({
+                    pageUrl,
+                    tagsToAdd: [],
+                    collectionsToAdd: [],
+                    isUnsupportedApplication: false,
+                    isStarred: true,
+                }),
+            )
         } finally {
             await element.cleanup()
         }
@@ -146,21 +130,15 @@ describe('share modal UI logic tests', () => {
         })
         await element.init()
         try {
-            expect(element.state).toEqual({
-                collectionsState: 'done',
-                bookmarkState: 'done',
-                tagsState: 'done',
-                saveState: 'pristine',
-                syncState: 'pristine',
-                collectionsToAdd: [],
-                isUnsupportedApplication: false,
-                isModalShown: true,
-                isStarred: false,
-                noteText: '',
-                pageUrl,
-                statusText: '',
-                tagsToAdd: ['tagA', 'tagB'],
-            })
+            expect(element.state).toEqual(
+                expect.objectContaining({
+                    pageUrl,
+                    collectionsToAdd: [],
+                    tagsToAdd: ['tagA', 'tagB'],
+                    isUnsupportedApplication: false,
+                    isStarred: false,
+                }),
+            )
         } finally {
             await element.cleanup()
         }
@@ -183,21 +161,15 @@ describe('share modal UI logic tests', () => {
         })
         await element.init()
         try {
-            expect(element.state).toEqual({
-                collectionsState: 'done',
-                bookmarkState: 'done',
-                tagsState: 'done',
-                saveState: 'pristine',
-                syncState: 'pristine',
-                collectionsToAdd: ['My list'],
-                isUnsupportedApplication: false,
-                isModalShown: true,
-                isStarred: false,
-                noteText: '',
-                pageUrl,
-                statusText: '',
-                tagsToAdd: [],
-            })
+            expect(element.state).toEqual(
+                expect.objectContaining({
+                    pageUrl,
+                    collectionsToAdd: ['My list'],
+                    tagsToAdd: [],
+                    isUnsupportedApplication: false,
+                    isStarred: false,
+                }),
+            )
         } finally {
             await element.cleanup()
         }
@@ -265,36 +237,25 @@ describe('share modal UI logic tests', () => {
     it('should be able to set meta view type', async (context: {
         storage: Storage
     }) => {
-        const { logic, initialState: state } = await setup(context)
+        const { element, logic } = await setup(context)
         const types: MetaType[] = ['tags', 'collections']
 
         logic['syncRunning'] = Promise.resolve()
 
-        let previousState = state
+        expect(element.state.metaViewShown).toBeUndefined()
+        expect(element.state.statusText).toEqual('')
 
-        for (const type of types) {
-            let newState: typeof state
+        await element.processEvent('setMetaViewType', { type: 'tags' })
+        expect(element.state.metaViewShown).toEqual('tags')
+        expect(element.state.statusText).toEqual('Tags')
 
-            logic.events.on('mutation', (mutation: any) => {
-                newState = logic.withMutation(state, mutation)
+        await element.processEvent('setMetaViewType', { type: 'collections' })
+        expect(element.state.metaViewShown).toEqual('collections')
+        expect(element.state.statusText).toEqual('Collections')
 
-                // If final mutation
-                if (mutation.syncState.$set === 'done') {
-                    expect(previousState.syncState).not.toBe('done')
-                    expect(newState.syncState).toBe('done')
-
-                    expect(previousState.metaViewShown).not.toBe(type)
-                    expect(newState.metaViewShown).toBe(type)
-                }
-
-                previousState = newState
-            })
-
-            await logic.setMetaViewType({
-                event: { type },
-                previousState,
-            })
-        }
+        await element.processEvent('setMetaViewType', { type: undefined })
+        expect(element.state.metaViewShown).toBeUndefined()
+        expect(element.state.statusText).toEqual('')
     })
 
     it('should be able to star pages', async (context: {
