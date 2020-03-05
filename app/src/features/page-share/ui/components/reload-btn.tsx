@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, TouchableOpacity } from 'react-native'
+import { TouchableOpacity, Image } from 'react-native'
 
 import styles from './reload-btn.styles'
 
@@ -7,9 +7,11 @@ export interface Props {
     onPress: () => void
 }
 
+const reloadImg = require('src/ui/img/reload.png')
+
 const ReloadBtn: React.StatelessComponent<Props> = props => (
     <TouchableOpacity style={styles.container} onPress={props.onPress}>
-        <Image source={require('src/ui/img/reload.png')} />
+        <Image resizeMode="contain" style={styles.Img} source={reloadImg} />
     </TouchableOpacity>
 )
 

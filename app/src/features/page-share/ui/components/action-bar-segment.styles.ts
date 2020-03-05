@@ -5,6 +5,7 @@ export default EStyleSheet.create({
         color: 'white',
     },
     container: {
+        display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -12,11 +13,20 @@ export default EStyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
         height: '4rem',
+        width: '100%',
         marginBottom: '0.5rem',
     },
     buttonText: {
         fontSize: '1.3rem',
         color: '#007AFF',
+    },
+    buttonContainerRight: {
+        flex: 1,
+        alignItems: 'flex-end',
+    },
+    buttonContainerLeft: {
+        flex: 1,
+        alignItems: 'flex-start',
     },
     buttonTextDisabled: {
         fontSize: '1.3rem',
@@ -25,5 +35,7 @@ export default EStyleSheet.create({
     mainText: {
         fontSize: '1.3rem',
         fontWeight: 'bold',
+        textAlign: 'center',
+        flex: 4,
     },
 })

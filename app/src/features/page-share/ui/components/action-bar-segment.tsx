@@ -24,27 +24,29 @@ const ActionBar: React.StatelessComponent<Props> = ({
     ...props
 }) => (
     <View style={styles.container} onTouchStart={() => Keyboard.dismiss()}>
-        {props.onLeftBtnPress ? (
-            <TouchableOpacity onPress={props.onLeftBtnPress}>
-                <Text style={styles.buttonText}>{leftBtnText}</Text>
-            </TouchableOpacity>
-        ) : (
-            <Text style={styles.placeholderBtn}>Back</Text>
-        )}
-        <Text style={styles.mainText}>{props.children}</Text>
-        {props.onRightBtnPress ? (
-            props.isConfirming ? (
-                <TouchableOpacity disabled>
-                    <Text style={styles.buttonTextDisabled}>Saving...</Text>
+        <View style={styles.buttonContainerLeft}>
+            {props.onLeftBtnPress ? (
+                <TouchableOpacity onPress={props.onLeftBtnPress}>
+                    <Text style={styles.buttonText}>{leftBtnText}</Text>
                 </TouchableOpacity>
             ) : (
-                <TouchableOpacity onPress={props.onRightBtnPress}>
-                    <Text style={styles.buttonText}>{rightBtnText}</Text>
-                </TouchableOpacity>
-            )
-        ) : (
-            <View />
-        )}
+                <Text style={styles.placeholderBtn}>Back</Text>
+            )}
+        </View>
+        <Text style={styles.mainText}>{props.children}</Text>
+        <View style={styles.buttonContainerRight}>
+            {props.onRightBtnPress ? (
+                props.isConfirming ? (
+                    <TouchableOpacity disabled>
+                        <Text style={styles.buttonTextDisabled}>Saving...</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity onPress={props.onRightBtnPress}>
+                        <Text style={styles.buttonText}>{rightBtnText}</Text>
+                    </TouchableOpacity>
+                )
+            ) : null}
+        </View>
     </View>
 )
 
