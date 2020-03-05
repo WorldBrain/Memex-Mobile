@@ -34,7 +34,7 @@ const TouchableSegment: React.StatelessComponent<Props> = props => (
             ]}
         >
             <Text style={styles.mainText}>{props.text}</Text>
-            {props.loading ? <LoadingBalls /> : props.children}
+            {props.loading ? null : props.children}
         </View>
     </TouchableOpacity>
 )
