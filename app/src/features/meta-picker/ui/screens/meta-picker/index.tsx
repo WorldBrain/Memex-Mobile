@@ -93,19 +93,19 @@ export default class MetaPickerScreen extends NavigationScreen<
     render() {
         return (
             <MetaPicker className={this.props.className}>
-                <View style={styles.resultContainer}>
-                    <View style={styles.searchContainer}>
-                        <SuggestInput
-                            onChange={this.handleInputText}
-                            value={selectors.inputText(this.state)}
-                            placeholder={this.suggestInputPlaceholder}
-                        />
+                {this.state.loadState === 'running' ? (
+                    <View style={styles.loadingBallContainer}>
+                        <LoadingBalls style={styles.loadingBalls} />
                     </View>
-                    {this.state.loadState === 'running' ? (
-                        <View style={styles.loadingBallContainer}>
-                            <LoadingBalls style={styles.loadingBalls} />
+                ) : (
+                    <View style={styles.resultContainer}>
+                        <View style={styles.searchContainer}>
+                            <SuggestInput
+                                onChange={this.handleInputText}
+                                value={selectors.inputText(this.state)}
+                                placeholder={this.suggestInputPlaceholder}
+                            />
                         </View>
-                    ) : (
                         <View style={styles.listContainer}>
                             <FlatList
                                 renderItem={this.renderPickerEntry}
@@ -121,8 +121,8 @@ export default class MetaPickerScreen extends NavigationScreen<
                                 }
                             />
                         </View>
-                    )}
-                </View>
+                    </View>
+                )}
             </MetaPicker>
         )
     }
