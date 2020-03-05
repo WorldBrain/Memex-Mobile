@@ -6,10 +6,6 @@ import styles from './loading-screen.styles'
 
 export default class LoadingScreen extends React.PureComponent {
     render() {
-        return (
-            <View style={styles.container}>
-                <LoadingBalls />
-            </View>
-        )
+        return <View />
     }
 }

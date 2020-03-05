@@ -20,4 +20,9 @@ export default EStyleSheet.create({
     modal: {
         backgroundColor: 'transparent',
     },
+    loadingBalls: {
+        width: '5rem',
+        display: 'flex',
+        justifyContent: 'center',
+    },
 })
