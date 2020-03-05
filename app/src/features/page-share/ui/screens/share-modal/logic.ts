@@ -15,10 +15,8 @@ import { getMetaTypeName } from 'src/features/meta-picker/utils'
 
 export interface State {
     loadState: UITaskState
-    saveState: UITaskState
-
-    bookmarkState: UITaskState
     tagsState: UITaskState
+    bookmarkState: UITaskState
     collectionsState: UITaskState
 
     pageUrl: string
@@ -72,7 +70,6 @@ export default class Logic extends UILogic<State, Event> {
         return {
             isUnsupportedApplication: false,
             loadState: 'pristine',
-            saveState: 'pristine',
             bookmarkState: 'pristine',
             tagsState: 'pristine',
             collectionsState: 'pristine',
@@ -87,11 +84,13 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
+    private handleSyncError = (err: Error) => {
+        this.emitMutation({ errorMessage: { $set: err.message } })
+    }
+
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         this.syncRunning = this.props.services.sync.continuousSync.forceIncrementalSync()
-        this.syncRunning.catch(err =>
-            this.emitMutation({ errorMessage: { $set: err.message } }),
-        )
+        this.syncRunning.catch(this.handleSyncError)
 
         let url: string
 
@@ -246,23 +245,17 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async save(incoming: IncomingUIEvent<State, Event, 'save'>) {
-        return executeUITask<State, 'saveState', void>(
-            this,
-            'saveState',
-            async () => {
-                this.emitMutation({ showSavingPage: { $set: true } })
-                await this.storePageFinal(incoming.previousState)
-                try {
-                    // TODO: abort any running pull sync, do a push sync
-                    await this.syncRunning
-                    await this.props.services.sync.continuousSync.forceIncrementalSync()
-                } catch (error) {
-                    this.handleSyncError(error)
-                } finally {
-                    this.emitMutation({ isModalShown: { $set: false } })
-                }
-            },
-        )
+        this.emitMutation({ showSavingPage: { $set: true } })
+        await this.storePageFinal(incoming.previousState)
+        try {
+            // TODO: abort any running pull sync, do a push sync
+            await this.syncRunning
+            await this.props.services.sync.continuousSync.forceIncrementalSync()
+        } catch (error) {
+            this.handleSyncError(error)
+        } finally {
+            this.emitMutation({ isModalShown: { $set: false } })
+        }
     }
 
     setMetaViewType(

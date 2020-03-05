@@ -131,7 +131,10 @@ export default class ShareModalScreen extends NavigationScreen<
         return (
             <>
                 <ActionBar
+                    leftBtnText="Back"
                     onLeftBtnPress={this.handleMetaViewTypeSwitch(undefined)}
+                    rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
+                    onRightBtnPress={this.handleSave}
                 >
                     {this.renderTitle()}
                 </ActionBar>
@@ -155,31 +158,26 @@ export default class ShareModalScreen extends NavigationScreen<
                     onLeftBtnPress={this.handleUndo}
                     rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
                     onRightBtnPress={this.handleSave}
-                    isConfirming={this.state.saveState === 'running'}
                 >
                     {this.renderTitle()}
                 </ActionBar>
                 <NoteInput
                     onChange={this.handleNoteTextChange}
                     value={this.state.noteText}
-                    disabled={this.state.saveState === 'running'}
                 />
                 <StarPage
                     isStarred={this.state.isStarred}
                     onPress={this.handleStarPress}
-                    disabled={this.state.saveState === 'running'}
                     loading={this.state.bookmarkState !== 'done'}
                 />
                 <AddCollection
                     onPress={this.handleMetaViewTypeSwitch('collections')}
                     count={this.state.collectionsToAdd.length}
-                    disabled={this.state.saveState === 'running'}
                     loading={this.state.collectionsState !== 'done'}
                 />
                 <AddTags
                     onPress={this.handleMetaViewTypeSwitch('tags')}
                     count={this.state.tagsToAdd.length}
-                    disabled={this.state.saveState === 'running'}
                     loading={this.state.tagsState !== 'done'}
                 />
             </>
