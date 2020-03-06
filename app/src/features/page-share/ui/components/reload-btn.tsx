@@ -11,7 +11,7 @@ const reloadImg = require('src/ui/img/reload.png')
 
 const ReloadBtn: React.StatelessComponent<Props> = props => (
     <TouchableOpacity style={styles.container} onPress={props.onPress}>
-        <Image resizeMode="contain" style={styles.Img} source={reloadImg} />
+        <Image resizeMode="contain" style={styles.img} source={reloadImg} />
     </TouchableOpacity>
 )
 

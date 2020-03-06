@@ -32,6 +32,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
 
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {
+            selectedList: this.state.selectedListName,
             pageUrl: page.fullUrl,
             mode,
         })
@@ -39,7 +40,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
 
     private resetDashboard = () => {
         this.processEvent('setSyncRibbonShow', { show: false })
-        this.processEvent('reload', { initList: MOBILE_LIST_NAME })
+        this.processEvent('reload', { initList: this.state.selectedListName })
     }
 
     private initHandleDeletePress = (page: UIPage) => () =>

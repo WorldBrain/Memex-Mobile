@@ -1,6 +1,5 @@
 import React from 'react'
-
-import { View } from 'react-native'
+import { Text } from 'react-native'
 import { NavigationScreen } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import Logic, { Props, State, Event } from './logic'
@@ -16,7 +15,7 @@ import ReloadBtn from '../../components/reload-btn'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import SavingUpdates from '../../components/saving-updates'
 import SyncError from '../../components/sync-error'
-import styles from '../../components/share-modal.styles'
+import styles from './styles'
 
 export default class ShareModalScreen extends NavigationScreen<
     Props,
@@ -112,7 +111,9 @@ export default class ShareModalScreen extends NavigationScreen<
         if (this.state.metaViewShown) {
             return (
                 <>
-                    {this.state.statusText}
+                    <Text style={styles.titleText}>
+                        {this.state.statusText}
+                    </Text>
                     <ReloadBtn onPress={this.handleReloadPress} />
                 </>
             )
@@ -126,7 +127,7 @@ export default class ShareModalScreen extends NavigationScreen<
             return null
         }
 
-        return 'Saved!'
+        return <Text style={styles.titleText}>Saved!</Text>
     }
 
     private renderMetaPicker() {

@@ -49,7 +49,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async loadPageData(url: string): Promise<Page> {
-        const { overview, pageEditor } = this.props.storage.modules
+        const { overview, pageEditor, metaPicker } = this.props.storage.modules
         const storedPage = await overview.findPage({ url })
 
         if (!storedPage) {
@@ -57,6 +57,16 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const notes = await pageEditor.findNotes({ url })
+
+        const noteTags = new Map<string, string[]>()
+
+        for (const note of notes) {
+            const tags = await metaPicker.findTagsByPage({ url: note.url })
+            noteTags.set(
+                note.url,
+                tags.map(t => t.name),
+            )
+        }
 
         return {
             ...storedPage,
@@ -74,6 +84,7 @@ export default class Logic extends UILogic<State, Event> {
                 commentText: note.comment || undefined,
                 noteText: note.body,
                 isNotePressed: false,
+                tags: noteTags.get(note.url)!,
                 isEdited:
                     note.lastEdited &&
                     note.lastEdited.getTime() !== note.createdWhen!.getTime(),
