@@ -56,11 +56,15 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    private navigateBack = () =>
+    private navigateBack = () => {
+        const selectedList = this.props.navigation.getParam('selectedList')
+
         this.props.navigation.navigate('PageEditor', {
             mode: 'notes',
             pageUrl: this.pageUrl,
+            selectedList,
         })
+    }
 
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
         if (previousState.noteText.trim() !== this.initNoteText.trim()) {

@@ -32,10 +32,16 @@ export default class PageEditorScreen extends NavigationScreen<
             return undefined
         }
 
+        const selectedList = this.props.navigation.getParam(
+            'selectedList',
+            MOBILE_LIST_NAME,
+        )
+
         return () =>
             this.props.navigation.navigate('NoteEditor', {
                 pageUrl: this.state.page.fullUrl,
                 mode: 'create',
+                selectedList,
             })
     }
 
