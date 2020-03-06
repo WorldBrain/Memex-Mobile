@@ -96,9 +96,6 @@ export default class MetaPickerScreen extends NavigationScreen<
                 {this.state.loadState === 'running' ? (
                     <View style={styles.loadingBallContainer}>
                         <LoadingBalls style={styles.loadingBalls} />
-                        <Text style={styles.loadingText}>
-                            Syncing and Updating List
-                        </Text>
                     </View>
                 ) : (
                     <View style={styles.resultContainer}>
