@@ -63,7 +63,8 @@ jobs:
         - "./write-ios-keys.sh"
         - "./install-deps-ios.sh"
       script:
-        - "./deploy-ios-beta.sh"
+        - cd app
+        - yarn ios:beta
     - stage: android-beta
       if: branch = master AND type = push
       language: android
@@ -84,7 +85,8 @@ jobs:
         - "./write-android-keys.sh"
         - "./install-deps-android.sh"
       script:
-        - "./deploy-android-beta.sh"
+        - cd app
+        - yarn android:beta
 
 env:
   global:
