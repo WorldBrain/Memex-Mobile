@@ -9,9 +9,7 @@ export default EStyleSheet.create({
     loadingBalls: {
         bottom: 20,
     },
-    searchContainer: {
-        height: 'fit-content',
-    },
+    searchContainer: {},
     listContainer: {
         height: '85%',
         marginTop: '0.3rem',
