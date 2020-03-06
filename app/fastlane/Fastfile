@@ -9,9 +9,15 @@ MAIN_APP_PROFILE = "match AppStore io.worldbrain.memex"
 EXT_APP_ID = "io.worldbrain.memex.MemexShare"
 EXT_APP_PROFILE = "match AppStore io.worldbrain.memex.MemexShare"
 
+MAIN_APP_ID_DEV = "io.worldbrain.memexTestDrive"
+MAIN_APP_PROFILE_DEV = "match AppStore io.worldbrain.memexTestDrive"
+EXT_APP_ID_DEV = "io.worldbrain.memex.MemexShareTestDrive"
+EXT_APP_PROFILE_DEV = "match AppStore io.worldbrain.memex.MemexShareTestDrive"
+
 APPLE_USER_ID = "dev@worldbrain.io"
 APPLE_APP_ID = "1471860331"
 ANDROID_APP_ID = "io.worldbrain"
+ANDROID_APP_ID_DEV = "io.worldbrain.TestDrive"
 
 ANDROID_SERVICE_JSON_PATH = "./android/service-account.json"
 PACKAGE_JSON_PATH = "./package.json"
@@ -33,17 +39,24 @@ platform :ios do
         ENV['FASTLANE_PASSWORD'] = nil
     end
 
-    desc 'Fetch certificates and provisioning profiles'
-    lane :certificates do
-        # match(app_identifier: [MAIN_APP_ID, EXT_APP_ID], type: 'development', readonly: true)
-        match(app_identifier: [MAIN_APP_ID, EXT_APP_ID], type: 'appstore', readonly: true)
-    end
-
     desc 'Build a new iOS application version.'
-    private_lane :build do
+    private_lane :build do |options|
         package = load_json(json_path: PACKAGE_JSON_PATH)
 
-        certificates
+        if options[:production]
+            match(app_identifier: [MAIN_APP_ID, EXT_APP_ID], type: 'appstore', readonly: true)
+            prov_profiles = {
+                MAIN_APP_ID => MAIN_APP_PROFILE,
+                EXT_APP_ID => EXT_APP_PROFILE
+            }
+        else
+            match(app_identifier: [MAIN_APP_ID_DEV, EXT_APP_ID_DEV], type: 'development', readonly: true)
+            prov_profiles = {
+                MAIN_APP_ID_DEV => MAIN_APP_PROFILE_DEV,
+                EXT_APP_ID_DEV => EXT_APP_PROFILE_DEV
+            }
+        end
+
         increment_version_number(xcodeproj: XCPROJ_PATH, version_number: package["version"])
         gym(
             scheme: 'app',
@@ -53,19 +66,15 @@ platform :ios do
             silent: true,
             export_options: {
                 method: "app-store",
-                provisioningProfiles: {
-                  MAIN_APP_ID => MAIN_APP_PROFILE,
-                  EXT_APP_ID => EXT_APP_PROFILE
-                }
+                provisioningProfiles: prov_profiles
             }
         )
     end
 
-    desc 'Ship to Testflight.'
-    lane :beta do
+    desc 'Ship to production or develop TestFlight.'
+    private_lane :ship do |options|
         setup_travis
-        # ensure_git_branch(branch: 'master')
-        build
+        build(production: options[:production])
         reset_pass
         pilot(
             username: APPLE_USER_ID,
@@ -73,11 +82,22 @@ platform :ios do
             skip_waiting_for_build_processing: true
         )
     end
+
+    desc 'Ship to production TestFlight.'
+    lane :production do
+        ship(production: true)
+    end
+
+    desc 'Ship to development TestFlight.'
+    lane :beta do
+        ship(production: false)
+    end
+
 end
 
 platform :android do
     desc 'Build a new Android application version.'
-    lane :build do
+    private_lane :build do
         package = load_json(json_path: PACKAGE_JSON_PATH)
 
         gradle(task: 'clean', project_dir: 'android/')
@@ -85,20 +105,35 @@ platform :android do
         gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
     end
 
-    desc 'Ship to Playstore Beta.'
-    lane :beta do
-        # ensure_git_branch(branch: 'master')
+    desc 'Ship to Playstore production or develop.'
+    private_lane :ship do |options|
+        package_name =
+            if options[:production]
+                ANDROID_APP_ID
+            else
+                ANDROID_APP_ID_DEV
+
         build
         supply(
             track: 'beta',
             track_promote_to: 'beta',
             aab: AAB_PATH,
             json_key: ANDROID_SERVICE_JSON_PATH,
-            package_name: ANDROID_APP_ID,
+            package_name: package_name,
+            skip_upload_screenshots: true,
             skip_upload_metadata: true,
             skip_upload_images: true,
-            skip_upload_screenshots: true,
             skip_upload_apk: true
         )
+    end
+
+    desc 'Ship to Playstore production.'
+    lane :production do
+        ship(production: true)
+    end
+
+    desc 'Ship to Playstore beta.'
+    lane :beta do
+        ship(production: false)
     end
 end
