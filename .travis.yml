@@ -48,6 +48,48 @@ jobs:
       script:
         - yarn lint
         - yarn test --colors
+
+    - stage: ios-production
+      if: branch = master AND type = push
+      os: osx
+      osx_image: xcode11.3
+      language: node_js
+      cache: *ios-cache
+      node_js:
+        - lts/*
+      before_install:
+        - sudo gem install fastlane
+        - npm install -g yarn
+      install:
+        - "./write-ios-keys.sh"
+        - "./install-deps-ios.sh"
+      script:
+        - cd app
+        - yarn ios:production
+
+    - stage: android-production
+      if: branch = master AND type = push
+      language: android
+      jdk: oraclejdk8
+      android: *android
+      before_cache:
+        - rm -f ~/.gradle/caches/modules-2/modules-2.lock
+        - rm -fr ~/.gradle/caches/*/plugin-resolution/
+      cache: *android-cache
+      before_install:
+        - rvm install 2.6.5
+        - gem install fastlane
+        - nvm install 10.17.0
+        - npm install -g yarn
+        - yes | sdkmanager "platforms;android-28"
+        - yes | sdkmanager "build-tools;28.0.3"
+      install:
+        - "./write-android-keys.sh"
+        - "./install-deps-android.sh"
+      script:
+        - cd app
+        - yarn android:production
+
     - stage: ios-beta
       if: branch = master AND type = push
       os: osx
