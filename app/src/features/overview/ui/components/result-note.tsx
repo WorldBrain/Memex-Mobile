@@ -1,14 +1,17 @@
 import React from 'react'
-import { TouchableWithoutFeedback } from 'react-native'
+import { View, TouchableWithoutFeedback } from 'react-native'
 
 import Container from './result-container'
 import Body, { Props as BodyProps } from './result-note-body'
 import { DeleteBtn, EditNoteBtn } from './action-btns'
 import ActionBar from './result-page-action-bar'
+import Tags from './result-page-tags'
 import { NativeTouchEventHandler } from '../../types'
+import styles from './result-note.styles'
 
 export interface Props extends BodyProps {
     isStarred?: boolean
+    tags: string[]
 }
 
 export interface InteractionProps {
@@ -25,7 +28,10 @@ const ResultNote: React.StatelessComponent<Props &
     <>
         <Container isNote={!props.clearBackground}>
             <TouchableWithoutFeedback onPress={props.onNotePress}>
-                <Body {...props} />
+                <View style={styles.contentContainer}>
+                    <Body {...props} />
+                    <Tags tags={props.tags} style={styles.tagsContainer} />
+                </View>
             </TouchableWithoutFeedback>
         </Container>
         {props.isNotePressed && (
