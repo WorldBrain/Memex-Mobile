@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, FlatList, ListRenderItem } from 'react-native'
+import { View, FlatList, ListRenderItem, Text } from 'react-native'
 
 import { NavigationScreen } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
@@ -93,24 +93,35 @@ export default class MetaPickerScreen extends NavigationScreen<
     render() {
         return (
             <MetaPicker className={this.props.className}>
-                <SuggestInput
-                    onChange={this.handleInputText}
-                    value={selectors.inputText(this.state)}
-                    placeholder={this.suggestInputPlaceholder}
-                />
                 {this.state.loadState === 'running' ? (
                     <View style={styles.loadingBallContainer}>
                         <LoadingBalls style={styles.loadingBalls} />
                     </View>
                 ) : (
-                    <FlatList
-                        renderItem={this.renderPickerEntry}
-                        data={selectors.pickerEntries(this.state, this.props)}
-                        keyExtractor={(item, index) => index.toString()}
-                        ListEmptyComponent={
-                            <MetaPickerEmptyRow type={this.props.type} />
-                        }
-                    />
+                    <View style={styles.resultContainer}>
+                        <View style={styles.searchContainer}>
+                            <SuggestInput
+                                onChange={this.handleInputText}
+                                value={selectors.inputText(this.state)}
+                                placeholder={this.suggestInputPlaceholder}
+                            />
+                        </View>
+                        <View style={styles.listContainer}>
+                            <FlatList
+                                renderItem={this.renderPickerEntry}
+                                data={selectors.pickerEntries(
+                                    this.state,
+                                    this.props,
+                                )}
+                                keyExtractor={(item, index) => index.toString()}
+                                ListEmptyComponent={
+                                    <MetaPickerEmptyRow
+                                        type={this.props.type}
+                                    />
+                                }
+                            />
+                        </View>
+                    </View>
                 )}
             </MetaPicker>
         )

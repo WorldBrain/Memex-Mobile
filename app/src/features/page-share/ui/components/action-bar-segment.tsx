@@ -33,7 +33,7 @@ const ActionBar: React.StatelessComponent<Props> = ({
                 <Text style={styles.placeholderBtn}>Back</Text>
             )}
         </View>
-        <Text style={styles.mainText}>{props.children}</Text>
+        <View style={styles.mainContent}>{props.children}</View>
         <View style={styles.buttonContainerRight}>
             {props.onRightBtnPress ? (
                 props.isConfirming ? (

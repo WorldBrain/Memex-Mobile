@@ -32,10 +32,10 @@ export default EStyleSheet.create({
         fontSize: '1.3rem',
         color: '#C4C4C4',
     },
-    mainText: {
-        fontSize: '1.3rem',
-        fontWeight: 'bold',
-        textAlign: 'center',
+    mainContent: {
         flex: 4,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 })

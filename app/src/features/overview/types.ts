@@ -39,6 +39,7 @@ export interface UINote extends UIResult {
     isEdited?: boolean
     commentText?: string
     isNotePressed?: boolean
+    tags: string[]
 }
 
 export interface Page {
