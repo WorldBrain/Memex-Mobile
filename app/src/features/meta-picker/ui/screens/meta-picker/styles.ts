@@ -20,4 +20,11 @@ export default EStyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
     },
+    loadingText: {
+        fontFamily: 'Poppins',
+        fontWeight: '700',
+        color: '$textColor',
+        fontSize: '1.3rem',
+        marginTop: '1rem',
+    },
 })
