@@ -8,6 +8,7 @@ import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 
 export default class PageEditorScreen extends NavigationScreen<
     Props,
@@ -36,6 +37,14 @@ export default class PageEditorScreen extends NavigationScreen<
                 pageUrl: this.state.page.fullUrl,
                 mode: 'create',
             })
+    }
+
+    private navBackToOverview = () => {
+        const selectedList = this.props.navigation.getParam(
+            'selectedList',
+            MOBILE_LIST_NAME,
+        )
+        this.props.navigation.navigate('Overview', { selectedList })
     }
 
     private renderNotes() {
@@ -96,7 +105,7 @@ export default class PageEditorScreen extends NavigationScreen<
         return (
             <MainLayout
                 {...this.state.page}
-                onBackPress={e => this.props.navigation.navigate('Overview')}
+                onBackPress={this.navBackToOverview}
                 onAddPress={this.initHandleAddNotePress()}
                 titleText={this.state.page.pageUrl}
             >
