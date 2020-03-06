@@ -2,7 +2,7 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 
 export default EStyleSheet.create({
     container: {
-        background: 'white',
+        backgroundColor: 'white',
     },
     img: {
         width: 15,
