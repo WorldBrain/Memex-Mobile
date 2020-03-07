@@ -66,7 +66,7 @@ export default class Logic extends UILogic<State, Event> {
         })
 
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
-        if (previousState.noteText.trim() !== this.initNoteText.trim()) {
+        if (previousState.noteText?.trim() !== this.initNoteText.trim()) {
             Alert.alert('Discard Changes?', `You've made unsaved changes`, [
                 {
                     text: 'Discard',

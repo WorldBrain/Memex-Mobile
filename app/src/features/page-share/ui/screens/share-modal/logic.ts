@@ -332,7 +332,7 @@ export default class Logic extends UILogic<State, Event> {
             tags: state.tagsToAdd,
         })
 
-        if (state.noteText.trim().length > 0) {
+        if (state.noteText?.trim().length > 0) {
             await pageEditor.createNote(
                 {
                     comment: state.noteText.trim(),
