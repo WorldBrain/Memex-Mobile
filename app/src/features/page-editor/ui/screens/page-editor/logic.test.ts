@@ -1,5 +1,6 @@
 import Logic, { Props, State, Event } from './logic'
 import { TestLogicContainer } from 'src/tests/ui-logic'
+import { FakeNavigation } from 'src/tests/navigation'
 
 const testText = 'this is a test'
 const testPage = {
@@ -14,7 +15,10 @@ const testPage = {
 
 describe('page editor UI logic tests', () => {
     function setup(deps: Partial<Props>) {
-        const logic = new Logic(deps as Props)
+        const logic = new Logic({
+            ...deps,
+            navigation: new FakeNavigation() as any,
+        } as Props)
         const logicContainer = new TestLogicContainer<State, Event>(logic)
 
         return { logic, logicContainer }

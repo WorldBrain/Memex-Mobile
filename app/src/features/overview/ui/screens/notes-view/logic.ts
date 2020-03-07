@@ -1,7 +1,11 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
+import { NavigationProps } from 'src/ui/types'
 import initTestData from './test-data'
 import { ResultSections } from './types'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+
+export interface Props extends NavigationProps {}
 
 export interface State {
     sections: ResultSections
@@ -17,6 +21,17 @@ export type Event = UIEvent<{
 }>
 
 export default class Logic extends UILogic<State, Event> {
+    selectedList: string
+
+    constructor(private props: Props) {
+        super()
+
+        this.selectedList = props.navigation.getParam(
+            'selectedList',
+            MOBILE_LIST_NAME,
+        )
+    }
+
     getInitialState(): State {
         return initTestData()
     }

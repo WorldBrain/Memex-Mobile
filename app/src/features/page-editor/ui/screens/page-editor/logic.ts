@@ -6,6 +6,7 @@ import { EditorMode } from 'src/features/page-editor/types'
 import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 
 export interface State {
     loadState: UITaskState
@@ -26,8 +27,15 @@ export interface Props extends NavigationProps {
 }
 
 export default class Logic extends UILogic<State, Event> {
+    selectedList: string
+
     constructor(private props: Props) {
         super()
+
+        this.selectedList = props.navigation.getParam(
+            'selectedList',
+            MOBILE_LIST_NAME,
+        )
     }
 
     getInitialState(): State {
