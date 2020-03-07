@@ -28,7 +28,7 @@ export default class ShareModalScreen extends NavigationScreen<
         super(props, { logic: new Logic(props) })
     }
 
-    private static arraysAreSame = (a: string[], b: string[]): boolean => {
+    private static arraysAreSame = (a: any[] = [], b: any[] = []): boolean => {
         for (const el of a) {
             if (!b.includes(el)) {
                 return false
