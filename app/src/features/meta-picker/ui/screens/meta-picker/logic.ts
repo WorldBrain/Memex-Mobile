@@ -73,14 +73,12 @@ export default class Logic extends UILogic<State, Event> {
                   })
         const entries = new Map<string, MetaTypeShape>()
 
-        selected.forEach(name => {
-            entries.set(name, { name, isChecked: true })
+        results.forEach(res => {
+            entries.set(res.name, res)
         })
 
-        results.forEach(res => {
-            if (!selected!.includes(res.name)) {
-                entries.set(res.name, res)
-            }
+        selected.forEach(name => {
+            entries.set(name, { name, isChecked: true })
         })
 
         this.emitMutation({

@@ -65,6 +65,7 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const notes = await pageEditor.findNotes({ url })
+        const tags = await metaPicker.findTagsByPage({ url })
 
         const noteTags = new Map<string, string[]>()
 
@@ -80,7 +81,7 @@ export default class Logic extends UILogic<State, Event> {
             ...storedPage,
             titleText: storedPage.fullTitle,
             date: 'a minute ago',
-            tags: [],
+            tags: tags.map(t => t.name),
             lists: [],
             pageUrl: storedPage.url,
             // TODO: unify this map fn with the identical one in DashboardLogic
