@@ -70,7 +70,9 @@ export default class Logic extends UILogic<State, Event> {
         const noteTags = new Map<string, string[]>()
 
         for (const note of notes) {
-            const tags = await metaPicker.findTagsByPage({ url: note.url })
+            const tags = await metaPicker.findTagsByAnnotation({
+                url: note.url,
+            })
             noteTags.set(
                 note.url,
                 tags.map(t => t.name),
