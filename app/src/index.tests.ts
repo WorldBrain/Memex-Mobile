@@ -11,6 +11,8 @@ import { Storage } from 'src/storage/types'
 import { createServices } from './services'
 import { Services } from './services/types'
 import { LocalStorageService } from './services/local-storage'
+import { MockSentry } from './services/error-tracking/index.tests'
+import { ErrorTrackingService } from './services/error-tracking'
 import { FakeNavigation } from './tests/navigation'
 import { MockSettingsStorage } from './features/settings/storage/mock-storage'
 import { MockKeychainPackage } from './services/keychain/mock-keychain-package'
@@ -99,6 +101,10 @@ export function makeStorageTestFactory() {
                     const localStorage = new LocalStorageService({
                         settingsStorage: new MockSettingsStorage(),
                     })
+                    const errorTracker = new ErrorTrackingService(
+                        new MockSentry() as any,
+                        { dsn: 'test.com' },
+                    )
                     const services = await createServices({
                         devicePlatform: 'integration-tests',
                         auth,
@@ -106,6 +112,7 @@ export function makeStorageTestFactory() {
                         signalTransportFactory,
                         sharedSyncLog,
                         localStorage,
+                        errorTracker,
                         disableSyncEncryption: true,
                         keychain: new MockKeychainPackage(),
                     })
@@ -167,6 +174,10 @@ export function makeMultiDeviceTestFactory() {
                 const localStorage = new LocalStorageService({
                     settingsStorage: new MockSettingsStorage(),
                 })
+                const errorTracker = new ErrorTrackingService(
+                    new MockSentry() as any,
+                    { dsn: 'test.com' },
+                )
                 const services = await createServices({
                     devicePlatform: 'integration-tests',
                     auth,
@@ -174,6 +185,7 @@ export function makeMultiDeviceTestFactory() {
                     signalTransportFactory,
                     sharedSyncLog,
                     localStorage,
+                    errorTracker,
                     disableSyncEncryption: true,
                     keychain: new MockKeychainPackage(),
                 })
