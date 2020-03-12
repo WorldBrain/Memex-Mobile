@@ -1,6 +1,5 @@
 import React from 'react'
 import { Text } from 'react-native'
-
 import { NavigationScreen } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import Logic, { Props, State, Event } from './logic'
@@ -29,7 +28,7 @@ export default class ShareModalScreen extends NavigationScreen<
         super(props, { logic: new Logic(props) })
     }
 
-    private static arraysAreSame = (a: string[], b: string[]): boolean => {
+    private static arraysAreSame = (a: any[] = [], b: any[] = []): boolean => {
         for (const el of a) {
             if (!b.includes(el)) {
                 return false
@@ -121,7 +120,7 @@ export default class ShareModalScreen extends NavigationScreen<
         }
 
         if (this.state.loadState === 'running') {
-            return <LoadingBalls />
+            return null
         }
 
         if (this.isInputDirty) {

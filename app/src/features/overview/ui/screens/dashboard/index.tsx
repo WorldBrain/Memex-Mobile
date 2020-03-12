@@ -100,7 +100,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         this.processEvent('setFilteredListName', {
             name: MOBILE_LIST_NAME,
         })
-        this.resetDashboard()
+        this.processEvent('reload', { initList: MOBILE_LIST_NAME })
     }
 
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (

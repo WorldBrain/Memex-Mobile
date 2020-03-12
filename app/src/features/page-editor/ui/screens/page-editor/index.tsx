@@ -8,7 +8,6 @@ import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
-import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 
 export default class PageEditorScreen extends NavigationScreen<
     Props,
@@ -34,18 +33,16 @@ export default class PageEditorScreen extends NavigationScreen<
 
         return () =>
             this.props.navigation.navigate('NoteEditor', {
+                selectedList: (this.logic as Logic).selectedList,
                 pageUrl: this.state.page.fullUrl,
                 mode: 'create',
             })
     }
 
-    private navBackToOverview = () => {
-        const selectedList = this.props.navigation.getParam(
-            'selectedList',
-            MOBILE_LIST_NAME,
-        )
-        this.props.navigation.navigate('Overview', { selectedList })
-    }
+    private navBackToOverview = () =>
+        this.props.navigation.navigate('Overview', {
+            selectedList: (this.logic as Logic).selectedList,
+        })
 
     private renderNotes() {
         return (
@@ -54,6 +51,7 @@ export default class PageEditorScreen extends NavigationScreen<
                     this.processEvent('confirmNoteDelete', { url: n.url })}
                 initNoteEdit={note => () =>
                     this.props.navigation.navigate('NoteEditor', {
+                        selectedList: (this.logic as Logic).selectedList,
                         pageUrl: this.state.page.fullUrl,
                         highlightText: note.noteText,
                         noteText: note.commentText,
