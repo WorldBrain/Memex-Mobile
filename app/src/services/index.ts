@@ -6,6 +6,7 @@ import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types
 import { Services } from './types'
 import { ShareExtService } from './share-ext'
 import { LocalStorageService } from './local-storage'
+import { ErrorTrackingService } from './error-tracking'
 import SyncService from './sync'
 import { Storage } from 'src/storage/types'
 import { BackgroundProcessService } from './background-processing'
@@ -18,6 +19,7 @@ export interface CreateServicesOptions {
     sharedSyncLog: SharedSyncLog
     auth: AuthService
     keychain: KeychainAPI
+    errorTracker: ErrorTrackingService
     localStorage: LocalStorageService
     devicePlatform: MemexSyncDevicePlatform
     disableSyncEncryption?: boolean
@@ -27,11 +29,12 @@ export async function createServices(
     options: CreateServicesOptions,
 ): Promise<Services> {
     const localStorage = options.localStorage
-    const services = {
+    return {
         auth: options.auth,
         shareExt: new ShareExtService({}),
         backgroundProcess: new BackgroundProcessService({}),
         keychain: new KeychainService({ keychain: options.keychain }),
+        errorTracker: options.errorTracker,
         localStorage,
         sync: new SyncService({
             devicePlatform: options.devicePlatform,
@@ -45,5 +48,4 @@ export async function createServices(
             localStorage,
         }),
     }
-    return services
 }

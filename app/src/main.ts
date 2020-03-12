@@ -1,18 +1,18 @@
 globalThis.process.version = '1.1.1'
 
+import { Platform } from 'react-native'
 import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'
 import '@react-native-firebase/functions'
-
-import { Platform } from 'react-native'
+import * as Sentry from '@sentry/react-native'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
 import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
-import { LocalAuthService } from '@worldbrain/memex-common/lib/authentication/local'
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
 
 import './polyfills'
+import { sentryDsn } from '../app.json'
 import {
     createStorage,
     setStorageMiddleware,
@@ -23,6 +23,7 @@ import { setupBackgroundSync, setupFirebaseAuth } from './services/setup'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
+import { ErrorTrackingService } from './services/error-tracking'
 import { KeychainPackage } from './services/keychain/keychain'
 import { insertIntegrationTestData } from './tests/shared-fixtures/integration'
 import { runMigrations } from 'src/utils/quick-and-dirty-migrations'
@@ -46,14 +47,18 @@ export async function main() {
     const localStorage = new LocalStorageService({
         settingsStorage: storage.modules.settings,
     })
+
+    const errorTracker = new ErrorTrackingService(Sentry, { dsn: sentryDsn })
+
     const services = await createServices({
+        keychain: new KeychainPackage({ server: 'worldbrain.io' }),
         devicePlatform: Platform.OS as MemexSyncDevicePlatform,
-        auth: new WorldbrainAuthService(firebase),
-        localStorage,
-        storage,
         signalTransportFactory: createFirebaseSignalTransport,
         sharedSyncLog: serverStorage.modules.sharedSyncLog,
-        keychain: new KeychainPackage({ server: 'worldbrain.io' }),
+        auth: new WorldbrainAuthService(firebase),
+        errorTracker,
+        localStorage,
+        storage,
     })
     const dependencies = { storage, services }
 
