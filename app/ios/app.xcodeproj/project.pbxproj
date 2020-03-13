@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* appTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* appTests.m */; };
 		0C5C83EF62BA4E6CB160D14D /* Poppins-Italic.woff in Resources */ = {isa = PBXBuildFile; fileRef = 1D18BAB8C4114A3AAB6C6013 /* Poppins-Italic.woff */; };
@@ -70,6 +69,7 @@
 		EDC209362C8440B6821BA67A /* Poppins-LightItalic.woff in Resources */ = {isa = PBXBuildFile; fileRef = 46B753B62E324A11AC9B1558 /* Poppins-LightItalic.woff */; };
 		F07412C1506F4F14B2A028F3 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 02D5F50E3CC34E2E81A733C8 /* Poppins-Light.ttf */; };
 		F9173CB927D746C28F727100 /* Poppins-Medium.woff in Resources */ = {isa = PBXBuildFile; fileRef = 252D3B856BBD41CEA4578790 /* Poppins-Medium.woff */; };
+		7A802DC863CE429AAF614CE6 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3156D479FBF84E6E83EB4A51 /* libz.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -338,6 +338,7 @@
 		F2528D9311EE45848DDAC604 /* Poppins-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBoldItalic.ttf"; path = "../fonts/Poppins/Poppins-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		F58BA832A7414BF197CDA26B /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../fonts/Poppins/Poppins-Regular.ttf"; sourceTree = "<group>"; };
 		FAF8CFBCFA82493D9FB6B00B /* Poppins-BlackItalic.woff */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BlackItalic.woff"; path = "../fonts/Poppins/Poppins-BlackItalic.woff"; sourceTree = "<group>"; };
+		3156D479FBF84E6E83EB4A51 /* libz.tbd */ = {isa = PBXFileReference; name = "libz.tbd"; path = "usr/lib/libz.tbd"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = sourcecode.text-based-dylib-definition; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -354,6 +355,7 @@
 			files = (
 				ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				160A0DEFFE000E12E86FE520 /* libPods-app.a in Frameworks */,
+				7A802DC863CE429AAF614CE6 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -537,6 +539,7 @@
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
 				02114BA33390EE56BFA23212 /* libPods-app.a */,
 				BA1A52709FF1B7E8626BF85C /* libPods-app-MemexShare.a */,
+				3156D479FBF84E6E83EB4A51 /* libz.tbd */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -657,6 +660,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		93AE8190C4E043039071794F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			path = Application;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -690,6 +701,7 @@
 				530D720F22AA523900E0F8D5 /* Embed App Extensions */,
 				FA4631CD8D513AD190AC6646 /* [CP] Embed Pods Frameworks */,
 				0F64D06992205D70973F6714 /* [CP] Copy Pods Resources */,
+				5D2D98F870A14547A9702E17 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
@@ -1116,7 +1128,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport NODE_BINARY=node\n../node_modules/@sentry/cli/bin/sentry-cli react-native xcode ../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		0F64D06992205D70973F6714 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1166,7 +1178,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport NODE_BINARY=node\n../node_modules/@sentry/cli/bin/sentry-cli react-native xcode ../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
 		32DD22971C2064BA438E7E01 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1205,7 +1217,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport NODE_BINARY=node\n../node_modules/@sentry/cli/bin/sentry-cli react-native xcode ../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		E6FBB79074DBB3AAE6173437 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1246,6 +1258,20 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-app/Pods-app-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		5D2D98F870A14547A9702E17 /* Upload Debug Symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Upload Debug Symbols to Sentry";
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			shellPath = /bin/sh;
+			shellScript = "export SENTRY_PROPERTIES=sentry.properties\n../node_modules/@sentry/cli/bin/sentry-cli upload-dsym";
 		};
 /* End PBXShellScriptBuildPhase section */
 
