@@ -65,3 +65,7 @@ android/metadata
 android/app/google-services.json
 ios/app/GoogleService-Info.plist
 ios/MemexShare/GoogleService-Info.plist
+
+# Sentry secrets
+ios/sentry.properties
+android/sentry.properties

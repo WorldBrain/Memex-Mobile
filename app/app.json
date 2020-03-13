@@ -5,7 +5,7 @@
     "version": "0.1",
     "appGroup": "group.io.worldbrain.memex",
     "appIdPrefix": "5YUPQC9D96",
-    "sentryDsn": "https://62f5d69eff6c465fb9775d0d5de64f93@sentry.io/4461865",
+    "sentryDsn": "https://efff674e8a664772b5c1b8689522e475@sentry.io/4461865",
     "storageKeys": {
         "showOnboarding": "@MemexApp_show-onboarding",
         "syncKey": "@MemexApp_sync-key"

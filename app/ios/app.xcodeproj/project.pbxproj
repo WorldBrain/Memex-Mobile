@@ -668,6 +668,22 @@
 			path = Application;
 			sourceTree = "<group>";
 		};
+		08B98DA29B9E4B5CB6876C84 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			path = Application;
+			sourceTree = "<group>";
+		};
+		C0C784C5147C4015BB5A4563 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			path = Application;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
