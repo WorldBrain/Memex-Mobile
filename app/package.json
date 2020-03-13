@@ -28,7 +28,6 @@
         "@react-native-firebase/database": "^6.0.1",
         "@react-native-firebase/firestore": "^6.0.1",
         "@react-native-firebase/functions": "6.0.1",
-        "@sentry/react-native": "^1.3.3",
         "@types/react-native-modalbox": "^1.4.8",
         "buffer": "^5.2.1",
         "expo-keep-awake": "^8.0.0",

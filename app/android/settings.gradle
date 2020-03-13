@@ -1,6 +1,4 @@
 apply from: '../node_modules/react-native-unimodules/gradle.groovy'
-include ':@sentry_react-native'
-project(':@sentry_react-native').projectDir = new File(rootProject.projectDir, '../node_modules/@sentry/react-native/android')
 includeUnimodulesProjects()
 
 rootProject.name = 'app'
