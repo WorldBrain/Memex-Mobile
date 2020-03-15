@@ -36,6 +36,7 @@ describe('share modal UI logic tests', () => {
                             : () => Promise.resolve(),
                     },
                 },
+                errorTracker: { track: () => undefined },
             } as any,
             storage: options.storage,
             navigation: new FakeNavigation() as any,
