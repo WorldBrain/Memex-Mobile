@@ -1,5 +1,10 @@
 import Logic, { Props, State, Event } from './logic'
 import { TestLogicContainer } from 'src/tests/ui-logic'
+import { FakeNavigation } from 'src/tests/navigation'
+import { makeStorageTestFactory } from 'src/index.tests'
+import { Storage } from 'src/storage/types'
+import { FakeStatefulUIElement } from 'src/ui/index.tests'
+import * as DATA from './logic.test.data'
 
 const testText = 'this is a test'
 const testPage = {
@@ -13,15 +18,68 @@ const testPage = {
 }
 
 describe('page editor UI logic tests', () => {
-    function setup(deps: Partial<Props>) {
-        const logic = new Logic(deps as Props)
+    const it = makeStorageTestFactory()
+
+    function setup(options: { storage: Storage }) {
+        const logic = new Logic({
+            storage: options.storage,
+            navigation: new FakeNavigation({ pageUrl: DATA.PAGE_1.url }) as any,
+        } as Props)
+        const element = new FakeStatefulUIElement<State, Event>(logic)
         const logicContainer = new TestLogicContainer<State, Event>(logic)
 
-        return { logic, logicContainer }
+        return { logic, logicContainer, element }
     }
 
-    it('should be able to set save notes', async () => {
-        const { logicContainer } = setup({})
+    it('should be able to load init page data for display', async context => {
+        const { element } = setup(context)
+        const { manager } = context.storage
+
+        await manager.collection('pages').createObject(DATA.PAGE_1)
+        await manager
+            .collection('bookmarks')
+            .createObject({ url: DATA.PAGE_1.url, time: Date.now() })
+        await manager.collection('annotations').createObject({
+            ...DATA.NOTE_1,
+            createdWhen: new Date(),
+            lastEdited: new Date(),
+        })
+
+        for (const name of DATA.TAGS_1) {
+            await manager
+                .collection('tags')
+                .createObject({ name, url: DATA.PAGE_1.url })
+        }
+
+        for (const name of DATA.TAGS_2) {
+            await manager
+                .collection('tags')
+                .createObject({ name, url: DATA.NOTE_1.url })
+        }
+
+        expect(element.state.page).toEqual({})
+        await element.init()
+        expect(element.state.page).toEqual(
+            expect.objectContaining({
+                titleText: DATA.PAGE_1.fullTitle,
+                tags: DATA.TAGS_1,
+                lists: [],
+                pageUrl: DATA.PAGE_1.url,
+                isStarred: true,
+                notes: [
+                    expect.objectContaining({
+                        url: DATA.NOTE_1.url,
+                        domain: DATA.PAGE_1.domain,
+                        isStarred: false,
+                        commentText: DATA.NOTE_1.comment,
+                    }),
+                ],
+            }),
+        )
+    })
+
+    it('should be able to set save notes', async context => {
+        const { logicContainer } = setup(context)
 
         logicContainer.logic.emitMutation({
             page: { $set: testPage as any },
@@ -38,8 +96,8 @@ describe('page editor UI logic tests', () => {
         expect(note.commentText).toEqual(testText)
     })
 
-    it('should be able to toggle note being pressed', async () => {
-        const { logicContainer } = setup({})
+    it('should be able to toggle note being pressed', async context => {
+        const { logicContainer } = setup(context)
 
         logicContainer.logic.emitMutation({
             page: { $set: testPage as any },

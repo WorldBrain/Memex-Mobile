@@ -31,6 +31,7 @@ export default class Logic extends UILogic<State, Event> {
     noteUrl?: string
     mode: 'create' | 'update'
     initNoteText: string
+    selectedList: string
 
     constructor(private props: Props) {
         super()
@@ -39,6 +40,7 @@ export default class Logic extends UILogic<State, Event> {
         this.pageUrl = props.navigation.getParam('pageUrl')
         this.noteUrl = props.navigation.getParam('noteUrl')
         this.initNoteText = props.navigation.getParam('noteText', '')
+        this.selectedList = props.navigation.getParam('selectedList')
     }
 
     getInitialState(): State {
@@ -60,10 +62,11 @@ export default class Logic extends UILogic<State, Event> {
         this.props.navigation.navigate('PageEditor', {
             mode: 'notes',
             pageUrl: this.pageUrl,
+            selectedList: this.selectedList,
         })
 
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
-        if (previousState.noteText.trim() !== this.initNoteText.trim()) {
+        if (previousState.noteText?.trim() !== this.initNoteText.trim()) {
             Alert.alert('Discard Changes?', `You've made unsaved changes`, [
                 {
                     text: 'Discard',

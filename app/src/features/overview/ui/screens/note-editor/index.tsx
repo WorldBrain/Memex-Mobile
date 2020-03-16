@@ -115,14 +115,14 @@ export default class NoteEditorScreen extends NavigationScreen<
                             style={navigationStyles.btnContainer}
                             disabled={
                                 this.disableInputs ||
-                                !this.state.noteText.trim().length
+                                !this.state.noteText?.trim().length
                             }
                         >
                             <Image
                                 resizeMode="contain"
                                 style={
                                     this.disableInputs ||
-                                    !this.state.noteText.trim().length
+                                    !this.state.noteText?.trim().length
                                         ? navigationStyles.disabled
                                         : navigationStyles.checkIcon
                                 }

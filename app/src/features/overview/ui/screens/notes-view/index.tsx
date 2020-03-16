@@ -7,28 +7,26 @@ import {
     SectionListRenderItem,
 } from 'react-native'
 
-import {
-    StatefulUIElement,
-    NavigationScreen,
-    NavigationProps,
-} from 'src/ui/types'
+import { NavigationScreen } from 'src/ui/types'
 import ResultPage from '../../components/result-page-with-notes'
-import Logic, { State, Event } from './logic'
+import Logic, { Props, State, Event } from './logic'
 import styles from './styles'
 import { UIPageWithNotes } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 import { NotesSection } from './types'
 
-interface Props extends NavigationProps {}
-
 export default class NotesView extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
-        super(props, { logic: new Logic() })
+        super(props, { logic: new Logic(props) })
     }
 
     private navToPageEditor = (mode: EditorMode, page: UIPageWithNotes) => () =>
-        this.props.navigation.navigate('PageEditor', { page, mode })
+        this.props.navigation.navigate('PageEditor', {
+            page,
+            mode,
+            selectedList: (this.logic as Logic).selectedList,
+        })
 
     private initHandleDeletePagePress = args => () =>
         Alert.alert(

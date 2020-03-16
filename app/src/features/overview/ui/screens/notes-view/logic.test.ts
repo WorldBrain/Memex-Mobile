@@ -1,11 +1,12 @@
 import Logic from './logic'
 import initTestData from './test-data'
+import { FakeNavigation } from 'src/tests/navigation'
 
 const { sections: testSections } = initTestData()
 
 describe('notes view UI logic tests', () => {
     function setup() {
-        const logic = new Logic()
+        const logic = new Logic({ navigation: new FakeNavigation() as any })
         const state = logic.getInitialState()
 
         return { logic, state }

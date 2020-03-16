@@ -1,10 +1,11 @@
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 
 import SyncService from './sync'
+import { KeychainService } from './keychain'
 import { ShareExtService } from './share-ext'
 import { LocalStorageService } from './local-storage'
+import { ErrorTrackingService } from './error-tracking'
 import { BackgroundProcessService } from './background-processing'
-import { KeychainService } from './keychain'
 
 export interface Services {
     auth: AuthService
@@ -12,6 +13,7 @@ export interface Services {
     shareExt: ShareExtService
     keychain: KeychainService
     localStorage: LocalStorageService
+    errorTracker: ErrorTrackingService
     backgroundProcess: BackgroundProcessService
 }
 

@@ -72,7 +72,7 @@ describe('note editor UI logic tests', () => {
             {
                 type: 'navigate',
                 target: 'PageEditor',
-                params: { mode: 'notes', pageUrl: testUrl },
+                params: { mode: 'notes', pageUrl: testUrl, selectedList: null },
             },
         ])
         expect(storedNote).toEqual({
@@ -109,7 +109,7 @@ describe('note editor UI logic tests', () => {
             {
                 type: 'navigate',
                 target: 'PageEditor',
-                params: { mode: 'notes', pageUrl: testUrl },
+                params: { mode: 'notes', pageUrl: testUrl, selectedList: null },
             },
         ])
         expect(storedNote).toEqual({

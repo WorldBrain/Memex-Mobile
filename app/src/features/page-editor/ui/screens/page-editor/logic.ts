@@ -6,6 +6,7 @@ import { EditorMode } from 'src/features/page-editor/types'
 import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
+import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 
 export interface State {
     loadState: UITaskState
@@ -26,8 +27,15 @@ export interface Props extends NavigationProps {
 }
 
 export default class Logic extends UILogic<State, Event> {
+    selectedList: string
+
     constructor(private props: Props) {
         super()
+
+        this.selectedList = props.navigation.getParam(
+            'selectedList',
+            MOBILE_LIST_NAME,
+        )
     }
 
     getInitialState(): State {
@@ -49,7 +57,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async loadPageData(url: string): Promise<Page> {
-        const { overview, pageEditor } = this.props.storage.modules
+        const { overview, pageEditor, metaPicker } = this.props.storage.modules
         const storedPage = await overview.findPage({ url })
 
         if (!storedPage) {
@@ -57,12 +65,25 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const notes = await pageEditor.findNotes({ url })
+        const tags = await metaPicker.findTagsByPage({ url })
+
+        const noteTags = new Map<string, string[]>()
+
+        for (const note of notes) {
+            const tags = await metaPicker.findTagsByAnnotation({
+                url: note.url,
+            })
+            noteTags.set(
+                note.url,
+                tags.map(t => t.name),
+            )
+        }
 
         return {
             ...storedPage,
             titleText: storedPage.fullTitle,
             date: 'a minute ago',
-            tags: [],
+            tags: tags.map(t => t.name),
             lists: [],
             pageUrl: storedPage.url,
             // TODO: unify this map fn with the identical one in DashboardLogic
@@ -74,6 +95,7 @@ export default class Logic extends UILogic<State, Event> {
                 commentText: note.comment || undefined,
                 noteText: note.body,
                 isNotePressed: false,
+                tags: noteTags.get(note.url)!,
                 isEdited:
                     note.lastEdited &&
                     note.lastEdited.getTime() !== note.createdWhen!.getTime(),

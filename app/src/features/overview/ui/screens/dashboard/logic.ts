@@ -1,6 +1,7 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { AppState, AppStateStatus } from 'react-native'
 
+import { storageKeys } from '../../../../../../app.json'
 import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
 import {
     UITaskState,
@@ -39,7 +40,7 @@ export type Event = UIEvent<{
 
 export interface Props extends NavigationProps {
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
-    services: UIServices<'sync'>
+    services: UIServices<'sync' | 'localStorage'>
     getNow?: () => number
     pageSize?: number
 }
@@ -75,7 +76,19 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
+    private async navToOnboardingIfNeeded() {
+        const showOnboarding = await this.props.services.localStorage.get<
+            boolean
+        >(storageKeys.showOnboarding)
+
+        if (showOnboarding || showOnboarding === null) {
+            this.props.navigation.navigate('Onboarding')
+        }
+    }
+
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+        await this.navToOnboardingIfNeeded()
+
         this.doSync()
         const handleAppStatusChange = (nextState: AppStateStatus) => {
             switch (nextState) {
@@ -245,6 +258,7 @@ export default class Logic extends UILogic<State, Event> {
                         commentText: note.comment || undefined,
                         noteText: note.body,
                         isNotePressed: false,
+                        tags: [],
                         isEdited:
                             note.lastEdited &&
                             note.lastEdited.getTime() !==

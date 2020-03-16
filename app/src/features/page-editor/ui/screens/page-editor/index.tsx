@@ -33,10 +33,16 @@ export default class PageEditorScreen extends NavigationScreen<
 
         return () =>
             this.props.navigation.navigate('NoteEditor', {
+                selectedList: (this.logic as Logic).selectedList,
                 pageUrl: this.state.page.fullUrl,
                 mode: 'create',
             })
     }
+
+    private navBackToOverview = () =>
+        this.props.navigation.navigate('Overview', {
+            selectedList: (this.logic as Logic).selectedList,
+        })
 
     private renderNotes() {
         return (
@@ -45,6 +51,7 @@ export default class PageEditorScreen extends NavigationScreen<
                     this.processEvent('confirmNoteDelete', { url: n.url })}
                 initNoteEdit={note => () =>
                     this.props.navigation.navigate('NoteEditor', {
+                        selectedList: (this.logic as Logic).selectedList,
                         pageUrl: this.state.page.fullUrl,
                         highlightText: note.noteText,
                         noteText: note.commentText,
@@ -96,7 +103,7 @@ export default class PageEditorScreen extends NavigationScreen<
         return (
             <MainLayout
                 {...this.state.page}
-                onBackPress={e => this.props.navigation.navigate('Overview')}
+                onBackPress={this.navBackToOverview}
                 onAddPress={this.initHandleAddNotePress()}
                 titleText={this.state.page.pageUrl}
             >

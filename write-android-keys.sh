@@ -3,6 +3,7 @@
 ENV_FILE="./app/android/app/google-services.json"
 SERVICE_ACC_KEY="./app/android/service-account.json"
 SIGN_KEY="./app/android/app/my-upload-key.keystore"
+SENTRY_PROPS_FILE="./app/android/sentry.properties"
 SSH_FILE="$HOME/.ssh/id_rsa"
 
 # Set up private key
@@ -16,6 +17,9 @@ chmod 400 $SIGN_KEY
 # Set up Google Play service account config
 echo $ANDROID_SERVICE_JSON | base64 -d > $SERVICE_ACC_KEY
 chmod 400 $SERVICE_ACC_KEY
+
+# Set up sentry properties
+echo $SENTRY_PROPS | base64 -d > $SENTRY_PROPS_FILE
 
 # Set up Firebase env file
 echo $ANDROID_APP_ENV | base64 -d > $ENV_FILE
