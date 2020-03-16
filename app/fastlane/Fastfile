@@ -64,6 +64,7 @@ platform :ios do
             workspace: XCWORKSPACE_PATH,
             clean: true,
             silent: true,
+            configuration: options[:production] ? 'Release' : 'Debug',
             export_options: {
                 method: "app-store",
                 provisioningProfiles: prov_profiles
@@ -97,23 +98,19 @@ end
 
 platform :android do
     desc 'Build a new Android application version.'
-    private_lane :build do
+    private_lane :build do |options|
         package = load_json(json_path: PACKAGE_JSON_PATH)
 
         gradle(task: 'clean', project_dir: 'android/')
         gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"], "version_code" => package["versionCode"] })
-        gradle(task: 'bundle', build_type: 'Release', project_dir: 'android/')
+        gradle(task: 'bundle', build_type: options[:production] ? 'Release' : 'Debug', project_dir: 'android/')
     end
 
     desc 'Ship to Playstore production or develop.'
     private_lane :ship do |options|
-        package_name =
-            if options[:production]
-                ANDROID_APP_ID
-            else
-                ANDROID_APP_ID_DEV
+        package_name = options[:production] ? ANDROID_APP_ID : ANDROID_APP_ID_DEV
 
-        build
+        build(production: options[:production])
         supply(
             track: 'beta',
             track_promote_to: 'beta',
