@@ -11,8 +11,8 @@ EXT_APP_PROFILE = "match AppStore io.worldbrain.memex.MemexShare"
 
 MAIN_APP_ID_DEV = "io.worldbrain.memexTestDrive"
 MAIN_APP_PROFILE_DEV = "match AppStore io.worldbrain.memexTestDrive"
-EXT_APP_ID_DEV = "io.worldbrain.memex.MemexShareTestDrive"
-EXT_APP_PROFILE_DEV = "match AppStore io.worldbrain.memex.MemexShareTestDrive"
+EXT_APP_ID_DEV = "io.worldbrain.memexTestDrive.MemexShare"
+EXT_APP_PROFILE_DEV = "match AppStore io.worldbrain.memexTestDrive.MemexShare"
 
 APPLE_USER_ID = "dev@worldbrain.io"
 APPLE_APP_ID = "1471860331"
@@ -60,11 +60,10 @@ platform :ios do
         increment_version_number(xcodeproj: XCPROJ_PATH, version_number: package["version"])
         gym(
             scheme: 'app',
-            configuration: "Production",
             workspace: XCWORKSPACE_PATH,
             clean: true,
             silent: true,
-            configuration: options[:production] ? 'Release' : 'Debug',
+            configuration: options[:production] ? 'Release' : 'Development',
             export_options: {
                 method: "app-store",
                 provisioningProfiles: prov_profiles
