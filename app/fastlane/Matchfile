@@ -2,9 +2,9 @@ git_url("git@gitlab.com:WorldBrain/ios-secrets.git")
 
 storage_mode("git")
 
-type("development") # The default type, can be: appstore, adhoc, enterprise or development
+type("appstore") # The default type, can be: appstore, adhoc, enterprise or development
 
-app_identifier(["io.worldbrain.memex", "io.worldbrain.memex.MemexShare"])
+app_identifier(["io.worldbrain.memexTestDrive", "io.worldbrain.memexTestDrive.MemexShare"])
 username("dev@worldbrain.io") # Your Apple Developer Portal username
 
 # For all available options run `fastlane match --help`

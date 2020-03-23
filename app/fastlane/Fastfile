@@ -44,13 +44,15 @@ platform :ios do
         package = load_json(json_path: PACKAGE_JSON_PATH)
 
         if options[:production]
+            scheme = 'app'
             match(app_identifier: [MAIN_APP_ID, EXT_APP_ID], type: 'appstore', readonly: true)
             prov_profiles = {
                 MAIN_APP_ID => MAIN_APP_PROFILE,
                 EXT_APP_ID => EXT_APP_PROFILE
             }
         else
-            match(app_identifier: [MAIN_APP_ID_DEV, EXT_APP_ID_DEV], type: 'development', readonly: true)
+            scheme = 'app-TestDrive'
+            match(app_identifier: [MAIN_APP_ID_DEV, EXT_APP_ID_DEV], type: 'appstore', readonly: true)
             prov_profiles = {
                 MAIN_APP_ID_DEV => MAIN_APP_PROFILE_DEV,
                 EXT_APP_ID_DEV => EXT_APP_PROFILE_DEV
@@ -59,7 +61,7 @@ platform :ios do
 
         increment_version_number(xcodeproj: XCPROJ_PATH, version_number: package["version"])
         gym(
-            scheme: 'app',
+            scheme: scheme,
             workspace: XCWORKSPACE_PATH,
             clean: true,
             silent: true,
