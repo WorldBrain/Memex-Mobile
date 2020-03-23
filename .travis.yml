@@ -65,7 +65,7 @@ jobs:
         - "./install-deps-ios.sh"
       script:
         - cd app
-        - yarn ios:production
+        - yarn ios:prod
 
     - stage: android-production
       if: branch = master AND type = push
@@ -88,9 +88,9 @@ jobs:
         - "./install-deps-android.sh"
       script:
         - cd app
-        - yarn android:production
+        - yarn android:prod
 
-    - stage: ios-beta
+    - stage: ios-development
       if: branch = master AND type = push
       os: osx
       osx_image: xcode11.3
@@ -106,8 +106,8 @@ jobs:
         - "./install-deps-ios.sh"
       script:
         - cd app
-        - yarn ios:beta
-    - stage: android-beta
+        - yarn ios:dev
+    - stage: android-development
       if: branch = master AND type = push
       language: android
       jdk: oraclejdk8
@@ -128,7 +128,7 @@ jobs:
         - "./install-deps-android.sh"
       script:
         - cd app
-        - yarn android:beta
+        - yarn android:dev
 
 env:
   global:

@@ -91,7 +91,7 @@ platform :ios do
     end
 
     desc 'Ship to development TestFlight.'
-    lane :beta do
+    lane :development do
         ship(production: false)
     end
 
@@ -130,8 +130,8 @@ platform :android do
         ship(production: true)
     end
 
-    desc 'Ship to Playstore beta.'
-    lane :beta do
+    desc 'Ship to Playstore development.'
+    lane :development do
         ship(production: false)
     end
 end
