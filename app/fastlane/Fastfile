@@ -104,7 +104,7 @@ platform :android do
 
         gradle(task: 'clean', project_dir: 'android/')
         gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"], "version_code" => package["versionCode"] })
-        gradle(task: 'bundle', build_type: options[:production] ? 'Release' : 'Debug', project_dir: 'android/')
+        gradle(task: 'bundle', build_type: 'Release', flavor: options[:production] ? 'production' : 'development',  project_dir: 'android/')
     end
 
     desc 'Ship to Playstore production or develop.'
