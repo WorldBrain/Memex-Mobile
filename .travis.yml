@@ -21,6 +21,7 @@ aliases:
 
   - &ios-cache
     yarn: true
+    bundler: true
     directories:
       - ~/.rncache
       - ~/Library/Caches/Yarn
@@ -79,7 +80,7 @@ jobs:
       cache: *android-cache
       before_install:
         - rvm install 2.6.5
-        - gem install fastlane
+        # - gem install fastlane
         - nvm install 10.17.0
         - npm install -g yarn
         - yes | sdkmanager "platforms;android-28"
@@ -100,7 +101,7 @@ jobs:
       node_js:
         - lts/*
       before_install:
-        - sudo gem install fastlane
+        # - sudo gem install fastlane
         - npm install -g yarn
       install:
         - "./write-ios-keys.sh"
