@@ -37,8 +37,7 @@ aliases:
 jobs:
   include:
     - stage: lint-and-test
-      # if: branch NOT IN (master, develop) AND type = push
-      if: branch = master
+      if: branch NOT IN (master, develop) AND type = push
       language: node_js
       cache: *test-cache
       node_js:
@@ -60,7 +59,6 @@ jobs:
       node_js:
         - lts/*
       before_install:
-        - sudo gem install fastlane
         - npm install -g yarn
       install:
         - "./write-ios-keys.sh production"
@@ -80,7 +78,6 @@ jobs:
       cache: *android-cache
       before_install:
         - rvm install 2.6.5
-        # - gem install fastlane
         - nvm install 10.17.0
         - npm install -g yarn
         - yes | sdkmanager "platforms;android-28"
@@ -93,7 +90,7 @@ jobs:
         - yarn android:prod
 
     - stage: ios-development
-      # if: branch = develop AND type = push
+      if: branch = develop AND type = push
       os: osx
       osx_image: xcode11.3
       language: node_js
@@ -101,7 +98,6 @@ jobs:
       node_js:
         - lts/*
       before_install:
-        # - sudo gem install fastlane
         - npm install -g yarn
       install:
         - "./write-ios-keys.sh"
@@ -111,7 +107,7 @@ jobs:
         - yarn ios:dev
 
     - stage: android-development
-      # if: branch = develop AND type = push
+      if: branch = develop AND type = push
       language: android
       jdk: oraclejdk8
       android: *android
@@ -121,7 +117,6 @@ jobs:
       cache: *android-cache
       before_install:
         - rvm install 2.6.5
-        - gem install fastlane
         - nvm install 10.17.0
         - npm install -g yarn
         - yes | sdkmanager "platforms;android-28"
