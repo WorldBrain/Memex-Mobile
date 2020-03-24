@@ -16,6 +16,7 @@ EXT_APP_PROFILE_DEV = "match AppStore io.worldbrain.memexTestDrive.MemexShare"
 
 APPLE_USER_ID = "dev@worldbrain.io"
 APPLE_APP_ID = "1471860331"
+APPLE_APP_ID_DEV = "1501641226"
 ANDROID_APP_ID = "io.worldbrain"
 ANDROID_APP_ID_DEV = "io.worldbrain.memexTestDrive"
 
@@ -46,6 +47,7 @@ platform :ios do
 
         if options[:production]
             scheme = 'app'
+            version_number = package["version"]
             match(app_identifier: [MAIN_APP_ID, EXT_APP_ID], type: 'appstore', readonly: true)
             prov_profiles = {
                 MAIN_APP_ID => MAIN_APP_PROFILE,
@@ -53,6 +55,7 @@ platform :ios do
             }
         else
             scheme = 'app-TestDrive'
+            version_number = package["versionCodeDev"]
             match(app_identifier: [MAIN_APP_ID_DEV, EXT_APP_ID_DEV], type: 'appstore', readonly: true)
             prov_profiles = {
                 MAIN_APP_ID_DEV => MAIN_APP_PROFILE_DEV,
@@ -60,7 +63,7 @@ platform :ios do
             }
         end
 
-        increment_version_number(xcodeproj: XCPROJ_PATH, version_number: package["version"])
+        increment_version_number(xcodeproj: XCPROJ_PATH, version_number: version_number)
         gym(
             scheme: scheme,
             workspace: XCWORKSPACE_PATH,
@@ -81,7 +84,8 @@ platform :ios do
         reset_pass
         pilot(
             username: APPLE_USER_ID,
-            apple_id: APPLE_APP_ID,
+            apple_id: options[:production] ? APPLE_APP_ID : APPLE_APP_ID_DEV,
+            app_identifier: options[:production] ? MAIN_APP_ID : MAIN_APP_ID_DEV,
             skip_waiting_for_build_processing: true
         )
     end
