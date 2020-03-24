@@ -99,12 +99,27 @@ platform :ios do
 end
 
 platform :android do
+    desc 'Update Android version.'
+    private_lane :update_version do |options|
+        package = load_json(json_path: PACKAGE_JSON_PATH)
+        version_number = package["version"]
+
+        if options[:production]
+            version_code = package["versionCode"]
+        else
+            version_code = package["versionCodeDev"]
+            version_number << "." << version_code
+        end
+
+        gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => version_number, "version_code" => version_code })
+    end
+
     desc 'Build a new Android application version.'
     private_lane :build do |options|
         package = load_json(json_path: PACKAGE_JSON_PATH)
 
         gradle(task: 'clean', project_dir: 'android/')
-        gradle(task: 'updateVersion', project_dir: 'android/', properties: { "version_number" => package["version"], "version_code" => package["versionCode"] })
+        update_version(production: options[:production])
         gradle(task: 'bundle', build_type: 'Release', flavor: options[:production] ? 'production' : 'development',  project_dir: 'android/')
     end
 
