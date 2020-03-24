@@ -22,7 +22,11 @@ chmod 400 $SERVICE_ACC_KEY
 echo $SENTRY_PROPS | base64 -d > $SENTRY_PROPS_FILE
 
 # Set up Firebase env file
-echo $ANDROID_APP_ENV | base64 -d > $ENV_FILE
+if [ $1 = "production" ]; then
+  echo $ANDROID_APP_ENV | base64 -d > $ENV_FILE
+else
+  echo $ANDROID_APP_DEV_ENV | base64 -d > $ENV_FILE
+fi
 
 # Enable SSH authentication
 printf "%s\n" \

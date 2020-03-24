@@ -61,7 +61,7 @@ jobs:
         - sudo gem install fastlane
         - npm install -g yarn
       install:
-        - "./write-ios-keys.sh"
+        - "./write-ios-keys.sh production"
         - "./install-deps-ios.sh"
       script:
         - cd app
@@ -84,7 +84,7 @@ jobs:
         - yes | sdkmanager "platforms;android-28"
         - yes | sdkmanager "build-tools;28.0.3"
       install:
-        - "./write-android-keys.sh"
+        - "./write-android-keys.sh production"
         - "./install-deps-android.sh"
       script:
         - cd app
@@ -107,6 +107,7 @@ jobs:
       script:
         - cd app
         - yarn ios:dev
+
     - stage: android-development
       if: branch = master AND type = push
       language: android

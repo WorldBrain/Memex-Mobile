@@ -13,8 +13,13 @@ chmod 600 $SSH_FILE
 echo $SENTRY_PROPS | base64 -D > $SENTRY_PROPS_FILE
 
 # Set up Firebase env files
-echo $IOS_MAIN_APP_ENV | base64 -D > $MAIN_APP_ENV_FILE
-echo $IOS_EXT_APP_ENV | base64 -D > $EXT_APP_ENV_FILE
+if [ $1 = "production" ]; then
+  echo $IOS_MAIN_APP_ENV | base64 -D > $MAIN_APP_ENV_FILE
+  echo $IOS_EXT_APP_ENV | base64 -D > $EXT_APP_ENV_FILE
+else
+  echo $IOS_MAIN_APP_DEV_ENV | base64 -D > $MAIN_APP_ENV_FILE
+  echo $IOS_EXT_APP_DEV_ENV | base64 -D > $EXT_APP_ENV_FILE
+fi
 
 # Enable SSH authentication
 printf "%s\n" \

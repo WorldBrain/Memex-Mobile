@@ -17,7 +17,7 @@ EXT_APP_PROFILE_DEV = "match AppStore io.worldbrain.memexTestDrive.MemexShare"
 APPLE_USER_ID = "dev@worldbrain.io"
 APPLE_APP_ID = "1471860331"
 ANDROID_APP_ID = "io.worldbrain"
-ANDROID_APP_ID_DEV = "io.worldbrain.TestDrive"
+ANDROID_APP_ID_DEV = "io.worldbrain.memexTestDrive"
 
 ANDROID_SERVICE_JSON_PATH = "./android/service-account.json"
 PACKAGE_JSON_PATH = "./package.json"
