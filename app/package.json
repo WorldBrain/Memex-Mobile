@@ -13,10 +13,10 @@
         "build:deptree": "depcruise --exclude '^node_modules' --output-type dot ./src | dot -T svg > /tmp/dependencygraph.svg",
         "build:android-release": "sh build-android-release.sh",
         "format": "prettier --config prettier.config.js --write '**/*.{ts,js,tsx,jsx,css,md}'",
-        "android:prod": "fastlane android production",
-        "android:dev": "fastlane android development",
-        "ios:prod": "fastlane ios production",
-        "ios:dev": "fastlane ios development",
+        "android:prod": "bundle exec fastlane android production",
+        "android:dev": "bundle exec fastlane android development",
+        "ios:prod": "bundle exec fastlane ios production",
+        "ios:dev": "bundle exec fastlane ios development",
         "postinstall": "jetify"
     },
     "husky": {
