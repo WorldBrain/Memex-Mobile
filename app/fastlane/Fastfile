@@ -23,7 +23,8 @@ ANDROID_SERVICE_JSON_PATH = "./android/service-account.json"
 PACKAGE_JSON_PATH = "./package.json"
 XCWORKSPACE_PATH = "./ios/app.xcworkspace"
 XCPROJ_PATH = "./ios/app.xcodeproj"
-AAB_PATH = "./android/app/build/outputs/bundle/release/app.aab"
+AAB_PATH = "./android/app/build/outputs/bundle/productionRelease/app.aab"
+AAB_PATH_DEV = "./android/app/build/outputs/bundle/developmentRelease/app.aab"
 
 
 before_all do
@@ -115,7 +116,7 @@ platform :android do
         supply(
             track: 'beta',
             track_promote_to: 'beta',
-            aab: AAB_PATH,
+            aab: options[:production] ? AAB_PATH : AAB_PATH_DEV,
             json_key: ANDROID_SERVICE_JSON_PATH,
             package_name: package_name,
             skip_upload_screenshots: true,
