@@ -1,7 +1,8 @@
 {
     "name": "memex-mobile",
-    "version": "1.3.6",
-    "versionCode": "50",
+    "version": "1.3.7",
+    "versionCode": "51",
+    "versionCodeDev": "51",
     "private": true,
     "scripts": {
         "start": "react-native start",
@@ -12,8 +13,10 @@
         "build:deptree": "depcruise --exclude '^node_modules' --output-type dot ./src | dot -T svg > /tmp/dependencygraph.svg",
         "build:android-release": "sh build-android-release.sh",
         "format": "prettier --config prettier.config.js --write '**/*.{ts,js,tsx,jsx,css,md}'",
-        "android:beta": "fastlane android beta",
-        "ios:beta": "fastlane ios beta",
+        "android:prod": "bundle exec fastlane android production",
+        "android:dev": "bundle exec fastlane android development",
+        "ios:prod": "bundle exec fastlane ios production",
+        "ios:dev": "bundle exec fastlane ios development",
         "postinstall": "jetify"
     },
     "husky": {

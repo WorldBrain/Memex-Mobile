@@ -7,3 +7,5 @@ yarn install --frozen-lockfile --non-interactive --cache-folder ~/Library/Caches
 cd ./ios/
 pod install
 cd ..
+
+bundle install

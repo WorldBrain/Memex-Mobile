@@ -24,6 +24,7 @@ import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
 import { ErrorTrackingService } from './services/error-tracking'
+import { MockSentry } from './services/error-tracking/index.tests'
 import { KeychainPackage } from './services/keychain/keychain'
 import { insertIntegrationTestData } from './tests/shared-fixtures/integration'
 import { runMigrations } from 'src/utils/quick-and-dirty-migrations'
@@ -48,7 +49,9 @@ export async function main() {
         settingsStorage: storage.modules.settings,
     })
 
-    const errorTracker = new ErrorTrackingService(Sentry, { dsn: sentryDsn })
+    const sentry = __DEV__ ? (new MockSentry() as any) : Sentry
+
+    const errorTracker = new ErrorTrackingService(sentry, { dsn: sentryDsn })
 
     const services = await createServices({
         keychain: new KeychainPackage({ server: 'worldbrain.io' }),

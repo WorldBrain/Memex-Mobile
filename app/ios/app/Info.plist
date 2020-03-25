@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>AppGroupName</key>
-	<string>group.io.worldbrain.memex</string>
+	<string>${GROUP_ID}</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Memex Go</string>
+	<string>${BUNDLE_DISPLAY_NAME}</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
