@@ -1,15 +1,11 @@
 import React from 'react'
 
 import { version } from '../../../../../../app.json'
-import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
-import Logic, { State, Event } from './logic'
+import { NavigationScreen } from 'src/ui/types'
+import Logic, { Props, State, Event } from './logic'
 import SettingsMenu from '../../components/settings-menu'
 import SettingsLink from '../../components/settings-link'
 import OutLink from '../../components/out-link'
-
-interface Props extends NavigationProps {
-    services: UIServices<'localStorage' | 'sync'>
-}
 
 export default class SettingsMenuScreen extends NavigationScreen<
     Props,
