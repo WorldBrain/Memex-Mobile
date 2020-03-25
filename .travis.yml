@@ -37,7 +37,8 @@ aliases:
 jobs:
   include:
     - stage: lint-and-test
-      if: branch NOT IN (master, develop) AND type = push
+      # if: branch NOT IN (master, develop) AND type = push
+      if: branch = master
       language: node_js
       cache: *test-cache
       node_js:
@@ -51,7 +52,7 @@ jobs:
         - yarn test --colors
 
     - stage: ios-production
-      if: branch = master AND type = push
+      # if: branch = master AND type = push
       os: osx
       osx_image: xcode11.3
       language: node_js
@@ -68,7 +69,7 @@ jobs:
         - yarn ios:prod
 
     - stage: android-production
-      if: branch = master AND type = push
+      # if: branch = master AND type = push
       language: android
       jdk: oraclejdk8
       android: *android
