@@ -40,7 +40,7 @@ export type Event = UIEvent<{
 
 export interface Props extends NavigationProps {
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
-    services: UIServices<'sync' | 'localStorage'>
+    services: UIServices<'sync' | 'localStorage' | 'errorTracker'>
     getNow?: () => number
     pageSize?: number
 }
@@ -148,7 +148,9 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'syncState',
             async () => {
-                await sync.continuousSync.maybeDoIncrementalSync()
+                await sync.continuousSync
+                    .maybeDoIncrementalSync()
+                    .catch(err => this.props.services.errorTracker.track(err))
             },
         )
     }

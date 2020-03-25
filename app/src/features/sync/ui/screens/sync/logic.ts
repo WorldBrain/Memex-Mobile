@@ -20,7 +20,9 @@ export type SyncScreenEvent = UIEvent<{
 }>
 
 export interface Props extends NavigationProps {
-    services: UIServices<'localStorage' | 'sync' | 'auth' | 'keychain'>
+    services: UIServices<
+        'localStorage' | 'sync' | 'auth' | 'keychain' | 'errorTracker'
+    >
     suppressErrorLogging?: boolean
     syncStallTimeout?: number
 }
@@ -93,6 +95,10 @@ export default class SyncScreenLogic extends UILogic<
 
     private detectStall = () =>
         setTimeout(() => {
+            this.props.services.errorTracker.track(
+                new Error('Init sync timeout'),
+            )
+
             this.emitMutation({
                 status: { $set: 'failure' },
                 errMsg: {
@@ -105,7 +111,7 @@ export default class SyncScreenLogic extends UILogic<
     async doSync(
         incoming: IncomingUIEvent<SyncScreenState, SyncScreenEvent, 'doSync'>,
     ) {
-        const { sync, localStorage } = this.props.services
+        const { sync, localStorage, errorTracker } = this.props.services
 
         this.emitMutation({ status: { $set: 'syncing' } })
         const timeBefore = Date.now()
@@ -135,6 +141,8 @@ export default class SyncScreenLogic extends UILogic<
                 console.error('Error during initial sync')
                 console.error(e)
             }
+
+            errorTracker.track(e)
             this.emitMutation({
                 status: { $set: 'failure' },
                 errMsg: {

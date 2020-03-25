@@ -50,7 +50,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends NavigationProps {
-    services: UIServices<'sync' | 'shareExt'>
+    services: UIServices<'sync' | 'shareExt' | 'errorTracker'>
     storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
 }
 
@@ -85,6 +85,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private handleSyncError = (err: Error) => {
+        this.props.services.errorTracker.track(err)
         this.emitMutation({ errorMessage: { $set: err.message } })
     }
 
