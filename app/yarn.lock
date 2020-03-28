@@ -7732,9 +7732,9 @@ react-native-securerandom@^1.0.0-rc.0:
   dependencies:
     base64-js "*"
 
-"react-native-share-extension@git+https://github.com/WorldBrain/react-native-share-extension#591e523e7c9e2595bd0a7f04ad02c4c0c7cf2206":
+"react-native-share-extension@git+https://github.com/WorldBrain/react-native-share-extension#f0e9cd91bfc77dae402c35e23324ee1d81a54b62":
   version "2.0.0"
-  resolved "git+https://github.com/WorldBrain/react-native-share-extension#591e523e7c9e2595bd0a7f04ad02c4c0c7cf2206"
+  resolved "git+https://github.com/WorldBrain/react-native-share-extension#f0e9cd91bfc77dae402c35e23324ee1d81a54b62"
 
 "react-native-sqlite-storage@git://github.com/WorldBrain/react-native-sqlite-storage#b1c5a50116d18c48eb71b067c36299ef0d50de6d":
   version "4.1.0"
