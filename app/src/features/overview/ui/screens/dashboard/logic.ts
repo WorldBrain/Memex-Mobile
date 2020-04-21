@@ -26,6 +26,7 @@ export interface State {
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
+    filterType: 'collection' | 'bookmarks' | 'visits'
 }
 
 export type Event = UIEvent<{
@@ -66,9 +67,11 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(initList?: string): State {
+        const { navigation } = this.props
         const selectedListName =
-            initList ??
-            this.props.navigation.getParam('selectedList', MOBILE_LIST_NAME)
+            initList ?? navigation.getParam('selectedList', MOBILE_LIST_NAME)
+
+        const filterType = navigation.getParam('filterType', 'collection')
 
         return {
             syncState: 'pristine',
@@ -81,6 +84,7 @@ export default class Logic extends UILogic<State, Event> {
             actionFinishedAt: 0,
             pages: new Map(),
             selectedListName,
+            filterType,
         }
     }
 
@@ -213,7 +217,10 @@ export default class Logic extends UILogic<State, Event> {
         let entryLoader: PageLookupEntryLoader
 
         // TODO: stateful switching logic for entry loader
-        entryLoader = this.loadEntriesForCollection
+        entryLoader =
+            prevState.filterType == null
+                ? this.loadEntriesForCollection
+                : this.loadEntriesForBookmarks
 
         try {
             entries = await entryLoader(prevState)
