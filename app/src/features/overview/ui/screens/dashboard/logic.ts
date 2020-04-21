@@ -27,6 +27,7 @@ export interface State {
     actionState: UITaskState
     actionFinishedAt: number
 }
+
 export type Event = UIEvent<{
     setSyncRibbonShow: { show: boolean }
     reload: { initList?: string; triggerSync?: boolean }
@@ -43,6 +44,13 @@ export interface Props extends NavigationProps {
     services: UIServices<'sync' | 'localStorage' | 'errorTracker'>
     getNow?: () => number
     pageSize?: number
+}
+
+type PageLookupEntryLoader = (prevState: State) => Promise<PageLookupEntry[]>
+
+interface PageLookupEntry {
+    url: string
+    date: Date
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -201,17 +209,58 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        const { metaPicker, overview, pageEditor } = this.props.storage.modules
-        const mobileList = await metaPicker.findListsByNames({
-            names: [prevState.selectedListName],
-        })
-        if (!mobileList.length) {
+        let entries: PageLookupEntry[]
+        let entryLoader: PageLookupEntryLoader
+
+        // TODO: stateful switching logic for entry loader
+        entryLoader = this.loadEntriesForCollection
+
+        try {
+            entries = await entryLoader(prevState)
+        } catch (err) {
             this.emitMutation({ couldHaveMore: { $set: false } })
             return
         }
 
+        if (entries.length < this.pageSize) {
+            couldHaveMore = false
+        }
+
+        const pages: Array<[string, UIPage]> = []
+
+        for (const entry of entries) {
+            try {
+                const page = await this.lookupPageForEntry(entry)
+                pages.push([entry.url, page])
+            } catch (err) {
+                continue
+            }
+        }
+
+        this.emitMutation({
+            couldHaveMore: { $set: couldHaveMore },
+            pages: {
+                $set: new Map<string, UIPage>([
+                    ...prevState.pages.entries(),
+                    ...pages,
+                ]),
+            },
+        })
+    }
+
+    private loadEntriesForCollection: PageLookupEntryLoader = async prevState => {
+        const { metaPicker } = this.props.storage.modules
+
+        const selectedLists = await metaPicker.findListsByNames({
+            names: [prevState.selectedListName],
+        })
+
+        if (!selectedLists.length) {
+            throw new Error('Selected lists cannot be found')
+        }
+
         let listEntries: ListEntry[] = await metaPicker.findRecentListEntries(
-            mobileList[0].id,
+            selectedLists[0].id,
             {
                 skip: prevState.pages.size,
                 limit: this.pageSize,
@@ -220,68 +269,66 @@ export default class Logic extends UILogic<State, Event> {
 
         listEntries = listEntries.filter(entry => !!entry.pageUrl)
 
-        if (listEntries.length < this.pageSize) {
-            couldHaveMore = false
-        }
+        return listEntries.map(entry => ({
+            url: entry.pageUrl,
+            date: entry.createdAt,
+        }))
+    }
 
-        const entries: Array<[string, UIPage]> = []
-        for (const listEntry of listEntries) {
-            const page = await overview.findPage({ url: listEntry.pageUrl })
-            if (!page) {
-                continue
-            }
+    private loadEntriesForBookmarks: PageLookupEntryLoader = async prevState => {
+        const { overview } = this.props.storage.modules
 
-            const tags = await metaPicker.findTagsByPage({
-                url: listEntry.pageUrl,
-            })
-
-            const notes = await pageEditor.findNotes({ url: listEntry.pageUrl })
-            const lists = await metaPicker.findListsByPage({
-                url: listEntry.pageUrl,
-            })
-
-            entries.push([
-                listEntry.pageUrl,
-                {
-                    url: listEntry.pageUrl,
-                    domain: page.domain,
-                    fullUrl: page.fullUrl,
-                    pageUrl: page.url,
-                    titleText: page.fullTitle || page.url,
-                    isStarred: !!page.isStarred,
-                    date: timeFromNow(listEntry.createdAt),
-                    tags: tags.map(tag => tag.name),
-                    lists: lists.map(list => list.name),
-                    notes: notes.map<UINote>(note => ({
-                        domain: page!.domain,
-                        fullUrl: page!.url,
-                        url: note.url,
-                        isStarred: note.isStarred,
-                        commentText: note.comment || undefined,
-                        noteText: note.body,
-                        isNotePressed: false,
-                        tags: [],
-                        isEdited:
-                            note.lastEdited &&
-                            note.lastEdited.getTime() !==
-                                note.createdWhen!.getTime(),
-                        date: note.lastEdited
-                            ? timeFromNow(note.lastEdited)
-                            : timeFromNow(note.createdWhen!),
-                    })),
-                },
-            ])
-        }
-
-        this.emitMutation({
-            pages: {
-                $set: new Map<string, UIPage>([
-                    ...prevState.pages.entries(),
-                    ...entries,
-                ]),
-            },
-            couldHaveMore: { $set: couldHaveMore },
+        const bookmarks = await overview.findRecentBookmarks({
+            skip: prevState.pages.size,
+            limit: this.pageSize,
         })
+
+        return bookmarks.map(bm => ({ url: bm.url, date: new Date(bm.time) }))
+    }
+
+    private async lookupPageForEntry({
+        url,
+        date,
+    }: PageLookupEntry): Promise<UIPage> {
+        const { overview, metaPicker, pageEditor } = this.props.storage.modules
+
+        const page = await overview.findPage({ url })
+        if (!page) {
+            throw Error('No page found for entry')
+        }
+
+        const tags = await metaPicker.findTagsByPage({ url })
+
+        const notes = await pageEditor.findNotes({ url })
+        const lists = await metaPicker.findListsByPage({ url })
+
+        return {
+            url,
+            domain: page.domain,
+            fullUrl: page.fullUrl,
+            pageUrl: page.url,
+            titleText: page.fullTitle || page.url,
+            isStarred: !!page.isStarred,
+            date: timeFromNow(date),
+            tags: tags.map(tag => tag.name),
+            lists: lists.map(list => list.name),
+            notes: notes.map<UINote>(note => ({
+                domain: page!.domain,
+                fullUrl: page!.url,
+                url: note.url,
+                isStarred: note.isStarred,
+                commentText: note.comment || undefined,
+                noteText: note.body,
+                isNotePressed: false,
+                tags: [],
+                isEdited:
+                    note.lastEdited &&
+                    note.lastEdited.getTime() !== note.createdWhen!.getTime(),
+                date: note.lastEdited
+                    ? timeFromNow(note.lastEdited)
+                    : timeFromNow(note.createdWhen!),
+            })),
+        }
     }
 
     setPages(
