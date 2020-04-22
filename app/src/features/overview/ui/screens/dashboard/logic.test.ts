@@ -48,7 +48,7 @@ describe('dashboard screen UI logic tests', () => {
         })
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
-        return { element }
+        return { element, logic }
     }
 
     async function createRecentlyVisitedPage(
@@ -74,18 +74,20 @@ describe('dashboard screen UI logic tests', () => {
         const { element } = setup(dependencies)
 
         await element.init()
-        expect(element.state).toEqual({
-            syncState: expect.any(String),
-            shouldShowSyncRibbon: false,
-            loadState: 'done',
-            reloadState: 'pristine',
-            loadMoreState: 'pristine',
-            selectedListName: MOBILE_LIST_NAME,
-            couldHaveMore: false,
-            actionState: 'pristine',
-            actionFinishedAt: 0,
-            pages: new Map(),
-        })
+        expect(element.state).toEqual(
+            expect.objectContaining({
+                syncState: expect.any(String),
+                shouldShowSyncRibbon: false,
+                loadState: 'done',
+                reloadState: 'pristine',
+                loadMoreState: 'pristine',
+                selectedListName: MOBILE_LIST_NAME,
+                couldHaveMore: false,
+                actionState: 'pristine',
+                actionFinishedAt: 0,
+                pages: new Map(),
+            }),
+        )
     })
 
     it('should load correctly with saved pages', async dependencies => {
@@ -95,28 +97,30 @@ describe('dashboard screen UI logic tests', () => {
         await addToMobileList(INTEGRATION_TEST_DATA.pages[0].url, dependencies)
 
         await element.init()
-        expect(element.state).toEqual({
-            syncState: expect.any(String),
-            shouldShowSyncRibbon: false,
-            loadState: 'done',
-            reloadState: 'pristine',
-            loadMoreState: 'pristine',
-            couldHaveMore: false,
-            actionState: 'pristine',
-            actionFinishedAt: 0,
-            selectedListName: MOBILE_LIST_NAME,
-            pages: new Map([
-                [
-                    'test.com',
-                    {
-                        ...UI_PAGE_1,
-                        isStarred: true,
-                        tags: INTEGRATION_TEST_DATA.tags,
-                        lists: [INTEGRATION_TEST_DATA.lists[0]],
-                    },
-                ],
-            ]),
-        })
+        expect(element.state).toEqual(
+            expect.objectContaining({
+                syncState: expect.any(String),
+                shouldShowSyncRibbon: false,
+                loadState: 'done',
+                reloadState: 'pristine',
+                loadMoreState: 'pristine',
+                couldHaveMore: false,
+                actionState: 'pristine',
+                actionFinishedAt: 0,
+                selectedListName: MOBILE_LIST_NAME,
+                pages: new Map([
+                    [
+                        'test.com',
+                        {
+                            ...UI_PAGE_1,
+                            isStarred: true,
+                            tags: INTEGRATION_TEST_DATA.tags,
+                            lists: [INTEGRATION_TEST_DATA.lists[0]],
+                        },
+                    ],
+                ]),
+            }),
+        )
     })
 
     it('should paginate correctly', async dependencies => {
@@ -145,66 +149,74 @@ describe('dashboard screen UI logic tests', () => {
         })
 
         await element.init()
-        expect(element.state).toEqual({
-            syncState: expect.any(String),
-            shouldShowSyncRibbon: false,
-            loadState: 'done',
-            reloadState: 'pristine',
-            loadMoreState: 'pristine',
-            couldHaveMore: true,
-            actionState: 'pristine',
-            actionFinishedAt: 0,
-            pages: new Map([['test.com.me', UI_PAGE_2]]),
-            selectedListName: MOBILE_LIST_NAME,
-        })
+        expect(element.state).toEqual(
+            expect.objectContaining({
+                syncState: expect.any(String),
+                shouldShowSyncRibbon: false,
+                loadState: 'done',
+                reloadState: 'pristine',
+                loadMoreState: 'pristine',
+                couldHaveMore: true,
+                actionState: 'pristine',
+                actionFinishedAt: 0,
+                pages: new Map([['test.com.me', UI_PAGE_2]]),
+                selectedListName: MOBILE_LIST_NAME,
+            }),
+        )
 
         await element.processEvent('loadMore', {})
-        expect(element.state).toEqual({
-            syncState: expect.any(String),
-            shouldShowSyncRibbon: false,
-            loadState: 'done',
-            reloadState: 'pristine',
-            loadMoreState: 'done',
-            couldHaveMore: true,
-            actionState: 'pristine',
-            actionFinishedAt: 0,
-            selectedListName: MOBILE_LIST_NAME,
-            pages: new Map([
-                ['test.com.me', UI_PAGE_2],
-                ['test.com', UI_PAGE_1],
-            ]),
-        })
+        expect(element.state).toEqual(
+            expect.objectContaining({
+                syncState: expect.any(String),
+                shouldShowSyncRibbon: false,
+                loadState: 'done',
+                reloadState: 'pristine',
+                loadMoreState: 'done',
+                couldHaveMore: true,
+                actionState: 'pristine',
+                actionFinishedAt: 0,
+                selectedListName: MOBILE_LIST_NAME,
+                pages: new Map([
+                    ['test.com.me', UI_PAGE_2],
+                    ['test.com', UI_PAGE_1],
+                ]),
+            }),
+        )
 
         await element.processEvent('loadMore', {})
-        expect(element.state).toEqual({
-            syncState: expect.any(String),
-            shouldShowSyncRibbon: false,
-            loadState: 'done',
-            reloadState: 'pristine',
-            loadMoreState: 'done',
-            couldHaveMore: false,
-            actionState: 'pristine',
-            actionFinishedAt: 0,
-            selectedListName: MOBILE_LIST_NAME,
-            pages: new Map([
-                ['test.com.me', UI_PAGE_2],
-                ['test.com', UI_PAGE_1],
-            ]),
-        })
+        expect(element.state).toEqual(
+            expect.objectContaining({
+                syncState: expect.any(String),
+                shouldShowSyncRibbon: false,
+                loadState: 'done',
+                reloadState: 'pristine',
+                loadMoreState: 'done',
+                couldHaveMore: false,
+                actionState: 'pristine',
+                actionFinishedAt: 0,
+                selectedListName: MOBILE_LIST_NAME,
+                pages: new Map([
+                    ['test.com.me', UI_PAGE_2],
+                    ['test.com', UI_PAGE_1],
+                ]),
+            }),
+        )
 
         await element.processEvent('reload', {})
-        expect(element.state).toEqual({
-            syncState: expect.any(String),
-            shouldShowSyncRibbon: false,
-            loadState: 'done',
-            reloadState: 'done',
-            loadMoreState: 'done',
-            couldHaveMore: true,
-            actionState: 'pristine',
-            actionFinishedAt: 0,
-            selectedListName: MOBILE_LIST_NAME,
-            pages: new Map([['test.com.me', UI_PAGE_2]]),
-        })
+        expect(element.state).toEqual(
+            expect.objectContaining({
+                syncState: expect.any(String),
+                shouldShowSyncRibbon: false,
+                loadState: 'done',
+                reloadState: 'done',
+                loadMoreState: 'done',
+                couldHaveMore: true,
+                actionState: 'pristine',
+                actionFinishedAt: 0,
+                selectedListName: MOBILE_LIST_NAME,
+                pages: new Map([['test.com.me', UI_PAGE_2]]),
+            }),
+        )
     })
 
     it('should be able to delete pages', async dependencies => {
@@ -222,19 +234,21 @@ describe('dashboard screen UI logic tests', () => {
         await element.processEvent('deletePage', {
             url,
         })
-        expect(element.state).toEqual({
-            syncState: expect.any(String),
-            shouldShowSyncRibbon: false,
-            loadState: 'done',
-            reloadState: 'pristine',
-            loadMoreState: 'pristine',
-            couldHaveMore: false,
-            action: 'delete',
-            actionState: 'done',
-            actionFinishedAt: expect.any(Number),
-            selectedListName: MOBILE_LIST_NAME,
-            pages: new Map([]),
-        })
+        expect(element.state).toEqual(
+            expect.objectContaining({
+                syncState: expect.any(String),
+                shouldShowSyncRibbon: false,
+                loadState: 'done',
+                reloadState: 'pristine',
+                loadMoreState: 'pristine',
+                couldHaveMore: false,
+                action: 'delete',
+                actionState: 'done',
+                actionFinishedAt: expect.any(Number),
+                selectedListName: MOBILE_LIST_NAME,
+                pages: new Map([]),
+            }),
+        )
         expect(element.state.actionFinishedAt).toBeGreaterThan(
             Date.now() - 5000,
         )
@@ -278,7 +292,6 @@ describe('dashboard screen UI logic tests', () => {
     })
 
     it('reload should be able to trigger sync ', async dependencies => {
-        const { services } = dependencies
         const { element } = setup(dependencies)
 
         expect(element.state.syncState).toEqual('pristine')
@@ -286,5 +299,50 @@ describe('dashboard screen UI logic tests', () => {
         expect(element.state.syncState).toEqual('pristine')
         await element.processEvent('reload', { triggerSync: true })
         expect(element.state.syncState).not.toEqual('pristine')
+    })
+
+    it('should be able to switch look up of latest collection entries, bookmarks, or visits, depending on set filter', async dependencies => {
+        const {
+            storage: {
+                modules: { overview },
+            },
+        } = dependencies
+        const { element } = setup(dependencies)
+
+        for (const page of INTEGRATION_TEST_DATA.pages) {
+            await overview.createPage(page)
+        }
+
+        await addToMobileList(INTEGRATION_TEST_DATA.pages[0].url, dependencies)
+        await addToMobileList(INTEGRATION_TEST_DATA.pages[3].url, dependencies)
+
+        await overview.starPage({ url: INTEGRATION_TEST_DATA.pages[1].url })
+        await overview.visitPage({ url: INTEGRATION_TEST_DATA.pages[1].url })
+        await overview.visitPage({ url: INTEGRATION_TEST_DATA.pages[4].url })
+
+        const logic = element.logic as Logic
+
+        element.processMutation({ filterType: { $set: 'bookmarks' } })
+        expect(
+            await logic['choosePageEntryLoader'](element.state)(element.state),
+        ).toEqual([
+            { url: INTEGRATION_TEST_DATA.pages[1].url, date: expect.any(Date) },
+        ])
+
+        element.processMutation({ filterType: { $set: 'visits' } })
+        expect(
+            await logic['choosePageEntryLoader'](element.state)(element.state),
+        ).toEqual([
+            { url: INTEGRATION_TEST_DATA.pages[4].url, date: expect.any(Date) },
+            { url: INTEGRATION_TEST_DATA.pages[1].url, date: expect.any(Date) },
+        ])
+
+        element.processMutation({ filterType: { $set: 'collection' } })
+        expect(
+            await logic['choosePageEntryLoader'](element.state)(element.state),
+        ).toEqual([
+            { url: INTEGRATION_TEST_DATA.pages[3].url, date: expect.any(Date) },
+            { url: INTEGRATION_TEST_DATA.pages[0].url, date: expect.any(Date) },
+        ])
     })
 })
