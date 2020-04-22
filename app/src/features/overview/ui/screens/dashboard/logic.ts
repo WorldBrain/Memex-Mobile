@@ -2,7 +2,11 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { AppState, AppStateStatus } from 'react-native'
 
 import { storageKeys } from '../../../../../../app.json'
-import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
+import {
+    UIPageWithNotes as UIPage,
+    UINote,
+    DashboardFilterType,
+} from 'src/features/overview/types'
 import {
     UITaskState,
     UIStorageModules,
@@ -26,7 +30,7 @@ export interface State {
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
-    filterType: 'collection' | 'bookmarks' | 'visits'
+    filterType: DashboardFilterType
 }
 
 export type Event = UIEvent<{
@@ -62,7 +66,7 @@ export default class Logic extends UILogic<State, Event> {
     constructor(private props: Props) {
         super()
 
-        this.pageSize = props.pageSize || 20
+        this.pageSize = props.pageSize || 15
         this.getNow = props.getNow || (() => Date.now())
     }
 
@@ -214,13 +218,7 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         let entries: PageLookupEntry[]
-        let entryLoader: PageLookupEntryLoader
-
-        // TODO: stateful switching logic for entry loader
-        entryLoader =
-            prevState.filterType == null
-                ? this.loadEntriesForCollection
-                : this.loadEntriesForBookmarks
+        const entryLoader = this.choosePageEntryLoader(prevState)
 
         try {
             entries = await entryLoader(prevState)
@@ -255,6 +253,20 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
+    private choosePageEntryLoader({
+        filterType,
+    }: State): PageLookupEntryLoader {
+        switch (filterType) {
+            case 'bookmarks':
+                return this.loadEntriesForBookmarks
+            case 'visits':
+                return this.loadEntriesForVisits
+            case 'collection':
+            default:
+                return this.loadEntriesForCollection
+        }
+    }
+
     private loadEntriesForCollection: PageLookupEntryLoader = async prevState => {
         const { metaPicker } = this.props.storage.modules
 
@@ -285,12 +297,26 @@ export default class Logic extends UILogic<State, Event> {
     private loadEntriesForBookmarks: PageLookupEntryLoader = async prevState => {
         const { overview } = this.props.storage.modules
 
-        const bookmarks = await overview.findRecentBookmarks({
+        const bookmarks = await overview.findLatestBookmarks({
             skip: prevState.pages.size,
             limit: this.pageSize,
         })
 
         return bookmarks.map(bm => ({ url: bm.url, date: new Date(bm.time) }))
+    }
+
+    private loadEntriesForVisits: PageLookupEntryLoader = async prevState => {
+        const { overview } = this.props.storage.modules
+
+        const visits = await overview.findLatestVisitsByPage({
+            skip: prevState.pages.size,
+            limit: this.pageSize,
+        })
+
+        return visits.map(visit => ({
+            url: visit.url,
+            date: new Date(visit.time),
+        }))
     }
 
     private async lookupPageForEntry({

@@ -7,6 +7,7 @@ import Navigation from '../../components/navigation'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaTypeShape } from 'src/features/meta-picker/types'
 import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
+import { DashboardFilterType } from 'src/features/overview/types'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import styles from './styles'
 
@@ -27,12 +28,14 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
     }
 
     private handleEntryPress = async (item: MetaTypeShape) => {
-        let filterType: string | undefined
+        let filterType: DashboardFilterType
 
         if (item.name === ListsFilter.MAGIC_BMS_FILTER) {
             filterType = 'bookmarks'
         } else if (item.name === ListsFilter.MAGIC_VISITS_FILTER) {
             filterType = 'visits'
+        } else {
+            filterType = 'collection'
         }
 
         this.props.navigation.navigate('Overview', {
