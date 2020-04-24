@@ -2,7 +2,11 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { AppState, AppStateStatus } from 'react-native'
 
 import { storageKeys } from '../../../../../../app.json'
-import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
+import {
+    UIPageWithNotes as UIPage,
+    UINote,
+    DashboardFilterType,
+} from 'src/features/overview/types'
 import {
     UITaskState,
     UIStorageModules,
@@ -26,7 +30,9 @@ export interface State {
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
+    filterType: DashboardFilterType
 }
+
 export type Event = UIEvent<{
     setSyncRibbonShow: { show: boolean }
     reload: { initList?: string; triggerSync?: boolean }
@@ -45,6 +51,13 @@ export interface Props extends NavigationProps {
     pageSize?: number
 }
 
+type PageLookupEntryLoader = (prevState: State) => Promise<PageLookupEntry[]>
+
+interface PageLookupEntry {
+    url: string
+    date: Date
+}
+
 export default class Logic extends UILogic<State, Event> {
     private removeAppChangeListener!: () => void
     private pageSize: number
@@ -53,14 +66,16 @@ export default class Logic extends UILogic<State, Event> {
     constructor(private props: Props) {
         super()
 
-        this.pageSize = props.pageSize || 20
+        this.pageSize = props.pageSize || 15
         this.getNow = props.getNow || (() => Date.now())
     }
 
     getInitialState(initList?: string): State {
+        const { navigation } = this.props
         const selectedListName =
-            initList ??
-            this.props.navigation.getParam('selectedList', MOBILE_LIST_NAME)
+            initList ?? navigation.getParam('selectedList', MOBILE_LIST_NAME)
+
+        const filterType = navigation.getParam('filterType', 'collection')
 
         return {
             syncState: 'pristine',
@@ -73,6 +88,7 @@ export default class Logic extends UILogic<State, Event> {
             actionFinishedAt: 0,
             pages: new Map(),
             selectedListName,
+            filterType,
         }
     }
 
@@ -116,7 +132,9 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     cleanup() {
-        this.removeAppChangeListener()
+        if (this.removeAppChangeListener) {
+            this.removeAppChangeListener()
+        }
     }
 
     private async doSync() {
@@ -201,17 +219,69 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        const { metaPicker, overview, pageEditor } = this.props.storage.modules
-        const mobileList = await metaPicker.findListsByNames({
-            names: [prevState.selectedListName],
-        })
-        if (!mobileList.length) {
+        let entries: PageLookupEntry[]
+        const entryLoader = this.choosePageEntryLoader(prevState)
+
+        try {
+            entries = await entryLoader(prevState)
+        } catch (err) {
             this.emitMutation({ couldHaveMore: { $set: false } })
             return
         }
 
+        if (entries.length < this.pageSize) {
+            couldHaveMore = false
+        }
+
+        const pages: Array<[string, UIPage]> = []
+
+        for (const entry of entries) {
+            try {
+                const page = await this.lookupPageForEntry(entry)
+                pages.push([entry.url, page])
+            } catch (err) {
+                continue
+            }
+        }
+
+        this.emitMutation({
+            couldHaveMore: { $set: couldHaveMore },
+            pages: {
+                $set: new Map<string, UIPage>([
+                    ...prevState.pages.entries(),
+                    ...pages,
+                ]),
+            },
+        })
+    }
+
+    private choosePageEntryLoader({
+        filterType,
+    }: State): PageLookupEntryLoader {
+        switch (filterType) {
+            case 'bookmarks':
+                return this.loadEntriesForBookmarks
+            case 'visits':
+                return this.loadEntriesForVisits
+            case 'collection':
+            default:
+                return this.loadEntriesForCollection
+        }
+    }
+
+    private loadEntriesForCollection: PageLookupEntryLoader = async prevState => {
+        const { metaPicker } = this.props.storage.modules
+
+        const selectedLists = await metaPicker.findListsByNames({
+            names: [prevState.selectedListName],
+        })
+
+        if (!selectedLists.length) {
+            throw new Error('Selected lists cannot be found')
+        }
+
         let listEntries: ListEntry[] = await metaPicker.findRecentListEntries(
-            mobileList[0].id,
+            selectedLists[0].id,
             {
                 skip: prevState.pages.size,
                 limit: this.pageSize,
@@ -220,68 +290,80 @@ export default class Logic extends UILogic<State, Event> {
 
         listEntries = listEntries.filter(entry => !!entry.pageUrl)
 
-        if (listEntries.length < this.pageSize) {
-            couldHaveMore = false
-        }
+        return listEntries.map(entry => ({
+            url: entry.pageUrl,
+            date: entry.createdAt,
+        }))
+    }
 
-        const entries: Array<[string, UIPage]> = []
-        for (const listEntry of listEntries) {
-            const page = await overview.findPage({ url: listEntry.pageUrl })
-            if (!page) {
-                continue
-            }
+    private loadEntriesForBookmarks: PageLookupEntryLoader = async prevState => {
+        const { overview } = this.props.storage.modules
 
-            const tags = await metaPicker.findTagsByPage({
-                url: listEntry.pageUrl,
-            })
-
-            const notes = await pageEditor.findNotes({ url: listEntry.pageUrl })
-            const lists = await metaPicker.findListsByPage({
-                url: listEntry.pageUrl,
-            })
-
-            entries.push([
-                listEntry.pageUrl,
-                {
-                    url: listEntry.pageUrl,
-                    domain: page.domain,
-                    fullUrl: page.fullUrl,
-                    pageUrl: page.url,
-                    titleText: page.fullTitle || page.url,
-                    isStarred: !!page.isStarred,
-                    date: timeFromNow(listEntry.createdAt),
-                    tags: tags.map(tag => tag.name),
-                    lists: lists.map(list => list.name),
-                    notes: notes.map<UINote>(note => ({
-                        domain: page!.domain,
-                        fullUrl: page!.url,
-                        url: note.url,
-                        isStarred: note.isStarred,
-                        commentText: note.comment || undefined,
-                        noteText: note.body,
-                        isNotePressed: false,
-                        tags: [],
-                        isEdited:
-                            note.lastEdited &&
-                            note.lastEdited.getTime() !==
-                                note.createdWhen!.getTime(),
-                        date: note.lastEdited
-                            ? timeFromNow(note.lastEdited)
-                            : timeFromNow(note.createdWhen!),
-                    })),
-                },
-            ])
-        }
-
-        this.emitMutation({
-            pages: {
-                $set: new Map<string, UIPage>([
-                    ...prevState.pages.entries(),
-                    ...entries,
-                ]),
-            },
-            couldHaveMore: { $set: couldHaveMore },
+        const bookmarks = await overview.findLatestBookmarks({
+            skip: prevState.pages.size,
+            limit: this.pageSize,
         })
+
+        return bookmarks.map(bm => ({ url: bm.url, date: new Date(bm.time) }))
+    }
+
+    private loadEntriesForVisits: PageLookupEntryLoader = async prevState => {
+        const { overview } = this.props.storage.modules
+
+        const visits = await overview.findLatestVisitsByPage({
+            skip: prevState.pages.size,
+            limit: this.pageSize,
+        })
+
+        return visits.map(visit => ({
+            url: visit.url,
+            date: new Date(visit.time),
+        }))
+    }
+
+    private async lookupPageForEntry({
+        url,
+        date,
+    }: PageLookupEntry): Promise<UIPage> {
+        const { overview, metaPicker, pageEditor } = this.props.storage.modules
+
+        const page = await overview.findPage({ url })
+        if (!page) {
+            throw Error('No page found for entry')
+        }
+
+        const tags = await metaPicker.findTagsByPage({ url })
+
+        const notes = await pageEditor.findNotes({ url })
+        const lists = await metaPicker.findListsByPage({ url })
+
+        return {
+            url,
+            domain: page.domain,
+            fullUrl: page.fullUrl,
+            pageUrl: page.url,
+            titleText: page.fullTitle || page.url,
+            isStarred: !!page.isStarred,
+            date: timeFromNow(date),
+            tags: tags.map(tag => tag.name),
+            lists: lists.map(list => list.name),
+            notes: notes.map<UINote>(note => ({
+                domain: page!.domain,
+                fullUrl: page!.url,
+                url: note.url,
+                isStarred: note.isStarred,
+                commentText: note.comment || undefined,
+                noteText: note.body,
+                isNotePressed: false,
+                tags: [],
+                isEdited:
+                    note.lastEdited &&
+                    note.lastEdited.getTime() !== note.createdWhen!.getTime(),
+                date: note.lastEdited
+                    ? timeFromNow(note.lastEdited)
+                    : timeFromNow(note.createdWhen!),
+            })),
+        }
     }
 
     setPages(

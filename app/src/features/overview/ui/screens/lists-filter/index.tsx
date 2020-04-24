@@ -7,10 +7,14 @@ import Navigation from '../../components/navigation'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaTypeShape } from 'src/features/meta-picker/types'
 import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
+import { DashboardFilterType } from 'src/features/overview/types'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import styles from './styles'
 
 export default class ListsFilter extends NavigationScreen<Props, State, Event> {
+    static MAGIC_VISITS_FILTER = 'All History'
+    static MAGIC_BMS_FILTER = 'All Bookmarks'
+
     private selectedEntryName?: string
 
     constructor(props: Props) {
@@ -19,9 +23,24 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
         this.selectedEntryName = this.props.navigation.getParam('selectedList')
     }
 
+    private get magicFilters(): string[] {
+        return [ListsFilter.MAGIC_VISITS_FILTER, ListsFilter.MAGIC_BMS_FILTER]
+    }
+
     private handleEntryPress = async (item: MetaTypeShape) => {
+        let filterType: DashboardFilterType
+
+        if (item.name === ListsFilter.MAGIC_BMS_FILTER) {
+            filterType = 'bookmarks'
+        } else if (item.name === ListsFilter.MAGIC_VISITS_FILTER) {
+            filterType = 'visits'
+        } else {
+            filterType = 'collection'
+        }
+
         this.props.navigation.navigate('Overview', {
             selectedList: item.isChecked ? MOBILE_LIST_NAME : item.name,
+            filterType: !item.isChecked ? filterType : undefined,
         })
     }
 
@@ -49,6 +68,7 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
                 />
                 <MetaPicker
                     {...this.props}
+                    extraEntries={this.magicFilters}
                     onEntryPress={this.handleEntryPress}
                     suggestInputPlaceholder="Search Collections"
                     className={styles.filterContainer}

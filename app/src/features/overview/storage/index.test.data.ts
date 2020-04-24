@@ -1,6 +1,6 @@
 import { Page } from '../types'
 
-export const pages: Omit<Page, 'domain' | 'hostname'>[] = [
+export const pages: Omit<Page, 'domain' | 'hostname' | 'pageUrl'>[] = [
     {
         url: 'test.com',
         fullUrl: 'https://www.test.com',
