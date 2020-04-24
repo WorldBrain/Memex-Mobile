@@ -132,7 +132,9 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     cleanup() {
-        this.removeAppChangeListener()
+        if (this.removeAppChangeListener) {
+            this.removeAppChangeListener()
+        }
     }
 
     private async doSync() {
