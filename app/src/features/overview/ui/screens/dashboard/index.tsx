@@ -11,6 +11,8 @@ import {
     TouchableOpacity,
     Text,
 } from 'react-native'
+import throttle from 'lodash/throttle'
+
 import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
 import styles from './styles'
@@ -26,6 +28,8 @@ import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/featu
 import SyncRibbon from '../../components/sync-ribbon'
 
 export default class Dashboard extends NavigationScreen<Props, State, Event> {
+    static BOTTOM_PAGINATION_TRIGGER_PX = 200
+
     constructor(props: Props) {
         super(props, { logic: new Logic(props) })
     }
@@ -81,11 +85,24 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
                 triggerSync: true,
             })
         }
-
-        if (scrollHelpers.isAtBottom(nativeEvent)) {
-            return this.processEvent('loadMore', {})
-        }
     }
+
+    private handleScroll = throttle(
+        ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
+            if (
+                this.state.loadMoreState !== 'running' &&
+                nativeEvent != null &&
+                scrollHelpers.isAtBottom(
+                    nativeEvent,
+                    Dashboard.BOTTOM_PAGINATION_TRIGGER_PX,
+                )
+            ) {
+                return this.processEvent('loadMore', {})
+            }
+        },
+        300,
+        { leading: true },
+    )
 
     private handleListsFilterPress = () => {
         this.props.navigation.navigate('ListsFilter', {
@@ -143,7 +160,9 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
                             }
                         />
                     }
+                    onScroll={this.handleScroll}
                     onScrollEndDrag={this.handleScrollToEnd}
+                    scrollEventThrottle={16}
                 />
                 {this.state.loadMoreState === 'running' && (
                     <LoadingBalls style={styles.loadMoreSpinner} />

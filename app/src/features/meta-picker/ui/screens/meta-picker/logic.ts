@@ -24,6 +24,7 @@ export interface Props extends NavigationProps {
     onEntryPress: (item: MetaTypeShape) => Promise<void>
     suggestInputPlaceholder?: string
     singleSelect?: boolean
+    extraEntries?: string[]
     initEntries?: string[]
     initEntry?: string
     className?: string
@@ -72,6 +73,10 @@ export default class Logic extends UILogic<State, Event> {
                       url: this.props.url,
                   })
         const entries = new Map<string, MetaTypeShape>()
+
+        this.props.extraEntries?.forEach(name => {
+            entries.set(name, { name, isChecked: false })
+        })
 
         results.forEach(res => {
             entries.set(res.name, res)

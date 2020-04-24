@@ -5,6 +5,8 @@ export type NativeTouchEventHandler = (
 ) => void
 export type ResultType = 'special' | 'pages' | 'notes'
 
+export type DashboardFilterType = 'collection' | 'bookmarks' | 'visits'
+
 export interface UICollection {
     id: number
     name: string
