@@ -1,3 +1,4 @@
+import { Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
 
 export default EStyleSheet.create({
@@ -15,7 +16,7 @@ export default EStyleSheet.create({
         alignItems: 'center',
     },
     cameraView: {
-        width: 1,
+        width: Platform.OS === 'ios' ? 250 : 1,
         height: '100%',
     },
     instructionText: {
