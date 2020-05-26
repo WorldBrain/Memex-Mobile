@@ -1,22 +1,22 @@
 import EStyleSheet from 'react-native-extended-stylesheet'
 
 export default EStyleSheet.create({
-    cameraViewContainer: {
-        position: 'relative',
-        top: 60,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
+    outsideCameraContainer: {
+        top: 50,
+        maxHeight: '70%',
         borderStyle: 'solid',
         borderWidth: 1,
         borderColor: '#d4d4d4',
-        width: '100%',
-        height: 600,
+    },
+    cameraViewContainer: {
         display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     cameraView: {
-        flex: 1,
+        width: 1,
+        height: '100%',
     },
     instructionText: {
         position: 'relative',
