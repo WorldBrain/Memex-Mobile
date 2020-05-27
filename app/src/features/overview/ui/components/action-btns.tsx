@@ -3,22 +3,23 @@ import { ImageSourcePropType } from 'react-native'
 
 import { ActionBtn, ActionBarBtn, Props } from './action-btn'
 
-const createBtn = (
-    icon: ImageSourcePropType,
-): React.StatelessComponent<Props> => props => (
+export type ActionBtnComponent = React.StatelessComponent<Props>
+
+const createBtn = (icon: ImageSourcePropType): ActionBtnComponent => props => (
     <ActionBtn iconSource={icon} {...props} />
 )
 
 const createActionBarBtn = (
     icon: ImageSourcePropType,
-): React.StatelessComponent<Props> => props => (
-    <ActionBarBtn iconSource={icon} {...props} />
-)
+): ActionBtnComponent => props => <ActionBarBtn iconSource={icon} {...props} />
 
+export const BackBtn = createBtn(require('../img/heart_empty.png'))
+export const ReaderBtn = createBtn(require('../img/heart_empty.png'))
 export const StarBtn = createBtn(require('../img/heart_empty.png'))
 export const FullStarBtn = createBtn(require('../img/heart_full.png'))
 export const CommentBtn = createBtn(require('../img/comment.png'))
 export const FullCommentBtn = createBtn(require('../img/comment-full.png'))
+export const HighlightBtn = createBtn(require('../img/edit_white.png'))
 export const EditBtn = createBtn(require('../img/edit_white.png'))
 export const DeleteBtn = createActionBarBtn(require('../img/trash.png'))
 export const ListBtn = createActionBarBtn(
