@@ -68,6 +68,7 @@
         "react-native-svg": "^9.13.6",
         "react-native-unimodules": "^0.7.0",
         "react-native-webrtc": "https://github.com/WorldBrain/react-native-webrtc.git#7392fe76e583f9ff9c5cc010bdf352e6d17803e6",
+        "react-native-webview": "^10.1.0",
         "react-navigation": "^3.11.0",
         "remove-stopwords": "^1.0.3",
         "sqlite3": "^4.0.8",
