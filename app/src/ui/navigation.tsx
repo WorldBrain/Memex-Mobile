@@ -21,6 +21,7 @@ import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
 import Sync from 'src/features/sync/ui/screens/sync'
 import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
 import SettingsMenu from 'src/features/settings-menu/ui/screens/settings-menu'
+import Reader from 'src/features/reader/ui/screens/reader'
 
 export type NavigationContainerCreator = (
     deps: UIDependencies,
@@ -67,6 +68,9 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             Pairing: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
             }) => <Pairing {...props} {...deps} />,
+            Reader: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <Reader {...props} {...deps} />,
         },
         {
             initialRouteName: 'Overview',

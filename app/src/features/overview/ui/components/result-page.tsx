@@ -14,6 +14,7 @@ import {
     StarBtn,
     ListBtn,
     FullStarBtn,
+    ReaderBtn,
 } from './action-btns'
 import ActionBar from './result-page-action-bar'
 import { NativeTouchEventHandler, UIPage } from '../../types'
@@ -28,6 +29,7 @@ export interface InteractionProps {
     onVisitPress: NativeTouchEventHandler
     onDeletePress: NativeTouchEventHandler
     onResultPress?: NativeTouchEventHandler
+    onReaderPress?: NativeTouchEventHandler
     onCommentPress: NativeTouchEventHandler
 }
 
@@ -74,6 +76,9 @@ const ResultPage: React.StatelessComponent<Props &
                     </Text>
                 )}
             >
+                {props.onReaderPress && (
+                    <ReaderBtn onPress={props.onReaderPress} />
+                )}
                 <ListBtn onPress={props.onListsPress} />
                 <DeleteBtn onPress={props.onDeletePress} />
             </ActionBar>

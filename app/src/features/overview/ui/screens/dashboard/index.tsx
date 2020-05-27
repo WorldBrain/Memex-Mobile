@@ -26,6 +26,7 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import SyncRibbon from '../../components/sync-ribbon'
+import { NAV_PARAMS as READER_NAV_PARAMS } from 'src/features/reader/ui/screens/reader/constants'
 
 export default class Dashboard extends NavigationScreen<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -70,6 +71,12 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
 
     private initHandleResultPress = ({ url }: UIPage) => () => {
         this.processEvent('toggleResultPress', { url })
+    }
+
+    private initHandleReaderPress = ({ url }: UIPage) => () => {
+        this.props.navigation.navigate('Reader', {
+            [READER_NAV_PARAMS.READER_URL]: url,
+        })
     }
 
     private handleVisitPress = ({ fullUrl }: UIPage) => () => {
@@ -129,6 +136,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
             onCommentPress={this.navToPageEditor(item, 'notes')}
             onTagPress={this.navToPageEditor(item, 'tags')}
             onListsPress={this.navToPageEditor(item, 'collections')}
+            onReaderPress={this.initHandleReaderPress(item)}
             key={index}
             {...item}
         />
