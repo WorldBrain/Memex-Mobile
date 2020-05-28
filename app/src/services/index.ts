@@ -12,6 +12,7 @@ import { Storage } from 'src/storage/types'
 import { BackgroundProcessService } from './background-processing'
 import { KeychainService } from './keychain'
 import { KeychainAPI } from './keychain/types'
+import { ReadabilityService } from './readability'
 
 export interface CreateServicesOptions {
     storage: Storage
@@ -35,6 +36,7 @@ export async function createServices(
         backgroundProcess: new BackgroundProcessService({}),
         keychain: new KeychainService({ keychain: options.keychain }),
         errorTracker: options.errorTracker,
+        readability: new ReadabilityService({}),
         localStorage,
         sync: new SyncService({
             devicePlatform: options.devicePlatform,
