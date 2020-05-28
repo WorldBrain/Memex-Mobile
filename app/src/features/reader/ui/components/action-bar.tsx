@@ -60,7 +60,7 @@ class ActionBar extends React.PureComponent<Props> {
                     onPress={this.props.onTagBtnPress}
                     className={styles.actionBtn}
                 />
-                <actionBtns.ListBtn
+                <actionBtns.FullStarBtn
                     onPress={this.props.onListBtnPress}
                     className={styles.actionBtn}
                 />

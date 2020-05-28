@@ -17,7 +17,7 @@ interface OwnProps {
     iconSource: ImageSourcePropType
 }
 
-const ActionBtn: React.StatelessComponent<Props & OwnProps> = props => (
+export const ActionBtn: React.StatelessComponent<Props & OwnProps> = props => (
     <TouchableOpacity
         style={[styles.actionBtn, props.className]}
         onPress={props.onPress}
@@ -34,23 +34,3 @@ const ActionBtn: React.StatelessComponent<Props & OwnProps> = props => (
         />
     </TouchableOpacity>
 )
-
-const ActionBarBtn: React.StatelessComponent<Props & OwnProps> = props => (
-    <TouchableOpacity
-        style={[styles.actionBarBtn, props.className]}
-        onPress={props.onPress}
-        disabled={props.disabled}
-    >
-        <Image
-            resizeMode="contain"
-            source={props.iconSource}
-            style={[
-                styles.iconBarButton,
-                props.disabled ? styles.iconDisabled : null,
-                props.imgClassName,
-            ]}
-        />
-    </TouchableOpacity>
-)
-
-export { ActionBtn, ActionBarBtn }

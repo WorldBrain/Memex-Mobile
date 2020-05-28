@@ -3,7 +3,7 @@ import { View, TouchableWithoutFeedback } from 'react-native'
 
 import Container from './result-container'
 import Body, { Props as BodyProps } from './result-note-body'
-import { DeleteBtn, EditNoteBtn } from './action-btns'
+import { DeleteActionBarBtn, EditNoteActionBarBtn } from './action-btns'
 import ActionBar from './result-page-action-bar'
 import Tags from './result-page-tags'
 import { NativeTouchEventHandler } from '../../types'
@@ -36,8 +36,8 @@ const ResultNote: React.StatelessComponent<Props &
         </Container>
         {props.isNotePressed && (
             <ActionBar>
-                <EditNoteBtn onPress={props.onEditPress} />
-                <DeleteBtn onPress={props.onDeletePress} />
+                <EditNoteActionBarBtn onPress={props.onEditPress} />
+                <DeleteActionBarBtn onPress={props.onDeletePress} />
             </ActionBar>
         )}
     </>

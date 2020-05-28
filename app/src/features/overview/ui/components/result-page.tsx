@@ -6,15 +6,15 @@ import Body, { Props as BodyProps } from './result-page-body'
 import Footer, { Props as FooterProps } from './result-footer'
 import Tags from './result-page-tags'
 import {
-    DeleteBtn,
+    DeleteActionBarBtn,
     FullTagBtn,
     TagBtn,
     CommentBtn,
     FullCommentBtn,
     StarBtn,
-    ListBtn,
+    ListActionBarBtn,
     FullStarBtn,
-    ReaderBtn,
+    ReaderActionBarBtn,
 } from './action-btns'
 import ActionBar from './result-page-action-bar'
 import { NativeTouchEventHandler, UIPage } from '../../types'
@@ -77,10 +77,10 @@ const ResultPage: React.StatelessComponent<Props &
                 )}
             >
                 {props.onReaderPress && (
-                    <ReaderBtn onPress={props.onReaderPress} />
+                    <ReaderActionBarBtn onPress={props.onReaderPress} />
                 )}
-                <ListBtn onPress={props.onListsPress} />
-                <DeleteBtn onPress={props.onDeletePress} />
+                <ListActionBarBtn onPress={props.onListsPress} />
+                <DeleteActionBarBtn onPress={props.onDeletePress} />
             </ActionBar>
         )}
     </View>
