@@ -9899,6 +9899,11 @@ xmldoc@^1.1.2:
   dependencies:
     sax "^1.2.1"
 
+xmldom-silent@^0.1.19:
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/xmldom-silent/-/xmldom-silent-0.1.19.tgz#3a2a8b9d8bc1e9e06fa70180e863ce72059fec58"
+  integrity sha1-OiqLnYvB6eBvpwGA6GPOcgWf7Fg=
+
 xmldom@0.1.x:
   version "0.1.27"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"

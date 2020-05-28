@@ -85,7 +85,8 @@
         "url-parse": "^1.4.7",
         "url-regex": "^5.0.0",
         "user-logic": "^0.0.1",
-        "whatwg-url": "^7.1.0"
+        "whatwg-url": "^7.1.0",
+        "xmldom-silent": "^0.1.19"
     },
     "devDependencies": {
         "@babel/core": "^7.4.4",
