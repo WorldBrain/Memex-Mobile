@@ -13,6 +13,7 @@ import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/lib/sync/constants'
 import defaultConnectionOpts from './default-connection-opts'
 import { Storage } from './types'
 import { SettingsStorage } from 'src/features/settings/storage'
+import { ReaderStorage } from 'src/features/reader/storage'
 import { Services } from 'src/services/types'
 import { createServerStorageManager } from './server'
 import { createSharedSyncLog } from 'src/services/sync/shared-sync-log'
@@ -56,6 +57,7 @@ export async function createStorage({
         clientSyncLog: new MemexClientSyncLogStorage({ storageManager }),
         syncInfo: new MemexSyncInfoStorage({ storageManager }),
         settings: new SettingsStorage({ storageManager }),
+        reader: new ReaderStorage({ storageManager }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules as any)

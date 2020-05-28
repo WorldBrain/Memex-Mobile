@@ -8,6 +8,7 @@ import {
     MemexSyncInfoStorage,
 } from 'src/features/sync/storage'
 import { SettingsStorage } from 'src/features/settings/storage'
+import { ReaderStorage } from 'src/features/reader/storage'
 
 export interface Storage {
     manager: StorageManager
@@ -21,4 +22,5 @@ export interface StorageModules {
     clientSyncLog: MemexClientSyncLogStorage
     syncInfo: MemexSyncInfoStorage
     settings: SettingsStorage
+    reader: ReaderStorage
 }
