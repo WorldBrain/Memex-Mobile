@@ -1,4 +1,4 @@
-import { ReadabilityService } from '.'
+import { ReadabilityService, createCleanHtmlString } from '.'
 
 const testUrlA = 'https://getmemex.com'
 const testUrlB = 'https://getmemex.com/test/route'
@@ -60,6 +60,40 @@ describe('readability service tests', () => {
 
         // TODO: what else can we verify here?
         expect(doc.title).toEqual(title)
+    })
+
+    // TODO: the `parseDocument` call returns undefined for some reason - Document is constructed prior to that
+    it.skip('should be able to clean HTML with our template', async () => {
+        const { service } = setup()
+
+        const title = 'Test title'
+        const heading = 'Test heading'
+        const text = 'lots of content!'
+        const js = `console.log('hi!')`
+
+        const expectedHTML = `
+        <html>
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            </head>
+            <body>
+                <h1>${title}</h1>
+                ${text}
+            </body>
+        </html>
+        `
+
+        const html = createSimpleHtml({ title, heading, text, js })
+        const urlDesc = service['deriveUrlDescriptor']('https://getmemex.com')
+        const doc = service['constructDocumentFromHtml'](html)
+        const article = await service['parseDocument'](urlDesc, doc)
+
+        expect(
+            createCleanHtmlString({
+                body: article.content,
+                title: article.title,
+            }),
+        ).toEqual(expectedHTML)
     })
 
     it('should be able to convert HTML to XHTML', () => {

@@ -13,7 +13,7 @@ Implementation inspired by `react-native-webview-readability` package:
 https://github.com/poptocrack/react-native-webview-readability
 */
 
-const createCleanHtmlString = (args: {
+export const createCleanHtmlString = (args: {
     css?: string
     title: string
     body: string
@@ -99,12 +99,17 @@ export class ReadabilityService implements ReadabilityServiceAPI {
         return new Readability(urlParts, doc).parse()
     }
 
-    async fetchAndCleanHtml({ url }: { url: string }): Promise<string> {
+    async fetchAndParse({ url }: { url: string }): Promise<ReadabilityArticle> {
         const urlDesc = this.deriveUrlDescriptor(url)
         const html = await this.fetchPageHtml(url)
         const xhtml = this.convertHtmlToXhtml(html)
         const doc = this.constructDocumentFromHtml(xhtml)
-        const article = await this.parseDocument(urlDesc, doc)
+
+        return this.parseDocument(urlDesc, doc)
+    }
+
+    async fetchAndCleanHtml(args: { url: string }): Promise<string> {
+        const article = await this.fetchAndParse(args)
 
         return createCleanHtmlString({
             body: article.content,
