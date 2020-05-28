@@ -1,4 +1,7 @@
+import { Dimensions } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+import { actionBarHeight } from '../../components/action-bar.styles'
 
 export default EStyleSheet.create({
     container: {
@@ -6,10 +9,12 @@ export default EStyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between',
     },
-    actionBar: {
-        bottom: -15,
+    actionBar: {},
+    webViewLoader: {
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     webView: {
-        height: '90%',
+        height: Dimensions.get('window').height - actionBarHeight,
     },
 })

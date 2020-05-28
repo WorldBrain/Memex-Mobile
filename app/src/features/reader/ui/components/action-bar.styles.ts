@@ -1,5 +1,7 @@
 import EStyleSheet from 'react-native-extended-stylesheet'
 
+export const actionBarHeight = 50
+
 export default EStyleSheet.create({
     container: {
         display: 'flex',
@@ -8,7 +10,7 @@ export default EStyleSheet.create({
         justifyContent: 'space-between',
         borderTopWidth: 1,
         borderTopColor: '#DADADA',
-        height: 50,
+        height: actionBarHeight,
         width: '100%',
         paddingHorizontal: 10,
     },

@@ -6,6 +6,7 @@ import { NavigationScreen } from 'src/ui/types'
 import ActionBar from '../../components/action-bar'
 import WebView from '../../components/web-view'
 import styles from './styles'
+import LoadingBalls from 'src/ui/components/loading-balls'
 
 export default class Reader extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -17,14 +18,28 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     private handleBackClick = () =>
         this.props.navigation.navigate({ routeName: 'Overview' })
 
+    private renderWebView() {
+        if (this.state.loadState === 'running') {
+            return (
+                <View style={[styles.webView, styles.webViewLoader]}>
+                    <LoadingBalls />
+                </View>
+            )
+        }
+
+        return (
+            <WebView
+                className={styles.webView}
+                htmlSource={this.state.htmlSource!}
+                url={this.state.url}
+            />
+        )
+    }
+
     render() {
         return (
             <View style={styles.container}>
-                <WebView
-                    className={styles.webView}
-                    htmlSource={this.state.htmlSource!}
-                    url={this.state.url}
-                />
+                {this.renderWebView()}
                 <ActionBar
                     className={styles.actionBar}
                     {...this.state}

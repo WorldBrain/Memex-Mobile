@@ -17,10 +17,8 @@ class ReaderWebView extends React.PureComponent<Props> {
                 <WebView
                     style={styles.webView}
                     source={{
-                        uri: this.props.url,
-                        // TODO: render given HTML rather than fetch URL contents
-                        // html: this.props.htmlSource,
-                        // baseUrl: this.props.url,
+                        html: this.props.htmlSource,
+                        baseUrl: this.props.url,
                     }}
                 />
             </View>
