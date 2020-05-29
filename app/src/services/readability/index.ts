@@ -110,10 +110,13 @@ export class ReadabilityService implements ReadabilityServiceAPI {
 
     async fetchAndCleanHtml(args: { url: string }): Promise<string> {
         const article = await this.fetchAndParse(args)
+        return this.applyHtmlTemplateToArticle({ article })
+    }
 
+    applyHtmlTemplateToArticle(args: { article: ReadabilityArticle }): string {
         return createCleanHtmlString({
-            body: article.content,
-            title: article.title,
+            body: args.article.content,
+            title: args.article.title,
         })
     }
 }

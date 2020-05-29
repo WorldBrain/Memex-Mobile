@@ -1,4 +1,10 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import {
+    UILogic,
+    UIEvent,
+    IncomingUIEvent,
+    UIEventHandler,
+    UIMutation,
+} from 'ui-logic-core'
 
 import {
     UITaskState,
@@ -8,6 +14,7 @@ import {
 } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
 import { NAV_PARAMS } from './constants'
+import { ReadabilityArticle } from 'src/services/readability/types'
 
 export interface State {
     loadState: UITaskState
@@ -18,9 +25,18 @@ export interface State {
     url: string
 }
 
-export type Event = UIEvent<{}>
+export type Event = UIEvent<{
+    toggleTextSelection: null
+}>
+
+type EventHandler<EventName extends keyof Event> = UIEventHandler<
+    State,
+    Event,
+    EventName
+>
 
 export interface Props extends NavigationProps {
+    storage: UIStorageModules<'reader'>
     services: UIServices<'readability'>
 }
 
@@ -46,14 +62,52 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
+        await loadInitial<State>(this, async () => {
+            await this.loadReadableUrl(previousState.url)
+        })
+    }
+
+    private async storeReadableArticle(
+        url: string,
+        article: ReadabilityArticle,
+        createdWhen = new Date(),
+    ) {
+        await this.props.storage.modules.reader.createReadablePage({
+            url,
+            fullUrl: url,
+            strategy: 'seanmcgary/readability',
+            createdWhen,
+            ...article,
+        })
+    }
+
+    private async loadReadableUrl(url: string) {
+        const { reader: readerStorage } = this.props.storage.modules
         const { readability } = this.props.services
 
-        await loadInitial<State>(this, async () => {
-            const cleanHtml = await readability.fetchAndCleanHtml({
-                url: previousState.url,
-            })
+        const existingReadable = await readerStorage.getReadablePage(url)
+        let article: ReadabilityArticle
 
-            this.emitMutation({ htmlSource: { $set: cleanHtml } })
+        if (existingReadable == null) {
+            article = await readability.fetchAndParse({ url })
+            await this.storeReadableArticle(url, article)
+        } else {
+            article = {
+                title: existingReadable.title,
+                content: existingReadable.content,
+            } as any
+        }
+
+        this.emitMutation({
+            htmlSource: {
+                $set: readability.applyHtmlTemplateToArticle({ article }),
+            },
+        })
+    }
+
+    toggleTextSelection: EventHandler<'toggleTextSelection'> = () => {
+        this.emitMutation({
+            isTextSelected: { $apply: prev => !prev },
         })
     }
 }
