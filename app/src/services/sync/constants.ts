@@ -18,7 +18,7 @@ export const AUTO_SYNC_COLLECTIONS: { [collection: string]: boolean } = {
     tags: true,
     visits: true,
     // TODO: Confirm we want to sync these
-    [READER_COLL_NAMES.readable]: false,
+    [READER_COLL_NAMES.readablePage]: false,
 
     clientSyncLogEntry: false,
     settings: false,

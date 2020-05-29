@@ -57,7 +57,7 @@ export async function createStorage({
         clientSyncLog: new MemexClientSyncLogStorage({ storageManager }),
         syncInfo: new MemexSyncInfoStorage({ storageManager }),
         settings: new SettingsStorage({ storageManager }),
-        reader: new ReaderStorage({ storageManager }),
+        reader: new ReaderStorage({ storageManager, normalizeUrl }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules as any)

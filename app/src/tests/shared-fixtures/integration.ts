@@ -137,9 +137,9 @@ export async function checkIntegrationTestData(options: { storage: Storage }) {
                 createdAt: expect.any(Date),
             },
         ],
-        readable: [],
         annotations: [],
         annotBookmarks: [],
         annotListEntries: [],
+        readablePageArchives: [],
     })
 }
