@@ -2,9 +2,6 @@ import { Readability, JSDOMParser } from 'readability-node'
 import { XMLSerializer, DOMParser } from 'xmldom-silent'
 import UrlParser from 'url-parse'
 
-import { createHtmlStringFromTemplate } from './create-html-from-template'
-import { inPageJS } from './in-page-js'
-import { inPageCSS } from './in-page-css'
 import {
     ReadabilityServiceAPI,
     ReadabilityArticle,
@@ -92,24 +89,5 @@ export class ReadabilityService implements ReadabilityServiceAPI {
         const doc = this.constructDocumentFromHtml(xhtml)
 
         return this.parseDocument(urlDesc, doc)
-    }
-
-    async fetchAndCleanHtml(args: { url: string }): Promise<string> {
-        const article = await this.fetchAndParse(args)
-        return this.applyHtmlTemplateToArticle({ article })
-    }
-
-    applyHtmlTemplateToArticle(args: {
-        article: ReadabilityArticle
-        js?: string
-        css?: string
-    }): string {
-        return createHtmlStringFromTemplate({
-            body: args.article.content,
-            title: args.article.title,
-            css: args.css ?? inPageCSS,
-            js: args.js ?? inPageJS,
-            ...args,
-        })
     }
 }

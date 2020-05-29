@@ -1,7 +1,5 @@
 export interface ReadabilityServiceAPI {
-    fetchAndCleanHtml(args: { url: string }): Promise<string>
     fetchAndParse(args: { url: string }): Promise<ReadabilityArticle>
-    applyHtmlTemplateToArticle(args: { article: ReadabilityArticle }): string
 }
 
 export interface ReadabilityArticle {

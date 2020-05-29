@@ -14,6 +14,9 @@ import {
 import { loadInitial } from 'src/ui/utils'
 import { NAV_PARAMS } from './constants'
 import { ReadabilityArticle } from 'src/services/readability/types'
+import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
+import { inPageJS } from 'src/features/reader/utils/in-page-js'
+import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
 export interface State {
     url: string
@@ -96,7 +99,12 @@ export default class Logic extends UILogic<State, Event> {
             } as any
         }
 
-        const html = readability.applyHtmlTemplateToArticle({ article })
+        const html = createHtmlStringFromTemplate({
+            body: article.content,
+            title: article.title,
+            js: inPageJS,
+            css: inPageCSS,
+        })
 
         this.emitMutation({ htmlSource: { $set: html } })
     }
