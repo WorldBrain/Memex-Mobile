@@ -29,6 +29,7 @@ export interface State {
 
 export type Event = UIEvent<{
     setTextSelection: { text: string }
+    toggleBookmark: null
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -38,7 +39,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export interface Props extends NavigationProps {
-    storage: UIStorageModules<'reader'>
+    storage: UIStorageModules<'reader' | 'overview'>
     services: UIServices<'readability'>
 }
 
@@ -64,6 +65,7 @@ export default class Logic extends UILogic<State, Event> {
 
     async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
+            await this.loadPageState(previousState.url)
             await this.loadReadableUrl(previousState.url)
         })
     }
@@ -109,8 +111,39 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ htmlSource: { $set: html } })
     }
 
+    private async loadPageState(url: string) {
+        const { overview: overviewStorage } = this.props.storage.modules
+
+        this.emitMutation({
+            isBookmarked: {
+                $set: await overviewStorage.isPageStarred({ url }),
+            },
+        })
+    }
+
     setTextSelection: EventHandler<'setTextSelection'> = ({ event }) => {
         const selectedText = event.text?.length ? event.text.trim() : undefined
         return this.emitMutation({ selectedText: { $set: selectedText } })
+    }
+
+    toggleBookmark: EventHandler<'toggleBookmark'> = async ({
+        previousState,
+    }) => {
+        const { overview: overviewStorage } = this.props.storage.modules
+
+        const toggleState = () =>
+            this.emitMutation({ isBookmarked: { $apply: prev => !prev } })
+        toggleState()
+
+        try {
+            if (previousState.isBookmarked) {
+                await overviewStorage.unstarPage({ url: previousState.url })
+            } else {
+                await overviewStorage.starPage({ url: previousState.url })
+            }
+        } catch (err) {
+            toggleState()
+            throw err
+        }
     }
 }

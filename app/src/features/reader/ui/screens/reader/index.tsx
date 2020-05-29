@@ -48,7 +48,9 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                     {...this.state}
                     onBackBtnPress={this.handleBackClick}
                     onAnnotateBtnPress={this._mockClick}
-                    onBookmarkBtnPress={this._mockClick}
+                    onBookmarkBtnPress={() =>
+                        this.processEvent('toggleBookmark', null)
+                    }
                     onCommentBtnPress={this._mockClick}
                     onHighlightBtnPress={this._mockClick}
                     onListBtnPress={this._mockClick}

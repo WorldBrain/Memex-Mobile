@@ -37,4 +37,20 @@ describe('reader screen UI logic tests', () => {
         await element.processEvent('setTextSelection', { text: '' })
         expect(element.state.selectedText).toBeUndefined()
     })
+
+    it('should be able to toggle bookmark state', async dependencies => {
+        const { element } = setup(dependencies)
+        const { overview } = dependencies.storage.modules
+
+        expect(element.state.isBookmarked).toBe(false)
+        expect(await overview.isPageStarred({ url: TEST_URL_1 })).toBe(false)
+
+        await element.processEvent('toggleBookmark', null)
+        expect(element.state.isBookmarked).toBe(true)
+        expect(await overview.isPageStarred({ url: TEST_URL_1 })).toBe(true)
+
+        await element.processEvent('toggleBookmark', null)
+        expect(element.state.isBookmarked).toBe(false)
+        expect(await overview.isPageStarred({ url: TEST_URL_1 })).toBe(false)
+    })
 })
