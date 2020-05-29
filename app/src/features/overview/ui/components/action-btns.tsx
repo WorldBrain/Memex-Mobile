@@ -26,7 +26,7 @@ export const StarBtn = createBtn(require('../img/heart_empty.png'))
 export const FullStarBtn = createBtn(require('../img/heart_full.png'))
 export const CommentBtn = createBtn(require('../img/comment.png'))
 export const FullCommentBtn = createBtn(require('../img/comment-full.png'))
-export const HighlightBtn = createBtn(require('../img/edit_white.png'))
+export const HighlightBtn = createBtn(require('../img/heart_empty.png'))
 export const EditBtn = createBtn(require('../img/edit_white.png'))
 
 export const TagBtn = createBtn(require('../img/tag.png'))

@@ -3,7 +3,6 @@ import {
     UIEvent,
     IncomingUIEvent,
     UIEventHandler,
-    UIMutation,
 } from 'ui-logic-core'
 
 import {
@@ -17,16 +16,16 @@ import { NAV_PARAMS } from './constants'
 import { ReadabilityArticle } from 'src/services/readability/types'
 
 export interface State {
+    url: string
     loadState: UITaskState
+    selectedText?: string
     isTagged: boolean
     isBookmarked: boolean
-    isTextSelected: boolean
     htmlSource?: string
-    url: string
 }
 
 export type Event = UIEvent<{
-    toggleTextSelection: null
+    setTextSelection: { text: string }
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -57,7 +56,6 @@ export default class Logic extends UILogic<State, Event> {
             loadState: 'pristine',
             isTagged: false,
             isBookmarked: false,
-            isTextSelected: false,
         }
     }
 
@@ -98,16 +96,13 @@ export default class Logic extends UILogic<State, Event> {
             } as any
         }
 
-        this.emitMutation({
-            htmlSource: {
-                $set: readability.applyHtmlTemplateToArticle({ article }),
-            },
-        })
+        const html = readability.applyHtmlTemplateToArticle({ article })
+
+        this.emitMutation({ htmlSource: { $set: html } })
     }
 
-    toggleTextSelection: EventHandler<'toggleTextSelection'> = () => {
-        this.emitMutation({
-            isTextSelected: { $apply: prev => !prev },
-        })
+    setTextSelection: EventHandler<'setTextSelection'> = ({ event }) => {
+        const selectedText = event.text?.length ? event.text.trim() : undefined
+        return this.emitMutation({ selectedText: { $set: selectedText } })
     }
 }

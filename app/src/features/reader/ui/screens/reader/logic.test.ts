@@ -23,13 +23,18 @@ describe('reader screen UI logic tests', () => {
         return { element, logic }
     }
 
-    it('should be able to toggle text selection state', async dependencies => {
+    it('should be able to change text selection state', async dependencies => {
         const { element } = setup(dependencies)
 
-        expect(element.state.isTextSelected).toBe(false)
-        await element.processEvent('toggleTextSelection', null)
-        expect(element.state.isTextSelected).toBe(true)
-        await element.processEvent('toggleTextSelection', null)
-        expect(element.state.isTextSelected).toBe(false)
+        const testTextA = 'some text'
+        const testTextB = 'some more text'
+
+        expect(element.state.selectedText).toBeUndefined()
+        await element.processEvent('setTextSelection', { text: testTextA })
+        expect(element.state.selectedText).toEqual(testTextA)
+        await element.processEvent('setTextSelection', { text: testTextB })
+        expect(element.state.selectedText).toEqual(testTextB)
+        await element.processEvent('setTextSelection', { text: '' })
+        expect(element.state.selectedText).toBeUndefined()
     })
 })

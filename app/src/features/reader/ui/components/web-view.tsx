@@ -5,9 +5,10 @@ import { WebView } from 'react-native-webview'
 import styles from './web-view.styles'
 
 export interface Props {
-    className?: string
     url: string
     htmlSource: string
+    className?: string
+    onMessage: (data: string) => void
 }
 
 class ReaderWebView extends React.PureComponent<Props> {
@@ -20,6 +21,12 @@ class ReaderWebView extends React.PureComponent<Props> {
                         html: this.props.htmlSource,
                         baseUrl: this.props.url,
                     }}
+                    onMessage={({ nativeEvent }) =>
+                        this.props.onMessage(nativeEvent.data)
+                    }
+                    // This flag needs to be set to afford text selection on iOS.
+                    //   https://github.com/react-native-community/react-native-webview/issues/1275
+                    allowsLinkPreview
                 />
             </View>
         )

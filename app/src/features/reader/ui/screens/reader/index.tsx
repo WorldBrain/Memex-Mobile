@@ -29,9 +29,12 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
 
         return (
             <WebView
+                url={this.state.url}
                 className={styles.webView}
                 htmlSource={this.state.htmlSource!}
-                url={this.state.url}
+                onMessage={text =>
+                    this.processEvent('setTextSelection', { text })
+                }
             />
         )
     }

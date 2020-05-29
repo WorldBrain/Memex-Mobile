@@ -6,10 +6,10 @@ import { NativeTouchEventHandler } from 'src/features/overview/types'
 import styles from './action-bar.styles'
 
 export interface Props {
-    className?: string
     isTagged?: boolean
     isBookmarked?: boolean
-    isTextSelected?: boolean
+    className?: string
+    selectedText?: string
     onBackBtnPress: NativeTouchEventHandler
     onBookmarkBtnPress: NativeTouchEventHandler
     onHighlightBtnPress: NativeTouchEventHandler
@@ -31,7 +31,7 @@ class ActionBar extends React.PureComponent<Props> {
     }
 
     private renderRightBtns() {
-        if (this.props.isTextSelected) {
+        if (this.props.selectedText != null) {
             return (
                 <>
                     <actionBtns.HighlightBtn

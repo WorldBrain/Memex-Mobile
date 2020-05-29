@@ -2,6 +2,9 @@ import { Readability, JSDOMParser } from 'readability-node'
 import { XMLSerializer, DOMParser } from 'xmldom-silent'
 import UrlParser from 'url-parse'
 
+import { createHtmlStringFromTemplate } from './create-html-from-template'
+import { inPageJS } from './in-page-js'
+import { inPageCSS } from './in-page-css'
 import {
     ReadabilityServiceAPI,
     ReadabilityArticle,
@@ -12,23 +15,6 @@ import {
 Implementation inspired by `react-native-webview-readability` package:
 https://github.com/poptocrack/react-native-webview-readability
 */
-
-export const createCleanHtmlString = (args: {
-    css?: string
-    title: string
-    body: string
-}) => `
-    <html>
-        <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            ${args.css ? `<style>${args.css}</style>` : ''}
-        </head>
-        <body>
-            <h1>${args.title}</h1>
-            ${args.body}
-        </body>
-    </html>
-`
 
 export interface Props {
     urlParser?: (url: string) => UrlParser
@@ -113,10 +99,17 @@ export class ReadabilityService implements ReadabilityServiceAPI {
         return this.applyHtmlTemplateToArticle({ article })
     }
 
-    applyHtmlTemplateToArticle(args: { article: ReadabilityArticle }): string {
-        return createCleanHtmlString({
+    applyHtmlTemplateToArticle(args: {
+        article: ReadabilityArticle
+        js?: string
+        css?: string
+    }): string {
+        return createHtmlStringFromTemplate({
             body: args.article.content,
             title: args.article.title,
+            css: args.css ?? inPageCSS,
+            js: args.js ?? inPageJS,
+            ...args,
         })
     }
 }
