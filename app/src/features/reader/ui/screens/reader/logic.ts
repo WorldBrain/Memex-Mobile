@@ -12,14 +12,16 @@ import {
     NavigationProps,
 } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
-import { NAV_PARAMS } from './constants'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { ReadabilityArticle } from 'src/services/readability/types'
 import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 import { inPageJS } from 'src/features/reader/utils/in-page-js'
 import { inPageCSS } from 'src/features/reader/utils/in-page-css'
+import { ReaderNavigationParams } from './types'
 
 export interface State {
     url: string
+    title: string
     loadState: UITaskState
     selectedText?: string
     isTagged: boolean
@@ -49,24 +51,27 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(): State {
-        const url = this.props.navigation.getParam(NAV_PARAMS.READER_URL)
+        const params = this.props.navigation.getParam(
+            NAV_PARAMS.READER,
+        ) as ReaderNavigationParams
 
-        if (!url) {
+        if (!params?.url) {
             throw new Error("Navigation error: reader didn't receive URL")
         }
 
         return {
-            url: 'https://' + url, // TODO: find a better way to get the full URL
+            title: params.title,
+            url: 'https://' + params.url, // TODO: find a better way to get the full URL
             loadState: 'pristine',
-            isTagged: false,
             isBookmarked: false,
+            isTagged: false,
         }
     }
 
     async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
             await this.loadPageState(previousState.url)
-            await this.loadReadableUrl(previousState.url)
+            await this.loadReadablePage(previousState.url, previousState.title)
         })
     }
 
@@ -75,16 +80,23 @@ export default class Logic extends UILogic<State, Event> {
         article: ReadabilityArticle,
         createdWhen = new Date(),
     ) {
-        await this.props.storage.modules.reader.createReadablePage({
+        const {
+            reader: readerStorage,
+            overview: overviewStorage,
+        } = this.props.storage.modules
+
+        // Update page title with what was found in readability parsing - most pages saved on Memex Go will lack titles
+        await overviewStorage.updatePageTitle({ url, title: article.title })
+
+        await readerStorage.createReadablePage({
             url,
-            fullUrl: url,
             strategy: 'seanmcgary/readability',
             createdWhen,
             ...article,
         })
     }
 
-    private async loadReadableUrl(url: string) {
+    private async loadReadablePage(url: string, title: string) {
         const { reader: readerStorage } = this.props.storage.modules
         const { readability } = this.props.services
 
@@ -96,7 +108,7 @@ export default class Logic extends UILogic<State, Event> {
             await this.storeReadableArticle(url, article)
         } else {
             article = {
-                title: existingReadable.title,
+                title,
                 content: existingReadable.content,
             } as any
         }

@@ -15,7 +15,7 @@ describe('reader screen UI logic tests', () => {
             ...options,
             navigation: {
                 ...options.navigation,
-                getParam: () => TEST_URL_1,
+                getParam: () => ({ url: TEST_URL_1, title: 'test' }),
             } as any,
         })
         const element = new FakeStatefulUIElement<State, Event>(logic)

@@ -16,6 +16,7 @@ import throttle from 'lodash/throttle'
 import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
 import styles from './styles'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
@@ -26,7 +27,6 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import SyncRibbon from '../../components/sync-ribbon'
-import { NAV_PARAMS as READER_NAV_PARAMS } from 'src/features/reader/ui/screens/reader/constants'
 
 export default class Dashboard extends NavigationScreen<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -73,9 +73,9 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         this.processEvent('toggleResultPress', { url })
     }
 
-    private initHandleReaderPress = ({ url }: UIPage) => () => {
+    private initHandleReaderPress = ({ url, titleText }: UIPage) => () => {
         this.props.navigation.navigate('Reader', {
-            [READER_NAV_PARAMS.READER_URL]: url,
+            [NAV_PARAMS.READER]: { url, title: titleText },
         })
     }
 
