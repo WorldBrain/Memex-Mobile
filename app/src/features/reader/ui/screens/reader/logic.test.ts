@@ -3,7 +3,7 @@ import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { FakeNavigation } from 'src/tests/navigation'
 
-const TEST_URL_1 = 'https://getmemex.com'
+const TEST_URL_1 = 'getmemex.com'
 
 describe('reader screen UI logic tests', () => {
     const it = makeStorageTestFactory()

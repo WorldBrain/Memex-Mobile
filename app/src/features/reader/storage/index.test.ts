@@ -26,5 +26,11 @@ describe('reader StorageModule', () => {
                 lastEdited: createdWhen,
             })
         }
+
+        // TODO: Remove this code
+        //  - it's only here because there's some issue with the sync test setup code expecting the readable objects not to be there
+        for (const { url } of readables) {
+            await reader.deleteReadablePage(url)
+        }
     })
 })

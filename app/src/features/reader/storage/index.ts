@@ -36,6 +36,13 @@ export class ReaderStorage extends StorageModule {
                     url: '$url:string',
                 },
             },
+            deleteReadable: {
+                operation: 'deleteObject',
+                collection: ReaderStorage.READER_COLL,
+                args: {
+                    url: '$url:string',
+                },
+            },
         },
     })
 
@@ -68,5 +75,9 @@ export class ReaderStorage extends StorageModule {
         if (!exists) {
             return this.createReadablePage(data)
         }
+    }
+
+    deleteReadablePage = async (url: string): Promise<void> => {
+        return this.operation('deleteReadable', { url })
     }
 }
