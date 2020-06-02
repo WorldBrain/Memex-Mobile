@@ -7,6 +7,7 @@ import { ReadabilityService } from './readability'
 import { LocalStorageService } from './local-storage'
 import { ErrorTrackingService } from './error-tracking'
 import { BackgroundProcessService } from './background-processing'
+import { ResourceLoaderService } from './resource-loader'
 
 export interface Services {
     auth: AuthService
@@ -16,6 +17,7 @@ export interface Services {
     readability: ReadabilityService
     localStorage: LocalStorageService
     errorTracker: ErrorTrackingService
+    resourceLoader: ResourceLoaderService
     backgroundProcess: BackgroundProcessService
 }
 

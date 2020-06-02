@@ -180,6 +180,7 @@ apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
     implementation project(':react-native-webview')
+    implementation project(':react-native-local-resource')
     implementation project(':@sentry_react-native')
     implementation project(':react-native-securerandom')
     implementation project(':react-native-webrtc')

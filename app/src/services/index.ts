@@ -13,6 +13,7 @@ import { BackgroundProcessService } from './background-processing'
 import { KeychainService } from './keychain'
 import { KeychainAPI } from './keychain/types'
 import { ReadabilityService } from './readability'
+import { ResourceLoaderService } from './resource-loader'
 
 export interface CreateServicesOptions {
     storage: Storage
@@ -38,6 +39,7 @@ export async function createServices(
         errorTracker: options.errorTracker,
         readability: new ReadabilityService({}),
         localStorage,
+        resourceLoader: new ResourceLoaderService({}),
         sync: new SyncService({
             devicePlatform: options.devicePlatform,
             signalTransportFactory: options.signalTransportFactory,

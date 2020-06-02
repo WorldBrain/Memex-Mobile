@@ -9,8 +9,11 @@ module.exports = (async () => {
     return {
         watchFolders: [path.join(__dirname, 'external')],
         resolver: {
-            assetExts: assetExts.filter(ext => ext !== 'svg'),
+            assetExts: [...assetExts.filter(ext => ext !== 'svg'), 'txt'],
             sourceExts: [...sourceExts, 'svg'],
+            extraNodeModules: {
+                dist: path.resolve(__dirname + '/dist'),
+            },
         },
         transformer: {
             babelTransformerPath: require.resolve(

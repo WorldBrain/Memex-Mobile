@@ -11,6 +11,7 @@ import org.unimodules.core.interfaces.SingletonModule;
 import com.oblador.keychain.KeychainPackage;
 import com.facebook.react.ReactApplication;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
+import com.igorbelyayev.rnlocalresource.RNLocalResourcePackage;
 import io.sentry.RNSentryPackage;
 import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
@@ -51,6 +52,7 @@ public class MainApplication extends Application implements ReactApplication {
         new SQLitePluginPackage(),   // register SQLite Plugin here
         new MainReactPackage(),
             new RNCWebViewPackage(),
+            new RNLocalResourcePackage(),
             new RNSentryPackage(),
         new RNSecureRandomPackage(),
         new WebRTCModulePackage(),
