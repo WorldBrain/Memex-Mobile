@@ -7832,10 +7832,10 @@ react-native-unimodules@^0.7.0:
     prop-types "^15.5.10"
     uuid "^3.3.2"
 
-react-native-webview@^10.1.0:
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-10.1.0.tgz#57ddb199e6f574b5a31196a6343b89f3998b815c"
-  integrity sha512-caoM/sd2bZkcMtU4s6UNAnS1BXHYh0EnGci5iju/uDTWCydfSpK6Lt2GwD9DL4dy9znJXPjSDKcMsnxCB+Lz7g==
+react-native-webview@^10.2.3:
+  version "10.2.3"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-10.2.3.tgz#78aef542deaa8f97f581743c205e6a6ada73559c"
+  integrity sha512-nGAw3S/Pjy3m3Jlymr1Zrk+Cy+Vdq+jRe3wqJ68NJDUlKhQHDXK2NsQnre4HwcRtRYoJqcfqR93VXZOoU1Uoeg==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
