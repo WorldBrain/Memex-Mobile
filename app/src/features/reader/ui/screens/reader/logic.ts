@@ -15,9 +15,9 @@ import { loadInitial } from 'src/ui/utils'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { ReadabilityArticle } from 'src/services/readability/types'
 import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
-import { inPageJS } from 'src/features/reader/utils/in-page-js'
 import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 import { ReaderNavigationParams } from './types'
+import { CONTENT_SCRIPT_PATH } from './constants'
 
 export interface State {
     url: string
@@ -42,12 +42,17 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 
 export interface Props extends NavigationProps {
     storage: UIStorageModules<'reader' | 'overview'>
-    services: UIServices<'readability'>
+    services: UIServices<'readability' | 'resourceLoader'>
+    contentScriptPath?: string
 }
 
 export default class Logic extends UILogic<State, Event> {
     constructor(private props: Props) {
         super()
+    }
+
+    private get contentScriptPath(): string {
+        return this.props.contentScriptPath ?? CONTENT_SCRIPT_PATH
     }
 
     getInitialState(): State {
@@ -113,10 +118,17 @@ export default class Logic extends UILogic<State, Event> {
             } as any
         }
 
+        // TODO: Figure out why this needs to be here
+        //  - I can't use `this.contentScriptPath` as it crashes
+        //  - also can't remove this even though inside `services.resourceLoader` it will call `require` again
+        require('dist/content_script_reader.js.txt')
+
         const html = createHtmlStringFromTemplate({
             body: article.content,
             title: article.title,
-            js: inPageJS,
+            js: await this.props.services.resourceLoader.loadResource(
+                this.contentScriptPath,
+            ),
             css: inPageCSS,
         })
 

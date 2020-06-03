@@ -338,7 +338,7 @@ PODS:
     - React
   - react-native-webrtc (1.75.3):
     - React
-  - react-native-webview (10.1.0):
+  - react-native-webview (10.2.3):
     - React
   - React-RCTActionSheet (0.61.0):
     - React-Core/RCTActionSheetHeaders (= 0.61.0)
@@ -721,7 +721,7 @@ SPEC CHECKSUMS:
   react-native-camera: 1df7f9a047591bbc2c9a7ec80bd6412d3c19579f
   react-native-sqlite-storage: f06bfba10f67f989c00b6a699b9c2b80a816edbe
   react-native-webrtc: e00b0dd940ab8fc8b201b6a129b9a64acdf5974a
-  react-native-webview: 6b7121c341da6fca09dcf54b517d472a93e74bb4
+  react-native-webview: 0bacc79175bc44869e4c1a015b9bc21df8cf4feb
   React-RCTActionSheet: 5f9a1733ec8e380aae8a97877f1166cb058733ae
   React-RCTAnimation: 3e0a55305b70b1eb5a5e34230ed8198d4a782da9
   React-RCTBlob: a6ff2220ed7ef4b06e559ec61a0b0f4e80a3716a
@@ -761,6 +761,6 @@ SPEC CHECKSUMS:
   UMTaskManagerInterface: a98e37a576a5220bf43b8faf33cfdc129d2f441d
   Yoga: 3f70bbd9aa01e04eefec36e2a085b2fc0ff1dd98
 
-PODFILE CHECKSUM: 1fcb9204b16896ae78e798eddbff60e4926f53c7
+PODFILE CHECKSUM: daa44c03384243dd36aac3ff8f1553ac7a8df354
 
 COCOAPODS: 1.9.1
