@@ -1,0 +1,10 @@
+{
+    "extends": "../../tsconfig",
+    "compilerOptions": {
+        "lib": ["ES2020", "DOM"],
+        "types": [],
+        "paths": {}
+    },
+    "files": ["index.ts"],
+    "exclude": ["node_modules"]
+}

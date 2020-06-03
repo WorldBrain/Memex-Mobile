@@ -3,7 +3,6 @@ import { descriptorToRange, selectionToDescriptor } from './anchoring'
 async function createHighlight() {
     document.body.style.backgroundColor = 'blue'
     const selection = document.getSelection()
-    const quote = selection.toString()
 
     const descriptor = await selectionToDescriptor({ selection })
     console.log('desc:', descriptor)
@@ -15,9 +14,13 @@ function createAnnotation() {
 
 document.onselectionchange = async function() {
     const selection = document.getSelection()
-    window.ReactNativeWebView.postMessage(selection)
-    const descriptor = await selectionToDescriptor({ selection })
+    postMessageToRN(selection?.toString())
+}
 
-    window.ReactNativeWebView.postMessage(descriptor?.content)
-    window.ReactNativeWebView.postMessage(descriptor?.strategy)
+function postMessageToRN(message?: string): void {
+    if (!message) {
+        return
+    }
+
+    return (window as any).ReactNativeWebView.postMessage(message)
 }

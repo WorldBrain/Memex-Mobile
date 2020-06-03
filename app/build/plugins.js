@@ -18,11 +18,12 @@ import CssExtractPlugin from 'mini-css-extract-plugin'
 /**
  * @param {boolean} tslint Denotes whether or not to enable linting on this thread as well as type checking.
  */
-const initTsPlugin = tslint =>
+const initTsPlugin = eslint =>
     new ForkTsPlugin({
         checkSyntacticErrors: true,
         async: false,
-        tslint,
+        tsconfig: 'src/content-script/tsconfig.json',
+        eslint,
     })
 
 export default function({
