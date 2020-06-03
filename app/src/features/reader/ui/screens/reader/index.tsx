@@ -8,7 +8,7 @@ import ActionBar from '../../components/action-bar'
 import ReaderWebView from '../../components/web-view'
 import styles from './styles'
 import LoadingBalls from 'src/ui/components/loading-balls'
-import { REMOTE_FUNCTIONS } from 'src/features/reader/utils/in-page-js'
+import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
 
 export default class Reader extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -18,8 +18,10 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     private webView!: WebView
     private _mockClick = () => undefined
 
-    private runInWebView = (code: string) =>
-        this.webView.injectJavaScript(`${code}; true;`)
+    private runFnInWebView = (fnName: RemoteFnName) =>
+        this.webView.injectJavaScript(
+            `window['remoteFnEvents'].emit('${fnName}'); true;`,
+        )
 
     private handleBackClick = () =>
         this.props.navigation.navigate({ routeName: 'Overview' })
@@ -55,10 +57,10 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                     {...this.state}
                     onBackBtnPress={this.handleBackClick}
                     onHighlightBtnPress={() =>
-                        this.runInWebView(REMOTE_FUNCTIONS.createHighlight)
+                        this.runFnInWebView('createHighlight')
                     }
                     onAnnotateBtnPress={() =>
-                        this.runInWebView(REMOTE_FUNCTIONS.createAnnotation)
+                        this.runFnInWebView('createAnnotation')
                     }
                     onBookmarkBtnPress={() =>
                         this.processEvent('toggleBookmark', null)

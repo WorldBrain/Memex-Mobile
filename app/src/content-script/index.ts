@@ -1,22 +1,7 @@
-import { descriptorToRange, selectionToDescriptor } from './anchoring'
+import { WebViewContentScript } from './content-script'
+import { postMessageToRN } from './utils'
 
-async function createHighlight() {
-    document.body.style.backgroundColor = 'blue'
-    const selection = document.getSelection()
+const contentScript = new WebViewContentScript({ postMessageToRN })
 
-    const descriptor = await selectionToDescriptor({ selection })
-    console.log('desc:', descriptor)
-}
-
-function createAnnotation() {
-    document.body.style.backgroundColor = 'red'
-}
-
-document.onselectionchange = async function() {
-    const selection = document.getSelection()
-    postMessageToRN(selection?.toString())
-}
-
-function postMessageToRN(message?: string): void {
-    return (window as any).ReactNativeWebView.postMessage(message)
-}
+document.onselectionchange = contentScript.handleSelectionChange
+;(window as any)['remoteFnEvents'] = contentScript.remoteFnEvents
