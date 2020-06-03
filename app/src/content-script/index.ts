@@ -18,9 +18,5 @@ document.onselectionchange = async function() {
 }
 
 function postMessageToRN(message?: string): void {
-    if (!message) {
-        return
-    }
-
     return (window as any).ReactNativeWebView.postMessage(message)
 }

@@ -13,7 +13,7 @@ export const entry = {
 
 export const output = {
     path: path.resolve(__dirname, '../dist'),
-    filename: '[name].js',
+    filename: '[name].js.txt',
 }
 
 export default ({ context = __dirname, mode = 'development', ...opts }) => {
