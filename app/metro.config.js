@@ -10,7 +10,7 @@ module.exports = (async () => {
         watchFolders: [path.join(__dirname, 'external')],
         resolver: {
             assetExts: [...assetExts.filter(ext => ext !== 'svg'), 'txt'],
-            sourceExts: [...sourceExts, 'svg'],
+            sourceExts: [...sourceExts, 'svg', 'txt'],
             extraNodeModules: {
                 dist: path.resolve(__dirname + '/dist'),
             },

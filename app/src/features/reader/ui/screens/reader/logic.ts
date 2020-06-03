@@ -19,6 +19,9 @@ import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 import { ReaderNavigationParams } from './types'
 import { CONTENT_SCRIPT_PATH } from './constants'
 
+// Special import: `babel-plugin-inline-import` will replace this with the text
+import contentScript from 'dist/content_script_reader.js.txt'
+
 export interface State {
     url: string
     title: string
@@ -42,7 +45,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 
 export interface Props extends NavigationProps {
     storage: UIStorageModules<'reader' | 'overview'>
-    services: UIServices<'readability' | 'resourceLoader'>
+    services: UIServices<'readability'>
     contentScriptPath?: string
 }
 
@@ -117,18 +120,10 @@ export default class Logic extends UILogic<State, Event> {
                 content: existingReadable.content,
             } as any
         }
-
-        // TODO: Figure out why this needs to be here
-        //  - I can't use `this.contentScriptPath` as it crashes
-        //  - also can't remove this even though inside `services.resourceLoader` it will call `require` again
-        require('dist/content_script_reader.js.txt')
-
         const html = createHtmlStringFromTemplate({
             body: article.content,
             title: article.title,
-            js: await this.props.services.resourceLoader.loadResource(
-                this.contentScriptPath,
-            ),
+            js: contentScript,
             css: inPageCSS,
         })
 

@@ -29,7 +29,10 @@ function isTypescriptPackage(packageName) {
 }
 
 function getAliases() {
-    const aliases = {}
+    const aliases = {
+        dist: './dist',
+    }
+
     for (const packageName of getExternalPackageNames()) {
         if (isTypescriptPackage(packageName)) {
             Object.assign(aliases, {
@@ -49,7 +52,13 @@ module.exports = {
     presets: ['module:metro-react-native-babel-preset'],
     plugins: [
         [
-            require.resolve('babel-plugin-module-resolver'),
+            'inline-import',
+            {
+                extensions: ['.md', '.text', '.txt'],
+            },
+        ],
+        [
+            'module-resolver',
             {
                 // root: ["./src/"],
                 alias: getAliases(),

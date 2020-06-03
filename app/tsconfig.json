@@ -83,7 +83,8 @@
             "simple-signalling": ["external/simple-signalling/ts"],
             "simple-signalling/lib/*": ["external/simple-signalling/ts/*"],
             "simple-peer": ["external/simple-peer/ts"],
-            "simple-peer/lib/*": ["external/simple-peer/ts/*"]
+            "simple-peer/lib/*": ["external/simple-peer/ts/*"],
+            "dist/*": ["dist/*"]
         }
     },
     "exclude": [
