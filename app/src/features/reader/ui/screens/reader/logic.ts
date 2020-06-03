@@ -16,11 +16,9 @@ import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { ReadabilityArticle } from 'src/services/readability/types'
 import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 import { inPageCSS } from 'src/features/reader/utils/in-page-css'
+import { loadContentScript } from 'src/features/reader/utils/load-content-script'
 import { ReaderNavigationParams } from './types'
 import { CONTENT_SCRIPT_PATH } from './constants'
-
-// Special import: `babel-plugin-inline-import` will replace this with the text
-import contentScript from 'dist/content_script_reader.js.txt'
 
 export interface State {
     url: string
@@ -45,7 +43,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 
 export interface Props extends NavigationProps {
     storage: UIStorageModules<'reader' | 'overview'>
-    services: UIServices<'readability'>
+    services: UIServices<'readability' | 'resourceLoader'>
     contentScriptPath?: string
 }
 
@@ -106,7 +104,7 @@ export default class Logic extends UILogic<State, Event> {
 
     private async loadReadablePage(url: string, title: string) {
         const { reader: readerStorage } = this.props.storage.modules
-        const { readability } = this.props.services
+        const { readability, resourceLoader } = this.props.services
 
         const existingReadable = await readerStorage.getReadablePage(url)
         let article: ReadabilityArticle
@@ -120,11 +118,12 @@ export default class Logic extends UILogic<State, Event> {
                 content: existingReadable.content,
             } as any
         }
+
         const html = createHtmlStringFromTemplate({
             body: article.content,
             title: article.title,
-            js: contentScript,
             css: inPageCSS,
+            js: await loadContentScript(resourceLoader, this.contentScriptPath),
         })
 
         this.emitMutation({ htmlSource: { $set: html } })
