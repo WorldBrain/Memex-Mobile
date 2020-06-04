@@ -55,15 +55,16 @@ export class WebViewContentScript {
     private async extractAnchorSelection(
         selection: Selection,
     ): Promise<Anchor> {
+        // NOTE: There seems to be a bug with the `Selection.toString()` in RN WebView where
+        //   it often returns the empty string. Instead we'll try to derive it from the selectors
+        // const quote = selection.toString()
         const descriptor = await selectionToDescriptor({ selection })
 
         if (!descriptor) {
-            throw new Error(
-                `Unable to derive descriptor from text selection: ${selection.toString()}`,
-            )
+            throw new Error(`Unable to derive descriptor from text selection`)
         }
 
-        return { quote: selection.toString(), descriptor }
+        return { quote: grabQuoteFromSelectors(descriptor.content), descriptor }
     }
 
     private getDOMSelection(): Selection {
@@ -83,4 +84,16 @@ export class WebViewContentScript {
         const range = await descriptorToRange({ descriptor })
         markRange({ range, cssClass: HIGHLIGHT_CLASS })
     }
+}
+
+function grabQuoteFromSelectors(selectors: any[]): string {
+    const textQuoteSelector = selectors.find(
+        selector => selector.type === 'TextQuoteSelector',
+    )
+
+    if (!textQuoteSelector) {
+        throw new Error('No text quote selector to grab quote from')
+    }
+
+    return textQuoteSelector.exact
 }
