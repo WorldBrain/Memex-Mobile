@@ -1,5 +1,5 @@
 import { WebViewContentScript } from './content-script'
-import { postMessageToRN } from './utils'
+import { postMessageToRN } from './rn-utils'
 
 const contentScript = new WebViewContentScript({ postMessageToRN })
 

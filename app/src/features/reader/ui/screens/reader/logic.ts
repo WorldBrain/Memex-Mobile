@@ -19,6 +19,7 @@ import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 import { loadContentScript } from 'src/features/reader/utils/load-content-script'
 import { ReaderNavigationParams } from './types'
 import { CONTENT_SCRIPT_PATH } from './constants'
+import { Anchor } from 'src/content-script/types'
 
 export interface State {
     url: string
@@ -31,7 +32,9 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    setTextSelection: { text: string }
+    createHighlight: { anchor: Anchor }
+    createAnnotation: { anchor: Anchor }
+    setTextSelection: { text?: string }
     toggleBookmark: null
 }>
 
@@ -139,11 +142,6 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    setTextSelection: EventHandler<'setTextSelection'> = ({ event }) => {
-        const selectedText = event.text?.length ? event.text.trim() : undefined
-        return this.emitMutation({ selectedText: { $set: selectedText } })
-    }
-
     toggleBookmark: EventHandler<'toggleBookmark'> = async ({
         previousState,
     }) => {
@@ -163,5 +161,21 @@ export default class Logic extends UILogic<State, Event> {
             toggleState()
             throw err
         }
+    }
+
+    //
+    // Webview content-script event handlers
+    //
+    setTextSelection: EventHandler<'setTextSelection'> = ({ event }) => {
+        const selectedText = event.text?.length ? event.text.trim() : undefined
+        return this.emitMutation({ selectedText: { $set: selectedText } })
+    }
+
+    createHighlight: EventHandler<'createHighlight'> = async ({ event }) => {
+        console.log('received highlight req!:', event.anchor)
+    }
+
+    createAnnotation: EventHandler<'createAnnotation'> = async ({ event }) => {
+        console.log('received annot req!:', event.anchor)
     }
 }

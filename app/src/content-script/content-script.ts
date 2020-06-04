@@ -2,7 +2,7 @@ import { EventEmitter } from 'events'
 
 import { selectionToDescriptor } from './anchoring'
 import { setupRemoteFunctions } from './remote-functions'
-import { MessagePoster } from './utils'
+import { Anchor, MessagePoster } from './types'
 
 export interface Props {
     document?: Document
@@ -26,21 +26,52 @@ export class WebViewContentScript {
     handleSelectionChange = () => {
         const selection = this.document.getSelection()
 
-        this.props.postMessageToRN(selection?.toString())
+        this.props.postMessageToRN({
+            type: 'selection',
+            payload: selection?.toString(),
+        })
     }
 
-    private createAnnotation = async () => {
-        this.document.body.style.backgroundColor = 'red'
+    private setupAnnotationSteps = (
+        type: 'highlight' | 'annotation',
+    ) => async () => {
+        const selection = this.getDOMSelection()
+        const anchor = await this.extractAnchorSelection(selection)
+
+        this.props.postMessageToRN({ type, payload: anchor })
+
+        this.renderHighlight(anchor)
     }
 
-    private createHighlight = async () => {
-        this.document.body.style.backgroundColor = 'blue'
+    createAnnotation = this.setupAnnotationSteps('annotation')
+    createHighlight = this.setupAnnotationSteps('highlight')
+
+    private async extractAnchorSelection(
+        selection: Selection,
+    ): Promise<Anchor> {
+        const quote = selection.toString()
+        const descriptor = await selectionToDescriptor({ selection })
+
+        if (!descriptor) {
+            throw new Error(
+                `Unable to derive descriptor from text selection: ${quote}`,
+            )
+        }
+
+        return { quote, descriptor }
+    }
+
+    private getDOMSelection(): Selection {
         const selection = document.getSelection()
 
-        const descriptor = await selectionToDescriptor({ selection })
-        const p = this.document.createElement('p')
-        p.innerHTML = descriptor?.content
+        if (!selection || selection.type === 'None') {
+            throw new Error('Unable to get selection from DOM')
+        }
 
-        this.document.body.appendChild(p)
+        return selection
+    }
+
+    private renderHighlight(anchor: Anchor) {
+        // TODO: implement
     }
 }

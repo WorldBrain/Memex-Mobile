@@ -9,6 +9,7 @@ import ReaderWebView from '../../components/web-view'
 import styles from './styles'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
+import { Message as WebViewMessage } from 'src/content-script/types'
 
 export default class Reader extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -26,6 +27,37 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     private handleBackClick = () =>
         this.props.navigation.navigate({ routeName: 'Overview' })
 
+    private handleWebViewMessageReceived = (serialized: string) => {
+        let message: WebViewMessage
+        try {
+            message = JSON.parse(serialized)
+        } catch (err) {
+            throw new Error(
+                `Received malformed message from WebView: ${serialized}`,
+            )
+        }
+
+        switch (message.type) {
+            case 'selection':
+                return this.processEvent('setTextSelection', {
+                    text: message.payload,
+                })
+            case 'highlight':
+                return this.processEvent('createHighlight', {
+                    anchor: message.payload,
+                })
+            case 'annotation':
+                return this.processEvent('createAnnotation', {
+                    anchor: message.payload,
+                })
+            default:
+                console.warn(
+                    'Unsupported message received from WebView:',
+                    message,
+                )
+        }
+    }
+
     private renderWebView() {
         if (this.state.loadState === 'running') {
             return (
@@ -41,9 +73,7 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 url={this.state.url}
                 className={styles.webView}
                 htmlSource={this.state.htmlSource!}
-                onMessage={text =>
-                    this.processEvent('setTextSelection', { text })
-                }
+                onMessage={this.handleWebViewMessageReceived}
             />
         )
     }
