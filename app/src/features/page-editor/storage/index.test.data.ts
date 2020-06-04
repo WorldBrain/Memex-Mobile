@@ -6,6 +6,7 @@ export const notes: Note[] = [
         pageUrl: 'test.com',
         pageTitle: 'This is a test page',
         body: 'this is some highlighted text from the page',
+        selector: {},
     },
     {
         url: 'test.com/#112',
@@ -13,6 +14,7 @@ export const notes: Note[] = [
         pageTitle: 'This is a test page',
         body:
             'this is some other highlighted text from the page with different terms',
+        selector: {},
         comment: 'this is a comment written by a user',
     },
     {

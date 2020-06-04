@@ -19,8 +19,9 @@ export class WebViewContentScript {
 
     constructor(private props: Props) {
         this.remoteFnEvents = setupRemoteFunctions({
-            createAnnotation: this.createAnnotation,
             createHighlight: this.createHighlight,
+            createAnnotation: this.createAnnotation,
+            renderHighlights: this.renderHighlights,
         })
     }
 
@@ -74,6 +75,9 @@ export class WebViewContentScript {
 
         return selection
     }
+
+    renderHighlights = async (anchors: Anchor[]) =>
+        anchors.forEach(anchor => this.renderHighlight(anchor))
 
     private async renderHighlight({ descriptor }: Anchor) {
         const range = await descriptorToRange({ descriptor })

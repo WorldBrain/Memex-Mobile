@@ -1,1 +1,4 @@
-export type RemoteFnName = 'createHighlight' | 'createAnnotation'
+export type RemoteFnName =
+    | 'createHighlight'
+    | 'createAnnotation'
+    | 'renderHighlights'

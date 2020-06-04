@@ -2,7 +2,7 @@ import { EventEmitter } from 'events'
 
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
 
-export type RemoteFn = () => Promise<void>
+export type RemoteFn = (arg?: any) => Promise<void>
 
 export type RemoteFnMap = {
     [fnName in RemoteFnName]: RemoteFn

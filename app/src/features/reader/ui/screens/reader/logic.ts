@@ -29,6 +29,7 @@ export interface State {
     isTagged: boolean
     isBookmarked: boolean
     htmlSource?: string
+    annotationAnchors: Anchor[]
 }
 
 export type Event = UIEvent<{
@@ -45,7 +46,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export interface Props extends NavigationProps {
-    storage: UIStorageModules<'reader' | 'overview'>
+    storage: UIStorageModules<'reader' | 'overview' | 'pageEditor'>
     services: UIServices<'readability' | 'resourceLoader'>
     contentScriptPath?: string
 }
@@ -74,12 +75,14 @@ export default class Logic extends UILogic<State, Event> {
             loadState: 'pristine',
             isBookmarked: false,
             isTagged: false,
+            annotationAnchors: [],
         }
     }
 
     async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
             await this.loadPageState(previousState.url)
+            await this.loadPageAnnotations(previousState.url)
             await this.loadReadablePage(previousState.url, previousState.title)
         })
     }
@@ -102,6 +105,16 @@ export default class Logic extends UILogic<State, Event> {
             strategy: 'seanmcgary/readability',
             createdWhen,
             ...article,
+        })
+    }
+
+    private async loadPageAnnotations(url: string) {
+        const { pageEditor } = this.props.storage.modules
+
+        const annotations = await pageEditor.findAnnotations({ url })
+
+        this.emitMutation({
+            annotationAnchors: { $set: annotations.map(a => a.selector) },
         })
     }
 
@@ -171,8 +184,18 @@ export default class Logic extends UILogic<State, Event> {
         return this.emitMutation({ selectedText: { $set: selectedText } })
     }
 
-    createHighlight: EventHandler<'createHighlight'> = async ({ event }) => {
-        console.log('received highlight req!:', event.anchor)
+    createHighlight: EventHandler<'createHighlight'> = async ({
+        event,
+        previousState,
+    }) => {
+        const { pageEditor } = this.props.storage.modules
+
+        await pageEditor.createAnnotation({
+            pageUrl: previousState.url,
+            pageTitle: previousState.title,
+            selector: event.anchor,
+            body: event.anchor.quote,
+        })
     }
 
     createAnnotation: EventHandler<'createAnnotation'> = async ({ event }) => {

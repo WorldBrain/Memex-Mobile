@@ -19,10 +19,17 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     private webView!: WebView
     private _mockClick = () => undefined
 
-    private runFnInWebView = (fnName: RemoteFnName) =>
-        this.webView.injectJavaScript(
-            `window['remoteFnEvents'].emit('${fnName}'); true;`,
-        )
+    private constructJs = (
+        fnName: RemoteFnName,
+        serializedArg?: string,
+    ): string => {
+        return !serializedArg
+            ? `window['remoteFnEvents'].emit('${fnName}'); true;`
+            : `window['remoteFnEvents'].emit('${fnName}', ${serializedArg}); true;`
+    }
+
+    private runFnInWebView = (fnName: RemoteFnName, serializedArg?: string) =>
+        this.webView.injectJavaScript(this.constructJs(fnName, serializedArg))
 
     private handleBackClick = () =>
         this.props.navigation.navigate({ routeName: 'Overview' })
@@ -74,6 +81,10 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 className={styles.webView}
                 htmlSource={this.state.htmlSource!}
                 onMessage={this.handleWebViewMessageReceived}
+                injectedJavaScript={this.constructJs(
+                    'renderHighlights',
+                    JSON.stringify(this.state.annotationAnchors),
+                )}
             />
         )
     }

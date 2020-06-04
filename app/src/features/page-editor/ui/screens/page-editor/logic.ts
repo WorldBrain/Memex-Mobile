@@ -97,11 +97,8 @@ export default class Logic extends UILogic<State, Event> {
                 isNotePressed: false,
                 tags: noteTags.get(note.url)!,
                 isEdited:
-                    note.lastEdited &&
-                    note.lastEdited.getTime() !== note.createdWhen!.getTime(),
-                date: note.lastEdited
-                    ? timeFromNow(note.lastEdited)
-                    : timeFromNow(note.createdWhen!),
+                    note.lastEdited?.getTime() !== note.createdWhen!.getTime(),
+                date: timeFromNow(note.lastEdited ?? note.createdWhen!),
             })),
         } as Page
     }
