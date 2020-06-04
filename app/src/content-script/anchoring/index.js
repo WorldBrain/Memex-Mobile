@@ -1,7 +1,7 @@
 import * as domTextQuote from 'dom-anchor-text-quote'
 import * as domTextPosition from 'dom-anchor-text-position'
 import * as hypAnchoring from './anchoring/html'
-// import { highlightDOMRange } from '../highlight-dom-range'
+import { highlightDOMRange } from '../highlight-dom-range'
 
 export async function selectionToDescriptor({ selection }) {
     if (selection === null || selection.isCollapsed) {
@@ -52,9 +52,9 @@ export async function descriptorToRange({ descriptor }) {
     return null
 }
 
-// export function markRange({ range, cssClass }) {
-//     return highlightDOMRange(range, cssClass)
-// }
+export function markRange({ range, cssClass }) {
+    return highlightDOMRange(range, cssClass)
+}
 
 function hasAncestor(node, test) {
     while (node !== document.body) {

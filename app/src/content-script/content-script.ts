@@ -1,8 +1,13 @@
 import { EventEmitter } from 'events'
 
-import { selectionToDescriptor } from './anchoring'
+import {
+    selectionToDescriptor,
+    descriptorToRange,
+    markRange,
+} from './anchoring'
 import { setupRemoteFunctions } from './remote-functions'
 import { Anchor, MessagePoster } from './types'
+import { HIGHLIGHT_CLASS } from './constants'
 
 export interface Props {
     document?: Document
@@ -49,16 +54,15 @@ export class WebViewContentScript {
     private async extractAnchorSelection(
         selection: Selection,
     ): Promise<Anchor> {
-        const quote = selection.toString()
         const descriptor = await selectionToDescriptor({ selection })
 
         if (!descriptor) {
             throw new Error(
-                `Unable to derive descriptor from text selection: ${quote}`,
+                `Unable to derive descriptor from text selection: ${selection.toString()}`,
             )
         }
 
-        return { quote, descriptor }
+        return { quote: selection.toString(), descriptor }
     }
 
     private getDOMSelection(): Selection {
@@ -71,7 +75,8 @@ export class WebViewContentScript {
         return selection
     }
 
-    private renderHighlight(anchor: Anchor) {
-        // TODO: implement
+    private async renderHighlight({ descriptor }: Anchor) {
+        const range = await descriptorToRange({ descriptor })
+        markRange({ range, cssClass: HIGHLIGHT_CLASS })
     }
 }

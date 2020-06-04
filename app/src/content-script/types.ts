@@ -8,7 +8,11 @@ export interface Anchor {
     descriptor: Descriptor
 }
 
-export type Message = SelectionMessage | HighlightMessage | AnnotationMessage
+export type Message =
+    | SelectionMessage
+    | HighlightMessage
+    | AnnotationMessage
+    | DebugMessage
 
 // TODO: Better way to do this with TS type system?
 export interface SelectionMessage {
@@ -22,6 +26,10 @@ export interface HighlightMessage {
 export interface AnnotationMessage {
     type: 'annotation'
     payload: Anchor
+}
+export interface DebugMessage {
+    type: 'debug'
+    payload?: any
 }
 
 export type MessagePoster = (message: Message) => void
