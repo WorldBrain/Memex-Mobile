@@ -43,7 +43,7 @@ class ActionBar extends React.PureComponent<Props> {
                         onPress={this.props.onHighlightBtnPress}
                         className={styles.actionBtn}
                     />
-                    <actionBtns.CommentBtn
+                    <actionBtns.AnnotateBtn
                         onPress={this.props.onAnnotateBtnPress}
                         className={styles.actionBtn}
                     />
@@ -57,7 +57,7 @@ class ActionBar extends React.PureComponent<Props> {
                     onPress={this.props.onBookmarkBtnPress}
                     className={styles.actionBtn}
                 />
-                <actionBtns.CommentBtn
+                <actionBtns.AnnotateBtn
                     onPress={this.props.onCommentBtnPress}
                     className={styles.actionBtn}
                 />
@@ -65,7 +65,7 @@ class ActionBar extends React.PureComponent<Props> {
                     onPress={this.props.onTagBtnPress}
                     className={styles.actionBtn}
                 />
-                <actionBtns.FullStarBtn
+                <actionBtns.AddListBtn
                     onPress={this.props.onListBtnPress}
                     className={styles.actionBtn}
                 />

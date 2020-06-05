@@ -21,5 +21,6 @@ export default EStyleSheet.create({
     },
     leftText: {
         color: 'white',
+        fontWeight: '800',
     },
 })

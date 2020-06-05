@@ -12,7 +12,8 @@ import {
     CommentBtn,
     FullCommentBtn,
     StarBtn,
-    ListActionBarBtn,
+    FullListActionBarWhiteBtn,
+    AddListActionBarWhiteBtn,
     FullStarBtn,
     ReaderActionBarBtn,
 } from './action-btns'
@@ -79,7 +80,11 @@ const ResultPage: React.StatelessComponent<Props &
                 {props.onReaderPress && (
                     <ReaderActionBarBtn onPress={props.onReaderPress} />
                 )}
-                <ListActionBarBtn onPress={props.onListsPress} />
+                {props.lists.length > 0 ? (
+                    <FullListActionBarWhiteBtn onPress={props.onListsPress} />
+                ) : (
+                    <AddListActionBarWhiteBtn onPress={props.onListsPress} />
+                )}
                 <DeleteActionBarBtn onPress={props.onDeletePress} />
             </ActionBar>
         )}
