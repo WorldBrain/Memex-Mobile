@@ -1,26 +1,14 @@
 # Setting up
 
 0. `git clone git@github.com:WorldBrain/Memex-Mobile --recursive`
-1. Set up and connect a device via XCode or adb
 1. Go to the `app/` directory
 1. Run `yarn`
 
-_additional required steps if intending to run on iOS:_
-
-1. Go to the `app/ios` directory
-1. Install Cocoapods if not already installed: https://cocoapods.org/
-1. Run `pod install`
-
-## Running on Android
+## Android specific
 
 0. Add Firebase credentials in `app/android/app/google-services.json`
-1. In one terminal, run `yarn start`
-1. In another terminal, run `yarn react-native run-android`
 
-**Note:**
-_If your Android SDK or AVDs are not configured properly, you may have to manually start an emulator instance for the above commands to work._
-
-## Running on iOS (requires macOS)
+## iOS specific
 
 0. Add Firebase credentials:
 
@@ -28,7 +16,26 @@ _If your Android SDK or AVDs are not configured properly, you may have to manual
 
    0.2. for share extension: `app/ios/MemexShare/GoogleService-Info.plist`
 
-1. In one terminal, run `yarn start`
+1. Go to the `app/ios` directory
+1. Install Cocoapods if not already installed: https://cocoapods.org/
+1. Run `pod install`
+
+# Running in dev
+
+0. Build the Reader feature's content script: `yarn content-script` _(`yarn content-script:watch` if working on it)_
+
+## Android
+
+1. Ensure an emulator/device is connected via ADB.
+1. In one terminal, run `yarn start` to start React Native's Metro bundler
+1. In another terminal, run `yarn react-native run-android`
+
+**Note:**
+_If your Android SDK or AVDs are not configured properly, you may have to manually start an emulator instance for the above commands to work._
+
+## iOS (requires macOS)
+
+1. In one terminal, run `yarn start` to start React Native's Metro bundler
 1. In another terminal, run `open app/ios/app.xcworkspace` to open the XCode workspace **(important that you don't open `app/ios/app.xcodeproj`)**
 1. In the menu bar, go to `Product > Destination`
 
@@ -45,6 +52,16 @@ _Assumes the above steps have been followed and app is currently running in iOS 
 3. Change anything in the source code and save and the app should quickly reload with those new changes.
 
 # Troubleshooting
+
+## Missing content script runtime error
+
+```
+Error: Unable to resolve module `../../../../dist/content_script_reader.js.txt` from `src/features/reader/utils/load-content-script.ts`
+```
+
+This just means the content script has not been built yet. This is a separate webpack build to the main React Native bundle created by Metro.
+Ensure `yarn content-script` is run at least once to build it, or use `yarn content-script:watch` to run it in watch mode if you intend to make
+changes in `src/content-script/`.
 
 ## Build issues citing missing deps or libraries
 
