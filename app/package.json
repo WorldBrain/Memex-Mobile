@@ -100,6 +100,7 @@
         "@babel/plugin-proposal-async-generator-functions": "^7.2.0",
         "@babel/runtime": "^7.6.2",
         "@react-native-community/cli": "^2.9.0",
+        "@types/events": "^3.0.0",
         "@types/jest": "^24.0.19",
         "@types/lodash": "^4.14.142",
         "@types/mocha": "^5.2.7",
