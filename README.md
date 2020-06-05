@@ -1,20 +1,20 @@
 # Setting up
 
-0. `git clone git@github.com:WorldBrain/Memex-Mobile --recursive`
+1. `git clone git@github.com:WorldBrain/Memex-Mobile --recursive`
 1. Go to the `app/` directory
 1. Run `yarn`
 
 ## Android specific
 
-0. Add Firebase credentials in `app/android/app/google-services.json`
+4. Add Firebase credentials in `app/android/app/google-services.json`
 
 ## iOS specific
 
-0. Add Firebase credentials:
+4. Add Firebase credentials:
 
-   0.1. for main app: `app/ios/app/GoogleService-Info.plist`
+   1.1. for main app: `app/ios/app/GoogleService-Info.plist`
 
-   0.2. for share extension: `app/ios/MemexShare/GoogleService-Info.plist`
+   1.2. for share extension: `app/ios/MemexShare/GoogleService-Info.plist`
 
 1. Go to the `app/ios` directory
 1. Install Cocoapods if not already installed: https://cocoapods.org/
@@ -22,20 +22,17 @@
 
 # Running in dev
 
-0. Build the Reader feature's content script: `yarn content-script` _(`yarn content-script:watch` if working on it)_
+1. Build the Reader feature's content script: `yarn content-script` _(`yarn content-script:watch` if working on it)_
 
 ## Android
 
-1. Ensure an emulator/device is connected via ADB.
+2. Ensure an emulator/device is connected via ADB.
 1. In one terminal, run `yarn start` to start React Native's Metro bundler
 1. In another terminal, run `yarn react-native run-android`
 
-**Note:**
-_If your Android SDK or AVDs are not configured properly, you may have to manually start an emulator instance for the above commands to work._
-
 ## iOS (requires macOS)
 
-1. In one terminal, run `yarn start` to start React Native's Metro bundler
+2. In one terminal, run `yarn start` to start React Native's Metro bundler
 1. In another terminal, run `open app/ios/app.xcworkspace` to open the XCode workspace **(important that you don't open `app/ios/app.xcodeproj`)**
 1. In the menu bar, go to `Product > Destination`
 
