@@ -8,6 +8,8 @@ import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
+import { NoteEditorNavigationParams } from 'src/features/overview/ui/screens/note-editor/types'
 
 export default class PageEditorScreen extends NavigationScreen<
     Props,
@@ -33,9 +35,11 @@ export default class PageEditorScreen extends NavigationScreen<
 
         return () =>
             this.props.navigation.navigate('NoteEditor', {
-                selectedList: (this.logic as Logic).selectedList,
-                pageUrl: this.state.page.fullUrl,
-                mode: 'create',
+                [NAV_PARAMS.NOTE_EDITOR]: {
+                    selectedList: (this.logic as Logic).selectedList,
+                    pageUrl: this.state.page.fullUrl,
+                    mode: 'create',
+                } as NoteEditorNavigationParams,
             })
     }
 
@@ -51,12 +55,14 @@ export default class PageEditorScreen extends NavigationScreen<
                     this.processEvent('confirmNoteDelete', { url: n.url })}
                 initNoteEdit={note => () =>
                     this.props.navigation.navigate('NoteEditor', {
-                        selectedList: (this.logic as Logic).selectedList,
-                        pageUrl: this.state.page.fullUrl,
-                        highlightText: note.noteText,
-                        noteText: note.commentText,
-                        noteUrl: note.url,
-                        mode: 'update',
+                        [NAV_PARAMS.NOTE_EDITOR]: {
+                            selectedList: (this.logic as Logic).selectedList,
+                            pageUrl: this.state.page.fullUrl,
+                            highlightText: note.noteText,
+                            noteText: note.commentText,
+                            noteUrl: note.url,
+                            mode: 'update',
+                        } as NoteEditorNavigationParams,
                     })}
                 initNotePress={n => () =>
                     this.processEvent('toggleNotePress', { url: n.url })}

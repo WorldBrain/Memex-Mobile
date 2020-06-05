@@ -3,6 +3,8 @@ import { Alert } from 'react-native'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
+import { NoteEditorNavigationParams, NoteEditMode } from './types'
 
 export interface State {
     noteText: string
@@ -29,30 +31,32 @@ export default class Logic extends UILogic<State, Event> {
 
     pageUrl: string
     noteUrl?: string
-    mode: 'create' | 'update'
+    mode: NoteEditMode
     initNoteText: string
     selectedList: string
 
     constructor(private props: Props) {
         super()
 
-        this.mode = props.navigation.getParam('mode', 'update')
-        this.pageUrl = props.navigation.getParam('pageUrl')
-        this.noteUrl = props.navigation.getParam('noteUrl')
-        this.initNoteText = props.navigation.getParam('noteText', '')
-        this.selectedList = props.navigation.getParam('selectedList')
+        const params = props.navigation.getParam(
+            NAV_PARAMS.NOTE_EDITOR,
+        ) as NoteEditorNavigationParams
+
+        this.mode = params.mode
+        this.pageUrl = params.pageUrl
+        this.noteUrl = params.noteUrl
+        this.initNoteText = params.noteText ?? ''
+        this.selectedList = params.selectedList
     }
 
     getInitialState(): State {
-        const noteText = this.props.navigation.getParam('noteText', '')
-        const highlightText = this.props.navigation.getParam(
-            'highlightText',
-            null,
-        )
+        const params = this.props.navigation.getParam(
+            NAV_PARAMS.NOTE_EDITOR,
+        ) as NoteEditorNavigationParams
 
         return {
-            noteText,
-            highlightText,
+            noteText: params.noteText ?? '',
+            highlightText: params.highlightText ?? null,
             showAllText: false,
             saveState: 'pristine',
         }
