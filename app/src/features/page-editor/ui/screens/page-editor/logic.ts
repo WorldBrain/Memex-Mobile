@@ -9,6 +9,7 @@ import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
+import { PreviousRoute } from './types'
 
 export interface State {
     loadState: UITaskState
@@ -30,12 +31,16 @@ export interface Props extends NavigationProps {
 
 export default class Logic extends UILogic<State, Event> {
     selectedList: string
+    previousRoute: PreviousRoute
 
     constructor(private props: Props) {
         super()
 
-        const params = props.navigation.getParam(NAV_PARAMS.PAGE_EDITOR)
+        const params = props.navigation.getParam(
+            NAV_PARAMS.PAGE_EDITOR,
+        ) as PageEditorNavigationParams
         this.selectedList = params.selectedList ?? MOBILE_LIST_NAME
+        this.previousRoute = params.previousRoute ?? 'Dashboard'
     }
 
     getInitialState(): State {
@@ -50,7 +55,7 @@ export default class Logic extends UILogic<State, Event> {
         await loadInitial<State>(this, async () => {
             const params = this.props.navigation.getParam(
                 NAV_PARAMS.PAGE_EDITOR,
-            )
+            ) as PageEditorNavigationParams
             const page = await this.loadPageData(params.pageUrl)
 
             this.emitMutation({

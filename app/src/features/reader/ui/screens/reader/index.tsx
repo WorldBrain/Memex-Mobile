@@ -4,12 +4,15 @@ import { WebView } from 'react-native-webview'
 
 import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import ActionBar from '../../components/action-bar'
 import ReaderWebView from '../../components/web-view'
 import styles from './styles'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
 import { Message as WebViewMessage } from 'src/content-script/types'
+import { EditorMode } from 'src/features/page-editor/types'
+import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 
 export default class Reader extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -33,6 +36,15 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
 
     private handleBackClick = () =>
         this.props.navigation.navigate({ routeName: 'Overview' })
+
+    private setupNaToPageEditor = (mode: EditorMode) => () =>
+        this.props.navigation.navigate('PageEditor', {
+            [NAV_PARAMS.PAGE_EDITOR]: {
+                previousRoute: 'Reader',
+                pageUrl: this.state.url,
+                mode,
+            } as PageEditorNavigationParams,
+        })
 
     private handleWebViewMessageReceived = (serialized: string) => {
         let message: WebViewMessage
@@ -106,9 +118,9 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                     onBookmarkBtnPress={() =>
                         this.processEvent('toggleBookmark', null)
                     }
-                    onCommentBtnPress={this._mockClick}
-                    onListBtnPress={this._mockClick}
-                    onTagBtnPress={this._mockClick}
+                    onListBtnPress={this.setupNaToPageEditor('collections')}
+                    onCommentBtnPress={this.setupNaToPageEditor('notes')}
+                    onTagBtnPress={this.setupNaToPageEditor('tags')}
                 />
             </View>
         )

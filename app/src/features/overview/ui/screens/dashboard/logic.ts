@@ -17,6 +17,8 @@ import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
+import { DashboardNavigationParams } from './types'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 
 export interface State {
     syncState: UITaskState
@@ -71,11 +73,12 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(initList?: string): State {
-        const { navigation } = this.props
-        const selectedListName =
-            initList ?? navigation.getParam('selectedList', MOBILE_LIST_NAME)
+        const params =
+            this.props.navigation.getParam(NAV_PARAMS.DASHBOARD) ??
+            ({} as DashboardNavigationParams)
 
-        const filterType = navigation.getParam('filterType', 'collection')
+        const selectedListName =
+            initList ?? params.selectedList ?? MOBILE_LIST_NAME
 
         return {
             syncState: 'pristine',
@@ -88,7 +91,7 @@ export default class Logic extends UILogic<State, Event> {
             actionFinishedAt: 0,
             pages: new Map(),
             selectedListName,
-            filterType,
+            filterType: params.filterType ?? 'collection',
         }
     }
 
