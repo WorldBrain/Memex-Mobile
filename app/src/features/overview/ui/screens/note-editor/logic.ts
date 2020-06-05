@@ -5,6 +5,7 @@ import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { NoteEditorNavigationParams, NoteEditMode } from './types'
+import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 
 export interface State {
     noteText: string
@@ -33,7 +34,7 @@ export default class Logic extends UILogic<State, Event> {
     noteUrl?: string
     mode: NoteEditMode
     initNoteText: string
-    selectedList: string
+    selectedList?: string
 
     constructor(private props: Props) {
         super()
@@ -64,9 +65,11 @@ export default class Logic extends UILogic<State, Event> {
 
     private navigateBack = () =>
         this.props.navigation.navigate('PageEditor', {
-            mode: 'notes',
-            pageUrl: this.pageUrl,
-            selectedList: this.selectedList,
+            [NAV_PARAMS.PAGE_EDITOR]: {
+                mode: 'notes',
+                pageUrl: this.pageUrl,
+                selectedList: this.selectedList,
+            } as PageEditorNavigationParams,
         })
 
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {

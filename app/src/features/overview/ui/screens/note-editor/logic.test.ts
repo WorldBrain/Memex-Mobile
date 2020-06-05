@@ -1,10 +1,13 @@
 import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { FakeNavigation } from 'src/tests/navigation'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 
 describe('note editor UI logic tests', () => {
     function setup(deps: Partial<Props>, navParams: any = {}) {
-        const navigation = new FakeNavigation(navParams)
+        const navigation = new FakeNavigation({
+            [NAV_PARAMS.NOTE_EDITOR]: navParams,
+        })
         const logic = new Logic({
             ...(deps as Props),
             navigation: navigation as any,
@@ -72,7 +75,13 @@ describe('note editor UI logic tests', () => {
             {
                 type: 'navigate',
                 target: 'PageEditor',
-                params: { mode: 'notes', pageUrl: testUrl, selectedList: null },
+                params: {
+                    [NAV_PARAMS.PAGE_EDITOR]: {
+                        mode: 'notes',
+                        pageUrl: testUrl,
+                        selectedList: undefined,
+                    },
+                },
             },
         ])
         expect(storedNote).toEqual({
@@ -109,7 +118,13 @@ describe('note editor UI logic tests', () => {
             {
                 type: 'navigate',
                 target: 'PageEditor',
-                params: { mode: 'notes', pageUrl: testUrl, selectedList: null },
+                params: {
+                    [NAV_PARAMS.PAGE_EDITOR]: {
+                        mode: 'notes',
+                        pageUrl: testUrl,
+                        selectedList: undefined,
+                    },
+                },
             },
         ])
         expect(storedNote).toEqual({

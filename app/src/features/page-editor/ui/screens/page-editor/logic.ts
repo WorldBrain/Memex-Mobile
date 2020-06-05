@@ -3,10 +3,12 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { UIPageWithNotes as Page, UINote } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 
 export interface State {
     loadState: UITaskState
@@ -32,10 +34,8 @@ export default class Logic extends UILogic<State, Event> {
     constructor(private props: Props) {
         super()
 
-        this.selectedList = props.navigation.getParam(
-            'selectedList',
-            MOBILE_LIST_NAME,
-        )
+        const params = props.navigation.getParam(NAV_PARAMS.PAGE_EDITOR)
+        this.selectedList = params.selectedList ?? MOBILE_LIST_NAME
     }
 
     getInitialState(): State {
@@ -48,11 +48,15 @@ export default class Logic extends UILogic<State, Event> {
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
-            const mode = this.props.navigation.getParam('mode', 'tags')
-            const pageUrl = this.props.navigation.getParam('pageUrl')
-            const page = await this.loadPageData(pageUrl)
+            const params = this.props.navigation.getParam(
+                NAV_PARAMS.PAGE_EDITOR,
+            )
+            const page = await this.loadPageData(params.pageUrl)
 
-            this.emitMutation({ page: { $set: page }, mode: { $set: mode } })
+            this.emitMutation({
+                page: { $set: page },
+                mode: { $set: params.mode ?? 'tags' },
+            })
         })
     }
 

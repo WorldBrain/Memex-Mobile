@@ -1,6 +1,7 @@
 import Logic, { Props, State, Event } from './logic'
 import { TestLogicContainer } from 'src/tests/ui-logic'
 import { FakeNavigation } from 'src/tests/navigation'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { Storage } from 'src/storage/types'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
@@ -23,7 +24,9 @@ describe('page editor UI logic tests', () => {
     function setup(options: { storage: Storage }) {
         const logic = new Logic({
             storage: options.storage,
-            navigation: new FakeNavigation({ pageUrl: DATA.PAGE_1.url }) as any,
+            navigation: new FakeNavigation({
+                [NAV_PARAMS.PAGE_EDITOR]: { pageUrl: DATA.PAGE_1.url },
+            }) as any,
         } as Props)
         const element = new FakeStatefulUIElement<State, Event>(logic)
         const logicContainer = new TestLogicContainer<State, Event>(logic)

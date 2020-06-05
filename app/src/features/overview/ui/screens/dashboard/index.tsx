@@ -28,6 +28,7 @@ import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import SyncRibbon from '../../components/sync-ribbon'
 import { ReaderNavigationParams } from 'src/features/reader/ui/screens/reader/types'
+import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 
 export default class Dashboard extends NavigationScreen<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -38,9 +39,11 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
 
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {
-            selectedList: this.state.selectedListName,
-            pageUrl: page.fullUrl,
-            mode,
+            [NAV_PARAMS.PAGE_EDITOR]: {
+                selectedList: this.state.selectedListName,
+                pageUrl: page.fullUrl,
+                mode,
+            } as PageEditorNavigationParams,
         })
     }
 
