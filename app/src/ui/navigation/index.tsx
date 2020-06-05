@@ -9,7 +9,9 @@ import {
     NavigationRoute,
 } from 'react-navigation'
 
-import { UIDependencies } from './types'
+import { loadContentScript } from 'src/features/reader/utils/load-content-script'
+
+import { UIDependencies } from '../types'
 import ShareModal from 'src/features/page-share/ui/screens/share-modal'
 import ListsFilter from 'src/features/overview/ui/screens/lists-filter'
 import Dashboard from 'src/features/overview/ui/screens/dashboard'
@@ -70,7 +72,13 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             }) => <Pairing {...props} {...deps} />,
             Reader: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
-            }) => <Reader {...props} {...deps} />,
+            }) => (
+                <Reader
+                    {...props}
+                    {...deps}
+                    loadContentScript={loadContentScript}
+                />
+            ),
         },
         {
             initialRouteName: 'Overview',

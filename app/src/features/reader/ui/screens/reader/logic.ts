@@ -16,9 +16,8 @@ import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { ReadabilityArticle } from 'src/services/readability/types'
 import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 import { inPageCSS } from 'src/features/reader/utils/in-page-css'
-import { loadContentScript } from 'src/features/reader/utils/load-content-script'
+import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
 import { ReaderNavigationParams } from './types'
-import { CONTENT_SCRIPT_PATH } from './constants'
 import { Anchor } from 'src/content-script/types'
 import { NoteEditorNavigationParams } from 'src/features/overview/ui/screens/note-editor/types'
 
@@ -49,7 +48,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 export interface Props extends NavigationProps {
     storage: UIStorageModules<'reader' | 'overview' | 'pageEditor'>
     services: UIServices<'readability' | 'resourceLoader'>
-    contentScriptPath?: string
+    loadContentScript: ContentScriptLoader
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -63,10 +62,6 @@ export default class Logic extends UILogic<State, Event> {
 
     constructor(private props: Props) {
         super()
-    }
-
-    private get contentScriptPath(): string {
-        return this.props.contentScriptPath ?? CONTENT_SCRIPT_PATH
     }
 
     getInitialState(): State {
@@ -147,7 +142,7 @@ export default class Logic extends UILogic<State, Event> {
         // Don't attempt to load this in jest
         let js
         if (process.env.JEST_WORKER_ID == null) {
-            js = await loadContentScript(resourceLoader, this.contentScriptPath)
+            js = await this.props.loadContentScript(resourceLoader)
         }
 
         const html = createHtmlStringFromTemplate({

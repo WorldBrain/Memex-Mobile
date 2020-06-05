@@ -2,6 +2,12 @@
 import contentScript from 'dist/content_script_reader.js.txt'
 
 import { ResourceLoaderService } from 'src/services/resource-loader'
+import { CONTENT_SCRIPT_PATH } from '../ui/screens/reader/constants'
+
+export type ContentScriptLoader = (
+    resourceLoader: ResourceLoaderService,
+    contentScriptPath?: string,
+) => void
 
 /*
   Handle loading the content-script JS as a string different in dev vs prod.
@@ -14,10 +20,10 @@ import { ResourceLoaderService } from 'src/services/resource-loader'
         This assumes the dev environment where we have the source code available. This solution
         does not work in prod.
 */
-export async function loadContentScript(
+export const loadContentScript: ContentScriptLoader = (
     resourceLoader: ResourceLoaderService,
-    contentScriptPath: string,
-) {
+    contentScriptPath = CONTENT_SCRIPT_PATH,
+) => {
     if (__DEV__) {
         require('dist/content_script_reader.js.txt')
         return resourceLoader.loadResource(contentScriptPath)
