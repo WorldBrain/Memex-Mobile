@@ -24,6 +24,7 @@ import { TweetNaclSyncEncryption } from '@worldbrain/memex-common/lib/sync/secre
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 import { AUTO_SYNC_TIMEOUT, AUTO_SYNC_COLLECTIONS } from './constants'
 import some from 'lodash/some'
+import { ErrorTracker } from '../error-tracking/types'
 
 export default class AppSyncService extends SyncService {
     static DEF_CONTINUOUS_SYNC_BATCH_SIZE = 15
@@ -39,6 +40,7 @@ export default class AppSyncService extends SyncService {
         syncInfoStorage: MemexSyncInfoStorage
         devicePlatform: MemexSyncDevicePlatform
         getSharedSyncLog: () => Promise<SharedSyncLog>
+        errorTracker: ErrorTracker
         disableEncryption?: boolean
         continuousSyncBatchSize?: number
     }) {
@@ -56,6 +58,9 @@ export default class AppSyncService extends SyncService {
         })
 
         this.initialSync.wrtc = WebRTC
+        this.initialSync.processCreationConstraintError = error => {
+            options.errorTracker.track(error)
+        }
         this.initialSync.getPeer = async ({ initiator }) => {
             const params =
                 options.devicePlatform !== 'integration-tests'
