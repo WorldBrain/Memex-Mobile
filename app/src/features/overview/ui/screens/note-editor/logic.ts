@@ -4,8 +4,14 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
-import { NoteEditorNavigationParams, NoteEditMode } from './types'
+import {
+    NoteEditorNavigationParams,
+    NoteEditMode,
+    PreviousRoute,
+} from './types'
 import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
+import { ReaderNavigationParams } from 'src/features/reader/ui/screens/reader/types'
+import { Anchor } from 'src/content-script/types'
 
 export interface State {
     noteText: string
@@ -16,8 +22,8 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    goBack: {}
-    saveNote: {}
+    goBack: null
+    saveNote: null
     changeNoteText: { value: string }
     setHighlightTextLines: { lines: number }
     setShowAllText: { show: boolean }
@@ -30,7 +36,10 @@ export interface Props extends NavigationProps {
 export default class Logic extends UILogic<State, Event> {
     static HIGHLIGHT_MAX_LINES = 4
 
+    previousRoute: PreviousRoute
+    highlightAnchor?: Anchor
     pageUrl: string
+    pageTitle?: string
     noteUrl?: string
     mode: NoteEditMode
     initNoteText: string
@@ -44,10 +53,13 @@ export default class Logic extends UILogic<State, Event> {
         ) as NoteEditorNavigationParams
 
         this.mode = params.mode
+        this.highlightAnchor = params.anchor
         this.pageUrl = params.pageUrl
+        this.pageTitle = params.pageTitle
         this.noteUrl = params.noteUrl
         this.initNoteText = params.noteText ?? ''
         this.selectedList = params.selectedList
+        this.previousRoute = params.previousRoute
     }
 
     getInitialState(): State {
@@ -63,14 +75,28 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    private navigateBack = () =>
-        this.props.navigation.navigate('PageEditor', {
-            [NAV_PARAMS.PAGE_EDITOR]: {
-                mode: 'notes',
-                pageUrl: this.pageUrl,
-                selectedList: this.selectedList,
-            } as PageEditorNavigationParams,
-        })
+    private navigateBack = () => {
+        const { navigate } = this.props.navigation
+
+        switch (this.previousRoute) {
+            case 'Reader':
+                return navigate('Reader', {
+                    [NAV_PARAMS.READER]: {
+                        url: this.pageUrl,
+                        title: this.pageTitle,
+                    } as ReaderNavigationParams,
+                })
+            case 'PageEditor':
+            default:
+                return navigate('PageEditor', {
+                    [NAV_PARAMS.PAGE_EDITOR]: {
+                        mode: 'notes',
+                        pageUrl: this.pageUrl,
+                        selectedList: this.selectedList,
+                    } as PageEditorNavigationParams,
+                })
+        }
+    }
 
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
         if (previousState.noteText?.trim() !== this.initNoteText.trim()) {
@@ -94,6 +120,26 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
+    private handleCreation(state: State) {
+        const { pageEditor } = this.props.storage.modules
+
+        if (this.highlightAnchor != null) {
+            return pageEditor.createAnnotation({
+                body: this.highlightAnchor.quote,
+                selector: this.highlightAnchor,
+                pageUrl: this.pageUrl,
+                comment: state.noteText,
+                pageTitle: this.pageTitle ?? '',
+            })
+        }
+
+        return pageEditor.createNote({
+            pageUrl: this.pageUrl,
+            comment: state.noteText,
+            pageTitle: this.pageTitle ?? '',
+        })
+    }
+
     async saveNote({
         previousState: state,
     }: IncomingUIEvent<State, Event, 'saveNote'>) {
@@ -104,17 +150,13 @@ export default class Logic extends UILogic<State, Event> {
             'saveState',
             async () => {
                 if (this.mode === 'create') {
-                    return pageEditor.createNote({
-                        pageUrl: this.pageUrl,
-                        comment: state.noteText,
-                        pageTitle: '',
-                    })
-                } else {
-                    return pageEditor.updateNoteText({
-                        url: this.noteUrl!,
-                        text: state.noteText,
-                    })
+                    return this.handleCreation(state)
                 }
+
+                return pageEditor.updateNoteText({
+                    url: this.noteUrl!,
+                    text: state.noteText,
+                })
             },
         )
 

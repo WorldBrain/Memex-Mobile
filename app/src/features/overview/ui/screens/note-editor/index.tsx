@@ -29,9 +29,26 @@ export default class NoteEditorScreen extends NavigationScreen<
         return this.state.saveState === 'running'
     }
 
-    private handleBackBtnPress = () => this.processEvent('goBack', {})
+    private get disableSaveBtn(): boolean {
+        if ((this.logic as Logic).highlightAnchor == null) {
+            return this.disableInputs || !this.state.noteText?.trim().length
+        }
 
-    private handleSaveBtnPress = () => this.processEvent('saveNote', {})
+        return this.disableInputs
+    }
+
+    private get titleText(): string {
+        const logic = this.logic as Logic
+        if (logic.mode === 'create') {
+            return logic.highlightAnchor == null ? 'Add Note' : 'Add Annotation'
+        }
+
+        return 'Edit Note'
+    }
+
+    private handleBackBtnPress = () => this.processEvent('goBack', null)
+
+    private handleSaveBtnPress = () => this.processEvent('saveNote', null)
 
     private handleHighlightTextLayoutChange = ({
         nativeEvent,
@@ -91,11 +108,7 @@ export default class NoteEditorScreen extends NavigationScreen<
         return (
             <>
                 <Navigation
-                    titleText={
-                        (this.logic as Logic).mode === 'create'
-                            ? 'Add Note'
-                            : 'Edit Note'
-                    }
+                    titleText={this.titleText}
                     renderLeftIcon={() => (
                         <TouchableOpacity
                             onPress={this.handleBackBtnPress}
@@ -113,16 +126,12 @@ export default class NoteEditorScreen extends NavigationScreen<
                         <TouchableOpacity
                             onPress={this.handleSaveBtnPress}
                             style={navigationStyles.btnContainer}
-                            disabled={
-                                this.disableInputs ||
-                                !this.state.noteText?.trim().length
-                            }
+                            disabled={this.disableSaveBtn}
                         >
                             <Image
                                 resizeMode="contain"
                                 style={
-                                    this.disableInputs ||
-                                    !this.state.noteText?.trim().length
+                                    this.disableSaveBtn
                                         ? navigationStyles.disabled
                                         : navigationStyles.checkIcon
                                 }

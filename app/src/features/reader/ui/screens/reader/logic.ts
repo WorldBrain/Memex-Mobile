@@ -20,6 +20,7 @@ import { loadContentScript } from 'src/features/reader/utils/load-content-script
 import { ReaderNavigationParams } from './types'
 import { CONTENT_SCRIPT_PATH } from './constants'
 import { Anchor } from 'src/content-script/types'
+import { NoteEditorNavigationParams } from 'src/features/overview/ui/screens/note-editor/types'
 
 export interface State {
     url: string
@@ -52,6 +53,14 @@ export interface Props extends NavigationProps {
 }
 
 export default class Logic extends UILogic<State, Event> {
+    static formUrl = (url: string) => {
+        if (url.startsWith('http')) {
+            return url
+        }
+
+        return 'https://' + url // TODO: find a better way to get the full URL
+    }
+
     constructor(private props: Props) {
         super()
     }
@@ -71,7 +80,7 @@ export default class Logic extends UILogic<State, Event> {
 
         return {
             title: params.title,
-            url: 'https://' + params.url, // TODO: find a better way to get the full URL
+            url: Logic.formUrl(params.url),
             loadState: 'pristine',
             isBookmarked: false,
             isTagged: false,
@@ -198,7 +207,19 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    createAnnotation: EventHandler<'createAnnotation'> = async ({ event }) => {
-        console.log('received annot req!:', event.anchor)
+    createAnnotation: EventHandler<'createAnnotation'> = async ({
+        event,
+        previousState,
+    }) => {
+        this.props.navigation.navigate('NoteEditor', {
+            [NAV_PARAMS.NOTE_EDITOR]: {
+                mode: 'create',
+                pageUrl: previousState.url,
+                highlightText: event.anchor.quote,
+                previousRoute: 'Reader',
+                anchor: event.anchor,
+                pageTitle: previousState.title,
+            } as NoteEditorNavigationParams,
+        })
     }
 }

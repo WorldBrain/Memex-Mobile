@@ -13,7 +13,7 @@ export class FakeNavigation {
 
     constructor(private params?: FakeNavigationParams) {}
 
-    navigate(target: string, params?: FakeNavigationParams) {
+    navigate = (target: string, params?: FakeNavigationParams) => {
         this.requests.push({ type: 'navigate', target, params })
     }
 
