@@ -144,11 +144,17 @@ export default class Logic extends UILogic<State, Event> {
             } as any
         }
 
+        // Don't attempt to load this in jest
+        let js
+        if (process.env.JEST_WORKER_ID == null) {
+            js = await loadContentScript(resourceLoader, this.contentScriptPath)
+        }
+
         const html = createHtmlStringFromTemplate({
             body: article.content,
             title: article.title,
             css: inPageCSS,
-            js: await loadContentScript(resourceLoader, this.contentScriptPath),
+            js: js ?? '',
         })
 
         this.emitMutation({ htmlSource: { $set: html } })
