@@ -29,10 +29,12 @@ export interface State {
     isTagged: boolean
     isBookmarked: boolean
     htmlSource?: string
+    errorMessage?: string
     annotationAnchors: Anchor[]
 }
 
 export type Event = UIEvent<{
+    setErrorMessage: { message?: string }
     createHighlight: { anchor: Anchor }
     createAnnotation: { anchor: Anchor }
     setTextSelection: { text?: string }
@@ -85,9 +87,16 @@ export default class Logic extends UILogic<State, Event> {
 
     async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
-            await this.loadPageState(previousState.url)
-            await this.loadPageAnnotations(previousState.url)
-            await this.loadReadablePage(previousState.url, previousState.title)
+            try {
+                await this.loadPageState(previousState.url)
+                await this.loadPageAnnotations(previousState.url)
+                await this.loadReadablePage(
+                    previousState.url,
+                    previousState.title,
+                )
+            } catch (err) {
+                this.emitMutation({ errorMessage: { $set: err.message } })
+            }
         })
     }
 
@@ -140,7 +149,7 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         // Don't attempt to load this in jest
-        let js
+        let js = ''
         if (process.env.JEST_WORKER_ID == null) {
             js = await this.props.loadContentScript(resourceLoader)
         }
@@ -149,7 +158,7 @@ export default class Logic extends UILogic<State, Event> {
             body: article.content,
             title: article.title,
             css: inPageCSS,
-            js: js ?? '',
+            js,
         })
 
         this.emitMutation({ htmlSource: { $set: html } })
@@ -184,6 +193,14 @@ export default class Logic extends UILogic<State, Event> {
             toggleState()
             throw err
         }
+    }
+
+    setErrorMessage: EventHandler<'setErrorMessage'> = ({ event }) => {
+        const defaultMessage = 'An error sssshappened'
+
+        return this.emitMutation({
+            errorMessage: { $set: event.message ?? defaultMessage },
+        })
     }
 
     //

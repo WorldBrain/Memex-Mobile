@@ -7,7 +7,7 @@ import { CONTENT_SCRIPT_PATH } from '../ui/screens/reader/constants'
 export type ContentScriptLoader = (
     resourceLoader: ResourceLoaderService,
     contentScriptPath?: string,
-) => void
+) => Promise<string>
 
 /*
   Handle loading the content-script JS as a string different in dev vs prod.

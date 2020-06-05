@@ -7,6 +7,7 @@ import { NavigationScreen } from 'src/ui/types'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import ActionBar from '../../components/action-bar'
 import ReaderWebView from '../../components/web-view'
+import ErrorView from '../../components/error-view'
 import styles from './styles'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
@@ -86,6 +87,15 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
             )
         }
 
+        if (this.state.errorMessage) {
+            return (
+                <ErrorView
+                    className={styles.webView}
+                    message={this.state.errorMessage}
+                />
+            )
+        }
+
         return (
             <ReaderWebView
                 setRef={ref => (this.webView = ref)}
@@ -107,6 +117,7 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 {this.renderWebView()}
                 <ActionBar
                     className={styles.actionBar}
+                    isErrorView={this.state.errorMessage != null}
                     {...this.state}
                     onBackBtnPress={this.handleBackClick}
                     onHighlightBtnPress={() =>

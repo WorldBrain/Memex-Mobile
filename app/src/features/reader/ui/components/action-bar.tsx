@@ -10,6 +10,7 @@ export interface Props {
     isBookmarked?: boolean
     className?: string
     selectedText?: string
+    isErrorView?: boolean
     onBackBtnPress: NativeTouchEventHandler
     onBookmarkBtnPress: NativeTouchEventHandler
     onHighlightBtnPress: NativeTouchEventHandler
@@ -31,6 +32,10 @@ class ActionBar extends React.PureComponent<Props> {
     }
 
     private renderRightBtns() {
+        if (this.props.isErrorView) {
+            return null
+        }
+
         if (this.props.selectedText != null) {
             return (
                 <>
