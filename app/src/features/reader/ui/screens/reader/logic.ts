@@ -109,6 +109,7 @@ export default class Logic extends UILogic<State, Event> {
     private async storeReadableArticle(
         url: string,
         article: ReadabilityArticle,
+        pageTitle: string,
         createdWhen = new Date(),
     ) {
         const {
@@ -117,7 +118,9 @@ export default class Logic extends UILogic<State, Event> {
         } = this.props.storage.modules
 
         // Update page title with what was found in readability parsing - most pages saved on Memex Go will lack titles
-        await overviewStorage.updatePageTitle({ url, title: article.title })
+        if (Logic.formUrl(pageTitle) === url) {
+            await overviewStorage.updatePageTitle({ url, title: article.title })
+        }
 
         await readerStorage.createReadablePage({
             url,
@@ -146,10 +149,10 @@ export default class Logic extends UILogic<State, Event> {
 
         if (existingReadable == null) {
             article = await readability.fetchAndParse({ url })
-            await this.storeReadableArticle(url, article)
+            await this.storeReadableArticle(url, article, title)
         } else {
             article = {
-                title,
+                title: existingReadable.title,
                 content: existingReadable.content,
             } as any
         }
