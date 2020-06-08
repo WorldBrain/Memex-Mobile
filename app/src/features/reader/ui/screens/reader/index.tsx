@@ -1,6 +1,6 @@
 import React from 'react'
-import { View } from 'react-native'
-import { WebView } from 'react-native-webview'
+import { View, Linking } from 'react-native'
+import { WebView, WebViewNavigation } from 'react-native-webview'
 
 import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
@@ -21,7 +21,6 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     }
 
     private webView!: WebView
-    private _mockClick = () => undefined
 
     private constructJs = (
         fnName: RemoteFnName,
@@ -78,6 +77,15 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
         }
     }
 
+    private handleOpenLinksInBrowser = (event: WebViewNavigation) => {
+        if (Logic.formUrl(event.url) === this.state.url) {
+            return
+        }
+
+        this.webView.stopLoading()
+        return Linking.openURL(event.url)
+    }
+
     private renderWebView() {
         if (this.state.loadState === 'running') {
             return (
@@ -103,6 +111,7 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 className={styles.webView}
                 htmlSource={this.state.htmlSource!}
                 onMessage={this.handleWebViewMessageReceived}
+                onNavigationStateChange={this.handleOpenLinksInBrowser}
                 injectedJavaScript={this.constructJs(
                     'renderHighlights',
                     JSON.stringify(this.state.annotationAnchors),
