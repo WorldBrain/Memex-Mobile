@@ -85,7 +85,7 @@
         "whatwg-url": "^7.1.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.4.4",
+        "@babel/core": "^7.9",
         "@babel/plugin-proposal-async-generator-functions": "^7.2.0",
         "@babel/runtime": "^7.6.2",
         "@react-native-community/cli": "^2.9.0",
