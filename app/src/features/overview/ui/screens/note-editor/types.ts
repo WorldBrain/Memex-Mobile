@@ -8,6 +8,8 @@ export interface NoteEditorNavigationParams {
     mode: NoteEditMode
     pageUrl: string
     previousRoute: PreviousRoute
+    /** TODO: This is a hack - fix the navigation lib so we don't have to manage this state */
+    __prevPreviousRoute?: PreviousRoute
     pageTitle?: string
     anchor?: Anchor
     selectedList?: string

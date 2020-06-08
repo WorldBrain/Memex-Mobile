@@ -37,7 +37,7 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     private handleBackClick = () =>
         this.props.navigation.navigate({ routeName: 'Overview' })
 
-    private setupNaToPageEditor = (mode: EditorMode) => () =>
+    private setupNavToPageEditor = (mode: EditorMode) => () =>
         this.props.navigation.navigate('PageEditor', {
             [NAV_PARAMS.PAGE_EDITOR]: {
                 previousRoute: 'Reader',
@@ -138,9 +138,9 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                     onBookmarkBtnPress={() =>
                         this.processEvent('toggleBookmark', null)
                     }
-                    onListBtnPress={this.setupNaToPageEditor('collections')}
-                    onCommentBtnPress={this.setupNaToPageEditor('notes')}
-                    onTagBtnPress={this.setupNaToPageEditor('tags')}
+                    onListBtnPress={this.setupNavToPageEditor('collections')}
+                    onCommentBtnPress={this.setupNavToPageEditor('notes')}
+                    onTagBtnPress={this.setupNavToPageEditor('tags')}
                 />
             </View>
         )

@@ -41,6 +41,7 @@ export default class PageEditorScreen extends NavigationScreen<
                     selectedList: (this.logic as Logic).selectedList,
                     pageUrl: this.state.page.fullUrl,
                     previousRoute: 'PageEditor',
+                    __prevPreviousRoute: 'Reader',
                     mode: 'create',
                 } as NoteEditorNavigationParams,
             })
@@ -81,6 +82,7 @@ export default class PageEditorScreen extends NavigationScreen<
                             highlightText: note.noteText,
                             noteText: note.commentText,
                             previousRoute: 'PageEditor',
+                            __prevPreviousRoute: 'Reader',
                             noteUrl: note.url,
                             mode: 'update',
                         } as NoteEditorNavigationParams,

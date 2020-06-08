@@ -36,6 +36,8 @@ export interface Props extends NavigationProps {
 export default class Logic extends UILogic<State, Event> {
     static HIGHLIGHT_MAX_LINES = 4
 
+    /** TODO: This is a hack - fix the navigation lib so we don't have to manage this state */
+    __prevPreviousRoute?: string
     previousRoute: PreviousRoute
     highlightAnchor?: Anchor
     pageUrl: string
@@ -60,6 +62,7 @@ export default class Logic extends UILogic<State, Event> {
         this.initNoteText = params.noteText ?? ''
         this.selectedList = params.selectedList
         this.previousRoute = params.previousRoute
+        this.__prevPreviousRoute = params.__prevPreviousRoute
     }
 
     getInitialState(): State {
@@ -93,6 +96,7 @@ export default class Logic extends UILogic<State, Event> {
                         mode: 'notes',
                         pageUrl: this.pageUrl,
                         selectedList: this.selectedList,
+                        previousRoute: this.__prevPreviousRoute,
                     } as PageEditorNavigationParams,
                 })
         }
