@@ -7,14 +7,14 @@ import Footer, { Props as FooterProps } from './result-footer'
 import Tags from './result-page-tags'
 import {
     DeleteActionBarBtn,
-    FullTagBtn,
+    TagBtnFull,
     TagBtn,
     CommentBtn,
     FullCommentBtn,
     StarBtn,
     FullListActionBarWhiteBtn,
     AddListActionBarWhiteBtn,
-    FullStarBtn,
+    StarBtnFull,
     ReaderActionBarBtn,
 } from './action-btns'
 import ActionBar from './result-page-action-bar'
@@ -51,7 +51,7 @@ const ResultPage: React.StatelessComponent<Props &
                 <View style={styles.actionContainer}>
                     <Footer {...props}>
                         {props.isStarred ? (
-                            <FullStarBtn onPress={props.onStarPress} />
+                            <StarBtnFull onPress={props.onStarPress} />
                         ) : (
                             <StarBtn onPress={props.onStarPress} />
                         )}
@@ -61,7 +61,7 @@ const ResultPage: React.StatelessComponent<Props &
                             <CommentBtn onPress={props.onCommentPress} />
                         )}
                         {props.tags.length > 0 ? (
-                            <FullTagBtn onPress={props.onTagPress} />
+                            <TagBtnFull onPress={props.onTagPress} />
                         ) : (
                             <TagBtn onPress={props.onTagPress} />
                         )}

@@ -28,6 +28,8 @@ export interface State {
     selectedText?: string
     isTagged: boolean
     isBookmarked: boolean
+    isListed: boolean
+    hasNotes: boolean
     htmlSource?: string
     errorMessage?: string
     annotationAnchors: Anchor[]
@@ -48,7 +50,9 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export interface Props extends NavigationProps {
-    storage: UIStorageModules<'reader' | 'overview' | 'pageEditor'>
+    storage: UIStorageModules<
+        'reader' | 'overview' | 'pageEditor' | 'metaPicker'
+    >
     services: UIServices<'readability' | 'resourceLoader'>
     loadContentScript: ContentScriptLoader
 }
@@ -81,6 +85,8 @@ export default class Logic extends UILogic<State, Event> {
             loadState: 'pristine',
             isBookmarked: false,
             isTagged: false,
+            isListed: false,
+            hasNotes: false,
             annotationAnchors: [],
         }
     }
@@ -165,12 +171,22 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async loadPageState(url: string) {
-        const { overview: overviewStorage } = this.props.storage.modules
+        const {
+            overview: overviewStorage,
+            pageEditor,
+            metaPicker,
+        } = this.props.storage.modules
+
+        const isBookmarked = await overviewStorage.isPageStarred({ url })
+        const lists = await metaPicker.findListsByPage({ url })
+        const tags = await metaPicker.findTagsByPage({ url })
+        const notes = await pageEditor.findNotes({ url })
 
         this.emitMutation({
-            isBookmarked: {
-                $set: await overviewStorage.isPageStarred({ url }),
-            },
+            isBookmarked: { $set: isBookmarked },
+            isListed: { $set: !!lists.length },
+            hasNotes: { $set: !!notes.length },
+            isTagged: { $set: !!tags.length },
         })
     }
 
@@ -223,6 +239,8 @@ export default class Logic extends UILogic<State, Event> {
             selector: event.anchor,
             body: event.anchor.quote,
         })
+
+        this.emitMutation({ hasNotes: { $set: true } })
     }
 
     createAnnotation: EventHandler<'createAnnotation'> = async ({

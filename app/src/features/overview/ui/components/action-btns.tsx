@@ -23,19 +23,23 @@ const createActionBarBtn = (
 
 export const BackBtn = createBtn(require('src/ui/img/arrow-back.png'))
 export const StarBtn = createBtn(require('../img/heart_empty.png'))
-export const FullStarBtn = createBtn(require('../img/heart_full.png'))
+export const StarBtnFull = createBtn(require('../img/heart_full.png'))
 export const CommentBtn = createBtn(require('../img/comment.png'))
 export const FullCommentBtn = createBtn(require('../img/comment-full.png'))
 export const HighlightBtn = createBtn(require('src/ui/img/highlight.png'))
 export const EditBtn = createBtn(require('../img/edit_white.png'))
 export const AnnotateBtn = createBtn(require('src/ui/img/add_comment.png'))
+export const AnnotateBtnFull = createBtn(require('../img/trash.png'))
 export const AddListBtn = createBtn(require('src/ui/img/add_list.png'))
+export const AddListBtnFull = createBtn(
+    require('../img/add_collection_white.png'),
+)
 
 export const EyeBtn = createBtn(require('src/ui/img/eye.png'))
 export const EyeWhiteBtn = createBtn(require('src/ui/img/eye_white.png'))
 
 export const TagBtn = createBtn(require('src/ui/img/tag_empty.png'))
-export const FullTagBtn = createBtn(require('src/ui/img/tag_full.png'))
+export const TagBtnFull = createBtn(require('src/ui/img/tag_full.png'))
 
 export const DeleteActionBarBtn = createActionBarBtn(
     require('../img/trash.png'),

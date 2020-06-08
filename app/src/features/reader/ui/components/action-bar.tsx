@@ -4,10 +4,10 @@ import { View } from 'react-native'
 import * as actionBtns from 'src/features/overview/ui/components/action-btns'
 import { NativeTouchEventHandler } from 'src/features/overview/types'
 import styles from './action-bar.styles'
+import { State } from '../screens/reader/logic'
 
-export interface Props {
-    isTagged?: boolean
-    isBookmarked?: boolean
+export interface Props
+    extends Pick<State, 'isBookmarked' | 'isTagged' | 'isListed' | 'hasNotes'> {
     className?: string
     selectedText?: string
     isErrorView?: boolean
@@ -23,12 +23,24 @@ export interface Props {
 class ActionBar extends React.PureComponent<Props> {
     private get BookmarkBtn(): actionBtns.ActionBtnComponent {
         return this.props.isBookmarked
-            ? actionBtns.FullStarBtn
+            ? actionBtns.StarBtnFull
             : actionBtns.StarBtn
     }
 
     private get TagBtn(): actionBtns.ActionBtnComponent {
-        return this.props.isTagged ? actionBtns.FullTagBtn : actionBtns.TagBtn
+        return this.props.isTagged ? actionBtns.TagBtnFull : actionBtns.TagBtn
+    }
+
+    private get ListBtn(): actionBtns.ActionBtnComponent {
+        return this.props.isListed
+            ? actionBtns.AddListBtnFull
+            : actionBtns.AddListBtn
+    }
+
+    private get AnnotateBtn(): actionBtns.ActionBtnComponent {
+        return this.props.hasNotes
+            ? actionBtns.AnnotateBtnFull
+            : actionBtns.AnnotateBtn
     }
 
     private renderRightBtns() {
@@ -57,7 +69,7 @@ class ActionBar extends React.PureComponent<Props> {
                     onPress={this.props.onBookmarkBtnPress}
                     className={styles.actionBtn}
                 />
-                <actionBtns.AnnotateBtn
+                <this.AnnotateBtn
                     onPress={this.props.onCommentBtnPress}
                     className={styles.actionBtn}
                 />
@@ -65,7 +77,7 @@ class ActionBar extends React.PureComponent<Props> {
                     onPress={this.props.onTagBtnPress}
                     className={styles.actionBtn}
                 />
-                <actionBtns.AddListBtn
+                <this.ListBtn
                     onPress={this.props.onListBtnPress}
                     className={styles.actionBtn}
                 />
