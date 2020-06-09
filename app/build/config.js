@@ -3,7 +3,7 @@ import path from 'path'
 import initLoaderRules from './loaders'
 import initPlugins from './plugins'
 import initMinimizers from './minimizers'
-// import { externalTsModules } from './external'
+import { externalTsModules } from './external'
 
 export const extensions = ['.ts', '.tsx', '.js', '.jsx', '.coffee']
 
@@ -21,13 +21,13 @@ export default ({ context = __dirname, mode = 'development', ...opts }) => {
         src: path.resolve(context, './src'),
     }
 
-    // for (const [moduleAlias, modulePath] of Object.entries(externalTsModules)) {
-    //     const extPath = path.resolve(context, `./external/${modulePath}/ts`)
-    //     Object.assign(aliases, {
-    //         [`${moduleAlias}$`]: extPath,
-    //         [`${moduleAlias}/lib`]: extPath,
-    //     })
-    // }
+    for (const [moduleAlias, modulePath] of Object.entries(externalTsModules)) {
+        const extPath = path.resolve(context, `./external/${modulePath}/ts`)
+        Object.assign(aliases, {
+            [`${moduleAlias}$`]: extPath,
+            [`${moduleAlias}/lib`]: extPath,
+        })
+    }
 
     const conf = {
         context,

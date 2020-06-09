@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events'
-
 import {
     selectionToDescriptor,
     descriptorToRange,
     markRange,
-} from './anchoring'
+} from '@worldbrain/memex-common/lib/annotations'
+
 import { setupRemoteFunctions } from './remote-functions'
 import { Anchor, MessagePoster } from './types'
 import { HIGHLIGHT_CLASS } from './constants'

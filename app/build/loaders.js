@@ -1,7 +1,7 @@
 // NOTE: Loader `include` paths are relative to this module
 import path from 'path'
 import CssExtractPlugin from 'mini-css-extract-plugin'
-// import { externalTsModules } from './external'
+import { externalTsModules } from './external'
 
 export const threadLoader = {
     loader: 'thread-loader',
@@ -84,9 +84,9 @@ export default ({ mode, context, isCI = false, injectStyles = false }) => {
         test: /\.(j|t)sx?$/,
         include: [
             path.resolve(context, './src'),
-            // ...Object.values(externalTsModules).map((mod) =>
-            //     path.resolve(context, `./external/${mod}`),
-            // ),
+            ...Object.values(externalTsModules).map(mod =>
+                path.resolve(context, `./external/${mod}`),
+            ),
         ],
         use: [babelLoader, tsLoader],
     }
@@ -95,7 +95,7 @@ export default ({ mode, context, isCI = false, injectStyles = false }) => {
         test: /\.coffee?$/,
         include: path.resolve(
             context,
-            './src/content-script/anchoring/anchoring',
+            './external/@worldbrain/memex-common/ts/annotations/anchoring',
         ),
         use: [babelLoader, coffeescriptLoader],
     }

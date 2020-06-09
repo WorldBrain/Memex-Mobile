@@ -3,7 +3,14 @@
     "compilerOptions": {
         "lib": ["ES2020", "DOM"],
         "types": [],
-        "paths": {}
+        "paths": {
+            "@worldbrain/memex-common": [
+                "external/@worldbrain/memex-common/ts"
+            ],
+            "@worldbrain/memex-common/lib/*": [
+                "external/@worldbrain/memex-common/ts/*"
+            ]
+        }
     },
     "files": ["index.ts"],
     "exclude": ["node_modules"]
