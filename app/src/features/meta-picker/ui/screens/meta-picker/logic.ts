@@ -1,8 +1,9 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import { UILogic, UIEvent, IncomingUIEvent } from 'ui-logic-core'
 
 import { UITaskState, UIStorageModules, NavigationProps } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MetaTypeShape, MetaType } from 'src/features/meta-picker/types'
+import { INIT_SUGGESTIONS_LIMIT } from './constants'
 
 export interface State {
     entries: Map<string, MetaTypeShape>
@@ -68,9 +69,11 @@ export default class Logic extends UILogic<State, Event> {
         const results =
             this.props.type === 'tags'
                 ? await metaPicker.findTagSuggestions({
+                      limit: INIT_SUGGESTIONS_LIMIT,
                       url: this.props.url,
                   })
                 : await metaPicker.findListSuggestions({
+                      limit: INIT_SUGGESTIONS_LIMIT,
                       url: this.props.url,
                   })
 
