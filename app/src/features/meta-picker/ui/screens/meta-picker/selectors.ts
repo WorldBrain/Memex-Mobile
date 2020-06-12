@@ -1,3 +1,5 @@
+import { VALID_TAG_PATTERN } from '@worldbrain/memex-common/lib/storage/constants'
+
 import { MetaTypeShape } from 'src/features/meta-picker/types'
 import { Props, State } from './logic'
 
@@ -7,17 +9,16 @@ export const inputText = (state: State): string => state.inputText
 
 export const pickerEntries = (state: State, props: Props): MetaTypeShape[] => {
     let mainEntries = [...entries(state).values()]
+    const name = state.inputText
 
-    // Pre-pend "Add new:" row if user input is something new
+    // Pre-pend "Add new:" row if user input is something new and valid
     if (
-        state.inputText.length &&
-        !state.entries.has(state.inputText) &&
-        !props.singleSelect
+        name.length &&
+        !state.entries.has(name) &&
+        !props.singleSelect &&
+        VALID_TAG_PATTERN.test(name)
     ) {
-        mainEntries = [
-            { canAdd: true, name: state.inputText, isChecked: false },
-            ...mainEntries,
-        ]
+        mainEntries = [{ canAdd: true, name, isChecked: false }, ...mainEntries]
     }
 
     return mainEntries

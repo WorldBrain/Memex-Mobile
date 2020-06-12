@@ -1,5 +1,6 @@
 import { Alert } from 'react-native'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import { VALID_TAG_PATTERN } from '@worldbrain/memex-common/lib/storage/constants'
 
 import { storageKeys } from '../../../../../../app.json'
 import { UIPageWithNotes as Page, UINote } from 'src/features/overview/types'
@@ -179,6 +180,10 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async createTagEntry(url: string, name: string) {
+        if (!VALID_TAG_PATTERN.test(name)) {
+            throw new Error(`Attempted to create a badly shaped tag: ${name}`)
+        }
+
         this.emitMutation({
             page: state => ({
                 ...state,
