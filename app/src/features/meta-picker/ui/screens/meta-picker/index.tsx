@@ -36,10 +36,12 @@ export default class MetaPickerScreen extends NavigationScreen<
 
     private get initEntries(): string[] {
         if (this.props.singleSelect) {
-            return this.props.initEntry ? [this.props.initEntry] : []
+            return this.props.initSelectedEntry
+                ? [this.props.initSelectedEntry]
+                : []
         }
 
-        return this.props.initEntries ?? []
+        return this.props.initSelectedEntries ?? []
     }
 
     private get suggestInputPlaceholder(): string {

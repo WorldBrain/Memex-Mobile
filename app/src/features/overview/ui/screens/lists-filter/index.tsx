@@ -80,7 +80,7 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
                     className={styles.filterContainer}
                     singleSelect
                     type="collections"
-                    initEntry={
+                    initSelectedEntry={
                         this.selectedEntryName === MOBILE_LIST_NAME
                             ? undefined
                             : this.selectedEntryName
