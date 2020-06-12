@@ -64,6 +64,7 @@ export default class Logic extends UILogic<State, Event> {
 
         const { metaPicker } = this.props.storage.modules
 
+        const entries = new Map<string, MetaTypeShape>()
         const results =
             this.props.type === 'tags'
                 ? await metaPicker.findTagSuggestions({
@@ -72,7 +73,6 @@ export default class Logic extends UILogic<State, Event> {
                 : await metaPicker.findListSuggestions({
                       url: this.props.url,
                   })
-        const entries = new Map<string, MetaTypeShape>()
 
         this.props.extraEntries?.forEach(name => {
             entries.set(name, { name, isChecked: false })
