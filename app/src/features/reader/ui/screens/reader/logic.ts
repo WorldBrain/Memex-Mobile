@@ -182,7 +182,7 @@ export default class Logic extends UILogic<State, Event> {
 
         const isBookmarked = await overviewStorage.isPageStarred({ url })
         const lists = await metaPicker.findListsByPage({ url })
-        const tags = await metaPicker.findTagsByPage({ url })
+        const tags = await metaPicker.findTagsByPage({ url, limit: 1 })
         const notes = await pageEditor.findNotes({ url })
 
         this.emitMutation({

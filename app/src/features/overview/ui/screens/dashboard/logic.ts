@@ -19,6 +19,7 @@ import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { DashboardNavigationParams } from './types'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
+import { TAGS_PER_RESULT_LIMIT } from './constants'
 
 export interface State {
     syncState: UITaskState
@@ -335,10 +336,12 @@ export default class Logic extends UILogic<State, Event> {
             throw Error('No page found for entry')
         }
 
-        const tags = await metaPicker.findTagsByPage({ url })
-
-        const notes = await pageEditor.findNotes({ url })
         const lists = await metaPicker.findListsByPage({ url })
+        const notes = await pageEditor.findNotes({ url })
+        const tags = await metaPicker.findTagsByPage({
+            url,
+            limit: TAGS_PER_RESULT_LIMIT,
+        })
 
         return {
             url,
