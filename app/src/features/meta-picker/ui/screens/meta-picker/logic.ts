@@ -1,6 +1,12 @@
 import { UILogic, UIEvent, IncomingUIEvent } from 'ui-logic-core'
 
-import { UITaskState, UIStorageModules, NavigationProps } from 'src/ui/types'
+import {
+    UIServices,
+    UITaskState,
+    UIStorageModules,
+    NavigationProps,
+} from 'src/ui/types'
+import { storageKeys } from '../../../../../../app.json'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MetaTypeShape, MetaType } from 'src/features/meta-picker/types'
 import { INIT_SUGGESTIONS_LIMIT } from './constants'
@@ -21,13 +27,14 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends NavigationProps {
-    storage: UIStorageModules<'metaPicker'>
     onEntryPress: (item: MetaTypeShape) => Promise<void>
+    storage: UIStorageModules<'metaPicker'>
+    services: UIServices<'localStorage'>
     suggestInputPlaceholder?: string
-    singleSelect?: boolean
+    initSelectedEntries?: string[]
+    initSelectedEntry?: string
     extraEntries?: string[]
-    initEntries?: string[]
-    initEntry?: string
+    singleSelect?: boolean
     className?: string
     type: MetaType
     url: string
@@ -43,7 +50,7 @@ export default class Logic extends UILogic<State, Event> {
             loadState: 'pristine',
             entries: new Map(),
             inputText: '',
-            selectedEntryName: this.props.initEntry,
+            selectedEntryName: this.props.initSelectedEntry,
         }
     }
 
@@ -55,33 +62,59 @@ export default class Logic extends UILogic<State, Event> {
 
     private calculateSelectedEntries(): string[] {
         if (this.props.singleSelect) {
-            return this.props.initEntry ? [this.props.initEntry] : []
+            return this.props.initSelectedEntry
+                ? [this.props.initSelectedEntry]
+                : []
         }
-        return this.props.initEntries ?? []
+        return this.props.initSelectedEntries ?? []
     }
 
-    private async loadInitEntries(selected?: string[]) {
-        selected = selected ?? this.calculateSelectedEntries()
-
+    private async loadSuggestions(
+        limit = INIT_SUGGESTIONS_LIMIT,
+    ): Promise<MetaTypeShape[]> {
         const { metaPicker } = this.props.storage.modules
+        const { localStorage } = this.props.services
 
-        const entries = new Map<string, MetaTypeShape>()
-        const results =
+        const storageKey =
+            this.props.type === 'tags'
+                ? storageKeys.tagSuggestionsCache
+                : storageKeys.listSuggestionsCache
+
+        const cache = (await localStorage.get<string[]>(storageKey)) ?? []
+
+        const suggestions: MetaTypeShape[] = cache.map(name => ({
+            name,
+            isChecked: false,
+        }))
+
+        if (suggestions.length >= limit) {
+            return suggestions
+        }
+
+        const dbResults =
             this.props.type === 'tags'
                 ? await metaPicker.findTagSuggestions({
-                      limit: INIT_SUGGESTIONS_LIMIT,
+                      limit: limit - cache.length,
                       url: this.props.url,
                   })
                 : await metaPicker.findListSuggestions({
-                      limit: INIT_SUGGESTIONS_LIMIT,
+                      limit: limit - cache.length,
                       url: this.props.url,
                   })
+
+        return [...dbResults, ...suggestions]
+    }
+
+    private async loadInitEntries(selected?: string[]) {
+        const entries = new Map<string, MetaTypeShape>()
+        selected = selected ?? this.calculateSelectedEntries()
 
         this.props.extraEntries?.forEach(name => {
             entries.set(name, { name, isChecked: false })
         })
 
-        results.forEach(res => {
+        const loadedSuggestions = await this.loadSuggestions()
+        loadedSuggestions.forEach(res => {
             entries.set(res.name, res)
         })
 

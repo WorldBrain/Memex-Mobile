@@ -74,7 +74,7 @@ export default class PageEditorScreen extends NavigationScreen<
             <>
                 <MetaPicker
                     {...this.props}
-                    initEntries={initEntries}
+                    initSelectedEntries={initEntries}
                     type={type}
                     url={this.state.page.url}
                     onEntryPress={this.handleEntryPress}

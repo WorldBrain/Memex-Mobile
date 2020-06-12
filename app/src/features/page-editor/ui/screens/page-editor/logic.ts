@@ -1,12 +1,20 @@
 import { Alert } from 'react-native'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
+import { storageKeys } from '../../../../../../app.json'
 import { UIPageWithNotes as Page, UINote } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
-import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
+import {
+    NavigationProps,
+    UIStorageModules,
+    UITaskState,
+    UIServices,
+} from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import { updateSuggestionsCache } from 'src/features/page-editor/utils'
+import { INIT_SUGGESTIONS_LIMIT } from 'src/features/meta-picker/ui/screens/meta-picker/constants'
 
 export interface State {
     loadState: UITaskState
@@ -23,6 +31,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends NavigationProps {
+    services: UIServices<'localStorage'>
     storage: UIStorageModules<'metaPicker' | 'pageEditor' | 'overview'>
 }
 
@@ -169,39 +178,52 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
+    private async createTagEntry(url: string, name: string) {
+        this.emitMutation({
+            page: state => ({
+                ...state,
+                tags: [...state.tags, name],
+            }),
+        })
+
+        await this.props.storage.modules.metaPicker.createTag({ url, name })
+        await this._updateTagSuggestionsCache({ added: name })
+    }
+
+    private async createListEntry(url: string, name: string) {
+        const { metaPicker } = this.props.storage.modules
+
+        this.emitMutation({
+            page: state => ({
+                ...state,
+                lists: [...state.lists, name],
+            }),
+        })
+        const lists = await metaPicker.findListsByNames({ names: [name] })
+
+        let listId
+        if (!lists.length) {
+            const { object } = await metaPicker.createList({ name })
+            listId = object.id
+        } else {
+            listId = lists[0].id
+        }
+
+        await metaPicker.createPageListEntry({ pageUrl: url, listId })
+        await this._updateListSuggestionsCache({ added: name })
+    }
+
     async createEntry({
         event: { name },
         previousState,
     }: IncomingUIEvent<State, Event, 'createEntry'>) {
-        const { metaPicker } = this.props.storage.modules
         const url = previousState.page.url
 
-        if (previousState.mode === 'tags') {
-            this.emitMutation({
-                page: state => ({
-                    ...state,
-                    tags: [...state.tags, name],
-                }),
-            })
-            await metaPicker.createTag({ url, name })
-        } else {
-            this.emitMutation({
-                page: state => ({
-                    ...state,
-                    lists: [...state.lists, name],
-                }),
-            })
-            const lists = await metaPicker.findListsByNames({ names: [name] })
-
-            let listId
-            if (!lists.length) {
-                const { object } = await metaPicker.createList({ name })
-                listId = object.id
-            } else {
-                listId = lists[0].id
-            }
-
-            await metaPicker.createPageListEntry({ pageUrl: url, listId })
+        switch (previousState.mode) {
+            case 'tags':
+                return this.createTagEntry(url, name)
+            default:
+                return this.createListEntry(url, name)
         }
     }
 
@@ -258,5 +280,47 @@ export default class Logic extends UILogic<State, Event> {
                 ],
             }),
         }
+    }
+
+    private _updateListSuggestionsCache(args: {
+        added?: string
+        removed?: string
+        updated?: [string, string]
+    }) {
+        const { localStorage } = this.props.services
+
+        return updateSuggestionsCache({
+            ...args,
+            suggestionLimit: INIT_SUGGESTIONS_LIMIT,
+            setCache: async suggestions =>
+                localStorage.set(storageKeys.listSuggestionsCache, suggestions),
+            getCache: async () => {
+                const suggestions = await localStorage.get<string[]>(
+                    storageKeys.listSuggestionsCache,
+                )
+                return suggestions ?? []
+            },
+        })
+    }
+
+    private _updateTagSuggestionsCache(args: {
+        added?: string
+        removed?: string
+        updated?: [string, string]
+    }) {
+        const { localStorage } = this.props.services
+
+        return updateSuggestionsCache({
+            ...args,
+            suggestionLimit: INIT_SUGGESTIONS_LIMIT,
+            setCache: async suggestions =>
+                localStorage.set(storageKeys.tagSuggestionsCache, suggestions),
+            getCache: async () => {
+                const suggestions = await localStorage.get<string[]>(
+                    storageKeys.tagSuggestionsCache,
+                )
+                return suggestions ?? []
+            },
+        })
     }
 }
