@@ -5,7 +5,9 @@ import styles from './sync-error.styles'
 import Button from 'src/ui/components/memex-btn'
 
 export interface Props {
+    isRetrying: boolean
     errorMessage: string
+    onRetryPress: () => void
     onReportPress: () => void
 }
 
@@ -14,13 +16,23 @@ const SyncError: React.StatelessComponent<Props> = props => (
         <Text style={styles.mainText}>
             Your content was saved but there was a sync error
         </Text>
-        <Button
-            style={styles.reportBtn}
-            title="Report >>"
-            onPress={props.onReportPress}
-            empty
-        />
+        <Text style={styles.errMsgTitle}>Error message:</Text>
         <Text style={styles.errMsg}>{props.errorMessage}</Text>
+        <View style={styles.buttonContainer}>
+            <Button
+                title="Report issue"
+                style={styles.reportBtn}
+                onPress={props.onReportPress}
+                empty
+            />
+            <Button
+                title="Retry"
+                style={styles.reportBtn}
+                onPress={props.onRetryPress}
+                isLoading={props.isRetrying}
+                empty
+            />
+        </View>
     </View>
 )
 

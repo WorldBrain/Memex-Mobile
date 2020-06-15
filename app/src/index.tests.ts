@@ -107,7 +107,6 @@ export function makeStorageTestFactory() {
                     )
                     const services = await createServices({
                         devicePlatform: 'integration-tests',
-                        auth,
                         storage,
                         signalTransportFactory,
                         sharedSyncLog,
@@ -115,6 +114,8 @@ export function makeStorageTestFactory() {
                         errorTracker,
                         disableSyncEncryption: true,
                         keychain: new MockKeychainPackage(),
+                        firebase: {} as any,
+                        auth,
                     })
                     await setStorageMiddleware({
                         services,

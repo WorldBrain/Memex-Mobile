@@ -7,15 +7,26 @@ export default EStyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
+    buttonContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 20,
+    },
     mainText: {
         fontWeight: '700',
-        fontSize: 18,
+        fontSize: 16,
         marginVertical: 25,
         lineHeight: '2rem',
         paddingHorizontal: 60,
         textAlign: 'center',
     },
     reportBtn: {},
+    errMsgTitle: {
+        fontWeight: '600',
+        fontSize: 16,
+    },
     errMsg: {
         marginVertical: 25,
         color: '#FC0C0C',
