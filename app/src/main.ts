@@ -6,7 +6,6 @@ import '@react-native-firebase/auth'
 import '@react-native-firebase/functions'
 import * as Sentry from '@sentry/react-native'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
-import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
@@ -58,11 +57,12 @@ export async function main() {
         devicePlatform: Platform.OS as MemexSyncDevicePlatform,
         signalTransportFactory: createFirebaseSignalTransport,
         sharedSyncLog: serverStorage.modules.sharedSyncLog,
-        auth: new WorldbrainAuthService(firebase),
         errorTracker,
         localStorage,
+        firebase,
         storage,
     })
+
     const dependencies = { storage, services }
 
     await setStorageMiddleware({
