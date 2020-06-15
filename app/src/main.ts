@@ -18,7 +18,11 @@ import {
     createServerStorage,
 } from './storage'
 import { createServices } from './services'
-import { setupBackgroundSync, setupFirebaseAuth } from './services/setup'
+import {
+    setupBackgroundSync,
+    setupFirebaseAuth,
+    setupContinuousSync,
+} from './services/setup'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
@@ -69,9 +73,11 @@ export async function main() {
         ...dependencies,
         enableAutoSync: true,
     })
+
     await setupBackgroundSync(dependencies)
     await setupFirebaseAuth(dependencies)
-    await services.sync.continuousSync.setup()
+    await setupContinuousSync(dependencies)
+
     await runMigrations(dependencies)
 
     ui.initialize({ dependencies })

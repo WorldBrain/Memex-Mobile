@@ -11,6 +11,19 @@ export const setupBackgroundSync: ServiceStarter = async ({ services }) => {
     })
 }
 
+export const setupContinuousSync: ServiceStarter = async ({ services }) => {
+    await services.sync.continuousSync.setup()
+
+    services.sync.continuousSync.events.addListener(
+        'syncFinished',
+        ({ error }) => {
+            if (error) {
+                services.errorTracker.track(error)
+            }
+        },
+    )
+}
+
 export const setupFirebaseAuth: ServiceStarter = async ({ services }) => {
     // iOS only: Set up Firebase to store auth state in shared iOS group space,
     //  allowing both the share ext + main app to share logged-in state automatically.
