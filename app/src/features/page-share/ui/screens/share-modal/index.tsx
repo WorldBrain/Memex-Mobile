@@ -1,5 +1,7 @@
 import React from 'react'
-import { Text } from 'react-native'
+import { Text, Linking } from 'react-native'
+
+import { supportEmail } from '../../../../../../app.json'
 import { NavigationScreen } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import Logic, { Props, State, Event } from './logic'
@@ -71,12 +73,12 @@ export default class ShareModalScreen extends NavigationScreen<
     }
 
     private handleUndo = () => {
-        return this.processEvent('undoPageSave', {})
+        return this.processEvent('undoPageSave', null)
     }
 
     private handleSave = () => {
         if (this.isInputDirty) {
-            this.processEvent('save', {})
+            this.processEvent('save', null)
         } else {
             this.handleModalClose()
         }
@@ -85,7 +87,7 @@ export default class ShareModalScreen extends NavigationScreen<
     }
 
     private handleStarPress = () => {
-        this.processEvent('togglePageStar', {})
+        this.processEvent('togglePageStar', null)
     }
 
     private handleMetaPickerEntryPress = async (entry: MetaTypeShape) => {
@@ -101,6 +103,21 @@ export default class ShareModalScreen extends NavigationScreen<
 
     private handleNoteTextChange = (value: string) => {
         this.processEvent('setNoteText', { value })
+    }
+
+    private handleSyncErrorReport = () => {
+        const subject = `SYNC ERROR: share modal`
+        const body = `
+        I encountered an error in the process of auto-sync when using the Memex Go share modal.
+
+        Below is the error message:
+
+        ${this.state.errorMessage}
+        `
+
+        return Linking.openURL(
+            `mailto:${supportEmail}?subject=${subject}&body=${body}`,
+        )
     }
 
     private setMetaPickerRef = (metaPicker: MetaPicker) => {
@@ -200,14 +217,16 @@ export default class ShareModalScreen extends NavigationScreen<
         return (
             <>
                 <ActionBar
-                    leftBtnText="Undo"
                     rightBtnText="Close"
-                    onLeftBtnPress={this.handleUndo}
-                    onRightBtnPress={this.handleModalClose}
+                    onRightBtnPress={() =>
+                        this.processEvent('clearSyncError', null)
+                    }
                 />
                 <SyncError
                     errorMessage={this.state.errorMessage!}
-                    onReportPress={this.handleModalClose}
+                    onReportPress={this.handleSyncErrorReport}
+                    isRetrying={this.state.syncRetryState === 'running'}
+                    onRetryPress={() => this.processEvent('retrySync', null)}
                 />
             </>
         )
