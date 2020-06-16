@@ -43,6 +43,7 @@ export default class SettingsMenuScreen extends NavigationScreen<
                 onExitErrorPress={() =>
                     this.processEvent('clearSyncError', null)
                 }
+                hasSuccessfullySynced={this.state.syncState === 'done'}
             >
                 <SettingsLink onPress={this.navigateTo('Onboarding')}>
                     Tutorial

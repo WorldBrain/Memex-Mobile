@@ -8,6 +8,7 @@ import Button from 'src/ui/components/memex-btn'
 export interface Props {
     isPaired: boolean
     isSyncing: boolean
+    hasSuccessfullySynced: boolean
     versionCode: string
     syncErrorMessage?: string
     onSyncPress: () => void
@@ -17,7 +18,17 @@ export interface Props {
 }
 
 class SettingsMenu extends React.PureComponent<Props> {
+    get syncButtonStyles(): string | undefined {
+        if (this.props.hasSuccessfullySynced) {
+            return styles.syncButtonSuccess
+        }
+    }
+
     get syncButtonText(): string {
+        if (this.props.hasSuccessfullySynced) {
+            return 'Synced!'
+        }
+
         return this.props.isPaired ? 'Sync Now' : 'Setup Sync With Computer'
     }
 
@@ -60,10 +71,11 @@ class SettingsMenu extends React.PureComponent<Props> {
                 />
                 <View style={styles.mainContainer}>
                     <Button
+                        secondary
                         title={this.syncButtonText}
+                        style={this.syncButtonStyles}
                         onPress={this.props.onSyncPress}
                         isLoading={this.props.isSyncing}
-                        secondary
                     />
                     <View style={styles.linksContainer}>
                         {this.props.children}
