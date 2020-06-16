@@ -6,6 +6,8 @@ import {
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 import { doInitialSync } from './index.tests'
 import { AUTO_SYNC_COLLECTIONS } from './constants'
+import { InitialSync } from '@worldbrain/storex-sync/lib/integration/initial-sync'
+import { MemexInitialSync } from '@worldbrain/memex-common/lib/sync'
 
 describe('SyncService', () => {
     const it = makeMultiDeviceTestFactory()
@@ -21,6 +23,47 @@ describe('SyncService', () => {
             target: devices[1],
         })
         await checkIntegrationTestData(devices[1])
+    })
+
+    it('should ignore constraint errors during initial sync', async ({
+        createDevice,
+    }) => {
+        const devices = [await createDevice(), await createDevice()]
+
+        devices[0].auth.setUser(TEST_USER)
+
+        await insertIntegrationTestData(devices[0])
+
+        const firstInitialSync = devices[0].services.sync.initialSync
+
+        const origGetPreSendProcessor = firstInitialSync.getPreSendProcessor.bind(
+            firstInitialSync,
+        ) as MemexInitialSync['getPreSendProcessor']
+        firstInitialSync.getPreSendProcessor = () => {
+            const preSendProcessor = origGetPreSendProcessor()
+            return async params => {
+                const result = (await preSendProcessor(params)) as any
+                if (
+                    result.collection === 'tags' &&
+                    result.object.name === 'testB'
+                ) {
+                    delete result.object.url
+                }
+                return result
+            }
+        }
+
+        await doInitialSync({
+            source: devices[0],
+            target: devices[1],
+        })
+        expect(
+            (
+                await devices[1].storage.manager
+                    .collection('tags')
+                    .findObjects({})
+            ).map((object: any) => object.name),
+        ).toEqual(['testA', 'testC', 'testD'])
     })
 
     it('should be able to do an incremental sync', async ({ createDevice }) => {
