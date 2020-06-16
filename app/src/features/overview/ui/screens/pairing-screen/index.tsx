@@ -3,16 +3,25 @@ import { Alert } from 'react-native'
 
 import SyncSuccess from 'src/features/sync/ui/components/sync-success-stage'
 import { storageKeys } from '../../../../../../app.json'
-import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
+import {
+    NavigationScreen,
+    NavigationProps,
+    UIServices,
+    UIStorageModules,
+} from 'src/ui/types'
 
 interface Props extends NavigationProps {
     services: UIServices<'localStorage'>
+    storage: UIStorageModules<'syncInfo'>
 }
 
 export default class RePairScreen extends NavigationScreen<Props, {}, Event> {
     private handleRePairConfirmation = async () => {
-        await this.props.services.localStorage.clear(storageKeys.syncKey)
-        this.props.navigation.navigate('Sync')
+        const { services, storage, navigation } = this.props
+
+        await services.localStorage.clear(storageKeys.syncKey)
+        await storage.modules.syncInfo.removeAllDevices()
+        navigation.navigate('Sync')
     }
 
     private handleRePairChoice = () => {
