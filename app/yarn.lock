@@ -10142,10 +10142,10 @@ uglify-js@^3.1.4:
     commander "~2.20.0"
     source-map "~0.6.1"
 
-ui-logic-core@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/ui-logic-core/-/ui-logic-core-0.1.1.tgz#b1327da85612db56a1751efc16c728f73bf87552"
-  integrity sha512-BlG34aO8CgUipY9zawSH2P1Vetudp6lsgLnDfXiTQLxXtO9J+n1/ZbKYb4cg+sZ9DJgqpj3Im8J0mNobiaAzEw==
+ui-logic-core@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/ui-logic-core/-/ui-logic-core-0.2.0.tgz#d5e12ebf62f55280c9b19a5344af0e7981d8353b"
+  integrity sha512-AR3qmy+ujB5p44XCO2Ot5/xPjpms+s9wal6uQ43L+kgeysM/U011ZFWTKuYxFuGki3f9s4rYUWuGxaws40xShA==
   dependencies:
     events "^3.0.0"
     source-map-support "^0.4.18"
