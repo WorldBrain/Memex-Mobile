@@ -50,6 +50,7 @@ export async function createServices(
             auth: options.auth,
             disableEncryption: options.disableSyncEncryption,
             localStorage,
+            errorTracker: options.errorTracker,
         }),
     }
 }
