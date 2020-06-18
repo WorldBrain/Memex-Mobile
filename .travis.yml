@@ -66,6 +66,7 @@ jobs:
         - "./install-deps-ios.sh"
       script:
         - cd app
+        - yarn content-script:ci
         - yarn ios:prod
 
     - stage: android-production
@@ -88,6 +89,7 @@ jobs:
         - "./install-deps-android.sh"
       script:
         - cd app
+        - yarn content-script:ci
         - yarn android:prod
 
     - stage: ios-development
@@ -105,6 +107,7 @@ jobs:
         - "./install-deps-ios.sh"
       script:
         - cd app
+        - yarn content-script:ci
         - yarn ios:dev
 
     - stage: android-development
@@ -127,6 +130,7 @@ jobs:
         - "./install-deps-android.sh"
       script:
         - cd app
+        - yarn content-script:ci
         - yarn android:dev
 
 env:
