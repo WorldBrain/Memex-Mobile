@@ -29,6 +29,12 @@ export class WebViewContentScript {
         return this.props.document ?? document
     }
 
+    addStyleElementToHead(css: string) {
+        const style = this.document.createElement('style')
+        style.innerHTML = css
+        this.document.head.appendChild(style)
+    }
+
     handleSelectionChange = () => {
         const selection = this.document.getSelection()
 
@@ -68,7 +74,7 @@ export class WebViewContentScript {
     }
 
     private getDOMSelection(): Selection {
-        const selection = document.getSelection()
+        const selection = this.document.getSelection()
 
         if (!selection || selection.type === 'None') {
             throw new Error('Unable to get selection from DOM')

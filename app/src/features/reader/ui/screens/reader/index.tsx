@@ -22,7 +22,7 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
 
     private webView!: WebView
 
-    private constructJs = (
+    private constructJsRemoteFnCall = (
         fnName: RemoteFnName,
         serializedArg?: string,
     ): string => {
@@ -32,7 +32,9 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     }
 
     private runFnInWebView = (fnName: RemoteFnName, serializedArg?: string) =>
-        this.webView.injectJavaScript(this.constructJs(fnName, serializedArg))
+        this.webView.injectJavaScript(
+            this.constructJsRemoteFnCall(fnName, serializedArg),
+        )
 
     private handleBackClick = () =>
         this.props.navigation.navigate({ routeName: 'Overview' })
@@ -78,12 +80,26 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     }
 
     private handleOpenLinksInBrowser = (event: WebViewNavigation) => {
-        if (Logic.formUrl(event.url) === this.state.url) {
+        if (
+            event.navigationType !== 'click' ||
+            Logic.formUrl(event.url) === this.state.url
+        ) {
             return
         }
 
         this.webView.stopLoading()
         return Linking.openURL(event.url)
+    }
+
+    private generateInitialJSToInject() {
+        const renderHighlightsCall = this.constructJsRemoteFnCall(
+            'renderHighlights',
+            JSON.stringify(this.state.annotationAnchors),
+        )
+
+        // TODO: We only need to inject `this.state.contentScriptSource` if full webpage mode -
+        //   else we include it with the HTML we pass to the WebView for rendering.
+        return `${this.state.contentScriptSource}; ${renderHighlightsCall}`
     }
 
     private renderWebView() {
@@ -106,16 +122,13 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
 
         return (
             <ReaderWebView
-                setRef={ref => (this.webView = ref)}
                 url={this.state.url}
+                setRef={ref => (this.webView = ref)}
                 className={styles.webView}
-                htmlSource={this.state.htmlSource!}
                 onMessage={this.handleWebViewMessageReceived}
+                htmlSource={this.state.htmlSource!}
+                injectedJavaScript={this.generateInitialJSToInject()}
                 onNavigationStateChange={this.handleOpenLinksInBrowser}
-                injectedJavaScript={this.constructJs(
-                    'renderHighlights',
-                    JSON.stringify(this.state.annotationAnchors),
-                )}
             />
         )
     }

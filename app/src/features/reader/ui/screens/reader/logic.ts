@@ -14,12 +14,12 @@ import {
 import { loadInitial } from 'src/ui/utils'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { ReadabilityArticle } from 'src/services/readability/types'
-import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
-import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
 import { ReaderNavigationParams } from './types'
 import { Anchor } from 'src/content-script/types'
 import { NoteEditorNavigationParams } from 'src/features/overview/ui/screens/note-editor/types'
+// import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
+// import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
 export interface State {
     url: string
@@ -31,6 +31,7 @@ export interface State {
     isListed: boolean
     hasNotes: boolean
     htmlSource?: string
+    contentScriptSource?: string
     errorMessage?: string
     annotationAnchors: Anchor[]
 }
@@ -141,21 +142,22 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async loadReadablePage(url: string, title: string) {
-        const { reader: readerStorage } = this.props.storage.modules
-        const { readability, resourceLoader } = this.props.services
+        // const { reader: readerStorage } = this.props.storage.modules
+        // const { readability, resourceLoader } = this.props.services
+        const { resourceLoader } = this.props.services
 
-        const existingReadable = await readerStorage.getReadablePage(url)
-        let article: ReadabilityArticle
+        // const existingReadable = await readerStorage.getReadablePage(url)
+        // let article: ReadabilityArticle
 
-        if (existingReadable == null) {
-            article = await readability.fetchAndParse({ url })
-            await this.storeReadableArticle(url, article, title)
-        } else {
-            article = {
-                title: existingReadable.title,
-                content: existingReadable.content,
-            } as any
-        }
+        // if (existingReadable == null) {
+        //     article = await readability.fetchAndParse({ url })
+        //     await this.storeReadableArticle(url, article, title)
+        // } else {
+        //     article = {
+        //         title: existingReadable.title,
+        //         content: existingReadable.content,
+        //     } as any
+        // }
 
         // Don't attempt to load this in jest
         let js = ''
@@ -163,14 +165,16 @@ export default class Logic extends UILogic<State, Event> {
             js = await this.props.loadContentScript(resourceLoader)
         }
 
-        const html = createHtmlStringFromTemplate({
-            body: article.content,
-            title: article.title,
-            css: inPageCSS,
-            js,
-        })
+        this.emitMutation({ contentScriptSource: { $set: js } })
 
-        this.emitMutation({ htmlSource: { $set: html } })
+        // const html = createHtmlStringFromTemplate({
+        //     body: article.content,
+        //     title: article.title,
+        //     css: inPageCSS,
+        //     js,
+        // })
+
+        // this.emitMutation({ htmlSource: { $set: html } })
     }
 
     private async loadPageState(url: string) {
