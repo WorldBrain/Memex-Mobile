@@ -3,9 +3,14 @@ import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { FakeNavigation } from 'src/tests/navigation'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
+import { Anchor } from 'src/content-script/types'
 
 const TEST_URL_1 = 'getmemex.com'
 const TEST_TITLE_1 = 'test'
+const TEST_ANCHOR_1: Anchor = {
+    quote: 'this is a test',
+    descriptor: { content: 'test', strategy: 'test' },
+}
 
 describe('reader screen UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -54,6 +59,69 @@ describe('reader screen UI logic tests', () => {
         await element.processEvent('toggleBookmark', null)
         expect(element.state.isBookmarked).toBe(false)
         expect(await overview.isPageStarred({ url: TEST_URL_1 })).toBe(false)
+    })
+
+    it('should be able to set reader error message', async dependencies => {
+        const { element } = setup(dependencies)
+
+        const TEST_MSG_1 = 'This is a test error'
+
+        expect(element.state.errorMessage).toBeUndefined()
+        element.processEvent('setErrorMessage', { message: TEST_MSG_1 })
+        expect(element.state.errorMessage).toEqual(TEST_MSG_1)
+        element.processEvent('setErrorMessage', {})
+        expect(element.state.errorMessage).toEqual('An error happened')
+    })
+
+    it('should be able to create a highlight from a text selection', async dependencies => {
+        const { element } = setup(dependencies)
+        const { pageEditor } = dependencies.storage.modules
+
+        expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([])
+        expect(element.state.hasNotes).toBe(false)
+        expect(element.state.highlights).toEqual([])
+
+        await element.processEvent('createHighlight', { anchor: TEST_ANCHOR_1 })
+
+        expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([
+            expect.objectContaining({
+                pageUrl: TEST_URL_1,
+                pageTitle: TEST_TITLE_1,
+                selector: TEST_ANCHOR_1,
+                body: TEST_ANCHOR_1.quote,
+            }),
+        ])
+        expect(element.state.hasNotes).toBe(true)
+        expect(element.state.highlights).toEqual([
+            expect.objectContaining({
+                anchor: TEST_ANCHOR_1,
+            }),
+        ])
+    })
+
+    it('should be able to signal intent to create an annot from a text selection', async dependencies => {
+        const { element, navigation } = setup(dependencies)
+
+        await element.processEvent('createAnnotation', {
+            anchor: TEST_ANCHOR_1,
+        })
+
+        expect(navigation.popRequests()).toEqual([
+            {
+                type: 'navigate',
+                target: 'NoteEditor',
+                params: {
+                    [NAV_PARAMS.NOTE_EDITOR]: {
+                        mode: 'create',
+                        highlightText: TEST_ANCHOR_1.quote,
+                        anchor: TEST_ANCHOR_1,
+                        previousRoute: 'Reader',
+                        pageTitle: TEST_TITLE_1,
+                        pageUrl: Logic.formUrl(TEST_URL_1),
+                    },
+                },
+            },
+        ])
     })
 
     it('should be able to click-to-edit highlights', async dependencies => {

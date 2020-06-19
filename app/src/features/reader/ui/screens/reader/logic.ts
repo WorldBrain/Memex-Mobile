@@ -225,7 +225,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     setErrorMessage: EventHandler<'setErrorMessage'> = ({ event }) => {
-        const defaultMessage = 'An error sssshappened'
+        const defaultMessage = 'An error happened'
 
         return this.emitMutation({
             errorMessage: { $set: event.message ?? defaultMessage },
@@ -241,7 +241,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     createHighlight: EventHandler<'createHighlight'> = async ({
-        event,
+        event: { anchor },
         previousState,
     }) => {
         const { pageEditor } = this.props.storage.modules
@@ -249,8 +249,8 @@ export default class Logic extends UILogic<State, Event> {
         const { object } = await pageEditor.createAnnotation({
             pageUrl: previousState.url,
             pageTitle: previousState.title,
-            selector: event.anchor,
-            body: event.anchor.quote,
+            selector: anchor,
+            body: anchor.quote,
         })
 
         this.emitMutation({
@@ -258,21 +258,21 @@ export default class Logic extends UILogic<State, Event> {
             highlights: {
                 $apply: (state: Highlight[]) => [
                     ...state,
-                    { url: object.url, anchor: event.anchor },
+                    { url: object.url, anchor },
                 ],
             },
         })
     }
 
     createAnnotation: EventHandler<'createAnnotation'> = async ({
-        event,
+        event: { anchor },
         previousState,
     }) => {
         this.props.navigation.navigate('NoteEditor', {
             [NAV_PARAMS.NOTE_EDITOR]: {
                 mode: 'create',
-                highlightText: event.anchor.quote,
-                anchor: event.anchor,
+                highlightText: anchor.quote,
+                anchor,
                 previousRoute: 'Reader',
                 pageTitle: previousState.title,
                 pageUrl: previousState.url,
