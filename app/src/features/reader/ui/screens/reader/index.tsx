@@ -91,16 +91,26 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
         }
     }
 
-    private handleOpenLinksInBrowser = (event: WebViewNavigation) => {
-        if (
-            event.navigationType !== 'click' ||
-            Logic.formUrl(event.url) === this.state.url
-        ) {
+    private handleNavStateChange = (event: WebViewNavigation) => {
+        switch (event.navigationType) {
+            case 'click':
+                return this.handleOpenLinksInBrowser(event.url)
+            case 'backforward':
+            case 'formresubmit':
+            case 'formsubmit':
+            case 'reload':
+                return this.webView.stopLoading()
+            default:
+        }
+    }
+
+    private handleOpenLinksInBrowser(url: string) {
+        if (Logic.formUrl(url) === this.state.url) {
             return
         }
 
         this.webView.stopLoading()
-        return Linking.openURL(event.url)
+        return Linking.openURL(url)
     }
 
     private generateInitialJSToInject() {
@@ -142,7 +152,7 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 onMessage={this.handleWebViewMessageReceived}
                 htmlSource={this.state.htmlSource!}
                 injectedJavaScript={this.generateInitialJSToInject()}
-                onNavigationStateChange={this.handleOpenLinksInBrowser}
+                onNavigationStateChange={this.handleNavStateChange}
                 startInLoadingState
                 renderLoading={this.renderLoading}
                 // This flag needs to be set to afford text selection on iOS.
