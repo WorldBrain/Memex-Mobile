@@ -23,9 +23,6 @@ class ReaderWebView extends React.PureComponent<Props> {
                         // html: this.props.htmlSource,
                         // baseUrl: this.props.url,
                     }}
-                    // This flag needs to be set to afford text selection on iOS.
-                    //   https://github.com/react-native-community/react-native-webview/issues/1275
-                    allowsLinkPreview
                     {...this.props}
                     ref={this.props.setRef}
                     onMessage={({ nativeEvent }) =>

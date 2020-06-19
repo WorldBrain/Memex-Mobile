@@ -114,13 +114,15 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
         return `${this.state.contentScriptSource}; ${renderHighlightsCall}`
     }
 
+    private renderLoading = () => (
+        <View style={[styles.webView, styles.webViewLoader]}>
+            <LoadingBalls />
+        </View>
+    )
+
     private renderWebView() {
         if (this.state.loadState === 'running') {
-            return (
-                <View style={[styles.webView, styles.webViewLoader]}>
-                    <LoadingBalls />
-                </View>
-            )
+            return this.renderLoading()
         }
 
         if (this.state.errorMessage) {
@@ -141,6 +143,11 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 htmlSource={this.state.htmlSource!}
                 injectedJavaScript={this.generateInitialJSToInject()}
                 onNavigationStateChange={this.handleOpenLinksInBrowser}
+                startInLoadingState
+                renderLoading={this.renderLoading}
+                // This flag needs to be set to afford text selection on iOS.
+                //   https://github.com/react-native-community/react-native-webview/issues/1275
+                allowsLinkPreview
             />
         )
     }
