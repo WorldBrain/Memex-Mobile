@@ -1,6 +1,9 @@
 import { ReadablePageData } from './types'
 
-type WithoutTimestamps = Omit<ReadablePageData, 'createdWhen' | 'lastEdited'>
+export type WithoutTimestamps = Omit<
+    ReadablePageData,
+    'createdWhen' | 'lastEdited'
+>
 
 export const READABLE_1: WithoutTimestamps = {
     url: 'test.com',
