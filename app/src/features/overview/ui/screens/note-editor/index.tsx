@@ -30,6 +30,10 @@ export default class NoteEditorScreen extends NavigationScreen<
     }
 
     private get disableSaveBtn(): boolean {
+        if ((this.logic as Logic).initNoteText === this.state.noteText) {
+            return true
+        }
+
         if ((this.logic as Logic).highlightAnchor == null) {
             return this.disableInputs || !this.state.noteText?.trim().length
         }

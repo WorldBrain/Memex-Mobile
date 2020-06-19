@@ -16,7 +16,7 @@ import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { ReadabilityArticle } from 'src/services/readability/types'
 import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
 import { ReaderNavigationParams } from './types'
-import { Anchor } from 'src/content-script/types'
+import { Anchor, Highlight } from 'src/content-script/types'
 import { NoteEditorNavigationParams } from 'src/features/overview/ui/screens/note-editor/types'
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
@@ -33,10 +33,11 @@ export interface State {
     htmlSource?: string
     contentScriptSource?: string
     errorMessage?: string
-    annotationAnchors: Anchor[]
+    highlights: Highlight[]
 }
 
 export type Event = UIEvent<{
+    editHighlight: { highlightUrl: string }
     setErrorMessage: { message?: string }
     createHighlight: { anchor: Anchor }
     createAnnotation: { anchor: Anchor }
@@ -88,7 +89,7 @@ export default class Logic extends UILogic<State, Event> {
             isTagged: false,
             isListed: false,
             hasNotes: false,
-            annotationAnchors: [],
+            highlights: [],
         }
     }
 
@@ -96,7 +97,7 @@ export default class Logic extends UILogic<State, Event> {
         await loadInitial<State>(this, async () => {
             try {
                 await this.loadPageState(previousState.url)
-                await this.loadPageAnnotations(previousState.url)
+                await this.loadPageHighlights(previousState.url)
                 await this.loadReadablePage(
                     previousState.url,
                     previousState.title,
@@ -131,13 +132,18 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    private async loadPageAnnotations(url: string) {
+    private async loadPageHighlights(url: string) {
         const { pageEditor } = this.props.storage.modules
 
         const annotations = await pageEditor.findAnnotations({ url })
 
         this.emitMutation({
-            annotationAnchors: { $set: annotations.map(a => a.selector) },
+            highlights: {
+                $set: annotations.map(a => ({
+                    anchor: a.selector,
+                    url: a.url,
+                })),
+            },
         })
     }
 
@@ -240,14 +246,22 @@ export default class Logic extends UILogic<State, Event> {
     }) => {
         const { pageEditor } = this.props.storage.modules
 
-        await pageEditor.createAnnotation({
+        const { object } = await pageEditor.createAnnotation({
             pageUrl: previousState.url,
             pageTitle: previousState.title,
             selector: event.anchor,
             body: event.anchor.quote,
         })
 
-        this.emitMutation({ hasNotes: { $set: true } })
+        this.emitMutation({
+            hasNotes: { $set: true },
+            highlights: {
+                $apply: (state: Highlight[]) => [
+                    ...state,
+                    { url: object.url, anchor: event.anchor },
+                ],
+            },
+        })
     }
 
     createAnnotation: EventHandler<'createAnnotation'> = async ({
@@ -257,11 +271,39 @@ export default class Logic extends UILogic<State, Event> {
         this.props.navigation.navigate('NoteEditor', {
             [NAV_PARAMS.NOTE_EDITOR]: {
                 mode: 'create',
-                pageUrl: previousState.url,
                 highlightText: event.anchor.quote,
-                previousRoute: 'Reader',
                 anchor: event.anchor,
+                previousRoute: 'Reader',
                 pageTitle: previousState.title,
+                pageUrl: previousState.url,
+            } as NoteEditorNavigationParams,
+        })
+    }
+
+    editHighlight: EventHandler<'editHighlight'> = async ({
+        event: { highlightUrl },
+        previousState,
+    }) => {
+        const { navigation, storage } = this.props
+
+        const note = await storage.modules.pageEditor.findNote({
+            url: highlightUrl,
+        })
+
+        if (!note) {
+            throw new Error('Clicked highlight that is not tracked in DB.')
+        }
+
+        navigation.navigate('NoteEditor', {
+            [NAV_PARAMS.NOTE_EDITOR]: {
+                mode: 'update',
+                noteUrl: note.url,
+                highlightText: note.body,
+                noteText: note.comment,
+                anchor: note.selector,
+                previousRoute: 'Reader',
+                pageTitle: previousState.title,
+                pageUrl: previousState.url,
             } as NoteEditorNavigationParams,
         })
     }

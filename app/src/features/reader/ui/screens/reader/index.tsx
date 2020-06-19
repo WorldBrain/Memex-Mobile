@@ -11,7 +11,7 @@ import ErrorView from '../../components/error-view'
 import styles from './styles'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
-import { Message as WebViewMessage } from 'src/content-script/types'
+import { Message as WebViewMessage, Anchor } from 'src/content-script/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 
@@ -24,17 +24,16 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
 
     private constructJsRemoteFnCall = (
         fnName: RemoteFnName,
-        serializedArg?: string,
+        arg?: any,
     ): string => {
-        return !serializedArg
+        const serializedArg = JSON.stringify(arg)
+        return !arg
             ? `window['remoteFnEvents'].emit('${fnName}'); true;`
             : `window['remoteFnEvents'].emit('${fnName}', ${serializedArg}); true;`
     }
 
-    private runFnInWebView = (fnName: RemoteFnName, serializedArg?: string) =>
-        this.webView.injectJavaScript(
-            this.constructJsRemoteFnCall(fnName, serializedArg),
-        )
+    private runFnInWebView = (fnName: RemoteFnName, arg?: any) =>
+        this.webView.injectJavaScript(this.constructJsRemoteFnCall(fnName, arg))
 
     private handleBackClick = () =>
         this.props.navigation.navigate({ routeName: 'Overview' })
@@ -47,6 +46,17 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 mode,
             } as PageEditorNavigationParams,
         })
+
+    private async createHighlightThenRender(anchor: Anchor) {
+        await this.processEvent('createHighlight', { anchor })
+
+        const latestIndex = this.state.highlights.length - 1
+
+        this.runFnInWebView(
+            'renderHighlight',
+            this.state.highlights[latestIndex],
+        )
+    }
 
     private handleWebViewMessageReceived = (serialized: string) => {
         let message: WebViewMessage
@@ -64,12 +74,14 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                     text: message.payload,
                 })
             case 'highlight':
-                return this.processEvent('createHighlight', {
-                    anchor: message.payload,
-                })
+                return this.createHighlightThenRender(message.payload)
             case 'annotation':
                 return this.processEvent('createAnnotation', {
                     anchor: message.payload,
+                })
+            case 'highlightClicked':
+                return this.processEvent('editHighlight', {
+                    highlightUrl: message.payload,
                 })
             default:
                 console.warn(
@@ -94,7 +106,7 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     private generateInitialJSToInject() {
         const renderHighlightsCall = this.constructJsRemoteFnCall(
             'renderHighlights',
-            JSON.stringify(this.state.annotationAnchors),
+            this.state.highlights,
         )
 
         // TODO: We only need to inject `this.state.contentScriptSource` if full webpage mode -

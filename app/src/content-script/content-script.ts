@@ -6,7 +6,7 @@ import {
 } from '@worldbrain/memex-common/lib/annotations'
 
 import { setupRemoteFunctions } from './remote-functions'
-import { Anchor, MessagePoster } from './types'
+import { Anchor, MessagePoster, Highlight } from './types'
 import { HIGHLIGHT_CLASS } from './constants'
 
 export interface Props {
@@ -22,6 +22,7 @@ export class WebViewContentScript {
             createHighlight: this.createHighlight,
             createAnnotation: this.createAnnotation,
             renderHighlights: this.renderHighlights,
+            renderHighlight: this.renderHighlight,
         })
     }
 
@@ -51,8 +52,6 @@ export class WebViewContentScript {
         const anchor = await this.extractAnchorSelection(selection)
 
         this.props.postMessageToRN({ type, payload: anchor })
-
-        this.renderHighlight(anchor)
     }
 
     createAnnotation = this.setupAnnotationSteps('annotation')
@@ -83,12 +82,35 @@ export class WebViewContentScript {
         return selection
     }
 
-    renderHighlights = async (anchors: Anchor[]) =>
-        anchors.forEach(anchor => this.renderHighlight(anchor))
+    renderHighlights = async (highlights: Highlight[]) => {
+        for (const highlight of highlights) {
+            await this.renderHighlight(highlight)
+        }
+    }
 
-    private async renderHighlight({ descriptor }: Anchor) {
+    renderHighlight = async ({ anchor: { descriptor }, url }: Highlight) => {
         const range = await descriptorToRange({ descriptor })
         markRange({ range, cssClass: HIGHLIGHT_CLASS })
+
+        this.attachEventListenersToNewHighlights(url)
+    }
+
+    private attachEventListenersToNewHighlights(highlightUrl: string) {
+        // The only highlight without an annotation data att should be the newly created one
+        const newHighlights = this.document.querySelectorAll<HTMLElement>(
+            `.${HIGHLIGHT_CLASS}:not([data-annotation])`,
+        )
+
+        newHighlights.forEach(highlightEl => {
+            highlightEl.dataset.annotation = highlightUrl
+
+            highlightEl.addEventListener('click', () =>
+                this.props.postMessageToRN({
+                    type: 'highlightClicked',
+                    payload: highlightUrl,
+                }),
+            )
+        })
     }
 }
 
