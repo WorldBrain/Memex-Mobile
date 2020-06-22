@@ -38,4 +38,24 @@ export default EStyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    readerSegmentContainer: {
+        backgroundColor: '#e4e4e4',
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+    },
+    readerSegment: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+    },
+    readerSegmentText: {
+        fontSize: '1.2rem',
+        fontWeight: 'bold',
+    },
+    readerSegmentArrow: {
+        position: 'absolute',
+        right: 20,
+    },
 })

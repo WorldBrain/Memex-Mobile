@@ -50,7 +50,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends NavigationProps {
-    services: UIServices<'sync' | 'shareExt' | 'errorTracker'>
+    services: UIServices<'sync' | 'shareExt' | 'errorTracker' | 'localStorage'>
     storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
 }
 
