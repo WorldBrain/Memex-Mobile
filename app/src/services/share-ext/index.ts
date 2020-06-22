@@ -1,3 +1,4 @@
+import { Platform, Linking } from 'react-native'
 import ShareExtension from 'react-native-share-extension'
 import { URLNormalizer } from '@worldbrain/memex-url-utils'
 
@@ -41,10 +42,15 @@ export class ShareExtService {
 
     openAppReader(args: { url: string }): void {
         const normalized = this.normalizeUrl(args.url)
-        return this.openAppURL('reader/' + normalized)
+        return this.openAppLink('reader/' + normalized)
     }
 
-    openAppURL(url: string) {
-        this.shareAPI.openURL('memexgo://' + url)
+    openAppLink(url: string) {
+        const link = 'memexgo://' + url
+        if (Platform.OS === 'ios') {
+            this.shareAPI.openURL(link)
+        } else {
+            Linking.openURL(link)
+        }
     }
 }
