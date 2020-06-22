@@ -5,6 +5,7 @@ import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'
 import '@react-native-firebase/functions'
 import * as Sentry from '@sentry/react-native'
+import { normalizeUrl } from '@worldbrain/memex-url-utils'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
 import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
@@ -61,6 +62,7 @@ export async function main() {
         auth: new WorldbrainAuthService(firebase),
         errorTracker,
         localStorage,
+        normalizeUrl,
         storage,
     })
     const dependencies = { storage, services }

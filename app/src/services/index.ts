@@ -2,6 +2,7 @@ import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
 import { SignalTransportFactory } from '@worldbrain/memex-common/lib/sync'
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
+import { URLNormalizer } from '@worldbrain/memex-url-utils'
 
 import { Services } from './types'
 import { ShareExtService } from './share-ext'
@@ -17,7 +18,6 @@ import { ResourceLoaderService } from './resource-loader'
 
 export interface CreateServicesOptions {
     storage: Storage
-    signalTransportFactory: SignalTransportFactory
     sharedSyncLog: SharedSyncLog
     auth: AuthService
     keychain: KeychainAPI
@@ -25,6 +25,8 @@ export interface CreateServicesOptions {
     localStorage: LocalStorageService
     devicePlatform: MemexSyncDevicePlatform
     disableSyncEncryption?: boolean
+    signalTransportFactory: SignalTransportFactory
+    normalizeUrl: URLNormalizer
 }
 
 export async function createServices(
@@ -33,7 +35,7 @@ export async function createServices(
     const localStorage = options.localStorage
     return {
         auth: options.auth,
-        shareExt: new ShareExtService({}),
+        shareExt: new ShareExtService({ normalizeUrl: options.normalizeUrl }),
         backgroundProcess: new BackgroundProcessService({}),
         keychain: new KeychainService({ keychain: options.keychain }),
         errorTracker: options.errorTracker,

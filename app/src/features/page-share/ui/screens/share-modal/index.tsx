@@ -55,6 +55,10 @@ export default class ShareModalScreen extends NavigationScreen<
         )
     }
 
+    private navToReader = () => {
+        this.props.services.shareExt.openAppReader({ url: this.state.pageUrl })
+    }
+
     private calcInitEntries = (): string[] =>
         this.state.metaViewShown === 'collections'
             ? this.state.collectionsToAdd
@@ -136,8 +140,9 @@ export default class ShareModalScreen extends NavigationScreen<
                 <ActionBar
                     leftBtnText="Back"
                     onLeftBtnPress={this.handleMetaViewTypeSwitch(undefined)}
-                    rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
                     onRightBtnPress={this.handleSave}
+                    onReaderBtnPress={this.navToReader}
+                    rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
                 >
                     {this.renderTitle()}
                 </ActionBar>
@@ -159,8 +164,9 @@ export default class ShareModalScreen extends NavigationScreen<
                 <ActionBar
                     leftBtnText="Undo"
                     onLeftBtnPress={this.handleUndo}
-                    rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
                     onRightBtnPress={this.handleSave}
+                    onReaderBtnPress={this.navToReader}
+                    rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
                 >
                     {this.renderTitle()}
                 </ActionBar>
