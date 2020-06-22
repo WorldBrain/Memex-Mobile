@@ -18,7 +18,7 @@ import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
 import styles from './styles'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
-import { handleDeepLink } from 'src/ui/navigation/deep-linking'
+import { handleDeepLinkNav } from 'src/ui/navigation/deep-linking'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
@@ -47,7 +47,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         const url = await Linking.getInitialURL()
 
         if (url) {
-            handleDeepLink({ link: url, ...this.props })
+            handleDeepLinkNav({ link: url, ...this.props })
         }
     }
 
@@ -56,7 +56,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
     }
 
     private handleOpenURL = (event: { url: string }) =>
-        handleDeepLink({ link: event.url, ...this.props })
+        handleDeepLinkNav({ link: event.url, ...this.props })
 
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {

@@ -2,21 +2,31 @@ import { NavigationProps } from '../types'
 import { NAV_PARAMS } from './constants'
 import { ReaderNavigationParams } from 'src/features/reader/ui/screens/reader/types'
 
-export function handleDeepLink(args: { link: string } & NavigationProps) {
-    const route = args.link.replace(/.*?:\/\//g, '')
-    const matchResult = route.match(/\/([^\/]+)\/?$/)
+export interface DeepLinkParams {
+    routeName: string
+    routeParam: string
+}
+
+export function deriveParams(link: string): DeepLinkParams {
+    const route = link.replace(/.*?:\/\//g, '')
+    const matchResult = route.match(/\/([\w./?=&#@()+_\-,]+)\/?$/)
 
     if (!matchResult) {
-        throw new Error(
-            `Cannot extract route params from deep link: ${args.link}`,
-        )
+        throw new Error(`Cannot extract route params from deep link: ${link}`)
     }
 
     // TODO: allow multiple params to be sent
-    const param = matchResult[1]
+    const routeParam = matchResult[1]
     const [routeName] = route.split('/')
+
+    return { routeName, routeParam }
+}
+
+export function handleDeepLinkNav(args: { link: string } & NavigationProps) {
+    const { routeName, routeParam } = deriveParams(args.link)
+
     console.log('DEEP LINK ROUTE:', routeName)
-    console.log('DEEP LINK PARAM:', param)
+    console.log('DEEP LINK PARAM:', routeParam)
 
     const { navigate } = args.navigation
 
@@ -24,7 +34,7 @@ export function handleDeepLink(args: { link: string } & NavigationProps) {
         case 'reader':
             navigate('Reader', {
                 [NAV_PARAMS.READER]: {
-                    url: param,
+                    url: routeParam,
                 } as ReaderNavigationParams,
             })
             break
