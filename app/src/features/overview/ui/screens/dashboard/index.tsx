@@ -10,7 +10,6 @@ import {
     NativeScrollEvent,
     TouchableOpacity,
     Text,
-    Platform,
 } from 'react-native'
 import throttle from 'lodash/throttle'
 
@@ -18,7 +17,6 @@ import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
 import styles from './styles'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
-import { handleDeepLinkNav } from 'src/ui/navigation/deep-linking'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
@@ -38,25 +36,6 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
         super(props, { logic: new Logic(props) })
     }
-
-    async componentDidMount() {
-        if (Platform.OS === 'ios') {
-            return Linking.addEventListener('url', this.handleOpenURL)
-        }
-
-        const url = await Linking.getInitialURL()
-
-        if (url) {
-            handleDeepLinkNav({ link: url, ...this.props })
-        }
-    }
-
-    componentWillUnmount() {
-        Linking.removeEventListener('url', this.handleOpenURL)
-    }
-
-    private handleOpenURL = (event: { url: string }) =>
-        handleDeepLinkNav({ link: event.url, ...this.props })
 
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {

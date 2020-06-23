@@ -1,5 +1,5 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
-import { AppState, AppStateStatus } from 'react-native'
+import { AppState, AppStateStatus, Platform, Linking } from 'react-native'
 
 import { storageKeys } from '../../../../../../app.json'
 import {
@@ -20,6 +20,7 @@ import { timeFromNow } from 'src/utils/time-helpers'
 import { DashboardNavigationParams } from './types'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { TAGS_PER_RESULT_LIMIT } from './constants'
+import { handleDeepLinkNav } from 'src/ui/navigation/deep-linking'
 
 export interface State {
     syncState: UITaskState
@@ -63,6 +64,7 @@ interface PageLookupEntry {
 
 export default class Logic extends UILogic<State, Event> {
     private removeAppChangeListener!: () => void
+    private removeDeepLinkingListener!: () => void
     private pageSize: number
     getNow: () => number
 
@@ -108,6 +110,7 @@ export default class Logic extends UILogic<State, Event> {
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await this.navToOnboardingIfNeeded()
+        await this.listenForDeepLinking()
 
         this.doSync()
         const handleAppStatusChange = (nextState: AppStateStatus) => {
@@ -138,6 +141,30 @@ export default class Logic extends UILogic<State, Event> {
     cleanup() {
         if (this.removeAppChangeListener) {
             this.removeAppChangeListener()
+        }
+
+        if (this.removeDeepLinkingListener) {
+            this.removeDeepLinkingListener()
+        }
+    }
+
+    private async listenForDeepLinking() {
+        const handleOpenURL = (event: { url: string }) =>
+            handleDeepLinkNav({ link: event.url, ...this.props })
+
+        if (Platform.OS === 'ios') {
+            Linking.addEventListener('url', handleOpenURL)
+
+            this.removeDeepLinkingListener = () =>
+                Linking.removeEventListener('url', handleOpenURL)
+
+            return
+        }
+
+        const url = await Linking.getInitialURL()
+
+        if (url) {
+            handleOpenURL({ url })
         }
     }
 
