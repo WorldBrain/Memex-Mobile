@@ -39,6 +39,7 @@ export default class Logic extends UILogic<State, Event> {
     /** TODO: This is a hack - fix the navigation lib so we don't have to manage this state */
     __prevPreviousRoute?: string
     previousRoute: PreviousRoute
+    readerScrollPercent?: number
     highlightAnchor?: Anchor
     pageUrl: string
     pageTitle?: string
@@ -63,6 +64,7 @@ export default class Logic extends UILogic<State, Event> {
         this.selectedList = params.selectedList
         this.previousRoute = params.previousRoute
         this.__prevPreviousRoute = params.__prevPreviousRoute
+        this.readerScrollPercent = params.readerScrollPercent
     }
 
     getInitialState(): State {
@@ -87,6 +89,7 @@ export default class Logic extends UILogic<State, Event> {
                     [NAV_PARAMS.READER]: {
                         url: this.pageUrl,
                         title: this.pageTitle,
+                        scrollPercent: this.readerScrollPercent,
                     } as ReaderNavigationParams,
                 })
             case 'PageEditor':

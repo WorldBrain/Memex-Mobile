@@ -4,7 +4,6 @@ import { WebView, WebViewNavigation } from 'react-native-webview'
 
 import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import ActionBar from '../../components/action-bar'
 import ReaderWebView from '../../components/web-view'
 import ErrorView from '../../components/error-view'
@@ -12,8 +11,6 @@ import styles from './styles'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
 import { Message as WebViewMessage, Anchor } from 'src/content-script/types'
-import { EditorMode } from 'src/features/page-editor/types'
-import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 
 export default class Reader extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -34,18 +31,6 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
 
     private runFnInWebView = (fnName: RemoteFnName, arg?: any) =>
         this.webView.injectJavaScript(this.constructJsRemoteFnCall(fnName, arg))
-
-    private handleBackClick = () =>
-        this.props.navigation.navigate({ routeName: 'Overview' })
-
-    private setupNavToPageEditor = (mode: EditorMode) => () =>
-        this.props.navigation.navigate('PageEditor', {
-            [NAV_PARAMS.PAGE_EDITOR]: {
-                previousRoute: 'Reader',
-                pageUrl: this.state.url,
-                mode,
-            } as PageEditorNavigationParams,
-        })
 
     private async createHighlightThenRender(anchor: Anchor) {
         await this.processEvent('createHighlight', { anchor })
@@ -123,9 +108,14 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
             this.state.highlights,
         )
 
+        const setScrollPercentCall = this.constructJsRemoteFnCall(
+            'setScrollPercent',
+            this.state.readerScrollPercent,
+        )
+
         // TODO: We only need to inject `this.state.contentScriptSource` if full webpage mode -
         //   else we include it with the HTML we pass to the WebView for rendering.
-        return `${this.state.contentScriptSource}; ${renderHighlightsCall}`
+        return `${this.state.contentScriptSource}; ${setScrollPercentCall}; ${renderHighlightsCall}`
     }
 
     private renderLoading = () => (
@@ -174,7 +164,7 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                     className={styles.actionBar}
                     isErrorView={this.state.errorMessage != null}
                     {...this.state}
-                    onBackBtnPress={this.handleBackClick}
+                    onBackBtnPress={() => this.processEvent('goBack', null)}
                     onHighlightBtnPress={() =>
                         this.runFnInWebView('createHighlight')
                     }
@@ -184,9 +174,17 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                     onBookmarkBtnPress={() =>
                         this.processEvent('toggleBookmark', null)
                     }
-                    onListBtnPress={this.setupNavToPageEditor('collections')}
-                    onCommentBtnPress={this.setupNavToPageEditor('notes')}
-                    onTagBtnPress={this.setupNavToPageEditor('tags')}
+                    onListBtnPress={() =>
+                        this.processEvent('goToPageEditor', {
+                            mode: 'collections',
+                        })
+                    }
+                    onCommentBtnPress={() =>
+                        this.processEvent('goToPageEditor', { mode: 'notes' })
+                    }
+                    onTagBtnPress={() =>
+                        this.processEvent('goToPageEditor', { mode: 'tags' })
+                    }
                 />
             </View>
         )

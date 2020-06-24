@@ -42,6 +42,7 @@ export interface Props extends NavigationProps {
 export default class Logic extends UILogic<State, Event> {
     selectedList: string
     previousRoute: PreviousRoute
+    readerScrollPercent?: number
 
     constructor(private props: Props) {
         super()
@@ -51,6 +52,7 @@ export default class Logic extends UILogic<State, Event> {
         ) as PageEditorNavigationParams
         this.selectedList = params.selectedList ?? MOBILE_LIST_NAME
         this.previousRoute = params.previousRoute ?? 'Dashboard'
+        this.readerScrollPercent = params.readerScrollPercent
     }
 
     getInitialState(): State {

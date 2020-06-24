@@ -18,6 +18,8 @@ import { ContentScriptLoader } from 'src/features/reader/utils/load-content-scri
 import { ReaderNavigationParams } from './types'
 import { Anchor, Highlight } from 'src/content-script/types'
 import { NoteEditorNavigationParams } from 'src/features/overview/ui/screens/note-editor/types'
+import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
+import { EditorMode } from 'src/features/page-editor/types'
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
@@ -44,7 +46,9 @@ export type Event = UIEvent<{
     createHighlight: { anchor: Anchor }
     createAnnotation: { anchor: Anchor }
     setTextSelection: { text?: string }
+    goToPageEditor: { mode: EditorMode }
     toggleBookmark: null
+    goBack: null
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -279,6 +283,7 @@ export default class Logic extends UILogic<State, Event> {
                 previousRoute: 'Reader',
                 pageTitle: previousState.title,
                 pageUrl: previousState.url,
+                readerScrollPercent: previousState.readerScrollPercent,
             } as NoteEditorNavigationParams,
         })
     }
@@ -307,6 +312,7 @@ export default class Logic extends UILogic<State, Event> {
                 previousRoute: 'Reader',
                 pageTitle: previousState.title,
                 pageUrl: previousState.url,
+                readerScrollPercent: previousState.readerScrollPercent,
             } as NoteEditorNavigationParams,
         })
     }
@@ -315,5 +321,23 @@ export default class Logic extends UILogic<State, Event> {
         event: { percent },
     }) => {
         this.emitMutation({ readerScrollPercent: { $set: percent } })
+    }
+
+    goBack = () => {
+        this.props.navigation.navigate('Overview')
+    }
+
+    goToPageEditor: EventHandler<'goToPageEditor'> = ({
+        event: { mode },
+        previousState,
+    }) => {
+        this.props.navigation.navigate('PageEditor', {
+            [NAV_PARAMS.PAGE_EDITOR]: {
+                previousRoute: 'Reader',
+                readerScrollPercent: previousState.readerScrollPercent,
+                pageUrl: previousState.url,
+                mode,
+            } as PageEditorNavigationParams,
+        })
     }
 }

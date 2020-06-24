@@ -57,6 +57,7 @@ export default class PageEditorScreen extends NavigationScreen<
                     [NAV_PARAMS.READER]: {
                         url: this.state.page.url,
                         title: this.state.page.titleText,
+                        scrollPercent: logic.readerScrollPercent,
                     } as ReaderNavigationParams,
                 })
             case 'Dashboard':

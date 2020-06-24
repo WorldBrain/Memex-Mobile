@@ -16,4 +16,5 @@ export interface NoteEditorNavigationParams {
     noteUrl?: string
     noteText?: string
     highlightText?: string
+    readerScrollPercent?: number
 }
