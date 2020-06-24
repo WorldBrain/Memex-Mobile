@@ -1,5 +1,6 @@
 import React from 'react'
 import { Text } from 'react-native'
+
 import { NavigationScreen } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import Logic, { Props, State, Event } from './logic'
@@ -53,10 +54,6 @@ export default class ShareModalScreen extends NavigationScreen<
                 initValues.tagsToAdd,
             )
         )
-    }
-
-    private navToReader = () => {
-        this.props.services.shareExt.openAppReader({ url: this.state.pageUrl })
     }
 
     private calcInitEntries = (): string[] =>
@@ -141,7 +138,6 @@ export default class ShareModalScreen extends NavigationScreen<
                     leftBtnText="Back"
                     onLeftBtnPress={this.handleMetaViewTypeSwitch(undefined)}
                     onRightBtnPress={this.handleSave}
-                    onReaderBtnPress={this.navToReader}
                     rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
                 >
                     {this.renderTitle()}
@@ -162,10 +158,10 @@ export default class ShareModalScreen extends NavigationScreen<
         return (
             <>
                 <ActionBar
+                    showReaderBanner
                     leftBtnText="Undo"
                     onLeftBtnPress={this.handleUndo}
                     onRightBtnPress={this.handleSave}
-                    onReaderBtnPress={this.navToReader}
                     rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
                 >
                     {this.renderTitle()}

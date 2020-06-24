@@ -12,9 +12,9 @@ import styles from './action-bar-segment.styles'
 
 export interface Props {
     isConfirming?: boolean
+    showReaderBanner?: boolean
     onLeftBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
     onRightBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
-    onReaderBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
     leftBtnText?: string
     rightBtnText?: string
 }
@@ -25,15 +25,11 @@ const ActionBar: React.StatelessComponent<Props> = ({
     ...props
 }) => (
     <>
-        {props.onReaderBtnPress && (
-            <View style={styles.readerSegmentContainer}>
-                <TouchableOpacity
-                    style={styles.readerSegment}
-                    onPress={props.onReaderBtnPress}
-                >
-                    <Text style={styles.readerSegmentText}>Annotate Page</Text>
-                    <Text style={styles.readerSegmentArrow}>></Text>
-                </TouchableOpacity>
+        {props.showReaderBanner && (
+            <View style={[styles.readerSegmentContainer, styles.readerSegment]}>
+                <Text style={styles.readerSegmentText}>
+                    NEW: Annotate page within app!
+                </Text>
             </View>
         )}
         <View style={styles.container} onTouchStart={() => Keyboard.dismiss()}>
