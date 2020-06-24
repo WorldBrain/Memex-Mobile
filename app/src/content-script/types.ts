@@ -18,6 +18,7 @@ export type Message =
     | HighlightMessage
     | AnnotationMessage
     | HighlightClickedMessage
+    | ScrollMessage
     | DebugMessage
 
 // TODO: Better way to do this with TS type system?
@@ -40,6 +41,10 @@ export interface HighlightClickedMessage {
 export interface DebugMessage {
     type: 'debug'
     payload?: any
+}
+export interface ScrollMessage {
+    type: 'scrollPercent'
+    payload: number
 }
 
 export type MessagePoster = (message: Message) => void

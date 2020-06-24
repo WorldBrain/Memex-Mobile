@@ -30,6 +30,7 @@ export interface State {
     isBookmarked: boolean
     isListed: boolean
     hasNotes: boolean
+    readerScrollPercent: number
     htmlSource?: string
     contentScriptSource?: string
     errorMessage?: string
@@ -37,6 +38,7 @@ export interface State {
 }
 
 export type Event = UIEvent<{
+    setReaderScrollPercent: { percent: number }
     editHighlight: { highlightUrl: string }
     setErrorMessage: { message?: string }
     createHighlight: { anchor: Anchor }
@@ -90,6 +92,7 @@ export default class Logic extends UILogic<State, Event> {
             isListed: false,
             hasNotes: false,
             highlights: [],
+            readerScrollPercent: params.scrollPercent ?? 0,
         }
     }
 
@@ -306,5 +309,11 @@ export default class Logic extends UILogic<State, Event> {
                 pageUrl: previousState.url,
             } as NoteEditorNavigationParams,
         })
+    }
+
+    setReaderScrollPercent: EventHandler<'setReaderScrollPercent'> = ({
+        event: { percent },
+    }) => {
+        this.emitMutation({ readerScrollPercent: { $set: percent } })
     }
 }

@@ -83,6 +83,10 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 return this.processEvent('editHighlight', {
                     highlightUrl: message.payload,
                 })
+            case 'scrollPercent':
+                return this.processEvent('setReaderScrollPercent', {
+                    percent: message.payload,
+                })
             default:
                 console.warn(
                     'Unsupported message received from WebView:',

@@ -10,7 +10,7 @@ import { Anchor, MessagePoster, Highlight } from './types'
 import { HIGHLIGHT_CLASS } from './constants'
 
 export interface Props {
-    document?: Document
+    window?: Window
     postMessageToRN: MessagePoster
 }
 
@@ -23,11 +23,16 @@ export class WebViewContentScript {
             createAnnotation: this.createAnnotation,
             renderHighlights: this.renderHighlights,
             renderHighlight: this.renderHighlight,
+            setScrollPercent: this.setScrollPercent,
         })
     }
 
     private get document(): Document {
-        return this.props.document ?? document
+        return this.window.document
+    }
+
+    private get window(): Window {
+        return this.props.window ?? window
     }
 
     addStyleElementToHead(css: string) {
@@ -93,6 +98,23 @@ export class WebViewContentScript {
         markRange({ range, cssClass: HIGHLIGHT_CLASS })
 
         this.attachEventListenersToNewHighlights(url)
+    }
+
+    private getScrollHeight = (el: Element) => el.scrollHeight - el.clientHeight
+
+    calcAndSendScrollPercent = async () => {
+        const html = this.document.body.parentNode as Element
+
+        const percent =
+            (this.document.body.scrollTop || html.scrollTop) /
+            this.getScrollHeight(html)
+        this.props.postMessageToRN({ type: 'scrollPercent', payload: percent })
+    }
+
+    setScrollPercent = async (percent: number) => {
+        const html = this.document.body.parentNode as Element
+
+        this.window.scrollTo(0, percent * this.getScrollHeight(html))
     }
 
     private attachEventListenersToNewHighlights(highlightUrl: string) {

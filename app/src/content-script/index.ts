@@ -14,3 +14,5 @@ contentScript.addStyleElementToHead(`
 
 document.onselectionchange = contentScript.handleSelectionChange
 ;(window as any)['remoteFnEvents'] = contentScript.remoteFnEvents
+// TODO: Throttle this event!
+window.addEventListener('scroll', contentScript.calcAndSendScrollPercent)
