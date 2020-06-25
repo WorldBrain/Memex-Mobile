@@ -108,15 +108,20 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
             this.state.highlights,
         )
 
-        const setScrollPercentCall = this.constructJsRemoteFnCall(
-            'setScrollPercent',
-            this.state.readerScrollPercent,
-        )
-
         // TODO: We only need to inject `this.state.contentScriptSource` if full webpage mode -
         //   else we include it with the HTML we pass to the WebView for rendering.
-        return `${this.state.contentScriptSource}; ${setScrollPercentCall}; ${renderHighlightsCall}`
+        return `${this.state.contentScriptSource}; ${renderHighlightsCall}`
     }
+
+    // Wait a bit after the HTML loads before scrolling to try and give whatever JS a chance to render
+    private sendScrollState = () =>
+        setTimeout(
+            () =>
+                this.runFnInWebView('setScrollPercent', {
+                    percent: this.state.readerScrollPercent,
+                }),
+            500,
+        )
 
     private renderLoading = () => (
         <View style={[styles.webView, styles.webViewLoader]}>
@@ -149,6 +154,7 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 onNavigationStateChange={this.handleNavStateChange}
                 startInLoadingState
                 renderLoading={this.renderLoading}
+                onLoadEnd={this.sendScrollState}
                 // This flag needs to be set to afford text selection on iOS.
                 //   https://github.com/react-native-community/react-native-webview/issues/1275
                 allowsLinkPreview

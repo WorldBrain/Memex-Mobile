@@ -102,19 +102,37 @@ export class WebViewContentScript {
 
     private getScrollHeight = (el: Element) => el.scrollHeight - el.clientHeight
 
-    calcAndSendScrollPercent = async () => {
+    private calcScrollPercent = (): number => {
         const html = this.document.body.parentNode as Element
 
-        const percent =
+        return (
             (this.document.body.scrollTop || html.scrollTop) /
             this.getScrollHeight(html)
-        this.props.postMessageToRN({ type: 'scrollPercent', payload: percent })
+        )
     }
 
-    setScrollPercent = async (percent: number) => {
+    calcAndSendScrollPercent = () =>
+        this.props.postMessageToRN({
+            type: 'scrollPercent',
+            payload: this.calcScrollPercent(),
+        })
+
+    setScrollPercent = async ({
+        percent,
+        skipThreshold = 0.05,
+    }: {
+        percent: number
+        skipThreshold?: number
+    }) => {
         const html = this.document.body.parentNode as Element
 
-        this.window.scrollTo(0, percent * this.getScrollHeight(html))
+        if (percent < skipThreshold) {
+            return
+        }
+
+        this.window.scroll({
+            top: percent * this.getScrollHeight(html),
+        })
     }
 
     private attachEventListenersToNewHighlights(highlightUrl: string) {
