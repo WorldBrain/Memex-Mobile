@@ -35,14 +35,15 @@ export interface State {
     readerScrollPercent: number
     htmlSource?: string
     contentScriptSource?: string
-    errorMessage?: string
+    error?: Error
     highlights: Highlight[]
 }
 
 export type Event = UIEvent<{
+    reportError: null
+    setError: { error?: Error }
     setReaderScrollPercent: { percent: number }
     editHighlight: { highlightUrl: string }
-    setErrorMessage: { message?: string }
     createHighlight: { anchor: Anchor }
     createAnnotation: { anchor: Anchor }
     setTextSelection: { text?: string }
@@ -61,7 +62,7 @@ export interface Props extends NavigationProps {
     storage: UIStorageModules<
         'reader' | 'overview' | 'pageEditor' | 'metaPicker'
     >
-    services: UIServices<'readability' | 'resourceLoader'>
+    services: UIServices<'readability' | 'resourceLoader' | 'errorTracker'>
     loadContentScript: ContentScriptLoader
 }
 
@@ -109,7 +110,7 @@ export default class Logic extends UILogic<State, Event> {
                     previousState.title,
                 )
             } catch (err) {
-                this.emitMutation({ errorMessage: { $set: err.message } })
+                this.emitMutation({ error: { $set: err } })
             }
         })
     }
@@ -223,11 +224,9 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    setErrorMessage: EventHandler<'setErrorMessage'> = ({ event }) => {
-        const defaultMessage = 'An error happened'
-
+    setError: EventHandler<'setError'> = ({ event }) => {
         return this.emitMutation({
-            errorMessage: { $set: event.message ?? defaultMessage },
+            error: { $set: event.error },
         })
     }
 
@@ -331,5 +330,12 @@ export default class Logic extends UILogic<State, Event> {
                 mode,
             } as PageEditorNavigationParams,
         })
+    }
+
+    reportError: EventHandler<'reportError'> = ({ previousState }) => {
+        const { errorTracker } = this.props.services
+
+        errorTracker.track(previousState.error!)
+        this.goBack()
     }
 }

@@ -134,11 +134,14 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
             return this.renderLoading()
         }
 
-        if (this.state.errorMessage) {
+        if (this.state.error) {
             return (
                 <ErrorView
-                    className={styles.webView}
-                    message={this.state.errorMessage}
+                    url={this.state.url}
+                    message={this.state.error.message}
+                    className={[styles.webView, styles.container]}
+                    onBackPress={() => this.processEvent('goBack', null)}
+                    onErrorReport={() => this.processEvent('reportError', null)}
                 />
             )
         }
@@ -168,7 +171,7 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 {this.renderWebView()}
                 <ActionBar
                     className={styles.actionBar}
-                    isErrorView={this.state.errorMessage != null}
+                    isErrorView={this.state.error != null}
                     {...this.state}
                     onBackBtnPress={() => this.processEvent('goBack', null)}
                     onHighlightBtnPress={() =>

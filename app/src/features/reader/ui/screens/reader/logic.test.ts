@@ -4,6 +4,7 @@ import { makeStorageTestFactory } from 'src/index.tests'
 import { FakeNavigation } from 'src/tests/navigation'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { Anchor } from 'src/content-script/types'
+import { MockSentry } from 'src/services/error-tracking/index.tests'
 
 const TEST_URL_1 = 'getmemex.com'
 const TEST_TITLE_1 = 'test'
@@ -61,16 +62,36 @@ describe('reader screen UI logic tests', () => {
         expect(await overview.isPageStarred({ url: TEST_URL_1 })).toBe(false)
     })
 
-    it('should be able to set reader error message', async dependencies => {
+    it('should be able to set reader error', async dependencies => {
         const { element } = setup(dependencies)
 
         const TEST_MSG_1 = 'This is a test error'
+        const dummyError = new Error(TEST_MSG_1)
 
-        expect(element.state.errorMessage).toBeUndefined()
-        element.processEvent('setErrorMessage', { message: TEST_MSG_1 })
-        expect(element.state.errorMessage).toEqual(TEST_MSG_1)
-        element.processEvent('setErrorMessage', {})
-        expect(element.state.errorMessage).toEqual('An error happened')
+        expect(element.state.error).toBeUndefined()
+        element.processEvent('setError', { error: dummyError })
+        expect(element.state.error).toEqual(dummyError)
+        expect(element.state.error!.message).toEqual(TEST_MSG_1)
+        element.processEvent('setError', { error: undefined })
+        expect(element.state.error).toBeUndefined()
+    })
+
+    it('should be able to report reader error', async dependencies => {
+        const {
+            element,
+            services: { errorTracker },
+        } = setup(dependencies)
+
+        const TEST_MSG_1 = 'This is a test error'
+        const dummyError = new Error(TEST_MSG_1)
+
+        expect(element.state.error).toBeUndefined()
+        element.processEvent('setError', { error: dummyError })
+        expect(element.state.error).toEqual(dummyError)
+        expect(element.state.error!.message).toEqual(TEST_MSG_1)
+        element.processEvent('reportError', null)
+
+        expect((errorTracker['api'] as any).captured).toEqual([dummyError])
     })
 
     it('should be able to create a highlight from a text selection', async dependencies => {
@@ -221,4 +242,6 @@ describe('reader screen UI logic tests', () => {
 
         expect(navigation.popRequests()).toEqual(navRequests)
     })
+
+    it('should be able to ')
 })
