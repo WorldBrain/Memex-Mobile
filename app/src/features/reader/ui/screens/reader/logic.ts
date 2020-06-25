@@ -104,7 +104,6 @@ export default class Logic extends UILogic<State, Event> {
         await loadInitial<State>(this, async () => {
             try {
                 await this.loadPageState(previousState.url)
-                await this.loadPageHighlights(previousState.url)
                 await this.loadReadablePage(
                     previousState.url,
                     previousState.title,
@@ -136,21 +135,6 @@ export default class Logic extends UILogic<State, Event> {
             strategy: 'seanmcgary/readability',
             createdWhen,
             ...article,
-        })
-    }
-
-    private async loadPageHighlights(url: string) {
-        const { pageEditor } = this.props.storage.modules
-
-        const annotations = await pageEditor.findAnnotations({ url })
-
-        this.emitMutation({
-            highlights: {
-                $set: annotations.map(a => ({
-                    anchor: a.selector,
-                    url: a.url,
-                })),
-            },
         })
     }
 
@@ -207,6 +191,14 @@ export default class Logic extends UILogic<State, Event> {
             isListed: { $set: !!lists.length },
             hasNotes: { $set: !!notes.length },
             isTagged: { $set: !!tags.length },
+            highlights: {
+                $set: notes
+                    .filter(note => note.body?.length && note.selector != null)
+                    .map(a => ({
+                        anchor: a.selector,
+                        url: a.url,
+                    })),
+            },
         })
     }
 
