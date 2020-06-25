@@ -1,5 +1,6 @@
 import { WebViewContentScript } from './content-script'
 import { postMessageToRN } from './rn-utils'
+import { throttle } from './utils'
 import { HIGHLIGHT_CLASS } from './constants'
 
 const contentScript = new WebViewContentScript({ postMessageToRN })
@@ -14,5 +15,7 @@ contentScript.addStyleElementToHead(`
 
 document.onselectionchange = contentScript.handleSelectionChange
 ;(window as any)['remoteFnEvents'] = contentScript.remoteFnEvents
-// TODO: Throttle this event!
-window.addEventListener('scroll', contentScript.calcAndSendScrollPercent)
+window.addEventListener(
+    'scroll',
+    throttle(contentScript.calcAndSendScrollPercent, 200),
+)
