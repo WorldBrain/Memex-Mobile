@@ -139,8 +139,8 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 <ErrorView
                     url={this.state.url}
                     message={this.state.error.message}
+                    alreadyReported={this.state.isErrorReported}
                     className={[styles.webView, styles.container]}
-                    onBackPress={() => this.processEvent('goBack', null)}
                     onErrorReport={() => this.processEvent('reportError', null)}
                 />
             )

@@ -36,6 +36,7 @@ export interface State {
     htmlSource?: string
     contentScriptSource?: string
     error?: Error
+    isErrorReported: boolean
     highlights: Highlight[]
 }
 
@@ -92,6 +93,7 @@ export default class Logic extends UILogic<State, Event> {
             title: params.title,
             url: Logic.formUrl(params.url),
             loadState: 'pristine',
+            isErrorReported: false,
             isBookmarked: false,
             isTagged: false,
             isListed: false,
@@ -336,6 +338,7 @@ export default class Logic extends UILogic<State, Event> {
         const { errorTracker } = this.props.services
 
         errorTracker.track(previousState.error!)
-        this.goBack()
+
+        this.emitMutation({ isErrorReported: { $set: true } })
     }
 }

@@ -8,7 +8,7 @@ export interface Props {
     url: string
     message?: string
     className?: string | string[]
-    onBackPress: () => void
+    alreadyReported: boolean
     onErrorReport: () => void
 }
 
@@ -24,6 +24,10 @@ class ErrorView extends React.PureComponent<Props> {
         }
 
         return [styles.container, ...custom]
+    }
+
+    private get buttonText() {
+        return this.props.alreadyReported ? 'Reported!' : 'Report URL'
     }
 
     private renderMessage() {
@@ -42,17 +46,16 @@ class ErrorView extends React.PureComponent<Props> {
     render() {
         return (
             <View style={this.mainClass}>
-                <Text>
-                    The reader encountered an error loading the page from URL:
-                </Text>
                 <Text style={styles.details}>{this.props.url}</Text>
+                <Text>
+                    This URL has failed to be loaded in the annotation viewer
+                </Text>
                 {this.renderMessage()}
                 <Button
-                    title="Report URL"
+                    title={this.buttonText}
                     onPress={this.props.onErrorReport}
-                    warning
+                    disabled={this.props.alreadyReported}
                 />
-                <Button title="Go back" onPress={this.props.onBackPress} />
             </View>
         )
     }
