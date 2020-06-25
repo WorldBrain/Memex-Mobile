@@ -118,6 +118,7 @@ describe('reader screen UI logic tests', () => {
                         previousRoute: 'Reader',
                         pageTitle: TEST_TITLE_1,
                         pageUrl: Logic.formUrl(TEST_URL_1),
+                        readerScrollPercent: 0,
                     },
                 },
             },
@@ -156,9 +157,68 @@ describe('reader screen UI logic tests', () => {
                         previousRoute: 'Reader',
                         pageTitle: TEST_TITLE_1,
                         pageUrl: Logic.formUrl(TEST_URL_1),
+                        readerScrollPercent: 0,
                     },
                 },
             },
         ])
+    })
+
+    it('should be able to set reader scroll state', dependencies => {
+        const { element } = setup(dependencies)
+
+        const step = 1
+
+        for (let percent = step; percent < 1; percent += step) {
+            expect(element.state.readerScrollPercent).toEqual(percent - step)
+            element.processEvent('setReaderScrollPercent', { percent })
+            expect(element.state.readerScrollPercent).toEqual(percent)
+        }
+    })
+
+    it('should be able to nav back to overview', async dependencies => {
+        const { element, navigation } = setup(dependencies)
+
+        expect(navigation.popRequests()).toEqual([])
+        element.processEvent('goBack', null)
+        expect(navigation.popRequests()).toEqual([
+            {
+                type: 'navigate',
+                target: 'Overview',
+            },
+        ])
+    })
+
+    it('should be able to nav to page editor with state', async dependencies => {
+        const { element, navigation } = setup(dependencies)
+
+        expect(navigation.popRequests()).toEqual([])
+
+        const readerScrollPercent = 0.3
+        const navRequests: any[] = []
+
+        // Change default reader scroll state to see if it appears in nav params
+        element.processEvent('setReaderScrollPercent', {
+            percent: readerScrollPercent,
+        })
+
+        for (const mode of ['collections', 'notes', 'tags'] as any[]) {
+            element.processEvent('goToPageEditor', { mode })
+
+            navRequests.push({
+                type: 'navigate',
+                target: 'PageEditor',
+                params: {
+                    [NAV_PARAMS.PAGE_EDITOR]: {
+                        mode,
+                        previousRoute: 'Reader',
+                        readerScrollPercent,
+                        pageUrl: Logic.formUrl(TEST_URL_1),
+                    },
+                },
+            })
+        }
+
+        expect(navigation.popRequests()).toEqual(navRequests)
     })
 })
