@@ -9,13 +9,21 @@ const testEntries = [
 ]
 
 const DEFAULT_DEPS: Partial<Props> = {
-    initEntries: [],
+    initSelectedEntries: [],
     url: 'test.com',
 }
 
 describe('meta picker UI logic tests', () => {
     function setup(deps: Partial<Props>) {
-        const logic = new Logic(deps as Props)
+        const logic = new Logic({
+            ...deps,
+            services: {
+                localStorage: {
+                    get: () => undefined,
+                    set: () => undefined,
+                } as any,
+            },
+        } as Props)
         const element = new FakeStatefulUIElement<State, Event>(logic)
         const state = logic.getInitialState()
 

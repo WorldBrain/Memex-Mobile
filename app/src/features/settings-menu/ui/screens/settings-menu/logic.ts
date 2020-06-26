@@ -6,13 +6,15 @@ import { storageKeys } from '../../../../../../app.json'
 
 export interface State {
     loadState: UITaskState
-    isSynced: boolean
     syncState: UITaskState
+    syncErrorMessage?: string
+    isSynced: boolean
 }
 
 export type Event = UIEvent<{
     setSyncStatus: { value: boolean }
-    syncNow: {}
+    syncNow: null
+    clearSyncError: null
 }>
 
 export interface Props extends NavigationProps {
@@ -25,7 +27,11 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(): State {
-        return { isSynced: false, syncState: 'pristine', loadState: 'pristine' }
+        return {
+            isSynced: false,
+            syncState: 'pristine',
+            loadState: 'pristine',
+        }
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
@@ -38,17 +44,36 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
+    clearSyncError() {
+        this.emitMutation({ syncErrorMessage: { $set: undefined } })
+    }
+
     setSyncStatus(
         incoming: IncomingUIEvent<State, Event, 'setSyncStatus'>,
     ): UIMutation<State> {
         return { isSynced: { $set: incoming.event.value } }
     }
 
-    async syncNow(incoming: IncomingUIEvent<State, Event, 'syncNow'>) {
-        return executeUITask(this, 'syncState', async () => {
-            await this.props.services.sync.continuousSync
-                .forceIncrementalSync()
-                .catch(err => this.props.services.errorTracker.track(err))
-        })
+    private handleSyncError = (error: Error) => {
+        this.props.services.errorTracker.track(error)
+
+        this.emitMutation({ syncErrorMessage: { $set: error.message } })
+    }
+
+    async syncNow() {
+        const { sync } = this.props.services
+
+        await executeUITask<State, 'syncState', void>(
+            this,
+            'syncState',
+            async () => {
+                try {
+                    await sync.continuousSync.forceIncrementalSync()
+                    this.clearSyncError()
+                } catch (err) {
+                    this.handleSyncError(err)
+                }
+            },
+        )
     }
 }

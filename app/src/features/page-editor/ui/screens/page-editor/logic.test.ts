@@ -5,6 +5,8 @@ import { makeStorageTestFactory } from 'src/index.tests'
 import { Storage } from 'src/storage/types'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import * as DATA from './logic.test.data'
+import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
+import { LocalStorageService } from 'src/services/local-storage'
 
 const testText = 'this is a test'
 const testPage = {
@@ -20,10 +22,21 @@ const testPage = {
 describe('page editor UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    function setup(options: { storage: Storage }) {
+    function setup(options: {
+        storage: Storage
+        localStorage?: LocalStorageService
+    }) {
         const logic = new Logic({
             storage: options.storage,
             navigation: new FakeNavigation({ pageUrl: DATA.PAGE_1.url }) as any,
+            services: {
+                localStorage:
+                    options.localStorage ??
+                    ({
+                        get: () => undefined,
+                        set: () => undefined,
+                    } as any),
+            },
         } as Props)
         const element = new FakeStatefulUIElement<State, Event>(logic)
         const logicContainer = new TestLogicContainer<State, Event>(logic)
@@ -122,6 +135,8 @@ describe('page editor UI logic tests', () => {
         let createTagValue: any
         let deleteTagValue: any
         const testTags = ['a', 'b', 'c']
+        const settingsStorage = new MockSettingsStorage()
+
         const { logicContainer } = setup({
             storage: {
                 modules: {
@@ -131,6 +146,7 @@ describe('page editor UI logic tests', () => {
                     },
                 },
             } as any,
+            localStorage: new LocalStorageService({ settingsStorage }),
         })
 
         logicContainer.logic.emitMutation({
@@ -139,10 +155,18 @@ describe('page editor UI logic tests', () => {
         })
 
         expect(logicContainer.state.page.tags.length).toBe(0)
+
+        const tmpCache = []
         for (const name of testTags) {
             await logicContainer.processEvent('createEntry', { name })
             expect(createTagValue).toEqual({ url: testPage.url, name })
+            tmpCache.unshift(name)
+
+            expect(
+                settingsStorage.settings['@MemexApp_tag-suggestions-cache'],
+            ).toEqual(tmpCache)
         }
+
         expect(logicContainer.state.page.tags.length).toBe(testTags.length)
         expect(logicContainer.state.page.tags).toEqual(testTags)
 
@@ -157,6 +181,8 @@ describe('page editor UI logic tests', () => {
         let createListEntryValue: any
         let deleteListEntryValue: any
         const testLists = ['a', 'b', 'c']
+        const settingsStorage = new MockSettingsStorage()
+
         const { logicContainer } = setup({
             storage: {
                 modules: {
@@ -169,6 +195,7 @@ describe('page editor UI logic tests', () => {
                     },
                 },
             } as any,
+            localStorage: new LocalStorageService({ settingsStorage }),
         })
 
         logicContainer.logic.emitMutation({
@@ -177,13 +204,21 @@ describe('page editor UI logic tests', () => {
         })
 
         expect(logicContainer.state.page.lists.length).toBe(0)
+
+        const tmpCache = []
         for (const name of testLists) {
             await logicContainer.processEvent('createEntry', { name })
             expect(createListEntryValue).toEqual({
                 pageUrl: testPage.url,
                 listId: expect.any(Number),
             })
+            tmpCache.unshift(name)
+
+            expect(
+                settingsStorage.settings['@MemexApp_list-suggestions-cache'],
+            ).toEqual(tmpCache)
         }
+
         expect(logicContainer.state.page.lists.length).toBe(testLists.length)
         expect(logicContainer.state.page.lists).toEqual(testLists)
 

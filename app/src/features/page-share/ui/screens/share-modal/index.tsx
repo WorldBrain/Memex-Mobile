@@ -143,7 +143,7 @@ export default class ShareModalScreen extends NavigationScreen<
                 </ActionBar>
                 <MetaPicker
                     onEntryPress={this.handleMetaPickerEntryPress}
-                    initEntries={this.calcInitEntries()}
+                    initSelectedEntries={this.calcInitEntries()}
                     type={this.state.metaViewShown}
                     url={this.state.pageUrl}
                     ref={this.setMetaPickerRef}

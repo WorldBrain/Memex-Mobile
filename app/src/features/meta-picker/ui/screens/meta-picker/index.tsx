@@ -36,10 +36,12 @@ export default class MetaPickerScreen extends NavigationScreen<
 
     private get initEntries(): string[] {
         if (this.props.singleSelect) {
-            return this.props.initEntry ? [this.props.initEntry] : []
+            return this.props.initSelectedEntry
+                ? [this.props.initSelectedEntry]
+                : []
         }
 
-        return this.props.initEntries ?? []
+        return this.props.initSelectedEntries ?? []
     }
 
     private get suggestInputPlaceholder(): string {
@@ -116,6 +118,9 @@ export default class MetaPickerScreen extends NavigationScreen<
                                 keyExtractor={(item, index) => index.toString()}
                                 ListEmptyComponent={
                                     <MetaPickerEmptyRow
+                                        hasSearchInput={
+                                            this.state.inputText.length > 0
+                                        }
                                         type={this.props.type}
                                     />
                                 }

@@ -18,7 +18,7 @@ export default class SettingsMenuScreen extends NavigationScreen<
 
     private handleSyncPress = () => {
         if (this.state.isSynced) {
-            this.processEvent('syncNow', {})
+            this.processEvent('syncNow', null)
         } else {
             this.props.navigation.navigate('Sync')
         }
@@ -36,9 +36,14 @@ export default class SettingsMenuScreen extends NavigationScreen<
                 isPaired={this.state.isSynced}
                 versionCode={version}
                 onDevicePairedPress={this.navigateTo('Pairing')}
-                onExitPress={this.navigateTo('Overview')}
+                onExitMenuPress={this.navigateTo('Overview')}
                 onSyncPress={this.handleSyncPress}
                 isSyncing={this.state.syncState === 'running'}
+                syncErrorMessage={this.state.syncErrorMessage}
+                onExitErrorPress={() =>
+                    this.processEvent('clearSyncError', null)
+                }
+                hasSuccessfullySynced={this.state.syncState === 'done'}
             >
                 <SettingsLink onPress={this.navigateTo('Onboarding')}>
                     Tutorial
