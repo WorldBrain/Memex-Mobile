@@ -61,6 +61,9 @@ target 'app' do
 
   pod 'RNSentry', :path => '../node_modules/@sentry/react-native'
 
+
+  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
   target 'MemexShare' do
     use_native_modules!
     inherit! :complete

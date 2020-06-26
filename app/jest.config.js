@@ -1,6 +1,7 @@
 module.exports = {
     preset: 'react-native',
     rootDir: '.',
+    setupFiles: ['./setupJest.js'],
     testMatch: ['<rootDir>/src/**/*.test.(js|jsx|ts|tsx)'],
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
     moduleNameMapper: {

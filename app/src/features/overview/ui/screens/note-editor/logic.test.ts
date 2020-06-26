@@ -1,10 +1,17 @@
 import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { FakeNavigation } from 'src/tests/navigation'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
+import { NoteEditorNavigationParams } from './types'
 
 describe('note editor UI logic tests', () => {
-    function setup(deps: Partial<Props>, navParams: any = {}) {
-        const navigation = new FakeNavigation(navParams)
+    function setup(
+        deps: Partial<Props>,
+        navParams: Partial<NoteEditorNavigationParams> = {},
+    ) {
+        const navigation = new FakeNavigation({
+            [NAV_PARAMS.NOTE_EDITOR]: navParams,
+        })
         const logic = new Logic({
             ...(deps as Props),
             navigation: navigation as any,
@@ -46,7 +53,7 @@ describe('note editor UI logic tests', () => {
         expect(element.state.showAllText).toBe(false)
     })
 
-    it('should be able to save a new note', async () => {
+    it('should be able to save a new note, if highlight anchor absent', async () => {
         const testText = 'test'
         const testUrl = 'test.com'
 
@@ -67,18 +74,74 @@ describe('note editor UI logic tests', () => {
         expect(navigation.popRequests()).toEqual([])
         expect(storedNote).toBeUndefined()
         await element.processEvent('changeNoteText', { value: testText })
-        await element.processEvent('saveNote', {})
+        await element.processEvent('saveNote', null)
         expect(navigation.popRequests()).toEqual([
             {
                 type: 'navigate',
                 target: 'PageEditor',
-                params: { mode: 'notes', pageUrl: testUrl, selectedList: null },
+                params: {
+                    [NAV_PARAMS.PAGE_EDITOR]: {
+                        mode: 'notes',
+                        pageUrl: testUrl,
+                        selectedList: undefined,
+                    },
+                },
             },
         ])
         expect(storedNote).toEqual({
             pageUrl: testUrl,
             comment: testText,
             pageTitle: '',
+        })
+    })
+
+    it('should be able to save a new anott, if highlight anchor provided', async () => {
+        const testText = 'test'
+        const testUrl = 'test.com'
+        const testAnchor = { quote: testText } as any
+
+        let storedAnnotation: any
+        const { element, navigation } = setup(
+            {
+                storage: {
+                    modules: {
+                        pageEditor: {
+                            createAnnotation: (annot: any) =>
+                                (storedAnnotation = annot),
+                        },
+                    } as any,
+                },
+            },
+            {
+                mode: 'create',
+                pageUrl: testUrl,
+                anchor: testAnchor,
+                highlightText: testText,
+            },
+        )
+
+        expect(navigation.popRequests()).toEqual([])
+        expect(storedAnnotation).toBeUndefined()
+        await element.processEvent('saveNote', null)
+        expect(navigation.popRequests()).toEqual([
+            {
+                type: 'navigate',
+                target: 'PageEditor',
+                params: {
+                    [NAV_PARAMS.PAGE_EDITOR]: {
+                        mode: 'notes',
+                        pageUrl: testUrl,
+                        selectedList: undefined,
+                    },
+                },
+            },
+        ])
+        expect(storedAnnotation).toEqual({
+            pageUrl: testUrl,
+            selector: testAnchor,
+            body: testText,
+            pageTitle: '',
+            comment: '',
         })
     })
 
@@ -104,17 +167,91 @@ describe('note editor UI logic tests', () => {
         expect(navigation.popRequests()).toEqual([])
         expect(storedNote).toBeUndefined()
         await element.processEvent('changeNoteText', { value: testText })
-        await element.processEvent('saveNote', {})
+        await element.processEvent('saveNote', null)
         expect(navigation.popRequests()).toEqual([
             {
                 type: 'navigate',
                 target: 'PageEditor',
-                params: { mode: 'notes', pageUrl: testUrl, selectedList: null },
+                params: {
+                    [NAV_PARAMS.PAGE_EDITOR]: {
+                        mode: 'notes',
+                        pageUrl: testUrl,
+                        selectedList: undefined,
+                    },
+                },
             },
         ])
         expect(storedNote).toEqual({
             url: testNoteUrl,
             text: testText,
         })
+    })
+
+    it('should nav back to set previous route', async () => {
+        const testTitle = 'test'
+        const testUrl = 'test.com'
+
+        let storedNote: any
+        const { element: elA, navigation: navA } = setup(
+            {
+                storage: {
+                    modules: {
+                        pageEditor: {
+                            createNote: (note: any) => (storedNote = note),
+                        },
+                    } as any,
+                },
+            },
+            { mode: 'create', pageUrl: testUrl, previousRoute: 'PageEditor' },
+        )
+
+        await elA.processEvent('goBack', null)
+
+        expect(navA.popRequests()).toEqual([
+            {
+                type: 'navigate',
+                target: 'PageEditor',
+                params: {
+                    [NAV_PARAMS.PAGE_EDITOR]: {
+                        mode: 'notes',
+                        pageUrl: testUrl,
+                        selectedList: undefined,
+                    },
+                },
+            },
+        ])
+
+        const { element: elB, navigation: navB } = setup(
+            {
+                storage: {
+                    modules: {
+                        pageEditor: {
+                            createNote: (note: any) => (storedNote = note),
+                        },
+                    } as any,
+                },
+            },
+            {
+                mode: 'create',
+                pageUrl: testUrl,
+                previousRoute: 'Reader',
+                pageTitle: testTitle,
+            },
+        )
+
+        await elB.processEvent('goBack', null)
+
+        expect(navB.popRequests()).toEqual([
+            {
+                type: 'navigate',
+                target: 'Reader',
+                params: {
+                    [NAV_PARAMS.READER]: {
+                        url: testUrl,
+                        title: testTitle,
+                    },
+                },
+            },
+        ])
     })
 })

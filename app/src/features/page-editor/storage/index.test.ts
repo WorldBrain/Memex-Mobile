@@ -50,13 +50,77 @@ describe('page editor StorageModule', () => {
         },
     }) => {
         for (const note of data.notes) {
+            if (!note.comment?.length) {
+                continue
+            }
+
             // Timestamp gets appended to URL ID; here we just grab it from test datum's URL
             const urlTimestamp = +note.url.split('#')[1]
 
-            await pageEditor.createNote(note, urlTimestamp)
+            await pageEditor.createNote(note as any, urlTimestamp)
             const foundNote = await pageEditor.findNote(note)
             testNoteEquality(foundNote!, note)
         }
+    })
+
+    it('should be able to create new annotations', async ({
+        storage: {
+            modules: { pageEditor },
+        },
+    }) => {
+        for (const note of data.notes) {
+            if (!note.body?.length) {
+                continue
+            }
+
+            // Timestamp gets appended to URL ID; here we just grab it from test datum's URL
+            const urlTimestamp = +note.url.split('#')[1]
+
+            await pageEditor.createAnnotation(note as any, urlTimestamp)
+            const foundNote = await pageEditor.findNote(note)
+            testNoteEquality(foundNote!, note)
+        }
+    })
+
+    it('should be able to find only annotations (with bodies)', async ({
+        storage: {
+            modules: { pageEditor },
+        },
+    }) => {
+        for (const note of data.notes) {
+            await pageEditor.createAnnotation(note as any)
+        }
+
+        const annotations = await pageEditor.findAnnotations({
+            url: 'https://test.com',
+        })
+        expect(annotations.length).toBe(2)
+        expect(annotations.map(a => a.body)).toEqual([
+            data.notes[0].body,
+            data.notes[1].body,
+        ])
+    })
+
+    it('should be able to delete all notes for a page', async ({
+        storage: {
+            modules: { pageEditor },
+        },
+    }) => {
+        for (const note of data.notes) {
+            await pageEditor.createAnnotation(note as any)
+        }
+
+        const before = await pageEditor.findNotes({
+            url: 'https://test.com',
+        })
+        expect(before.length).toBe(3)
+
+        await pageEditor.deleteNotesForPage({ url: 'https://test.com' })
+
+        const after = await pageEditor.findNotes({
+            url: 'https://test.com',
+        })
+        expect(after.length).toBe(0)
     })
 
     it('should be able to star notes', async ({

@@ -8,6 +8,10 @@ import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
+import { NoteEditorNavigationParams } from 'src/features/overview/ui/screens/note-editor/types'
+import { ReaderNavigationParams } from 'src/features/reader/ui/screens/reader/types'
+import { DashboardNavigationParams } from 'src/features/overview/ui/screens/dashboard/types'
 
 export default class PageEditorScreen extends NavigationScreen<
     Props,
@@ -33,16 +37,38 @@ export default class PageEditorScreen extends NavigationScreen<
 
         return () =>
             this.props.navigation.navigate('NoteEditor', {
-                selectedList: (this.logic as Logic).selectedList,
-                pageUrl: this.state.page.fullUrl,
-                mode: 'create',
+                [NAV_PARAMS.NOTE_EDITOR]: {
+                    selectedList: (this.logic as Logic).selectedList,
+                    pageUrl: this.state.page.fullUrl,
+                    previousRoute: 'PageEditor',
+                    __prevPreviousRoute: 'Reader',
+                    mode: 'create',
+                } as NoteEditorNavigationParams,
             })
     }
 
-    private navBackToOverview = () =>
-        this.props.navigation.navigate('Overview', {
-            selectedList: (this.logic as Logic).selectedList,
-        })
+    private navBackToDashboard = () => {
+        const { navigate } = this.props.navigation
+        const logic = this.logic as Logic
+
+        switch (logic.previousRoute) {
+            case 'Reader':
+                return navigate('Reader', {
+                    [NAV_PARAMS.READER]: {
+                        url: this.state.page.url,
+                        title: this.state.page.titleText,
+                        scrollPercent: logic.readerScrollPercent,
+                    } as ReaderNavigationParams,
+                })
+            case 'Dashboard':
+            default:
+                return navigate('Overview', {
+                    [NAV_PARAMS.DASHBOARD]: {
+                        selectedList: (this.logic as Logic).selectedList,
+                    } as DashboardNavigationParams,
+                })
+        }
+    }
 
     private renderNotes() {
         return (
@@ -51,12 +77,16 @@ export default class PageEditorScreen extends NavigationScreen<
                     this.processEvent('confirmNoteDelete', { url: n.url })}
                 initNoteEdit={note => () =>
                     this.props.navigation.navigate('NoteEditor', {
-                        selectedList: (this.logic as Logic).selectedList,
-                        pageUrl: this.state.page.fullUrl,
-                        highlightText: note.noteText,
-                        noteText: note.commentText,
-                        noteUrl: note.url,
-                        mode: 'update',
+                        [NAV_PARAMS.NOTE_EDITOR]: {
+                            selectedList: (this.logic as Logic).selectedList,
+                            pageUrl: this.state.page.fullUrl,
+                            highlightText: note.noteText,
+                            noteText: note.commentText,
+                            previousRoute: 'PageEditor',
+                            __prevPreviousRoute: 'Reader',
+                            noteUrl: note.url,
+                            mode: 'update',
+                        } as NoteEditorNavigationParams,
                     })}
                 initNotePress={n => () =>
                     this.processEvent('toggleNotePress', { url: n.url })}
@@ -103,7 +133,7 @@ export default class PageEditorScreen extends NavigationScreen<
         return (
             <MainLayout
                 {...this.state.page}
-                onBackPress={this.navBackToOverview}
+                onBackPress={this.navBackToDashboard}
                 onAddPress={this.initHandleAddNotePress()}
                 titleText={this.state.page.pageUrl}
             >

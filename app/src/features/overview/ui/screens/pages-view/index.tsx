@@ -7,10 +7,12 @@ import {
     NavigationProps,
 } from 'src/ui/types'
 import styles from './styles'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
+import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 
 interface Props extends NavigationProps {}
 
@@ -20,7 +22,12 @@ export default class PagesView extends NavigationScreen<Props, State, Event> {
     }
 
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () =>
-        this.props.navigation.navigate('PageEditor', { page, mode })
+        this.props.navigation.navigate('PageEditor', {
+            [NAV_PARAMS.PAGE_EDITOR]: {
+                pageUrl: page.url,
+                mode,
+            } as PageEditorNavigationParams,
+        })
 
     private initHandleDeletePress = (page: UIPage) => () =>
         Alert.alert(

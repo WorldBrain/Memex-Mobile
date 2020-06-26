@@ -10,6 +10,8 @@ import navigationStyles from 'src/features/overview/ui/components/navigation.sty
 import { DashboardFilterType } from 'src/features/overview/types'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import styles from './styles'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
+import { DashboardNavigationParams } from '../dashboard/types'
 
 export default class ListsFilter extends NavigationScreen<Props, State, Event> {
     static MAGIC_VISITS_FILTER = 'All History'
@@ -39,8 +41,10 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
         }
 
         this.props.navigation.navigate('Overview', {
-            selectedList: item.isChecked ? MOBILE_LIST_NAME : item.name,
-            filterType: !item.isChecked ? filterType : undefined,
+            [NAV_PARAMS.DASHBOARD]: {
+                selectedList: item.isChecked ? MOBILE_LIST_NAME : item.name,
+                filterType: !item.isChecked ? filterType : undefined,
+            } as DashboardNavigationParams,
         })
     }
 
@@ -53,7 +57,9 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
                         <TouchableOpacity
                             onPress={() =>
                                 this.props.navigation.navigate('Overview', {
-                                    selectedList: this.selectedEntryName,
+                                    [NAV_PARAMS.DASHBOARD]: {
+                                        selectedList: this.selectedEntryName,
+                                    } as DashboardNavigationParams,
                                 })
                             }
                             style={navigationStyles.btnContainer}

@@ -6,4 +6,5 @@ export interface SharedData {
 export interface ShareAPI {
     data(): Promise<SharedData>
     close(): Promise<void>
+    openURL(url: string): void
 }

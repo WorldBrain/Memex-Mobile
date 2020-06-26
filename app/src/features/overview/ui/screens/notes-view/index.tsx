@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 
 import { NavigationScreen } from 'src/ui/types'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import ResultPage from '../../components/result-page-with-notes'
 import Logic, { Props, State, Event } from './logic'
 import styles from './styles'
@@ -15,6 +16,7 @@ import { UIPageWithNotes } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 import { NotesSection } from './types'
+import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 
 export default class NotesView extends NavigationScreen<Props, State, Event> {
     constructor(props: Props) {
@@ -23,9 +25,11 @@ export default class NotesView extends NavigationScreen<Props, State, Event> {
 
     private navToPageEditor = (mode: EditorMode, page: UIPageWithNotes) => () =>
         this.props.navigation.navigate('PageEditor', {
-            page,
-            mode,
-            selectedList: (this.logic as Logic).selectedList,
+            [NAV_PARAMS.PAGE_EDITOR]: {
+                selectedList: (this.logic as Logic).selectedList,
+                pageUrl: page.url,
+                mode,
+            } as PageEditorNavigationParams,
         })
 
     private initHandleDeletePagePress = args => () =>

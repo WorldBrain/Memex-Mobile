@@ -56,6 +56,32 @@ describe('overview StorageModule', () => {
         }
     })
 
+    it('should be able to update page title', async ({
+        storage: {
+            modules: { overview },
+        },
+    }) => {
+        const testTitle = 'This is a new title'
+
+        for (const page of data.pages) {
+            await overview.createPage(page)
+            expect(await overview.findPage(page)).toEqual(
+                expect.objectContaining({ fullTitle: page.fullTitle }),
+            )
+            await overview.updatePageTitle({ url: page.url, title: testTitle })
+            expect(await overview.findPage(page)).toEqual(
+                expect.objectContaining({ fullTitle: testTitle }),
+            )
+            await overview.updatePageTitle({
+                url: page.url,
+                title: page.fullTitle,
+            })
+            expect(await overview.findPage(page)).toEqual(
+                expect.objectContaining({ fullTitle: page.fullTitle }),
+            )
+        }
+    })
+
     it('should be able to set page star state', async ({
         storage: {
             modules: { overview },

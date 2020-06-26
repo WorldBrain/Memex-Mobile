@@ -6,14 +6,16 @@ import Body, { Props as BodyProps } from './result-page-body'
 import Footer, { Props as FooterProps } from './result-footer'
 import Tags from './result-page-tags'
 import {
-    DeleteBtn,
-    FullTagBtn,
+    DeleteActionBarBtn,
+    TagBtnFull,
     TagBtn,
     CommentBtn,
     FullCommentBtn,
     StarBtn,
-    ListBtn,
-    FullStarBtn,
+    FullListActionBarWhiteBtn,
+    AddListActionBarWhiteBtn,
+    StarBtnFull,
+    ReaderActionBarBtn,
 } from './action-btns'
 import ActionBar from './result-page-action-bar'
 import { NativeTouchEventHandler, UIPage } from '../../types'
@@ -28,6 +30,7 @@ export interface InteractionProps {
     onVisitPress: NativeTouchEventHandler
     onDeletePress: NativeTouchEventHandler
     onResultPress?: NativeTouchEventHandler
+    onReaderPress?: NativeTouchEventHandler
     onCommentPress: NativeTouchEventHandler
 }
 
@@ -48,7 +51,7 @@ const ResultPage: React.StatelessComponent<Props &
                 <View style={styles.actionContainer}>
                     <Footer {...props}>
                         {props.isStarred ? (
-                            <FullStarBtn onPress={props.onStarPress} />
+                            <StarBtnFull onPress={props.onStarPress} />
                         ) : (
                             <StarBtn onPress={props.onStarPress} />
                         )}
@@ -58,7 +61,7 @@ const ResultPage: React.StatelessComponent<Props &
                             <CommentBtn onPress={props.onCommentPress} />
                         )}
                         {props.tags.length > 0 ? (
-                            <FullTagBtn onPress={props.onTagPress} />
+                            <TagBtnFull onPress={props.onTagPress} />
                         ) : (
                             <TagBtn onPress={props.onTagPress} />
                         )}
@@ -74,8 +77,15 @@ const ResultPage: React.StatelessComponent<Props &
                     </Text>
                 )}
             >
-                <ListBtn onPress={props.onListsPress} />
-                <DeleteBtn onPress={props.onDeletePress} />
+                {props.onReaderPress && (
+                    <ReaderActionBarBtn onPress={props.onReaderPress} />
+                )}
+                {props.lists.length > 0 ? (
+                    <FullListActionBarWhiteBtn onPress={props.onListsPress} />
+                ) : (
+                    <AddListActionBarWhiteBtn onPress={props.onListsPress} />
+                )}
+                <DeleteActionBarBtn onPress={props.onDeletePress} />
             </ActionBar>
         )}
     </View>

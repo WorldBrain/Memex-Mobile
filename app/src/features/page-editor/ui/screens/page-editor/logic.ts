@@ -5,6 +5,7 @@ import { VALID_TAG_PATTERN } from '@worldbrain/memex-common/lib/storage/constant
 import { storageKeys } from '../../../../../../app.json'
 import { UIPageWithNotes as Page, UINote } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import {
     NavigationProps,
     UIStorageModules,
@@ -14,6 +15,8 @@ import {
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
+import { PreviousRoute } from './types'
 import { updateSuggestionsCache } from 'src/features/page-editor/utils'
 import { INIT_SUGGESTIONS_LIMIT } from 'src/features/meta-picker/ui/screens/meta-picker/constants'
 
@@ -38,14 +41,18 @@ export interface Props extends NavigationProps {
 
 export default class Logic extends UILogic<State, Event> {
     selectedList: string
+    previousRoute: PreviousRoute
+    readerScrollPercent?: number
 
     constructor(private props: Props) {
         super()
 
-        this.selectedList = props.navigation.getParam(
-            'selectedList',
-            MOBILE_LIST_NAME,
-        )
+        const params = props.navigation.getParam(
+            NAV_PARAMS.PAGE_EDITOR,
+        ) as PageEditorNavigationParams
+        this.selectedList = params.selectedList ?? MOBILE_LIST_NAME
+        this.previousRoute = params.previousRoute ?? 'Dashboard'
+        this.readerScrollPercent = params.readerScrollPercent
     }
 
     getInitialState(): State {
@@ -58,11 +65,15 @@ export default class Logic extends UILogic<State, Event> {
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
-            const mode = this.props.navigation.getParam('mode', 'tags')
-            const pageUrl = this.props.navigation.getParam('pageUrl')
-            const page = await this.loadPageData(pageUrl)
+            const params = this.props.navigation.getParam(
+                NAV_PARAMS.PAGE_EDITOR,
+            ) as PageEditorNavigationParams
+            const page = await this.loadPageData(params.pageUrl)
 
-            this.emitMutation({ page: { $set: page }, mode: { $set: mode } })
+            this.emitMutation({
+                page: { $set: page },
+                mode: { $set: params.mode ?? 'tags' },
+            })
         })
     }
 
@@ -107,11 +118,8 @@ export default class Logic extends UILogic<State, Event> {
                 isNotePressed: false,
                 tags: noteTags.get(note.url)!,
                 isEdited:
-                    note.lastEdited &&
-                    note.lastEdited.getTime() !== note.createdWhen!.getTime(),
-                date: note.lastEdited
-                    ? timeFromNow(note.lastEdited)
-                    : timeFromNow(note.createdWhen!),
+                    note.lastEdited?.getTime() !== note.createdWhen!.getTime(),
+                date: timeFromNow(note.lastEdited ?? note.createdWhen!),
             })),
         } as Page
     }

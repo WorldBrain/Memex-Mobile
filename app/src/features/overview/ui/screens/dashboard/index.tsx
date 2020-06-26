@@ -16,6 +16,7 @@ import throttle from 'lodash/throttle'
 import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
 import styles from './styles'
+import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
@@ -26,6 +27,8 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import SyncRibbon from '../../components/sync-ribbon'
+import { ReaderNavigationParams } from 'src/features/reader/ui/screens/reader/types'
+import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 
 export default class Dashboard extends NavigationScreen<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -36,9 +39,11 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
 
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {
-            selectedList: this.state.selectedListName,
-            pageUrl: page.fullUrl,
-            mode,
+            [NAV_PARAMS.PAGE_EDITOR]: {
+                selectedList: this.state.selectedListName,
+                pageUrl: page.fullUrl,
+                mode,
+            } as PageEditorNavigationParams,
         })
     }
 
@@ -70,6 +75,15 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
 
     private initHandleResultPress = ({ url }: UIPage) => () => {
         this.processEvent('toggleResultPress', { url })
+    }
+
+    private initHandleReaderPress = ({ url, titleText }: UIPage) => () => {
+        this.props.navigation.navigate('Reader', {
+            [NAV_PARAMS.READER]: {
+                url,
+                title: titleText,
+            } as ReaderNavigationParams,
+        })
     }
 
     private handleVisitPress = ({ fullUrl }: UIPage) => () => {
@@ -129,6 +143,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
             onCommentPress={this.navToPageEditor(item, 'notes')}
             onTagPress={this.navToPageEditor(item, 'tags')}
             onListsPress={this.navToPageEditor(item, 'collections')}
+            onReaderPress={this.initHandleReaderPress(item)}
             key={index}
             {...item}
         />

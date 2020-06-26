@@ -1611,6 +1611,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9F56D9583DFD9272446C5B28 /* Pods-app-MemexShare.debug.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1656,6 +1657,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 95C5DAA9CDD14C04969950FE /* Pods-app-MemexShare.release.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1950,6 +1952,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7A2676AE611B807E77D7C630 /* Pods-app-MemexShare.development.xcconfig */;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
