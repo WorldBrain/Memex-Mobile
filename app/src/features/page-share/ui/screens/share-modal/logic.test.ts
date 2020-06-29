@@ -19,7 +19,7 @@ describe('share modal UI logic tests', () => {
         storage: Storage
         getSharedText?: () => string
         getSharedUrl?: () => string
-        syncError?: string
+        syncError?: () => string | undefined
     }) {
         const logic = new Logic({
             services: {
@@ -38,15 +38,19 @@ describe('share modal UI logic tests', () => {
                     continuousSync: {
                         ...options.services.sync.continuousSync,
                         forceIncrementalSync: async () => {
-                            if (options.syncError) {
+                            if (options.syncError && options.syncError()) {
                                 options.services.sync.continuousSync.events.emit(
                                     'syncFinished',
                                     {
                                         hasChanges: false,
-                                        error: new Error(options.syncError),
+                                        error: new Error(options.syncError()),
                                     },
                                 )
                             } else {
+                                options.services.sync.continuousSync.events.emit(
+                                    'syncFinished',
+                                    { hasChanges: true },
+                                )
                                 return options.services.sync.continuousSync.forceIncrementalSync()
                             }
                         },
@@ -114,7 +118,7 @@ describe('share modal UI logic tests', () => {
         const { element } = await setup({
             ...context,
             getSharedUrl: () => pageUrl,
-            syncError: errMsg,
+            syncError: () => errMsg,
         })
 
         expect(element.state.errorMessage).toBeUndefined()
@@ -130,10 +134,7 @@ describe('share modal UI logic tests', () => {
         const { element } = await setup({
             ...context,
             getSharedUrl: () => pageUrl,
-            forceIncrementalSync: () =>
-                shouldFail
-                    ? Promise.reject(new Error(errMsg))
-                    : Promise.resolve(),
+            syncError: () => (shouldFail ? errMsg : undefined),
         })
 
         expect(element.state.errorMessage).toBeUndefined()
@@ -152,7 +153,7 @@ describe('share modal UI logic tests', () => {
         const { element } = await setup({
             ...context,
             getSharedUrl: () => pageUrl,
-            forceIncrementalSync: () => Promise.reject(new Error(errMsg)),
+            syncError: () => errMsg,
         })
 
         expect(element.state.errorMessage).toBeUndefined()
