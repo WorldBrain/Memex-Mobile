@@ -31,7 +31,10 @@ const MetaPickerEntry: React.StatelessComponent<Props> = props => (
                 <View
                     style={[
                         styles.entry,
-                        props.showTextBackground ? styles.entryBackground : null,
+                        props.showTextBackground
+                            ? styles.entryBackground
+                            : null,
+                        props.canAdd && styles.canAdd,
                     ]}
                 >
                     <Text style={styles.entryText}>{props.text}</Text>

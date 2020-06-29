@@ -18,7 +18,7 @@ export default EStyleSheet.create({
         justifyContent: 'flex-start',
         flexDirection: 'row',
         alignItems: 'center',
-    },    
+    },
     entry: {
         paddingHorizontal: '1rem',
         paddingVertical: '0.3rem',
@@ -46,7 +46,9 @@ export default EStyleSheet.create({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
-
+    },
+    canAdd: {
+        marginLeft: 10,
     },
     addText: {
         fontSize: '1.2rem',
