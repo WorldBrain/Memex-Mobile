@@ -26,14 +26,16 @@ const MetaPickerEntry: React.StatelessComponent<Props> = props => (
                 props.skipBottomBorder ? null : styles.containerBorder,
             ]}
         >
-            {props.canAdd && <Text style={styles.addText}>Add new:</Text>}
-            <View
-                style={[
-                    styles.entry,
-                    props.showTextBackground ? styles.entryBackground : null,
-                ]}
-            >
-                <Text style={styles.entryText}>{props.text}</Text>
+            <View style={styles.textContainer}>
+                {props.canAdd && <Text style={styles.addText}>Add new:</Text>}
+                <View
+                    style={[
+                        styles.entry,
+                        props.showTextBackground ? styles.entryBackground : null,
+                    ]}
+                >
+                    <Text style={styles.entryText}>{props.text}</Text>
+                </View>
             </View>
             <View style={styles.checkMarkContainer}>
                 <Image

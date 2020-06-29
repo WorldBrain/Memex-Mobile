@@ -110,6 +110,7 @@ export default class MetaPickerScreen extends NavigationScreen<
                         </View>
                         <View style={styles.listContainer}>
                             <FlatList
+                                keyboardShouldPersistTaps="always"
                                 renderItem={this.renderPickerEntry}
                                 data={selectors.pickerEntries(
                                     this.state,

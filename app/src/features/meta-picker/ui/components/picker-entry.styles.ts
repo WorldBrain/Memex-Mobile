@@ -13,10 +13,17 @@ export default EStyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
     },
+    textContainer: {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },    
     entry: {
         paddingHorizontal: '1rem',
         paddingVertical: '0.3rem',
         borderRadius: 5,
+        textAlign: 'left',
     },
     entryBackground: {
         backgroundColor: '#83c9f4',
@@ -25,12 +32,21 @@ export default EStyleSheet.create({
         fontSize: '1.4rem',
         color: '$textColor',
         fontWeight: '400',
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        textAlign: 'left',
+        width: '100%',
     },
     emptyRowText: {
         width: '100%',
-        textAlign: 'center',
         fontSize: '1.4rem',
         color: '$textColor',
+        textAlign: 'left',
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+
     },
     addText: {
         fontSize: '1.2rem',
