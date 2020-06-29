@@ -9,18 +9,21 @@ import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import * as DATA from './logic.test.data'
 import { List } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
 import { FakeNavigation } from 'src/tests/navigation'
+import { Services } from 'src/services/types'
 
 describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     async function setup(options: {
+        services: Services
         storage: Storage
         getSharedText?: () => string
         getSharedUrl?: () => string
-        forceIncrementalSync?: () => Promise<void>
+        syncError?: string
     }) {
         const logic = new Logic({
             services: {
+                ...options.services,
                 shareExt: ({
                     getSharedText: options.getSharedText
                         ? options.getSharedText
@@ -29,15 +32,27 @@ describe('share modal UI logic tests', () => {
                         ? options.getSharedUrl
                         : () => 'http://test.com',
                 } as any) as any,
+                errorTracker: { track: () => undefined } as any,
                 sync: {
+                    ...options.services.sync,
                     continuousSync: {
-                        forceIncrementalSync: options.forceIncrementalSync
-                            ? options.forceIncrementalSync
-                            : () => Promise.resolve(),
+                        ...options.services.sync.continuousSync,
+                        forceIncrementalSync: async () => {
+                            if (options.syncError) {
+                                options.services.sync.continuousSync.events.emit(
+                                    'syncFinished',
+                                    {
+                                        hasChanges: false,
+                                        error: new Error(options.syncError),
+                                    },
+                                )
+                            } else {
+                                return options.services.sync.continuousSync.forceIncrementalSync()
+                            }
+                        },
                     },
-                },
-                errorTracker: { track: () => undefined },
-            } as any,
+                } as any,
+            },
             storage: options.storage,
             navigation: new FakeNavigation() as any,
         })
@@ -99,7 +114,7 @@ describe('share modal UI logic tests', () => {
         const { element } = await setup({
             ...context,
             getSharedUrl: () => pageUrl,
-            forceIncrementalSync: () => Promise.reject(new Error(errMsg)),
+            syncError: errMsg,
         })
 
         expect(element.state.errorMessage).toBeUndefined()
