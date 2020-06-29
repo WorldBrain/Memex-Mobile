@@ -7,7 +7,6 @@ import '@react-native-firebase/functions'
 import * as Sentry from '@sentry/react-native'
 import { normalizeUrl } from '@worldbrain/memex-url-utils'
 import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
-import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
@@ -20,7 +19,11 @@ import {
     createServerStorage,
 } from './storage'
 import { createServices } from './services'
-import { setupBackgroundSync, setupFirebaseAuth } from './services/setup'
+import {
+    setupBackgroundSync,
+    setupFirebaseAuth,
+    setupContinuousSync,
+} from './services/setup'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { LocalStorageService } from './services/local-storage'
@@ -59,21 +62,24 @@ export async function main() {
         devicePlatform: Platform.OS as MemexSyncDevicePlatform,
         signalTransportFactory: createFirebaseSignalTransport,
         sharedSyncLog: serverStorage.modules.sharedSyncLog,
-        auth: new WorldbrainAuthService(firebase),
         errorTracker,
         localStorage,
         normalizeUrl,
+        firebase,
         storage,
     })
+
     const dependencies = { storage, services }
 
     await setStorageMiddleware({
         ...dependencies,
         enableAutoSync: true,
     })
+
     await setupBackgroundSync(dependencies)
     await setupFirebaseAuth(dependencies)
-    await services.sync.continuousSync.setup()
+    await setupContinuousSync(dependencies)
+
     await runMigrations(dependencies)
 
     ui.initialize({ dependencies })

@@ -40,7 +40,7 @@ target 'app' do
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
 
 
-  pod 'Firebase/Core', '~> 6.8.1'
+  pod 'Firebase/Core', '~> 6.25.0'
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
   pod 'Firebase/Database'

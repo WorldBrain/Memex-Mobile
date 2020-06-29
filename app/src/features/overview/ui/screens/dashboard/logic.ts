@@ -146,13 +146,19 @@ export default class Logic extends UILogic<State, Event> {
 
         const syncFinishedHandler = ({
             hasChanges,
+            error,
         }: {
             hasChanges: boolean
+            error?: Error
         }) => {
             if (hasChanges) {
                 this.emitMutation({
                     shouldShowSyncRibbon: { $set: true },
                 })
+            }
+
+            if (error) {
+                this.props.services.errorTracker.track(error)
             }
 
             sync.continuousSync.events.removeListener(

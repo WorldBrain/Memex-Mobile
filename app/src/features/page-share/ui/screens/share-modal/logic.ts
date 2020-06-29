@@ -12,11 +12,13 @@ import {
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
+import delay from 'src/utils/delay'
 
 export interface State {
     loadState: UITaskState
     tagsState: UITaskState
     bookmarkState: UITaskState
+    syncRetryState: UITaskState
     collectionsState: UITaskState
 
     pageUrl: string
@@ -31,14 +33,16 @@ export interface State {
     isUnsupportedApplication: boolean
     metaViewShown?: MetaType
 }
-export type Event = UIEvent<{
-    save: {}
 
-    undoPageSave: {}
+export type Event = UIEvent<{
+    save: null
+    retrySync: null
+
+    undoPageSave: null
     metaPickerEntryPress: { entry: MetaTypeShape }
     setMetaViewType: { type?: MetaType }
     setModalVisible: { shown: boolean }
-    togglePageStar: {}
+    togglePageStar: null
     setNoteText: { value: string }
 
     toggleTag: { name: string }
@@ -47,6 +51,7 @@ export type Event = UIEvent<{
     setPageStar: { value: boolean }
     setStatusText: { value: string }
     setCollectionsToAdd: { values: string[] }
+    clearSyncError: null
 }>
 
 export interface Props extends NavigationProps {
@@ -56,7 +61,7 @@ export interface Props extends NavigationProps {
 
 export default class Logic extends UILogic<State, Event> {
     syncRunning!: Promise<void | SyncReturnValue>
-    initValues!: {
+    initValues: {
         isStarred: boolean
         tagsToAdd: string[]
         collectionsToAdd: string[]
@@ -70,6 +75,7 @@ export default class Logic extends UILogic<State, Event> {
         return {
             isUnsupportedApplication: false,
             loadState: 'pristine',
+            syncRetryState: 'pristine',
             bookmarkState: 'pristine',
             tagsState: 'pristine',
             collectionsState: 'pristine',
@@ -152,6 +158,26 @@ export default class Logic extends UILogic<State, Event> {
         )
 
         await Promise.all([pageP, bookmarkP, tagsP, listsP])
+    }
+
+    async retrySync() {
+        await executeUITask<State, 'syncRetryState', void>(
+            this,
+            'syncRetryState',
+            async () => {
+                try {
+                    this.syncRunning = this.props.services.sync.continuousSync.forceIncrementalSync()
+                    await this.syncRunning
+                    this.clearSyncError()
+                } catch (err) {
+                    this.handleSyncError(err)
+                }
+            },
+        )
+    }
+
+    clearSyncError() {
+        this.emitMutation({ errorMessage: { $set: undefined } })
     }
 
     setPageUrl(
