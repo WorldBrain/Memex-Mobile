@@ -20,9 +20,7 @@ export type SyncScreenEvent = UIEvent<{
 }>
 
 export interface Props extends NavigationProps {
-    services: UIServices<
-        'localStorage' | 'sync' | 'auth' | 'keychain' | 'errorTracker'
-    >
+    services: UIServices<'localStorage' | 'sync' | 'errorTracker'>
     suppressErrorLogging?: boolean
     syncStallTimeout?: number
 }
@@ -80,19 +78,6 @@ export default class SyncScreenLogic extends UILogic<
         delete (globalThis as any).feedQrData
     }
 
-    async saveFirebaseTokenToKeychain() {
-        const { token } = await this.props.services.auth.generateLoginToken()
-
-        if (!token || !token.length) {
-            throw new Error('Could not get Firebase Auth token')
-        }
-
-        await this.props.services.keychain.setLogin({
-            username: appGroup,
-            password: token,
-        })
-    }
-
     private detectStall = () =>
         setTimeout(() => {
             this.props.services.errorTracker.track(
@@ -134,7 +119,6 @@ export default class SyncScreenLogic extends UILogic<
             await localStorage.set(storageKeys.syncKey, true)
             await sync.continuousSync.setup()
 
-            await this.saveFirebaseTokenToKeychain()
             await this.emitMutation({ status: { $set: 'success' } })
         } catch (e) {
             if (!this.props.suppressErrorLogging) {

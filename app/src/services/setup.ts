@@ -1,18 +1,9 @@
 // tslint:disable:no-console
-import { appGroup } from '../../app.json'
+import { appGroup, appIdPrefix } from '../../app.json'
 import { ServiceStarter } from './types'
 
 export const setupBackgroundSync: ServiceStarter = async ({ services }) => {
     services.backgroundProcess.scheduleProcess(async () => {
-        const { token } = await services.auth.generateLoginToken()
-
-        if (token) {
-            await services.keychain.setLogin({
-                username: appGroup,
-                password: token,
-            })
-        }
-
         await services.sync.continuousSync.maybeDoIncrementalSync()
 
         // TODO: figure out whether the DB was written to (still don't understand how important this is)
@@ -20,22 +11,28 @@ export const setupBackgroundSync: ServiceStarter = async ({ services }) => {
     })
 }
 
+export const setupContinuousSync: ServiceStarter = async ({ services }) => {
+    await services.sync.continuousSync.setup()
+
+    services.sync.continuousSync.events.addListener(
+        'syncFinished',
+        ({ error }) => {
+            if (error) {
+                services.errorTracker.track(error)
+            }
+        },
+    )
+}
+
 export const setupFirebaseAuth: ServiceStarter = async ({ services }) => {
+    // iOS only: Set up Firebase to store auth state in shared iOS group space,
+    //  allowing both the share ext + main app to share logged-in state automatically.
+    await services.auth.useiOSAccessGroup(`${appIdPrefix}.${appGroup}`)
+
     if (await services.auth.getCurrentUser()) {
         console.log('FB: LOGGED IN')
         return
     }
-    console.log('FB: NOT LOGGED IN - USING STORED TOKEN')
 
-    const storedLogin = await services.keychain.getLogin()
-
-    if (storedLogin != null) {
-        console.log('FB: STORED TOKEN FOUND')
-
-        try {
-            await services.auth.loginWithToken(storedLogin.password)
-        } catch (err) {
-            console.log('FB:', err.message)
-        }
-    }
+    console.log('FB: NOT LOGGED IN')
 }

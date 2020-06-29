@@ -107,7 +107,7 @@ describe('share modal UI logic tests', () => {
         }
     })
 
-    it('should show error view if sync error encountered', async context => {
+    it('should set error message state if sync error encountered', async context => {
         const errMsg = 'this is a test'
         const pageUrl = DATA.PAGE_URL_1
 
@@ -119,6 +119,48 @@ describe('share modal UI logic tests', () => {
 
         expect(element.state.errorMessage).toBeUndefined()
         await element.init()
+        expect(element.state.errorMessage).toEqual(errMsg)
+    })
+
+    it('should clear error message state if retry sync is succesfull', async context => {
+        const errMsg = 'this is a test'
+        const pageUrl = DATA.PAGE_URL_1
+        let shouldFail = true
+
+        const { element } = await setup({
+            ...context,
+            getSharedUrl: () => pageUrl,
+            forceIncrementalSync: () =>
+                shouldFail
+                    ? Promise.reject(new Error(errMsg))
+                    : Promise.resolve(),
+        })
+
+        expect(element.state.errorMessage).toBeUndefined()
+        await element.init()
+        expect(element.state.errorMessage).toEqual(errMsg)
+
+        shouldFail = false
+        await element.processEvent('retrySync', null)
+        expect(element.state.errorMessage).toBeUndefined()
+    })
+
+    it('should update error message state if retry sync is unssuccesfull', async context => {
+        let errMsg = 'this is a test'
+        const pageUrl = DATA.PAGE_URL_1
+
+        const { element } = await setup({
+            ...context,
+            getSharedUrl: () => pageUrl,
+            forceIncrementalSync: () => Promise.reject(new Error(errMsg)),
+        })
+
+        expect(element.state.errorMessage).toBeUndefined()
+        await element.init()
+        expect(element.state.errorMessage).toEqual(errMsg)
+
+        errMsg = 'this is another test'
+        await element.processEvent('retrySync', null)
         expect(element.state.errorMessage).toEqual(errMsg)
     })
 

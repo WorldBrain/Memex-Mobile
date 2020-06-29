@@ -12,11 +12,13 @@ import {
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
+import delay from 'src/utils/delay'
 
 export interface State {
     loadState: UITaskState
     tagsState: UITaskState
     bookmarkState: UITaskState
+    syncRetryState: UITaskState
     collectionsState: UITaskState
 
     pageUrl: string
@@ -31,14 +33,16 @@ export interface State {
     isUnsupportedApplication: boolean
     metaViewShown?: MetaType
 }
-export type Event = UIEvent<{
-    save: {}
 
-    undoPageSave: {}
+export type Event = UIEvent<{
+    save: null
+    retrySync: null
+
+    undoPageSave: null
     metaPickerEntryPress: { entry: MetaTypeShape }
     setMetaViewType: { type?: MetaType }
     setModalVisible: { shown: boolean }
-    togglePageStar: {}
+    togglePageStar: null
     setNoteText: { value: string }
 
     toggleTag: { name: string }
@@ -47,6 +51,7 @@ export type Event = UIEvent<{
     setPageStar: { value: boolean }
     setStatusText: { value: string }
     setCollectionsToAdd: { values: string[] }
+    clearSyncError: null
 }>
 
 export interface Props extends NavigationProps {
@@ -70,6 +75,7 @@ export default class Logic extends UILogic<State, Event> {
         return {
             isUnsupportedApplication: false,
             loadState: 'pristine',
+            syncRetryState: 'pristine',
             bookmarkState: 'pristine',
             tagsState: 'pristine',
             collectionsState: 'pristine',
@@ -96,13 +102,16 @@ export default class Logic extends UILogic<State, Event> {
             if (error) {
                 this.props.services.errorTracker.track(error)
                 this.emitMutation({ errorMessage: { $set: error.message } })
+            } else {
+                this.clearSyncError()
             }
 
             sync.continuousSync.events.removeAllListeners('syncFinished')
         })
+
         this.syncRunning = sync.continuousSync.forceIncrementalSync()
 
-        return this.syncRunning
+        await this.syncRunning
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
@@ -173,6 +182,18 @@ export default class Logic extends UILogic<State, Event> {
         this.props.services.sync.continuousSync.events.removeAllListeners(
             'syncFinished',
         )
+    }
+
+    async retrySync() {
+        await executeUITask<State, 'syncRetryState', void>(
+            this,
+            'syncRetryState',
+            async () => this.doSync(),
+        )
+    }
+
+    clearSyncError() {
+        this.emitMutation({ errorMessage: { $set: undefined } })
     }
 
     setPageUrl(
