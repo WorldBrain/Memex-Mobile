@@ -29,11 +29,9 @@ export const FullCommentBtn = createBtn(require('../img/comment-full.png'))
 export const HighlightBtn = createBtn(require('src/ui/img/highlight.png'))
 export const EditBtn = createBtn(require('../img/edit_white.png'))
 export const AnnotateBtn = createBtn(require('src/ui/img/add_comment.png'))
-export const AnnotateBtnFull = createBtn(require('../img/trash.png'))
+export const AnnotateBtnFull = createBtn(require('src/ui/img/comment_full.png'))
 export const AddListBtn = createBtn(require('src/ui/img/add_list.png'))
-export const AddListBtnFull = createBtn(
-    require('../img/add_collection_white.png'),
-)
+export const AddListBtnFull = createBtn(require('../img/collections-full.png'))
 
 export const EyeBtn = createBtn(require('src/ui/img/eye.png'))
 export const EyeWhiteBtn = createBtn(require('src/ui/img/eye_white.png'))
