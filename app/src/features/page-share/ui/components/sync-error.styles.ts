@@ -16,16 +16,30 @@ export default EStyleSheet.create({
     },
     mainText: {
         fontWeight: '700',
-        fontSize: 16,
-        marginVertical: 25,
+        fontSize: 20,
+        marginTop: 10,
         lineHeight: '2rem',
         paddingHorizontal: 60,
+        textAlign: 'center',
+    },
+    subText: {
+        fontWeight: '400',
+        fontSize: 16,
+        marginVertical: 10,
+        marginBottom: 20,
+        lineHeight: '1.5rem',
+        paddingHorizontal: 20,
         textAlign: 'center',
     },
     reportBtn: {},
     errMsgTitle: {
         fontWeight: '600',
         fontSize: 16,
+        marginVertical: 10,
+    },
+    scrollView: {
+        backgroundColor: 'pink',
+        marginHorizontal: 20,
     },
     errMsg: {
         marginVertical: 25,
