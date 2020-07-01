@@ -28,7 +28,7 @@ const ActionBar: React.StatelessComponent<Props> = ({
         {props.showReaderBanner && (
             <View style={[styles.readerSegmentContainer, styles.readerSegment]}>
                 <Text style={styles.readerSegmentText}>
-                    NEW: Annotate page within app!
+                    New: Annotate page within app!
                 </Text>
             </View>
         )}

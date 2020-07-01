@@ -139,37 +139,30 @@ export default class Logic extends UILogic<State, Event> {
         if (this.removeAppChangeListener) {
             this.removeAppChangeListener()
         }
+
+        this.props.services.sync.continuousSync.events.removeAllListeners(
+            'syncFinished',
+        )
     }
 
     private async doSync() {
         const { sync } = this.props.services
 
-        const syncFinishedHandler = ({
-            hasChanges,
-            error,
-        }: {
-            hasChanges: boolean
-            error?: Error
-        }) => {
-            if (hasChanges) {
-                this.emitMutation({
-                    shouldShowSyncRibbon: { $set: true },
-                })
-            }
-
-            if (error) {
-                this.props.services.errorTracker.track(error)
-            }
-
-            sync.continuousSync.events.removeListener(
-                'syncFinished',
-                syncFinishedHandler,
-            )
-        }
-
         sync.continuousSync.events.addListener(
             'syncFinished',
-            syncFinishedHandler,
+            ({ hasChanges, error }) => {
+                if (error) {
+                    this.props.services.errorTracker.track(error)
+                }
+
+                if (hasChanges) {
+                    this.emitMutation({
+                        shouldShowSyncRibbon: { $set: true },
+                    })
+                }
+
+                sync.continuousSync.events.removeAllListeners('syncFinished')
+            },
         )
 
         await executeUITask<State, 'syncState', void>(

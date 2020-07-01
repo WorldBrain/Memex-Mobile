@@ -60,7 +60,7 @@ export interface Props extends NavigationProps {
 }
 
 export default class Logic extends UILogic<State, Event> {
-    syncRunning!: Promise<void | SyncReturnValue>
+    syncRunning: Promise<void | SyncReturnValue> = Promise.resolve()
     initValues: {
         isStarred: boolean
         tagsToAdd: string[]
@@ -90,14 +90,32 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    private handleSyncError = (err: Error) => {
-        this.props.services.errorTracker.track(err)
-        this.emitMutation({ errorMessage: { $set: err.message } })
+    private async doSync() {
+        const { sync } = this.props.services
+
+        if (this.syncRunning) {
+            // TODO: abort any running pull sync, do a push sync
+            await this.syncRunning
+        }
+
+        sync.continuousSync.events.addListener('syncFinished', ({ error }) => {
+            if (error) {
+                this.props.services.errorTracker.track(error)
+                this.emitMutation({ errorMessage: { $set: error.message } })
+            } else {
+                this.clearSyncError()
+            }
+
+            sync.continuousSync.events.removeAllListeners('syncFinished')
+        })
+
+        this.syncRunning = sync.continuousSync.forceIncrementalSync()
+
+        await this.syncRunning
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
-        this.syncRunning = this.props.services.sync.continuousSync.forceIncrementalSync()
-        this.syncRunning.catch(this.handleSyncError)
+        this.doSync()
 
         let url: string
 
@@ -160,19 +178,17 @@ export default class Logic extends UILogic<State, Event> {
         await Promise.all([pageP, bookmarkP, tagsP, listsP])
     }
 
+    cleanup() {
+        this.props.services.sync.continuousSync.events.removeAllListeners(
+            'syncFinished',
+        )
+    }
+
     async retrySync() {
         await executeUITask<State, 'syncRetryState', void>(
             this,
             'syncRetryState',
-            async () => {
-                try {
-                    this.syncRunning = this.props.services.sync.continuousSync.forceIncrementalSync()
-                    await this.syncRunning
-                    this.clearSyncError()
-                } catch (err) {
-                    this.handleSyncError(err)
-                }
-            },
+            async () => this.doSync(),
         )
     }
 
@@ -274,15 +290,8 @@ export default class Logic extends UILogic<State, Event> {
     async save(incoming: IncomingUIEvent<State, Event, 'save'>) {
         this.emitMutation({ showSavingPage: { $set: true } })
         await this.storePageFinal(incoming.previousState)
-        try {
-            // TODO: abort any running pull sync, do a push sync
-            await this.syncRunning
-            await this.props.services.sync.continuousSync.forceIncrementalSync()
-        } catch (error) {
-            this.handleSyncError(error)
-        } finally {
-            this.emitMutation({ isModalShown: { $set: false } })
-        }
+        await this.doSync()
+        this.emitMutation({ isModalShown: { $set: false } })
     }
 
     setMetaViewType(

@@ -106,7 +106,7 @@ export default class ShareModalScreen extends NavigationScreen<
     }
 
     private handleSyncErrorReport = () => {
-        const subject = `SYNC ERROR: share modal`
+        const subject = `SYNC ERROR: Share modal`
         const body = `
         I encountered an error in the process of auto-sync when using the Memex Go share modal.
 
@@ -116,7 +116,7 @@ export default class ShareModalScreen extends NavigationScreen<
         `
 
         return Linking.openURL(
-            `mailto:${supportEmail}?subject=${subject}&body=${body}`,
+            'mailto:${supportEmail}?subject=${subject}&body=${body}',
         )
     }
 

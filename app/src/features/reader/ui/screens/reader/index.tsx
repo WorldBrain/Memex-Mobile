@@ -17,7 +17,13 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
         super(props, { logic: new Logic(props) })
     }
 
+    private scrollTimeout: number = 0
     private webView!: WebView
+
+    componentWillUnmount() {
+        super.componentWillUnmount()
+        clearTimeout(this.scrollTimeout)
+    }
 
     private constructJsRemoteFnCall = (
         fnName: RemoteFnName,
@@ -114,14 +120,15 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     }
 
     // Wait a bit after the HTML loads before scrolling to try and give whatever JS a chance to render
-    private sendScrollState = () =>
-        setTimeout(
+    private sendScrollState = () => {
+        this.scrollTimeout = setTimeout(
             () =>
                 this.runFnInWebView('setScrollPercent', {
                     percent: this.state.readerScrollPercent,
                 }),
             500,
         )
+    }
 
     private renderLoading = () => (
         <View style={[styles.webView, styles.webViewLoader]}>

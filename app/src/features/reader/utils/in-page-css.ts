@@ -3,7 +3,7 @@ import { HIGHLIGHT_CLASS } from 'src/content-script/constants'
 export const inPageCSS = `
 body {
     -webkit-touch-callout: none;
-    padding: 0 20px;
+    padding: 40px 20px 0 20px;
 }
 
 h1 {
