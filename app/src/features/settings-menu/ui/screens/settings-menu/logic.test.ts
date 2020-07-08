@@ -6,12 +6,16 @@ import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { LocalStorageService } from 'src/services/local-storage/index'
 import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 import { FakeNavigation } from 'src/tests/navigation'
+import { Services } from 'src/services/types'
+import { Storage } from 'src/storage/types'
 
 describe('settings menu UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     async function setup(options: {
-        forceIncrementalSync?: () => Promise<void>
+        services: Services
+        storage: Storage
+        syncError?: () => string | undefined
     }) {
         const logic = new Logic({
             services: {
@@ -19,10 +23,26 @@ describe('settings menu UI logic tests', () => {
                     settingsStorage: new MockSettingsStorage(),
                 }),
                 sync: {
+                    ...options.services.sync,
                     continuousSync: {
-                        forceIncrementalSync: options.forceIncrementalSync
-                            ? options.forceIncrementalSync
-                            : () => Promise.resolve(),
+                        ...options.services.sync.continuousSync,
+                        forceIncrementalSync: async () => {
+                            if (options.syncError && options.syncError()) {
+                                options.services.sync.continuousSync.events.emit(
+                                    'syncFinished',
+                                    {
+                                        hasChanges: false,
+                                        error: new Error(options.syncError()),
+                                    },
+                                )
+                            } else {
+                                options.services.sync.continuousSync.events.emit(
+                                    'syncFinished',
+                                    { hasChanges: true },
+                                )
+                                return options.services.sync.continuousSync.forceIncrementalSync()
+                            }
+                        },
                     },
                 },
                 errorTracker: { track: () => undefined },
@@ -40,7 +60,7 @@ describe('settings menu UI logic tests', () => {
 
         const { element } = await setup({
             ...context,
-            forceIncrementalSync: () => Promise.reject(new Error(errMsg)),
+            syncError: () => errMsg,
         })
 
         expect(element.state.syncErrorMessage).toBeUndefined()
@@ -54,10 +74,7 @@ describe('settings menu UI logic tests', () => {
 
         const { element } = await setup({
             ...context,
-            forceIncrementalSync: () =>
-                shouldFail
-                    ? Promise.reject(new Error(errMsg))
-                    : Promise.resolve(),
+            syncError: () => (shouldFail ? errMsg : undefined),
         })
 
         expect(element.state.syncErrorMessage).toBeUndefined()
@@ -74,7 +91,7 @@ describe('settings menu UI logic tests', () => {
 
         const { element } = await setup({
             ...context,
-            forceIncrementalSync: () => Promise.reject(new Error(errMsg)),
+            syncError: () => errMsg,
         })
 
         expect(element.state.syncErrorMessage).toBeUndefined()

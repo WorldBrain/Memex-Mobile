@@ -44,6 +44,12 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
+    cleanup() {
+        this.props.services.sync.continuousSync.events.removeAllListeners(
+            'syncFinished',
+        )
+    }
+
     clearSyncError() {
         this.emitMutation({ syncErrorMessage: { $set: undefined } })
     }
@@ -63,13 +69,22 @@ export default class Logic extends UILogic<State, Event> {
     async syncNow() {
         const { sync } = this.props.services
 
+        sync.continuousSync.events.addListener('syncFinished', ({ error }) => {
+            if (error) {
+                this.handleSyncError(error)
+            } else {
+                this.clearSyncError()
+            }
+
+            sync.continuousSync.events.removeAllListeners('syncFinished')
+        })
+
         await executeUITask<State, 'syncState', void>(
             this,
             'syncState',
             async () => {
                 try {
                     await sync.continuousSync.forceIncrementalSync()
-                    this.clearSyncError()
                 } catch (err) {
                     this.handleSyncError(err)
                 }
