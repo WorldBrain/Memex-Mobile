@@ -14,8 +14,19 @@ export class MemexClientSyncLogStorage extends ClientSyncLogStorage {
                     moduleVersion: new Date('2019-02-05'),
                     applicationVersion: STORAGE_VERSIONS[0].version,
                 },
+                {
+                    moduleVersion: new Date('2020-07-15'),
+                    applicationVersion: STORAGE_VERSIONS[20].version,
+                },
             ],
         })
+        for (const collectionDefinition of [
+            config.collections!.clientSyncLogEntry,
+            ...config.collections!.clientSyncLogEntry.history!,
+        ]) {
+            collectionDefinition.backup = false
+            collectionDefinition.watch = false
+        }
         return config
     }
 }
@@ -32,6 +43,13 @@ export class MemexSyncInfoStorage extends SyncInfoStorage {
                 },
             ],
         })
+        for (const collectionDefinition of [
+            config.collections!.syncDeviceInfo,
+            ...(config.collections!.syncDeviceInfo.history ?? []),
+        ]) {
+            collectionDefinition.backup = false
+            collectionDefinition.watch = false
+        }
         return config
     }
 }
