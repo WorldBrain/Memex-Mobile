@@ -49,7 +49,7 @@
         "global": "^4.4.0",
         "immutability-helper": "^3.0.0",
         "json-date-parser": "^1.0.1",
-        "lodash": "^4.17.15",
+        "lodash": "^4.17.19",
         "moment": "^2.24.0",
         "normalize-url": "4.3.0",
         "openpgp": "^4.6.2",
