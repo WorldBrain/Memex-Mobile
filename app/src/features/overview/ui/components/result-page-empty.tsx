@@ -1,12 +1,12 @@
 import React from 'react'
 import { View, Text, TouchableWithoutFeedback } from 'react-native'
-import { NativeTouchEventHandler } from '../../types'
+import { TouchEventHandler } from 'src/ui/types'
 
 import styles from './result-page-empty.styles'
 
 export interface Props {
-    onPairingPress: NativeTouchEventHandler
-    onSaveNewPagePress: NativeTouchEventHandler
+    onPairingPress: TouchEventHandler
+    onSaveNewPagePress: TouchEventHandler
 }
 
 const ResultPageEmpty: React.StatelessComponent<Props> = props => (

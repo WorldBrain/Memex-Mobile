@@ -2,7 +2,7 @@ import React from 'react'
 import { View } from 'react-native'
 
 import * as actionBtns from 'src/features/overview/ui/components/action-btns'
-import { NativeTouchEventHandler } from 'src/features/overview/types'
+import { TouchEventHandler } from 'src/ui/types'
 import styles from './action-bar.styles'
 import { State } from '../screens/reader/logic'
 
@@ -11,13 +11,13 @@ export interface Props
     className?: string
     selectedText?: string
     isErrorView?: boolean
-    onBackBtnPress: NativeTouchEventHandler
-    onBookmarkBtnPress: NativeTouchEventHandler
-    onHighlightBtnPress: NativeTouchEventHandler
-    onAnnotateBtnPress: NativeTouchEventHandler
-    onCommentBtnPress: NativeTouchEventHandler
-    onTagBtnPress: NativeTouchEventHandler
-    onListBtnPress: NativeTouchEventHandler
+    onBackBtnPress: TouchEventHandler
+    onBookmarkBtnPress: TouchEventHandler
+    onHighlightBtnPress: TouchEventHandler
+    onAnnotateBtnPress: TouchEventHandler
+    onCommentBtnPress: TouchEventHandler
+    onTagBtnPress: TouchEventHandler
+    onListBtnPress: TouchEventHandler
 }
 
 class ActionBar extends React.PureComponent<Props> {

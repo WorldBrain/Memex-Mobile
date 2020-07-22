@@ -4,6 +4,7 @@ import { NavigationScreenProp, NavigationRoute } from 'react-navigation'
 import { Storage } from 'src/storage/types'
 import { Services } from 'src/services/types'
 import { UILogic } from 'ui-logic-core'
+import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
 
 export type UITaskState = 'pristine' | 'running' | 'done' | 'error'
 export type UIServices<Required extends keyof Services> = Pick<
@@ -42,3 +43,7 @@ export abstract class NavigationScreen<
         super(props, options.logic)
     }
 }
+
+export type TouchEventHandler = (
+    e: NativeSyntheticEvent<NativeTouchEvent>,
+) => void
