@@ -1,5 +1,6 @@
 import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
 
+import { storageKeys } from '../../../../../../app.json'
 import { UITaskState, UIServices, NavigationProps } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
 
@@ -24,7 +25,7 @@ export type Event = UIEvent<{
 
 export interface Props extends NavigationProps {
     previousRoute: 'Overview' | 'ShareModal'
-    services: UIServices<'auth'>
+    services: UIServices<'auth' | 'localStorage'>
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -48,7 +49,10 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ passwordInputValue: { $set: event.value } })
     }
 
-    cancelLogin: EventHandler<'cancelLogin'> = () => {
+    cancelLogin: EventHandler<'cancelLogin'> = async () => {
+        const { localStorage } = this.props.services
+
+        await localStorage.set(storageKeys.skipAutoSync, true)
         this.navBackToPrevRoute()
     }
 

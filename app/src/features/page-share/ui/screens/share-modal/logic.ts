@@ -12,7 +12,7 @@ import {
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
-import delay from 'src/utils/delay'
+import { shouldAutoSync, isSyncEnabled } from 'src/features/sync/utils'
 
 export interface State {
     loadState: UITaskState
@@ -124,7 +124,9 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
-        this.doSync()
+        if (await shouldAutoSync(this.props.services)) {
+            this.doSync()
+        }
 
         let url: string
 
@@ -299,7 +301,11 @@ export default class Logic extends UILogic<State, Event> {
     async save(incoming: IncomingUIEvent<State, Event, 'save'>) {
         this.emitMutation({ showSavingPage: { $set: true } })
         await this.storePageFinal(incoming.previousState)
-        await this.doSync()
+
+        if (await isSyncEnabled(this.props.services)) {
+            await this.doSync()
+        }
+
         this.emitMutation({ isModalShown: { $set: false } })
     }
 

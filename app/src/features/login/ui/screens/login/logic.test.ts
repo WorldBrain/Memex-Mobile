@@ -1,5 +1,6 @@
 import expect from 'expect'
 
+import { storageKeys } from '../../../../../../app.json'
 import Logic, { State, Event } from './logic'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { FakeNavigation } from 'src/tests/navigation'
@@ -50,14 +51,17 @@ describe('login UI logic tests', () => {
         }
     })
 
-    it('should nav back to prev route on cancel', async context => {
+    it('should nav back to prev route and set skip sync flag on cancel', async context => {
         const previousRoute = 'testRoute'
         const { element, navigation } = setup({ ...context, previousRoute })
+        const { localStorage } = context.services
 
         expect(navigation.popRequests()).toEqual([])
+        expect(await localStorage.get(storageKeys.skipAutoSync)).toBeFalsy()
 
-        element.processEvent('cancelLogin', null)
+        await element.processEvent('cancelLogin', null)
 
+        expect(await localStorage.get(storageKeys.skipAutoSync)).toBe(true)
         expect(navigation.popRequests()).toEqual([
             { type: 'navigate', target: previousRoute },
         ])

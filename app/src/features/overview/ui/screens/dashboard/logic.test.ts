@@ -1,3 +1,4 @@
+import { storageKeys } from '../../../../../../app.json'
 import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { makeStorageTestFactory } from 'src/index.tests'
@@ -39,9 +40,11 @@ const UI_PAGE_2: UIPage = {
 describe('dashboard screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    function setup(
+    async function setup(
         options: Omit<Props, 'navigation'> & { navigation: FakeNavigation },
     ) {
+        await options.services.localStorage.set(storageKeys.syncKey, true)
+
         const logic = new Logic({
             ...options,
             navigation: options.navigation as any,
@@ -71,7 +74,7 @@ describe('dashboard screen UI logic tests', () => {
     }
 
     it('should load correctly without any saved pages', async dependencies => {
-        const { element } = setup(dependencies)
+        const { element } = await setup(dependencies)
 
         await element.init()
         expect(element.state).toEqual(
@@ -91,7 +94,7 @@ describe('dashboard screen UI logic tests', () => {
     })
 
     it('should load correctly with saved pages', async dependencies => {
-        const { element } = setup(dependencies)
+        const { element } = await setup(dependencies)
 
         await insertIntegrationTestData(dependencies)
         await addToMobileList(INTEGRATION_TEST_DATA.pages[0].url, dependencies)
@@ -125,7 +128,7 @@ describe('dashboard screen UI logic tests', () => {
 
     it('should paginate correctly', async dependencies => {
         const { storage } = dependencies
-        const { element } = setup({ ...dependencies, pageSize: 1 })
+        const { element } = await setup({ ...dependencies, pageSize: 1 })
 
         await storage.modules.overview.createPage(
             INTEGRATION_TEST_DATA.pages[0],
@@ -221,7 +224,7 @@ describe('dashboard screen UI logic tests', () => {
 
     it('should be able to delete pages', async dependencies => {
         const { storage } = dependencies
-        const { element } = setup(dependencies)
+        const { element } = await setup(dependencies)
 
         await createRecentlyVisitedPage(INTEGRATION_TEST_DATA.pages[0], {
             storage,
@@ -256,14 +259,14 @@ describe('dashboard screen UI logic tests', () => {
             await storage.manager.collection('pages').findObjects({}),
         ).toEqual([])
 
-        const { element: secondElement } = setup(dependencies)
+        const { element: secondElement } = await setup(dependencies)
         await secondElement.init()
         expect(secondElement.state.pages).toEqual(new Map([]))
     })
 
     it('should be able to star + unstar pages', async dependencies => {
         const { storage } = dependencies
-        const { element } = setup(dependencies)
+        const { element } = await setup(dependencies)
 
         const { url } = INTEGRATION_TEST_DATA.pages[0]
         await createRecentlyVisitedPage(INTEGRATION_TEST_DATA.pages[0], {
@@ -292,7 +295,7 @@ describe('dashboard screen UI logic tests', () => {
     })
 
     it('reload should be able to trigger sync ', async dependencies => {
-        const { element } = setup(dependencies)
+        const { element } = await setup(dependencies)
 
         expect(element.state.syncState).toEqual('pristine')
         await element.processEvent('reload', {})
@@ -307,7 +310,7 @@ describe('dashboard screen UI logic tests', () => {
                 modules: { overview },
             },
         } = dependencies
-        const { element } = setup(dependencies)
+        const { element } = await setup(dependencies)
 
         for (const page of INTEGRATION_TEST_DATA.pages) {
             await overview.createPage(page)

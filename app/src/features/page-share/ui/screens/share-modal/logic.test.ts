@@ -1,7 +1,7 @@
 import expect from 'expect'
 
+import { storageKeys } from '../../../../../../app.json'
 import Logic, { State, Event } from './logic'
-import { MetaType } from 'src/features/meta-picker/types'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { Storage } from 'src/storage/types'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
@@ -21,6 +21,8 @@ describe('share modal UI logic tests', () => {
         getSharedUrl?: () => string
         syncError?: () => string | undefined
     }) {
+        await options.services.localStorage.set(storageKeys.syncKey, true)
+
         const logic = new Logic({
             services: {
                 ...options.services,

@@ -1,10 +1,11 @@
 // tslint:disable:no-console
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
-import { appGroup, storageKeys } from '../../../../../../app.json'
+import { storageKeys } from '../../../../../../app.json'
 
 import { SyncStatus } from 'src/features/sync/types'
 import { NavigationProps, UIServices } from 'src/ui/types'
 import { FastSyncProgress } from '@worldbrain/storex-sync/lib/fast-sync/types.js'
+import { isSyncEnabled } from 'src/features/sync/utils'
 
 export interface SyncScreenState {
     status: SyncStatus
@@ -56,11 +57,7 @@ export default class SyncScreenLogic extends UILogic<
     }
 
     async init() {
-        const syncKey = await this.props.services.localStorage.get<boolean>(
-            storageKeys.syncKey,
-        )
-
-        if (syncKey) {
+        if (await isSyncEnabled(this.props.services)) {
             this.props.navigation.navigate('Pairing')
             return
         }

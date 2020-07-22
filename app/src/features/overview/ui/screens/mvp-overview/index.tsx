@@ -7,6 +7,7 @@ import Button from 'src/ui/components/memex-btn'
 import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import styles from './styles'
+import { isSyncEnabled } from 'src/features/sync/utils'
 
 export interface Props extends NavigationProps {
     services: UIServices<'localStorage' | 'sync'>
@@ -27,11 +28,7 @@ export default class MVPOverviewMenu extends NavigationScreen<
     }
 
     private async checkSyncState() {
-        const syncKey = await this.props.services.localStorage.get<string>(
-            storageKeys.syncKey,
-        )
-
-        if (syncKey != null) {
+        if (await isSyncEnabled(this.props.services)) {
             this.processEvent('setSyncStatus', { value: true })
         }
     }

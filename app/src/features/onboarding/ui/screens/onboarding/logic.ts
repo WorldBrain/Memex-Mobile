@@ -3,6 +3,7 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { storageKeys } from '../../../../../../app.json'
 import { OnboardingStage } from 'src/features/onboarding/types'
 import { UIServices, NavigationProps } from 'src/ui/types'
+import { isSyncEnabled } from 'src/features/sync/utils'
 
 export interface State {
     onboardingStage: OnboardingStage
@@ -32,11 +33,7 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
     }
 
     async init() {
-        const syncKey = await this.options.services.localStorage.get<string>(
-            storageKeys.syncKey,
-        )
-
-        if (syncKey != null) {
+        if (await isSyncEnabled(this.options.services)) {
             this.emitMutation({ isSynced: { $set: true } })
         }
     }

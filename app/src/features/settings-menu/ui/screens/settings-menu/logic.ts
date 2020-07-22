@@ -2,7 +2,7 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { UITaskState, UIServices, NavigationProps } from 'src/ui/types'
 import { executeUITask, loadInitial } from 'src/ui/utils'
-import { storageKeys } from '../../../../../../app.json'
+import { isSyncEnabled } from 'src/features/sync/utils'
 
 export interface State {
     loadState: UITaskState
@@ -36,9 +36,7 @@ export default class Logic extends UILogic<State, Event> {
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
-            const { localStorage } = this.props.services
-
-            if (await localStorage.get(storageKeys.syncKey)) {
+            if (await isSyncEnabled(this.props.services)) {
                 this.emitMutation({ isSynced: { $set: true } })
             }
         })
