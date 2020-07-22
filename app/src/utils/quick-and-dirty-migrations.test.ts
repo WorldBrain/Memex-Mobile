@@ -78,28 +78,28 @@ describe('Quick and dirty migrations tests', () => {
         {
             ...baseEntry,
             createdOn: time - 1,
-            needsIntegration: false,
+            needsIntegration: 0,
             sharedOn: null,
             pk: 0,
         },
         {
             ...baseEntry,
             createdOn: time - 2,
-            needsIntegration: false,
+            needsIntegration: 0,
             sharedOn: 123,
             pk: 1,
         },
         {
             ...baseEntry,
             createdOn: time - 3,
-            needsIntegration: true,
+            needsIntegration: 1,
             sharedOn: null,
             pk: 2,
         },
         {
             ...baseEntry,
             createdOn: time - 4,
-            needsIntegration: true,
+            needsIntegration: 1,
             sharedOn: 999,
             pk: 3,
         },
@@ -111,6 +111,10 @@ describe('Quick and dirty migrations tests', () => {
         for (const entry of dummyEntries) {
             await db.collection('clientSyncLogEntry').createObject(entry)
         }
+
+        expect(
+            await db.collection('clientSyncLogEntry').findAllObjects({}),
+        ).toEqual(dummyEntries)
 
         await migrations['fill-out-empty-sync-log-fields']({ db })
 
