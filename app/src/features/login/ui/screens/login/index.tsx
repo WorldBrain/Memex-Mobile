@@ -13,6 +13,7 @@ export default class LoginScreen extends NavigationScreen<Props, State, Event> {
         return (
             <Login
                 hasError={this.state.loginState === 'error'}
+                isLoading={this.state.loginState === 'running'}
                 emailInputValue={this.state.emailInputValue}
                 passwordInputValue={this.state.passwordInputValue}
                 onLoginPress={() => this.processEvent('submitLogin', null)}

@@ -4,9 +4,11 @@ import { Text, View, TextInput } from 'react-native'
 import { TouchEventHandler } from 'src/ui/types'
 import Button from 'src/ui/components/memex-btn'
 import styles from './login.styles'
+import LoadingBalls from 'src/ui/components/loading-balls'
 
 export interface Props {
     hasError?: boolean
+    isLoading?: boolean
     emailInputValue: string
     passwordInputValue: string
     onLoginPress: TouchEventHandler
@@ -30,6 +32,7 @@ const Login: React.StatelessComponent<Props> = props => (
                 onChangeText={props.onEmailChange}
                 placeholder="Email"
                 textContentType="emailAddress"
+                editable={!props.isLoading}
             />
             <TextInput
                 style={styles.textInput}
@@ -38,19 +41,21 @@ const Login: React.StatelessComponent<Props> = props => (
                 placeholder="Password"
                 textContentType="password"
                 secureTextEntry
+                editable={!props.isLoading}
             />
         </View>
         <View style={styles.actionBtnsContainer}>
             <Button title="Login" onPress={props.onLoginPress} />
             <Button title="Cancel" onPress={props.onCancelPress} empty />
         </View>
-        {props.hasError && (
-            <View style={styles.errorContainer}>
+        <View style={styles.extraContainer}>
+            {props.isLoading && <LoadingBalls />}
+            {props.hasError && (
                 <Text style={styles.errorTitle}>
                     Your email or password was incorrect - please try again
                 </Text>
-            </View>
-        )}
+            )}
+        </View>
     </View>
 )
 

@@ -1,6 +1,7 @@
 import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
 
 import { UITaskState, UIServices, NavigationProps } from 'src/ui/types'
+import { executeUITask } from 'src/ui/utils'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,
@@ -22,6 +23,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends NavigationProps {
+    previousRoute: 'Overview' | 'ShareModal'
     services: UIServices<'auth'>
 }
 
@@ -46,13 +48,25 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ passwordInputValue: { $set: event.value } })
     }
 
-    cancelLogin: EventHandler<'cancelLogin'> = ({ previousState }) => {
-        console.log('cancel!')
+    cancelLogin: EventHandler<'cancelLogin'> = () => {
+        this.navBackToPrevRoute()
     }
 
-    submitLogin: EventHandler<'submitLogin'> = ({ previousState }) => {
-        console.log('logging in...')
-        console.log('email:', previousState.emailInputValue)
-        console.log('pw:', previousState.passwordInputValue)
+    submitLogin: EventHandler<'submitLogin'> = async ({
+        previousState: { emailInputValue: email, passwordInputValue: password },
+    }) => {
+        const { auth } = this.props.services
+
+        await executeUITask<State, 'loginState', void>(
+            this,
+            'loginState',
+            async () => {
+                await auth.loginWithEmailAndPassword(email, password)
+                this.navBackToPrevRoute()
+            },
+        )
     }
+
+    private navBackToPrevRoute = () =>
+        this.props.navigation.navigate(this.props.previousRoute)
 }

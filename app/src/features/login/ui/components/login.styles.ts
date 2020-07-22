@@ -5,7 +5,10 @@ export default EStyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        paddingTop: 50,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        paddingVertical: 50,
+        paddingHorizontal: 20,
     },
     infoContainer: {
         display: 'flex',
@@ -27,5 +30,10 @@ export default EStyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    extraContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
 })
