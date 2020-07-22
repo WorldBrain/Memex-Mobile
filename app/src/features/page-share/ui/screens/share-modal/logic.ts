@@ -90,6 +90,16 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
+    private handleSyncError(error: Error) {
+        if (error.message === 'Cannot Sync without authenticated user') {
+            this.props.navigation.navigate('Login')
+            return
+        }
+
+        this.props.services.errorTracker.track(error)
+        this.emitMutation({ errorMessage: { $set: error.message } })
+    }
+
     private async doSync() {
         const { sync } = this.props.services
 
@@ -100,8 +110,7 @@ export default class Logic extends UILogic<State, Event> {
 
         sync.continuousSync.events.addListener('syncFinished', ({ error }) => {
             if (error) {
-                this.props.services.errorTracker.track(error)
-                this.emitMutation({ errorMessage: { $set: error.message } })
+                this.handleSyncError(error)
             } else {
                 this.clearSyncError()
             }

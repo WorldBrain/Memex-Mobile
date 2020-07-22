@@ -61,8 +61,12 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private handleSyncError = (error: Error) => {
-        this.props.services.errorTracker.track(error)
+        if (error.message === 'Cannot Sync without authenticated user') {
+            this.props.navigation.navigate('Login')
+            return
+        }
 
+        this.props.services.errorTracker.track(error)
         this.emitMutation({ syncErrorMessage: { $set: error.message } })
     }
 

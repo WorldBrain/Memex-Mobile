@@ -6,6 +6,7 @@ import Logic, { Props, State, Event } from './logic'
 import SettingsMenu from '../../components/settings-menu'
 import SettingsLink from '../../components/settings-link'
 import OutLink from '../../components/out-link'
+import MemexButton from 'src/ui/components/memex-btn'
 
 export default class SettingsMenuScreen extends NavigationScreen<
     Props,
@@ -61,6 +62,13 @@ export default class SettingsMenuScreen extends NavigationScreen<
                 >
                     Report Bugs
                 </OutLink>
+                {/* TODO: REMOVE THIS BEFORE MERGE */}
+                <MemexButton
+                    title="DEBUG: LOG OUT"
+                    onPress={() =>
+                        (this.props.services as any)['auth'].signOut()
+                    }
+                />
             </SettingsMenu>
         )
     }
