@@ -17,6 +17,13 @@ export default EStyleSheet.create({
     },
     infoTitle: {
         fontWeight: 'bold',
+        fontSize: '1.5rem',
+        marginTop: 30,
+    },
+    infoSubtext: {
+        fontSize: '1.2rem',
+        marginTop: 10,
+        marginBottom: 10,
     },
     textInput: {
         margin: 10,
@@ -24,16 +31,31 @@ export default EStyleSheet.create({
         height: '3rem',
         minWidth: '90%',
         backgroundColor: '#d3d3d3',
+        borderRadius: 5,
     },
     actionBtnsContainer: {
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        marginVertical: 25,
     },
     extraContainer: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
+    },
+    loginButton: {
+        width: 150,
+        borderRadius: 3,
+    },
+    cancelButton: {
+        height: 30,
+        marginTop: 15,
+    },
+    errorTitle: {
+        fontSize: '1.1rem',
+        paddingHorizontal: 30,
+        textAlign: 'center',
     },
 })

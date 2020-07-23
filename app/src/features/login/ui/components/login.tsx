@@ -31,6 +31,7 @@ const Login: React.StatelessComponent<Props> = props => (
                 value={props.emailInputValue}
                 onChangeText={props.onEmailChange}
                 placeholder="Email"
+                placeholderTextColor="#333"
                 textContentType="emailAddress"
                 editable={!props.isLoading}
             />
@@ -42,11 +43,21 @@ const Login: React.StatelessComponent<Props> = props => (
                 textContentType="password"
                 secureTextEntry
                 editable={!props.isLoading}
+                placeholderTextColor="#333"
             />
         </View>
         <View style={styles.actionBtnsContainer}>
-            <Button title="Login" onPress={props.onLoginPress} />
-            <Button title="Cancel" onPress={props.onCancelPress} empty />
+            <Button
+                style={styles.loginButton}
+                title="Login"
+                onPress={props.onLoginPress}
+            />
+            <Button
+                style={styles.cancelButton}
+                title="Cancel"
+                onPress={props.onCancelPress}
+                empty
+            />
         </View>
         <View style={styles.extraContainer}>
             {props.isLoading && <LoadingBalls />}
