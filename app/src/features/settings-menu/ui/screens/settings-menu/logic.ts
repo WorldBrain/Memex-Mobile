@@ -2,7 +2,7 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { UITaskState, UIServices, NavigationProps } from 'src/ui/types'
 import { executeUITask, loadInitial } from 'src/ui/utils'
-import { isSyncEnabled } from 'src/features/sync/utils'
+import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 
 export interface State {
     loadState: UITaskState
@@ -59,13 +59,9 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private handleSyncError = (error: Error) => {
-        if (error.message === 'Cannot Sync without authenticated user') {
-            this.props.navigation.navigate('Login')
-            return
+        if (!handleSyncError(error, this.props).errorHandled) {
+            this.emitMutation({ syncErrorMessage: { $set: error.message } })
         }
-
-        this.props.services.errorTracker.track(error)
-        this.emitMutation({ syncErrorMessage: { $set: error.message } })
     }
 
     async syncNow() {

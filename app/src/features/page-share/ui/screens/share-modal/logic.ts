@@ -12,7 +12,11 @@ import {
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
-import { shouldAutoSync, isSyncEnabled } from 'src/features/sync/utils'
+import {
+    shouldAutoSync,
+    isSyncEnabled,
+    handleSyncError,
+} from 'src/features/sync/utils'
 
 export interface State {
     loadState: UITaskState
@@ -91,13 +95,25 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private handleSyncError(error: Error) {
-        if (error.message === 'Cannot Sync without authenticated user') {
-            this.props.navigation.navigate('Login')
+        // Handle this differently as the default `handleSyncError` branch sends a system alert,
+        //  which does not work in iOS extensions
+        if (
+            error.message.startsWith(
+                `Could not find collection definition for '`,
+            )
+        ) {
+            this.emitMutation({
+                errorMessage: {
+                    $set:
+                        'Please update your app.\nSync is being attempted with a future version of the Memex extension',
+                },
+            })
             return
         }
 
-        this.props.services.errorTracker.track(error)
-        this.emitMutation({ errorMessage: { $set: error.message } })
+        if (!handleSyncError(error, this.props).errorHandled) {
+            this.emitMutation({ errorMessage: { $set: error.message } })
+        }
     }
 
     private async doSync() {

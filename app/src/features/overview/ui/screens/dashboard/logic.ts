@@ -20,7 +20,11 @@ import { timeFromNow } from 'src/utils/time-helpers'
 import { DashboardNavigationParams } from './types'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { TAGS_PER_RESULT_LIMIT } from './constants'
-import { isSyncEnabled, shouldAutoSync } from 'src/features/sync/utils'
+import {
+    isSyncEnabled,
+    shouldAutoSync,
+    handleSyncError,
+} from 'src/features/sync/utils'
 
 export interface State {
     syncState: UITaskState
@@ -149,15 +153,6 @@ export default class Logic extends UILogic<State, Event> {
         )
     }
 
-    private handleSyncError(error: Error) {
-        if (error.message === 'Cannot Sync without authenticated user') {
-            this.props.navigation.navigate('Login')
-            return
-        }
-
-        this.props.services.errorTracker.track(error)
-    }
-
     private async doSync() {
         const { sync } = this.props.services
 
@@ -165,7 +160,7 @@ export default class Logic extends UILogic<State, Event> {
             'syncFinished',
             ({ hasChanges, error }) => {
                 if (error) {
-                    this.handleSyncError(error)
+                    handleSyncError(error, this.props)
                 }
 
                 if (hasChanges) {
