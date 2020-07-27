@@ -8,6 +8,7 @@ import { createStorexPlugins } from '@worldbrain/memex-storage/lib/mobile-app/pl
 import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
 import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
 import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
+import { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/lib/sync/constants'
 
 import defaultConnectionOpts from './default-connection-opts'
@@ -58,6 +59,7 @@ export async function createStorage({
         syncInfo: new MemexSyncInfoStorage({ storageManager }),
         settings: new SettingsStorage({ storageManager }),
         reader: new ReaderStorage({ storageManager, normalizeUrl }),
+        contentSharing: new ContentSharingClientStorage({ storageManager }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules as any)

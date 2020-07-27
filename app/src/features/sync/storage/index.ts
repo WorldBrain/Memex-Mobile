@@ -1,7 +1,7 @@
 import { ClientSyncLogStorage } from '@worldbrain/storex-sync/lib/client-sync-log'
 import { StorageModuleConfig } from '@worldbrain/storex-pattern-modules'
 import { mapCollectionVersions } from '@worldbrain/storex-pattern-modules/lib/utils'
-import { STORAGE_VERSIONS } from '../../../storage/constants'
+import { STORAGE_VERSIONS } from '@worldbrain/memex-common/lib/browser-extension/storage/versions'
 import { SyncInfoStorage } from '@worldbrain/memex-common/lib/sync/storage'
 
 export class MemexClientSyncLogStorage extends ClientSyncLogStorage {

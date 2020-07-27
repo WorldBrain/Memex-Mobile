@@ -140,6 +140,8 @@ export async function checkIntegrationTestData(options: { storage: Storage }) {
         annotations: [],
         annotBookmarks: [],
         annotListEntries: [],
+        sharedListMetadata: [],
         readablePageArchives: [],
+        contentSharingAction: [],
     })
 }

@@ -1,5 +1,6 @@
 import StorageManager from '@worldbrain/storex'
 
+import { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
 import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
 import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
@@ -20,6 +21,7 @@ export interface StorageModules {
     metaPicker: MetaPickerStorage
     pageEditor: PageEditorStorage
     clientSyncLog: MemexClientSyncLogStorage
+    contentSharing: ContentSharingClientStorage
     syncInfo: MemexSyncInfoStorage
     settings: SettingsStorage
     reader: ReaderStorage

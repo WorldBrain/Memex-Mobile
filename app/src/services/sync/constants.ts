@@ -17,6 +17,8 @@ export const AUTO_SYNC_COLLECTIONS: { [collection: string]: boolean } = {
     pages: true,
     tags: true,
     visits: true,
+    contentSharingAction: true,
+    sharedListMetadata: true,
     // TODO: Confirm we want to sync these
     [READER_COLL_NAMES.readablePage]: false,
 

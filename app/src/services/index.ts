@@ -19,7 +19,7 @@ import { ResourceLoaderService } from './resource-loader'
 
 export interface CreateServicesOptions {
     auth?: AuthService
-    firebase: any
+    firebase?: any
     storage: Storage
     sharedSyncLog: SharedSyncLog
     keychain: KeychainAPI
