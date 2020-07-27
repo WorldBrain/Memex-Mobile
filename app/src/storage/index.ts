@@ -23,6 +23,7 @@ import {
     MemexSyncInfoStorage,
 } from 'src/features/sync/storage'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
+import { filterSyncLog } from '@worldbrain/memex-common/lib/sync/sync-logging'
 
 export interface CreateStorageOptions {
     typeORMConnectionOpts: ConnectionOptions
@@ -81,6 +82,8 @@ export async function setStorageMiddleware(options: {
     ) => void | Promise<void>
 }) {
     const syncedCollections = new Set(SYNCED_COLLECTIONS)
+    const syncLoggingMiddleware = await options.services.sync.createSyncLoggingMiddleware()
+    syncLoggingMiddleware.changeInfoPreprocessor = filterSyncLog
     options.storage.manager.setMiddleware([
         new ChangeWatchMiddleware({
             storageManager: options.storage.manager,
@@ -96,7 +99,7 @@ export async function setStorageMiddleware(options: {
                 }
             },
         }),
-        await options.services.sync.createSyncLoggingMiddleware(),
+        syncLoggingMiddleware,
     ])
 }
 

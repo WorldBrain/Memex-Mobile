@@ -86,6 +86,7 @@ export async function checkIntegrationTestData(options: { storage: Storage }) {
         pages: [
             {
                 ...INTEGRATION_TEST_DATA.pages[0],
+                text: undefined,
                 domain: 'test.com',
                 hostname: 'test.com',
             },
