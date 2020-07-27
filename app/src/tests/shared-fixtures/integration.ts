@@ -143,5 +143,7 @@ export async function checkIntegrationTestData(options: { storage: Storage }) {
         sharedListMetadata: [],
         readablePageArchives: [],
         contentSharingAction: [],
+        customListDescriptions: [],
+        pageListEntryDescriptions: [],
     })
 }

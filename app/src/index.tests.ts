@@ -185,6 +185,7 @@ export function makeMultiDeviceTestFactory() {
                     devicePlatform: 'integration-tests',
                     auth,
                     storage,
+                    normalizeUrl,
                     signalTransportFactory,
                     sharedSyncLog,
                     localStorage,
