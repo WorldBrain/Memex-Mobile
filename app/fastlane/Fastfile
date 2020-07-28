@@ -67,7 +67,7 @@ platform :ios do
         gym(
             scheme: scheme,
             workspace: XCWORKSPACE_PATH,
-            clean: true,
+            clean: false,
             silent: true,
             configuration: options[:production] ? 'Release' : 'Development',
             export_options: {
