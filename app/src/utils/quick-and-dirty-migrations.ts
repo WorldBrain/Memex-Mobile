@@ -1,6 +1,7 @@
 import StorageManager from '@worldbrain/storex'
 
 import { UIDependencies } from 'src/ui/types'
+import { ClientSyncLogEntry } from '@worldbrain/storex-sync/lib/client-sync-log/types'
 
 export interface MigrationProps {
     db: StorageManager
@@ -16,6 +17,14 @@ export const migrations: Migrations = {
         await db.collection('visits').deleteObjects({ url: '' })
         await db.collection('annotations').deleteObjects({ pageUrl: '' })
         await db.collection('pageListEntries').deleteObjects({ pageUrl: '' })
+    },
+    'fill-out-empty-sync-log-fields': async ({ db }) => {
+        await db.operation(
+            'updateObjects',
+            'clientSyncLogEntry',
+            { sharedOn: null },
+            { sharedOn: 0 },
+        )
     },
 }
 

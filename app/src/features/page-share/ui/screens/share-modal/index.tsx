@@ -116,7 +116,7 @@ export default class ShareModalScreen extends NavigationScreen<
         `
 
         return Linking.openURL(
-            'mailto:${supportEmail}?subject=${subject}&body=${body}',
+            `mailto:${supportEmail}?subject=${subject}&body=${body}`,
         )
     }
 

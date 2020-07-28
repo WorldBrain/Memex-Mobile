@@ -6,7 +6,7 @@ import {
     ImageSourcePropType,
     TouchableWithoutFeedback,
 } from 'react-native'
-import { NativeTouchEventHandler } from '../../types'
+import { TouchEventHandler } from 'src/ui/types'
 
 import styles from './result-page-body.styles'
 
@@ -16,7 +16,7 @@ export interface Props {
     pageUrl: string
     domain: string
     fullUrl: string
-    onResultPress?: NativeTouchEventHandler
+    onResultPress?: TouchEventHandler
     date: string
 }
 

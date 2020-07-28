@@ -24,6 +24,7 @@ import Sync from 'src/features/sync/ui/screens/sync'
 import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
 import SettingsMenu from 'src/features/settings-menu/ui/screens/settings-menu'
 import Reader from 'src/features/reader/ui/screens/reader'
+import Login from 'src/features/login/ui/screens/login'
 
 export type NavigationContainerCreator = (
     deps: UIDependencies,
@@ -52,6 +53,9 @@ const createMainNavigator: NavigationContainerCreator = deps =>
             Overview: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
             }) => <Dashboard {...props} {...deps} />,
+            Login: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <Login {...props} {...deps} previousRoute="Overview" />,
             ListsFilter: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
             }) => <ListsFilter {...props} {...deps} />,
@@ -91,6 +95,9 @@ const createShareNavigator: NavigationContainerCreator = deps =>
             ShareModal: (props: {
                 navigation: NavigationScreenProp<NavigationRoute>
             }) => <ShareModal {...props} {...deps} />,
+            Login: (props: {
+                navigation: NavigationScreenProp<NavigationRoute>
+            }) => <Login {...props} {...deps} previousRoute="ShareModal" />,
         },
         {
             initialRouteName: 'ShareModal',

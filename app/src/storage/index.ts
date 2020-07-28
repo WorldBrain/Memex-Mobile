@@ -8,6 +8,7 @@ import { createStorexPlugins } from '@worldbrain/memex-storage/lib/mobile-app/pl
 import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
 import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
 import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
+import { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/lib/sync/constants'
 
 import defaultConnectionOpts from './default-connection-opts'
@@ -22,6 +23,7 @@ import {
     MemexSyncInfoStorage,
 } from 'src/features/sync/storage'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
+import { filterSyncLog } from '@worldbrain/memex-common/lib/sync/sync-logging'
 
 export interface CreateStorageOptions {
     typeORMConnectionOpts: ConnectionOptions
@@ -58,6 +60,7 @@ export async function createStorage({
         syncInfo: new MemexSyncInfoStorage({ storageManager }),
         settings: new SettingsStorage({ storageManager }),
         reader: new ReaderStorage({ storageManager, normalizeUrl }),
+        contentSharing: new ContentSharingClientStorage({ storageManager }),
     }
 
     registerModuleMapCollections(storageManager.registry, modules as any)
@@ -79,6 +82,8 @@ export async function setStorageMiddleware(options: {
     ) => void | Promise<void>
 }) {
     const syncedCollections = new Set(SYNCED_COLLECTIONS)
+    const syncLoggingMiddleware = await options.services.sync.createSyncLoggingMiddleware()
+    syncLoggingMiddleware.changeInfoPreprocessor = filterSyncLog
     options.storage.manager.setMiddleware([
         new ChangeWatchMiddleware({
             storageManager: options.storage.manager,
@@ -94,7 +99,7 @@ export async function setStorageMiddleware(options: {
                 }
             },
         }),
-        await options.services.sync.createSyncLoggingMiddleware(),
+        syncLoggingMiddleware,
     ])
 }
 

@@ -18,20 +18,20 @@ import {
     ReaderActionBarBtn,
 } from './action-btns'
 import ActionBar from './result-page-action-bar'
-import { NativeTouchEventHandler, UIPage } from '../../types'
+import { TouchEventHandler, UIPage } from 'src/ui/types'
 import styles from './result-page-view-button.styles'
 
 export interface Props extends FooterProps, BodyProps, UIPage {}
 
 export interface InteractionProps {
-    onTagPress: NativeTouchEventHandler
-    onStarPress: NativeTouchEventHandler
-    onListsPress: NativeTouchEventHandler
-    onVisitPress: NativeTouchEventHandler
-    onDeletePress: NativeTouchEventHandler
-    onResultPress?: NativeTouchEventHandler
-    onReaderPress?: NativeTouchEventHandler
-    onCommentPress: NativeTouchEventHandler
+    onTagPress: TouchEventHandler
+    onStarPress: TouchEventHandler
+    onListsPress: TouchEventHandler
+    onVisitPress: TouchEventHandler
+    onDeletePress: TouchEventHandler
+    onResultPress?: TouchEventHandler
+    onReaderPress?: TouchEventHandler
+    onCommentPress: TouchEventHandler
 }
 
 const ResultPage: React.StatelessComponent<Props &

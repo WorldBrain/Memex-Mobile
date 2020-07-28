@@ -2,7 +2,7 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { UITaskState, UIServices, NavigationProps } from 'src/ui/types'
 import { executeUITask, loadInitial } from 'src/ui/utils'
-import { storageKeys } from '../../../../../../app.json'
+import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 
 export interface State {
     loadState: UITaskState
@@ -36,12 +36,16 @@ export default class Logic extends UILogic<State, Event> {
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
-            const { localStorage } = this.props.services
-
-            if (await localStorage.get(storageKeys.syncKey)) {
+            if (await isSyncEnabled(this.props.services)) {
                 this.emitMutation({ isSynced: { $set: true } })
             }
         })
+    }
+
+    cleanup() {
+        this.props.services.sync.continuousSync.events.removeAllListeners(
+            'syncFinished',
+        )
     }
 
     clearSyncError() {
@@ -55,13 +59,23 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private handleSyncError = (error: Error) => {
-        this.props.services.errorTracker.track(error)
-
-        this.emitMutation({ syncErrorMessage: { $set: error.message } })
+        if (!handleSyncError(error, this.props).errorHandled) {
+            this.emitMutation({ syncErrorMessage: { $set: error.message } })
+        }
     }
 
     async syncNow() {
         const { sync } = this.props.services
+
+        sync.continuousSync.events.addListener('syncFinished', ({ error }) => {
+            if (error) {
+                this.handleSyncError(error)
+            } else {
+                this.clearSyncError()
+            }
+
+            sync.continuousSync.events.removeAllListeners('syncFinished')
+        })
 
         await executeUITask<State, 'syncState', void>(
             this,
@@ -69,7 +83,6 @@ export default class Logic extends UILogic<State, Event> {
             async () => {
                 try {
                     await sync.continuousSync.forceIncrementalSync()
-                    this.clearSyncError()
                 } catch (err) {
                     this.handleSyncError(err)
                 }

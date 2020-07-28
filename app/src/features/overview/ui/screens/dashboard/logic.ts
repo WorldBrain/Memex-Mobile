@@ -20,6 +20,11 @@ import { timeFromNow } from 'src/utils/time-helpers'
 import { DashboardNavigationParams } from './types'
 import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { TAGS_PER_RESULT_LIMIT } from './constants'
+import {
+    isSyncEnabled,
+    shouldAutoSync,
+    handleSyncError,
+} from 'src/features/sync/utils'
 
 export interface State {
     syncState: UITaskState
@@ -109,7 +114,6 @@ export default class Logic extends UILogic<State, Event> {
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await this.navToOnboardingIfNeeded()
 
-        this.doSync()
         const handleAppStatusChange = (nextState: AppStateStatus) => {
             switch (nextState) {
                 case 'active':
@@ -129,6 +133,10 @@ export default class Logic extends UILogic<State, Event> {
 
         this.removeAppChangeListener = () =>
             AppState.removeEventListener('change', handleAppStatusChange)
+
+        if (await shouldAutoSync(this.props.services)) {
+            this.doSync()
+        }
 
         await loadInitial<State>(this, async () => {
             await this.doLoadMore(this.getInitialState())
@@ -152,7 +160,7 @@ export default class Logic extends UILogic<State, Event> {
             'syncFinished',
             ({ hasChanges, error }) => {
                 if (error) {
-                    this.props.services.errorTracker.track(error)
+                    handleSyncError(error, this.props)
                 }
 
                 if (hasChanges) {
@@ -191,7 +199,10 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async reload(incoming: IncomingUIEvent<State, Event, 'reload'>) {
-        if (incoming.event.triggerSync) {
+        if (
+            incoming.event.triggerSync &&
+            (await isSyncEnabled(this.props.services))
+        ) {
             this.doSync()
         }
 

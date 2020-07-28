@@ -109,6 +109,9 @@ export function registerSingleDeviceSyncTests(
                         exclude: new Set(['syncDeviceInfo']),
                     },
                 )
+                for (const page of firstDeviceStorageContents['pages'] || []) {
+                    delete page.text
+                }
                 expect(firstDeviceStorageContents).toEqual(
                     secondDeviceStorageContents,
                 )
@@ -132,5 +135,8 @@ async function incrementalSyncAndCheck(devices: [TestDevice, TestDevice]) {
             exclude: new Set(['clientSyncLogEntry', 'syncDeviceInfo']),
         },
     )
+    for (const page of firstDeviceStorageContents['pages'] || []) {
+        delete page.text
+    }
     expect(firstDeviceStorageContents).toEqual(secondDeviceStorageContents)
 }

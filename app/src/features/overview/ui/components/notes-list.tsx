@@ -3,15 +3,15 @@ import { FlatList, ListRenderItem, View, Text } from 'react-native'
 
 import styles from './result-page-with-notes.styles'
 import ResultNote from './result-note'
-import { NativeTouchEventHandler } from '../../types'
+import { TouchEventHandler } from 'src/ui/types'
 import { UINote } from 'src/features/overview/types'
 
 export interface Props {
     notes: UINote[]
     clearBackground?: boolean
-    initNoteDelete: (note: UINote) => NativeTouchEventHandler
-    initNotePress: (note: UINote) => NativeTouchEventHandler
-    initNoteEdit: (note: UINote) => NativeTouchEventHandler
+    initNoteDelete: (note: UINote) => TouchEventHandler
+    initNotePress: (note: UINote) => TouchEventHandler
+    initNoteEdit: (note: UINote) => TouchEventHandler
 }
 
 class NotesList extends React.PureComponent<Props> {

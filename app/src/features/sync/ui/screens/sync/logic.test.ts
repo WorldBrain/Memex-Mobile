@@ -28,6 +28,7 @@ describe('SyncScreen', () => {
             services: {
                 localStorage,
                 sync: {} as any,
+                errorTracker: {} as any,
             },
         }
     }

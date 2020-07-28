@@ -1,8 +1,5 @@
 import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
 
-export type NativeTouchEventHandler = (
-    ev: NativeSyntheticEvent<NativeTouchEvent>,
-) => void
 export type ResultType = 'special' | 'pages' | 'notes'
 
 export type DashboardFilterType = 'collection' | 'bookmarks' | 'visits'

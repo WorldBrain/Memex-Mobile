@@ -12,7 +12,11 @@ import {
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
-import delay from 'src/utils/delay'
+import {
+    shouldAutoSync,
+    isSyncEnabled,
+    handleSyncError,
+} from 'src/features/sync/utils'
 
 export interface State {
     loadState: UITaskState
@@ -90,6 +94,28 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
+    private handleSyncError(error: Error) {
+        // Handle this differently as the default `handleSyncError` branch sends a system alert,
+        //  which does not work in iOS extensions
+        if (
+            error.message.startsWith(
+                `Could not find collection definition for '`,
+            )
+        ) {
+            this.emitMutation({
+                errorMessage: {
+                    $set:
+                        'Please update your app.\nSync is being attempted with a future version of the Memex extension',
+                },
+            })
+            return
+        }
+
+        if (!handleSyncError(error, this.props).errorHandled) {
+            this.emitMutation({ errorMessage: { $set: error.message } })
+        }
+    }
+
     private async doSync() {
         const { sync } = this.props.services
 
@@ -100,8 +126,7 @@ export default class Logic extends UILogic<State, Event> {
 
         sync.continuousSync.events.addListener('syncFinished', ({ error }) => {
             if (error) {
-                this.props.services.errorTracker.track(error)
-                this.emitMutation({ errorMessage: { $set: error.message } })
+                this.handleSyncError(error)
             } else {
                 this.clearSyncError()
             }
@@ -115,7 +140,9 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
-        this.doSync()
+        if (await shouldAutoSync(this.props.services)) {
+            this.doSync()
+        }
 
         let url: string
 
@@ -290,7 +317,11 @@ export default class Logic extends UILogic<State, Event> {
     async save(incoming: IncomingUIEvent<State, Event, 'save'>) {
         this.emitMutation({ showSavingPage: { $set: true } })
         await this.storePageFinal(incoming.previousState)
-        await this.doSync()
+
+        if (await isSyncEnabled(this.props.services)) {
+            await this.doSync()
+        }
+
         this.emitMutation({ isModalShown: { $set: false } })
     }
 

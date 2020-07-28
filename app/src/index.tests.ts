@@ -3,6 +3,7 @@ import StorageManager from '@worldbrain/storex'
 import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
 import { SharedSyncLogStorage } from '@worldbrain/storex-sync/lib/shared-sync-log/storex'
 import { DexieStorageBackend } from '@worldbrain/storex-backend-dexie'
+import { normalizeUrl } from '@worldbrain/memex-url-utils'
 import inMemory from '@worldbrain/storex-backend-dexie/lib/in-memory'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
 import { MemorySignalTransportManager } from 'simple-signalling/lib/memory'
@@ -108,6 +109,7 @@ export function makeStorageTestFactory() {
                     const services = await createServices({
                         devicePlatform: 'integration-tests',
                         storage,
+                        normalizeUrl,
                         signalTransportFactory,
                         sharedSyncLog,
                         localStorage,
@@ -183,6 +185,7 @@ export function makeMultiDeviceTestFactory() {
                     devicePlatform: 'integration-tests',
                     auth,
                     storage,
+                    normalizeUrl,
                     signalTransportFactory,
                     sharedSyncLog,
                     localStorage,

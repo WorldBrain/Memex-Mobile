@@ -6,7 +6,7 @@ import Body, { Props as BodyProps } from './result-note-body'
 import { DeleteActionBarBtn, EditNoteActionBarBtn } from './action-btns'
 import ActionBar from './result-page-action-bar'
 import Tags from './result-page-tags'
-import { NativeTouchEventHandler } from '../../types'
+import { TouchEventHandler } from 'src/ui/types'
 import styles from './result-note.styles'
 
 export interface Props extends BodyProps {
@@ -17,9 +17,9 @@ export interface Props extends BodyProps {
 export interface InteractionProps {
     clearBackground?: boolean
     isNotePressed: boolean
-    onDeletePress: NativeTouchEventHandler
-    onEditPress: NativeTouchEventHandler
-    onNotePress: NativeTouchEventHandler
+    onDeletePress: TouchEventHandler
+    onEditPress: TouchEventHandler
+    onNotePress: TouchEventHandler
     hideFooter?: boolean
 }
 
