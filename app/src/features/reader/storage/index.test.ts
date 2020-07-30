@@ -2,18 +2,6 @@ import expect from 'expect'
 
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as DATA from './index.test.data'
-import { ReaderStorage } from '.'
-
-// TODO: Remove this code
-//  - it's only here because there's some issue with the sync test setup code expecting the readable objects not to be there
-async function __cleanupTestData(
-    reader: ReaderStorage,
-    readables: DATA.WithoutTimestamps[],
-) {
-    for (const { url } of readables) {
-        await reader.deleteReadablePage(url)
-    }
-}
 
 const it = makeStorageTestFactory()
 
@@ -37,8 +25,6 @@ describe('reader StorageModule', () => {
                 lastEdited: createdWhen,
             })
         }
-
-        await __cleanupTestData(reader, readables)
     })
 
     it('should be able to determine whether a readable page archives exists for a page already', async ({
@@ -54,8 +40,6 @@ describe('reader StorageModule', () => {
             await reader.createReadablePage({ ...data, createdWhen })
             expect(await reader.readablePageExists(data.url)).toBe(true)
         }
-
-        await __cleanupTestData(reader, readables)
     })
 
     it("should be able to createa new readable page archives, if they don't exist for a page already", async ({
@@ -99,7 +83,5 @@ describe('reader StorageModule', () => {
                 lastEdited: createdWhenA,
             })
         }
-
-        await __cleanupTestData(reader, readables)
     })
 })
