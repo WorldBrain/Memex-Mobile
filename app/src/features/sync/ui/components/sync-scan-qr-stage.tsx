@@ -2,7 +2,7 @@ import React from 'react'
 import QRCodeScanner, {
     Event as QRReadEvent,
 } from 'react-native-qrcode-scanner'
-import { Text } from 'react-native'
+import { Text, View } from 'react-native'
 
 import SyncLayout from 'src/ui/layouts/sync'
 import E2EEMessage from './e2ee-msg'
@@ -25,11 +25,13 @@ const SyncScanQRStage: React.StatelessComponent<Props> = ({
 }) => (
     <SyncLayout titleText="Step 3" btnText="Next" disableMainBtn {...props}>
         <Text style={styles.instructionText}>Scan the QR code</Text>
-        <QRCodeScanner
-            cameraStyle={styles.cameraView as any}
-            containerStyle={styles.cameraViewContainer as any}
-            onRead={onQRRead}
-        />
+        <View style={styles.outsideCameraContainer}>
+            <QRCodeScanner
+                cameraStyle={styles.cameraView as any}
+                containerStyle={styles.cameraViewContainer as any}
+                onRead={onQRRead}
+            />
+        </View>
         <E2EEMessage />
         {debug && <ManualSyncInput {...props} />}
     </SyncLayout>
