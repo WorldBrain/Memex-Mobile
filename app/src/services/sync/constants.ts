@@ -21,8 +21,7 @@ export const AUTO_SYNC_COLLECTIONS: { [collection: string]: boolean } = {
     sharedListMetadata: true,
     customListDescriptions: true,
     pageListEntryDescriptions: true,
-    // TODO: Confirm we want to sync these
-    [READER_COLL_NAMES.readablePage]: false,
+    [READER_COLL_NAMES.readablePage]: true,
 
     clientSyncLogEntry: false,
     settings: false,
