@@ -363,6 +363,7 @@ export default class Logic extends UILogic<State, Event> {
         const { overview, metaPicker } = this.props.storage.modules
 
         if ((await overview.findPage({ url: state.pageUrl })) != null) {
+            await overview.visitPage({ url: state.pageUrl })
             return
         }
 
