@@ -81,13 +81,13 @@ platform :ios do
     private_lane :ship do |options|
         setup_travis
         build(production: options[:production])
-        reset_pass
-        pilot(
-            username: APPLE_USER_ID,
-            apple_id: options[:production] ? APPLE_APP_ID : APPLE_APP_ID_DEV,
-            app_identifier: options[:production] ? MAIN_APP_ID : MAIN_APP_ID_DEV,
-            skip_waiting_for_build_processing: true
-        )
+        # reset_pass
+        # pilot(
+        #     username: APPLE_USER_ID,
+        #     apple_id: options[:production] ? APPLE_APP_ID : APPLE_APP_ID_DEV,
+        #     app_identifier: options[:production] ? MAIN_APP_ID : MAIN_APP_ID_DEV,
+        #     skip_waiting_for_build_processing: true
+        # )
     end
 
     desc 'Ship to production TestFlight.'
