@@ -38,7 +38,7 @@ jobs:
   include:
     - stage: ios-production
       os: osx
-      osx_image: xcode11.4
+      osx_image: xcode12u
       language: node_js
       cache: *ios-cache
       node_js:
