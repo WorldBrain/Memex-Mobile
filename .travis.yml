@@ -38,11 +38,11 @@ jobs:
   include:
     - stage: ios-production
       os: osx
-      osx_image: xcode12u
+      osx_image: xcode11.3
       language: node_js
       cache: *ios-cache
       node_js:
-        - lts/*
+        - 12.8.1
       before_install:
         - npm install -g yarn
       install:
