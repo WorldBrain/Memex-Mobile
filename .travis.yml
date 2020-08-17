@@ -36,29 +36,13 @@ aliases:
 
 jobs:
   include:
-    - stage: standard-checks
-      if: branch NOT IN (master, develop) AND type = push
-      language: node_js
-      cache: *test-cache
-      node_js:
-        - "10"
-      install:
-        - git submodule update --init --recursive
-        - cd app
-        - yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-      script:
-        - yarn lint
-        - yarn content-script:ci
-        - yarn test --colors
-
     - stage: ios-production
-      if: branch = master AND type = push
       os: osx
       osx_image: xcode11.3
       language: node_js
       cache: *ios-cache
       node_js:
-        - lts/*
+        - 12.8.1
       before_install:
         - npm install -g yarn
       install:
@@ -68,70 +52,6 @@ jobs:
         - cd app
         - yarn content-script:ci
         - yarn ios:prod
-
-    - stage: android-production
-      if: branch = master AND type = push
-      language: android
-      jdk: oraclejdk8
-      android: *android
-      before_cache:
-        - rm -f ~/.gradle/caches/modules-2/modules-2.lock
-        - rm -fr ~/.gradle/caches/*/plugin-resolution/
-      cache: *android-cache
-      before_install:
-        - rvm install 2.6.5
-        - nvm install 10.17.0
-        - npm install -g yarn
-        - yes | sdkmanager "platforms;android-28"
-        - yes | sdkmanager "build-tools;28.0.3"
-      install:
-        - "./write-android-keys.sh production"
-        - "./install-deps-android.sh"
-      script:
-        - cd app
-        - yarn content-script:ci
-        - yarn android:prod
-
-    - stage: ios-development
-      if: branch = develop AND type = push
-      os: osx
-      osx_image: xcode11.3
-      language: node_js
-      cache: *ios-cache
-      node_js:
-        - lts/*
-      before_install:
-        - npm install -g yarn
-      install:
-        - "./write-ios-keys.sh"
-        - "./install-deps-ios.sh"
-      script:
-        - cd app
-        - yarn content-script:ci
-        - yarn ios:dev
-
-    - stage: android-development
-      if: branch = develop AND type = push
-      language: android
-      jdk: oraclejdk8
-      android: *android
-      before_cache:
-        - rm -f ~/.gradle/caches/modules-2/modules-2.lock
-        - rm -fr ~/.gradle/caches/*/plugin-resolution/
-      cache: *android-cache
-      before_install:
-        - rvm install 2.6.5
-        - nvm install 10.17.0
-        - npm install -g yarn
-        - yes | sdkmanager "platforms;android-28"
-        - yes | sdkmanager "build-tools;28.0.3"
-      install:
-        - "./write-android-keys.sh"
-        - "./install-deps-android.sh"
-      script:
-        - cd app
-        - yarn content-script:ci
-        - yarn android:dev
 
 env:
   global:
