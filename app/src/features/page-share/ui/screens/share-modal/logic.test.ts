@@ -559,4 +559,33 @@ describe('share modal UI logic tests', () => {
                 .findObjects({}),
         ).toEqual([TEST_DATA.NOTE])
     })
+
+    it('should skip store for already stored page, but still create a new visit', async context => {
+        const { logic, initialState: state } = await setup(context)
+        const TEST_DATA = new DATA.TestData({
+            url: DATA.PAGE_URL_1,
+            normalizedUrl: DATA.PAGE_URL_1_NORM,
+        })
+
+        await logic['storePage']({ ...state, pageUrl: DATA.PAGE_URL_1 })
+
+        expect(
+            await context.storage.manager.collection('pages').findObjects({}),
+        ).toEqual([TEST_DATA.PAGE])
+        expect(
+            await context.storage.manager.collection('visits').findObjects({}),
+        ).toEqual([{ url: TEST_DATA.PAGE.url, time: expect.any(Number) }])
+
+        await logic['storePageInit']({ ...state, pageUrl: DATA.PAGE_URL_1 })
+
+        expect(
+            await context.storage.manager.collection('pages').findObjects({}),
+        ).toEqual([TEST_DATA.PAGE])
+        expect(
+            await context.storage.manager.collection('visits').findObjects({}),
+        ).toEqual([
+            { url: TEST_DATA.PAGE.url, time: expect.any(Number) },
+            { url: TEST_DATA.PAGE.url, time: expect.any(Number) },
+        ])
+    })
 })
