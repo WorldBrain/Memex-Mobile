@@ -58,7 +58,7 @@ jobs:
       language: node_js
       cache: *ios-cache
       node_js:
-        - lts/*
+        - 12.8.1
       before_install:
         - npm install -g yarn
       install:
@@ -99,7 +99,7 @@ jobs:
       language: node_js
       cache: *ios-cache
       node_js:
-        - lts/*
+        - 12.8.1
       before_install:
         - npm install -g yarn
       install:

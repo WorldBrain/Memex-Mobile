@@ -20,6 +20,7 @@ export const AUTO_SYNC_COLLECTIONS: { [collection: string]: boolean } = {
     contentSharingAction: true,
     sharedListMetadata: true,
     customListDescriptions: true,
+    sharedAnnotationMetadata: true,
     pageListEntryDescriptions: true,
     [READER_COLL_NAMES.readablePage]: true,
 
