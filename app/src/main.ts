@@ -1,5 +1,6 @@
 globalThis.process.version = '1.1.1'
 
+import 'react-native-gesture-handler'
 import { Platform } from 'react-native'
 import firebase from '@react-native-firebase/app'
 import '@react-native-firebase/auth'

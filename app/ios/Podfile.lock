@@ -555,6 +555,8 @@ PODS:
     - React
   - react-native-camera/RN (3.13.1):
     - React
+  - react-native-safe-area-context (3.1.8):
+    - React-Core
   - react-native-sqlite-storage (4.1.0):
     - React
   - react-native-webrtc (1.75.3):
@@ -602,6 +604,8 @@ PODS:
     - React
   - RNCAsyncStorage (1.6.1):
     - React
+  - RNCMaskedView (0.1.10):
+    - React
   - RNFBApp (7.2.1):
     - Firebase/CoreOnly (~> 6.25.0)
     - React
@@ -621,11 +625,15 @@ PODS:
     - Firebase/Functions (~> 6.25.0)
     - React
     - RNFBApp
-  - RNGestureHandler (1.6.0):
+  - RNGestureHandler (1.8.0):
     - React
   - RNKeychain (4.0.5):
     - React
   - RNPermissions (2.0.4):
+    - React
+  - RNReanimated (1.13.1):
+    - React
+  - RNScreens (2.11.0):
     - React
   - RNSecureRandom (1.0.0-rc.0):
     - React
@@ -682,6 +690,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-sqlite-storage (from `../node_modules/react-native-sqlite-storage`)
   - react-native-webrtc (from `../node_modules/react-native-webrtc`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -699,6 +708,7 @@ DEPENDENCIES:
   - ReactNativeShareExtension (from `../node_modules/react-native-share-extension/ReactNativeShareExtension.podspec`)
   - RNBackgroundFetch (from `../node_modules/react-native-background-fetch`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
+  - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app/RNFBApp.podspec`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBDatabase (from `../node_modules/@react-native-firebase/database`)"
@@ -707,6 +717,8 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
+  - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNScreens (from `../node_modules/react-native-screens`)
   - RNSecureRandom (from `../node_modules/react-native-securerandom`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -800,6 +812,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   react-native-sqlite-storage:
     :path: "../node_modules/react-native-sqlite-storage"
   react-native-webrtc:
@@ -832,6 +846,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-background-fetch"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
+  RNCMaskedView:
+    :path: "../node_modules/@react-native-community/masked-view"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app/RNFBApp.podspec"
   RNFBAuth:
@@ -848,6 +864,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-keychain"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
+  RNReanimated:
+    :path: "../node_modules/react-native-reanimated"
+  RNScreens:
+    :path: "../node_modules/react-native-screens"
   RNSecureRandom:
     :path: "../node_modules/react-native-securerandom"
   RNSentry:
@@ -939,6 +959,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 5532ab4389aabbbf1b87904de04c8ddd7dda7036
   React-jsinspector: 99b82aeb51d67d9025ab4eb8ccb8132f8dcebf69
   react-native-camera: 1df7f9a047591bbc2c9a7ec80bd6412d3c19579f
+  react-native-safe-area-context: 79fea126c6830c85f65947c223a5e3058a666937
   react-native-sqlite-storage: f06bfba10f67f989c00b6a699b9c2b80a816edbe
   react-native-webrtc: e00b0dd940ab8fc8b201b6a129b9a64acdf5974a
   react-native-webview: 0bacc79175bc44869e4c1a015b9bc21df8cf4feb
@@ -955,14 +976,17 @@ SPEC CHECKSUMS:
   ReactNativeShareExtension: d99eb6e4f22233a6a54f3a938e94357f0a8e1462
   RNBackgroundFetch: 8d8d66b47eafcb9e772b2eb95057939038b3ef95
   RNCAsyncStorage: 2e2e3feb9bdadc752a026703d8c4065ca912e75a
+  RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNFBApp: def13f6392e7c9839c938879f065ec0088c4496a
   RNFBAuth: da10602d9f8644a1669d824c862e7321b1f0fc9e
   RNFBDatabase: d23f1e3e98eb7b7afd883312316edb5adf2efb0b
   RNFBFirestore: b6209c3c80f6dc934e72443c007299f594041904
   RNFBFunctions: 709c2428f0ddd4b461af7eb39689a6b4270a950e
-  RNGestureHandler: dde546180bf24af0b5f737c8ad04b6f3fa51609a
+  RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
   RNKeychain: 840f8e6f13be0576202aefcdffd26a4f54bfe7b5
   RNPermissions: 35959d09546f1cd60c129ee128146a120ea595c3
+  RNReanimated: dd8c286ab5dd4ba36d3a7fef8bff7e08711b5476
+  RNScreens: 0e91da98ab26d5d04c7b59a9b6bd694124caf88c
   RNSecureRandom: 1f19ad1492f7ed416b8fc79e92216a1f73f13a4c
   RNSentry: 86baf0c87120cd5eb491d073989f8cbc1a2174c6
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f

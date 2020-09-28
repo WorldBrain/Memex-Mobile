@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { AppRegistry, Dimensions } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-import 'react-native-gesture-handler'
+
 import { name as appName, shareExtName } from '../../app.json'
 import {
     createApp,
