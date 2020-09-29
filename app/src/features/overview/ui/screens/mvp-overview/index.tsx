@@ -4,7 +4,7 @@ import { View, Text, Linking, Image } from 'react-native'
 import { storageKeys } from '../../../../../../app.json'
 import EmptyLayout from 'src/ui/layouts/empty'
 import Button from 'src/ui/components/memex-btn'
-import { NavigationScreen, MainNavProps, UIServices } from 'src/ui/types'
+import { MainNavProps, UIServices, StatefulUIElement } from 'src/ui/types'
 import Logic, { State, Event } from './logic'
 import styles from './styles'
 import { isSyncEnabled } from 'src/features/sync/utils'
@@ -13,14 +13,13 @@ export interface Props extends MainNavProps<'MVPOverview'> {
     services: UIServices<'localStorage' | 'sync'>
 }
 
-export default class MVPOverviewMenu extends NavigationScreen<
+export default class MVPOverviewMenu extends StatefulUIElement<
     Props,
     State,
-    Event,
-    'MVPOverview'
+    Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
     componentDidMount() {

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { NavigationScreen, MainNavProps, UIServices } from 'src/ui/types'
+import { MainNavProps, UIServices, StatefulUIElement } from 'src/ui/types'
 import OnboardingScreenLogic, { State, Event } from './logic'
 import OnboardingLayout, {
     Props as OnboardingLayoutProps,
@@ -13,14 +13,13 @@ interface Props extends MainNavProps<'Onboarding'> {
     services: UIServices<'localStorage'>
 }
 
-export default class OnboardingScreen extends NavigationScreen<
+export default class OnboardingScreen extends StatefulUIElement<
     Props,
     State,
-    Event,
-    'Onboarding'
+    Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new OnboardingScreenLogic(props) })
+        super(props, new OnboardingScreenLogic(props))
     }
 
     private renderOnboardingStage(

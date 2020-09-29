@@ -1,21 +1,20 @@
 import React from 'react'
 
 import { version } from '../../../../../../app.json'
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import SettingsMenu from '../../components/settings-menu'
 import SettingsLink from '../../components/settings-link'
 import OutLink from '../../components/out-link'
 import MemexButton from 'src/ui/components/memex-btn'
 
-export default class SettingsMenuScreen extends NavigationScreen<
+export default class SettingsMenuScreen extends StatefulUIElement<
     Props,
     State,
-    Event,
-    'SettingsMenu'
+    Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
     private handleSyncPress = () => {

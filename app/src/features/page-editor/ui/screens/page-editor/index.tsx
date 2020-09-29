@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import MainLayout from '../../components/main-layout'
 import Footer from '../../components/footer'
@@ -9,14 +9,13 @@ import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
 
-export default class PageEditorScreen extends NavigationScreen<
+export default class PageEditorScreen extends StatefulUIElement<
     Props,
     State,
-    Event,
-    'PageEditor'
+    Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
     private handleEntryPress = (entry: MetaTypeShape) => {

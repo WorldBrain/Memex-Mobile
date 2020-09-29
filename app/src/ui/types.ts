@@ -47,17 +47,6 @@ export abstract class StatefulUIElement<Props, State, Event> extends UIElement<
     }
 }
 
-export abstract class NavigationScreen<
-    Props extends MainNavProps<Route>,
-    State,
-    Event,
-    Route extends MainNavigatorRoutes
-> extends StatefulUIElement<Props, State, Event> {
-    constructor(props: Props, options: { logic: UILogic<State, Event> }) {
-        super(props, options.logic)
-    }
-}
-
 export type TouchEventHandler = (
     e: NativeSyntheticEvent<NativeTouchEvent>,
 ) => void

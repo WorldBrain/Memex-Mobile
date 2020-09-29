@@ -3,7 +3,7 @@ import { View, Linking } from 'react-native'
 import { WebView, WebViewNavigation } from 'react-native-webview'
 
 import Logic, { State, Event, Props } from './logic'
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import ActionBar from '../../components/action-bar'
 import ReaderWebView from '../../components/web-view'
 import ErrorView from '../../components/error-view'
@@ -12,14 +12,9 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
 import { Message as WebViewMessage, Anchor } from 'src/content-script/types'
 
-export default class Reader extends NavigationScreen<
-    Props,
-    State,
-    Event,
-    'Reader'
-> {
+export default class Reader extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
     private scrollTimeout: number = 0

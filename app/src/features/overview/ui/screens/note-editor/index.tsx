@@ -10,20 +10,19 @@ import {
 
 import Navigation from '../../components/navigation'
 import Logic, { State, Props, Event } from './logic'
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import NoteInput from 'src/features/page-share/ui/components/note-input-segment'
 import styles from './styles'
 import * as selectors from './selectors'
 import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
 
-export default class NoteEditorScreen extends NavigationScreen<
+export default class NoteEditorScreen extends StatefulUIElement<
     Props,
     State,
-    Event,
-    'NoteEditor'
+    Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
     private get disableInputs(): boolean {

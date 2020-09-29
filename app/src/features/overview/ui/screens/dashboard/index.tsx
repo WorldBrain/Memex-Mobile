@@ -14,7 +14,7 @@ import {
 import throttle from 'lodash/throttle'
 
 import Logic, { State, Event, Props } from './logic'
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import styles from './styles'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
@@ -27,16 +27,11 @@ import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import SyncRibbon from '../../components/sync-ribbon'
 
-export default class Dashboard extends NavigationScreen<
-    Props,
-    State,
-    Event,
-    'Dashboard'
-> {
+export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
 
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
 
