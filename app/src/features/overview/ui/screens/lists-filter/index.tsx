@@ -42,12 +42,10 @@ export default class ListsFilter extends StatefulUIElement<
             filterType = 'collection'
         }
 
-        const p = {
+        this.props.navigation.navigate('Dashboard', {
             selectedList: item.isChecked ? MOBILE_LIST_NAME : item.name,
             filterType: !item.isChecked ? filterType : undefined,
-        }
-        console.log('nav to:', p)
-        this.props.navigation.navigate('Dashboard', p)
+        })
     }
 
     render() {
@@ -57,11 +55,7 @@ export default class ListsFilter extends StatefulUIElement<
                     titleText="Collections"
                     renderLeftIcon={() => (
                         <TouchableOpacity
-                            onPress={() =>
-                                this.props.navigation.navigate('Dashboard', {
-                                    selectedList: this.selectedEntryName,
-                                })
-                            }
+                            onPress={this.props.navigation.goBack}
                             style={navigationStyles.btnContainer}
                         >
                             <Image

@@ -29,11 +29,38 @@ import SyncRibbon from '../../components/sync-ribbon'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
+    private unsubNavFocus!: () => void
 
     constructor(props: Props) {
         super(props, new Logic(props))
     }
 
+    componentDidMount() {
+        super.componentDidMount()
+        this.unsubNavFocus = this.props.navigation.addListener(
+            'focus',
+            async () => {
+                const { params } = this.props.route
+
+                if (
+                    params?.selectedList != null &&
+                    params.selectedList !== this.state.selectedListName
+                ) {
+                    this.processEvent('setFilteredListName', {
+                        name: params.selectedList,
+                    })
+                    await this.processEvent('reload', {
+                        initList: params.selectedList,
+                    })
+                }
+            },
+        )
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount()
+        this.unsubNavFocus()
+    }
 
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {
@@ -113,7 +140,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     )
 
     private handleListsFilterPress = () => {
-        this.props.navigation.push('ListsFilter', {
+        this.props.navigation.navigate('ListsFilter', {
             selectedList: this.state.selectedListName,
         })
     }
@@ -122,6 +149,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         if (this.state.selectedListName === MOBILE_LIST_NAME) {
             return
         }
+        this.props.navigation.setParams({ selectedList: MOBILE_LIST_NAME })
         this.processEvent('setFilteredListName', { name: MOBILE_LIST_NAME })
         this.processEvent('reload', { initList: MOBILE_LIST_NAME })
     }
