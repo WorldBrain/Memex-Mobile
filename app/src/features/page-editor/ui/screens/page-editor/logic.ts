@@ -5,9 +5,8 @@ import { VALID_TAG_PATTERN } from '@worldbrain/memex-common/lib/storage/constant
 import { storageKeys } from '../../../../../../app.json'
 import { UIPageWithNotes as Page, UINote } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import {
-    NavigationProps,
+    MainNavProps,
     UIStorageModules,
     UITaskState,
     UIServices,
@@ -15,8 +14,6 @@ import {
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
-import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
-import { PreviousRoute } from './types'
 import { updateSuggestionsCache } from 'src/features/page-editor/utils'
 import { INIT_SUGGESTIONS_LIMIT } from 'src/features/meta-picker/ui/screens/meta-picker/constants'
 
@@ -34,24 +31,20 @@ export type Event = UIEvent<{
     saveNote: { text: string }
 }>
 
-export interface Props extends NavigationProps {
+export interface Props extends MainNavProps<'PageEditor'> {
     services: UIServices<'localStorage'>
     storage: UIStorageModules<'metaPicker' | 'pageEditor' | 'overview'>
 }
 
 export default class Logic extends UILogic<State, Event> {
     selectedList: string
-    previousRoute: PreviousRoute
     readerScrollPercent?: number
 
     constructor(private props: Props) {
         super()
 
-        const params = props.navigation.getParam(
-            NAV_PARAMS.PAGE_EDITOR,
-        ) as PageEditorNavigationParams
+        const { params } = props.route
         this.selectedList = params.selectedList ?? MOBILE_LIST_NAME
-        this.previousRoute = params.previousRoute ?? 'Dashboard'
         this.readerScrollPercent = params.readerScrollPercent
     }
 
@@ -65,9 +58,7 @@ export default class Logic extends UILogic<State, Event> {
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
-            const params = this.props.navigation.getParam(
-                NAV_PARAMS.PAGE_EDITOR,
-            ) as PageEditorNavigationParams
+            const { params } = this.props.route
             const page = await this.loadPageData(params.pageUrl)
 
             this.emitMutation({

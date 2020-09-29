@@ -2,7 +2,7 @@ import React from 'react'
 import { Text, Linking } from 'react-native'
 
 import { supportEmail } from '../../../../../../app.json'
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import Logic, { Props, State, Event } from './logic'
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
@@ -14,12 +14,11 @@ import StarPage from '../../components/star-page-segment'
 import AddTags from '../../components/add-tags-segment'
 import UnsupportedApp from '../../components/unsupported-app'
 import ReloadBtn from '../../components/reload-btn'
-import LoadingBalls from 'src/ui/components/loading-balls'
 import SavingUpdates from '../../components/saving-updates'
 import SyncError from '../../components/sync-error'
 import styles from './styles'
 
-export default class ShareModalScreen extends NavigationScreen<
+export default class ShareModalScreen extends StatefulUIElement<
     Props,
     State,
     Event
@@ -27,7 +26,7 @@ export default class ShareModalScreen extends NavigationScreen<
     private metaPicker!: MetaPicker
 
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
     private static arraysAreSame = (a: any[] = [], b: any[] = []): boolean => {

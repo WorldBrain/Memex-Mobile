@@ -9,16 +9,12 @@ import {
     UITaskState,
     UIStorageModules,
     UIServices,
-    NavigationProps,
+    MainNavProps,
 } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { ReadabilityArticle } from 'src/services/readability/types'
 import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
-import { ReaderNavigationParams } from './types'
 import { Anchor, Highlight } from 'src/content-script/types'
-import { NoteEditorNavigationParams } from 'src/features/overview/ui/screens/note-editor/types'
-import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 import { EditorMode } from 'src/features/page-editor/types'
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
@@ -59,7 +55,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
     EventName
 >
 
-export interface Props extends NavigationProps {
+export interface Props extends MainNavProps<'Reader'> {
     storage: UIStorageModules<
         'reader' | 'overview' | 'pageEditor' | 'metaPicker'
     >
@@ -81,9 +77,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(): State {
-        const params = this.props.navigation.getParam(
-            NAV_PARAMS.READER,
-        ) as ReaderNavigationParams
+        const { params } = this.props.route
 
         if (!params?.url) {
             throw new Error("Navigation error: reader didn't receive URL")
@@ -269,15 +263,12 @@ export default class Logic extends UILogic<State, Event> {
         previousState,
     }) => {
         this.props.navigation.navigate('NoteEditor', {
-            [NAV_PARAMS.NOTE_EDITOR]: {
-                mode: 'create',
-                highlightText: anchor.quote,
-                anchor,
-                previousRoute: 'Reader',
-                pageTitle: previousState.title,
-                pageUrl: previousState.url,
-                readerScrollPercent: previousState.readerScrollPercent,
-            } as NoteEditorNavigationParams,
+            mode: 'create',
+            highlightText: anchor.quote,
+            anchor,
+            pageTitle: previousState.title,
+            pageUrl: previousState.url,
+            readerScrollPercent: previousState.readerScrollPercent,
         })
     }
 
@@ -296,17 +287,14 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         navigation.navigate('NoteEditor', {
-            [NAV_PARAMS.NOTE_EDITOR]: {
-                mode: 'update',
-                noteUrl: note.url,
-                highlightText: note.body,
-                noteText: note.comment,
-                anchor: note.selector,
-                previousRoute: 'Reader',
-                pageTitle: previousState.title,
-                pageUrl: previousState.url,
-                readerScrollPercent: previousState.readerScrollPercent,
-            } as NoteEditorNavigationParams,
+            mode: 'update',
+            noteUrl: note.url,
+            highlightText: note.body,
+            noteText: note.comment,
+            anchor: note.selector,
+            pageTitle: previousState.title,
+            pageUrl: previousState.url,
+            readerScrollPercent: previousState.readerScrollPercent,
         })
     }
 
@@ -317,7 +305,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     goBack = () => {
-        this.props.navigation.navigate('Overview')
+        this.props.navigation.navigate('Dashboard')
     }
 
     goToPageEditor: EventHandler<'goToPageEditor'> = ({
@@ -325,12 +313,9 @@ export default class Logic extends UILogic<State, Event> {
         previousState,
     }) => {
         this.props.navigation.navigate('PageEditor', {
-            [NAV_PARAMS.PAGE_EDITOR]: {
-                previousRoute: 'Reader',
-                readerScrollPercent: previousState.readerScrollPercent,
-                pageUrl: previousState.url,
-                mode,
-            } as PageEditorNavigationParams,
+            readerScrollPercent: previousState.readerScrollPercent,
+            pageUrl: previousState.url,
+            mode,
         })
     }
 

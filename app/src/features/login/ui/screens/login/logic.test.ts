@@ -16,7 +16,7 @@ describe('login UI logic tests', () => {
         const logic = new Logic({
             navigation: navigation as any,
             services: options.services,
-            previousRoute: (options.previousRoute as any) ?? 'Overview',
+            previousRoute: (options.previousRoute as any) ?? 'Dashboard',
         })
         const element = new FakeStatefulUIElement<State, Event>(logic)
 

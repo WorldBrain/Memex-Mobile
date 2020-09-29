@@ -1,6 +1,6 @@
 import { Alert } from 'react-native'
 
-import { UIServices, NavigationProps } from 'src/ui/types'
+import { UIServices, MainNavProps } from 'src/ui/types'
 import { storageKeys } from '../../../app.json'
 
 export const shouldAutoSync = async ({
@@ -36,7 +36,7 @@ export const isSyncEnabled = async ({
 
 export const handleSyncError = (
     error: Error,
-    opts: { services: UIServices<'errorTracker'> } & NavigationProps,
+    opts: { services: UIServices<'errorTracker'> } & MainNavProps,
 ): { errorHandled: boolean } => {
     if (
         error.message.startsWith(`Could not find collection definition for '`)

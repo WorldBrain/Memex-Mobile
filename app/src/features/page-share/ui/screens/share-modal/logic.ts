@@ -7,7 +7,8 @@ import {
     UITaskState,
     UIServices,
     UIStorageModules,
-    NavigationProps,
+    MainNavProps,
+    ShareNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
@@ -58,7 +59,7 @@ export type Event = UIEvent<{
     clearSyncError: null
 }>
 
-export interface Props extends NavigationProps {
+export interface Props extends ShareNavProps<'ShareModal'> {
     services: UIServices<'sync' | 'shareExt' | 'errorTracker' | 'localStorage'>
     storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
 }

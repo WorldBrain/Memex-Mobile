@@ -16,7 +16,6 @@ import throttle from 'lodash/throttle'
 import Logic, { State, Event, Props } from './logic'
 import { NavigationScreen } from 'src/ui/types'
 import styles from './styles'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
@@ -27,23 +26,25 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import SyncRibbon from '../../components/sync-ribbon'
-import { ReaderNavigationParams } from 'src/features/reader/ui/screens/reader/types'
-import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 
-export default class Dashboard extends NavigationScreen<Props, State, Event> {
+export default class Dashboard extends NavigationScreen<
+    Props,
+    State,
+    Event,
+    'Dashboard'
+> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
 
     constructor(props: Props) {
         super(props, { logic: new Logic(props) })
     }
 
+
     private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {
-            [NAV_PARAMS.PAGE_EDITOR]: {
-                selectedList: this.state.selectedListName,
-                pageUrl: page.fullUrl,
-                mode,
-            } as PageEditorNavigationParams,
+            selectedList: this.state.selectedListName,
+            pageUrl: page.fullUrl,
+            mode,
         })
     }
 
@@ -79,10 +80,8 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
 
     private initHandleReaderPress = ({ url, titleText }: UIPage) => () => {
         this.props.navigation.navigate('Reader', {
-            [NAV_PARAMS.READER]: {
-                url,
-                title: titleText,
-            } as ReaderNavigationParams,
+            url,
+            title: titleText,
         })
     }
 
@@ -119,7 +118,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
     )
 
     private handleListsFilterPress = () => {
-        this.props.navigation.navigate('ListsFilter', {
+        this.props.navigation.push('ListsFilter', {
             selectedList: this.state.selectedListName,
         })
     }
@@ -128,9 +127,7 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         if (this.state.selectedListName === MOBILE_LIST_NAME) {
             return
         }
-        this.processEvent('setFilteredListName', {
-            name: MOBILE_LIST_NAME,
-        })
+        this.processEvent('setFilteredListName', { name: MOBILE_LIST_NAME })
         this.processEvent('reload', { initList: MOBILE_LIST_NAME })
     }
 

@@ -4,18 +4,19 @@ import { View, Text, FlatList } from 'react-native'
 import EmptyLayout from 'src/ui/layouts/empty'
 import Button from 'src/ui/components/memex-btn'
 import Logic, { State, Event, LogType } from './logic'
-import { NavigationScreen, NavigationProps, UIServices } from 'src/ui/types'
+import { NavigationScreen, MainNavProps, UIServices } from 'src/ui/types'
 import styles from './styles'
 import { LogEntry, DebugConsole } from 'src/utils/debug-console'
 
-interface Props extends NavigationProps {
+interface Props extends MainNavProps<'DebugConsole'> {
     services: UIServices<'localStorage'>
 }
 
 export default class DebugConsoleScreen extends NavigationScreen<
     Props,
     State,
-    Event
+    Event,
+    'DebugConsole'
 > {
     constructor(props: Props) {
         super(props, { logic: new Logic() })

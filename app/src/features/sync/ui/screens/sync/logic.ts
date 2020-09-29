@@ -3,7 +3,7 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { storageKeys } from '../../../../../../app.json'
 
 import { SyncStatus } from 'src/features/sync/types'
-import { NavigationProps, UIServices } from 'src/ui/types'
+import { MainNavProps, UIServices } from 'src/ui/types'
 import { FastSyncProgress } from '@worldbrain/storex-sync/lib/fast-sync/types.js'
 import { isSyncEnabled } from 'src/features/sync/utils'
 
@@ -20,7 +20,7 @@ export type SyncScreenEvent = UIEvent<{
     confirmSuccess: {}
 }>
 
-export interface Props extends NavigationProps {
+export interface Props extends MainNavProps<'Sync'> {
     services: UIServices<'localStorage' | 'sync' | 'errorTracker'>
     suppressErrorLogging?: boolean
     syncStallTimeout?: number
@@ -154,7 +154,7 @@ export default class SyncScreenLogic extends UILogic<
     }
 
     confirmSuccess() {
-        this.props.navigation.navigate('Overview')
+        this.props.navigation.navigate('Dashboard')
     }
 
     setSyncStatus(

@@ -1,8 +1,10 @@
 import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { FakeNavigation } from 'src/tests/navigation'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
-import { NoteEditorNavigationParams } from './types'
+
+interface NoteEditorNavigationParams {}
+
+const NAV_PARAMS = {}
 
 describe('note editor UI logic tests', () => {
     function setup(

@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, FlatList, ListRenderItem, Text } from 'react-native'
 
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import MetaPicker from '../../components/picker'
 import MetaPickerEntry from '../../components/picker-entry'
@@ -17,7 +17,7 @@ export interface MetaPickerScreenProps extends Props {
     ref?: (metaPicker: MetaPickerScreen) => void
 }
 
-export default class MetaPickerScreen extends NavigationScreen<
+export default class MetaPickerScreen extends StatefulUIElement<
     MetaPickerScreenProps,
     State,
     Event
@@ -27,7 +27,7 @@ export default class MetaPickerScreen extends NavigationScreen<
     }
 
     constructor(props: MetaPickerScreenProps) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
 
         if (props.ref) {
             props.ref(this)

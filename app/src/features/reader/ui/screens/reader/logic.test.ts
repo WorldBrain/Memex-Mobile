@@ -2,9 +2,10 @@ import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { FakeNavigation } from 'src/tests/navigation'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { Anchor } from 'src/content-script/types'
 import { MockSentry } from 'src/services/error-tracking/index.tests'
+
+const NAV_PARAMS = {}
 
 const TEST_URL_1 = 'getmemex.com'
 const TEST_TITLE_1 = 'test'
@@ -205,7 +206,7 @@ describe('reader screen UI logic tests', () => {
         expect(navigation.popRequests()).toEqual([
             {
                 type: 'navigate',
-                target: 'Overview',
+                target: 'Dashboard',
             },
         ])
     })

@@ -13,7 +13,8 @@ import ScanQRStage from '../../components/sync-scan-qr-stage'
 export default class SyncScreen extends NavigationScreen<
     Props,
     SyncScreenState,
-    SyncScreenEvent
+    SyncScreenEvent,
+    'Sync'
 > {
     constructor(props: Props) {
         super(props, { logic: new Logic(props) })
@@ -24,7 +25,7 @@ export default class SyncScreen extends NavigationScreen<
     }
 
     private handleCancelBtnPress = () => {
-        this.props.navigation.navigate('Overview')
+        this.props.navigation.navigate('Dashboard')
     }
 
     handleDoSync = async ({ initialMessage }: { initialMessage: string }) => {

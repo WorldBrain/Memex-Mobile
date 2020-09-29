@@ -1,7 +1,7 @@
 import React from 'react'
 import { TouchableOpacity, Image } from 'react-native'
 
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import Navigation from '../../components/navigation'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
@@ -10,19 +10,21 @@ import navigationStyles from 'src/features/overview/ui/components/navigation.sty
 import { DashboardFilterType } from 'src/features/overview/types'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import styles from './styles'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
-import { DashboardNavigationParams } from '../dashboard/types'
 
-export default class ListsFilter extends NavigationScreen<Props, State, Event> {
+export default class ListsFilter extends StatefulUIElement<
+    Props,
+    State,
+    Event
+> {
     static MAGIC_VISITS_FILTER = 'All History'
     static MAGIC_BMS_FILTER = 'All Bookmarks'
 
     private selectedEntryName?: string
 
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
 
-        this.selectedEntryName = this.props.navigation.getParam('selectedList')
+        this.selectedEntryName = this.props.route.params.selectedList
     }
 
     private get magicFilters(): string[] {
@@ -40,12 +42,12 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
             filterType = 'collection'
         }
 
-        this.props.navigation.navigate('Overview', {
-            [NAV_PARAMS.DASHBOARD]: {
-                selectedList: item.isChecked ? MOBILE_LIST_NAME : item.name,
-                filterType: !item.isChecked ? filterType : undefined,
-            } as DashboardNavigationParams,
-        })
+        const p = {
+            selectedList: item.isChecked ? MOBILE_LIST_NAME : item.name,
+            filterType: !item.isChecked ? filterType : undefined,
+        }
+        console.log('nav to:', p)
+        this.props.navigation.navigate('Dashboard', p)
     }
 
     render() {
@@ -56,10 +58,8 @@ export default class ListsFilter extends NavigationScreen<Props, State, Event> {
                     renderLeftIcon={() => (
                         <TouchableOpacity
                             onPress={() =>
-                                this.props.navigation.navigate('Overview', {
-                                    [NAV_PARAMS.DASHBOARD]: {
-                                        selectedList: this.selectedEntryName,
-                                    } as DashboardNavigationParams,
+                                this.props.navigation.navigate('Dashboard', {
+                                    selectedList: this.selectedEntryName,
                                 })
                             }
                             style={navigationStyles.btnContainer}

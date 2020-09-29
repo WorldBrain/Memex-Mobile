@@ -19,7 +19,8 @@ import navigationStyles from 'src/features/overview/ui/components/navigation.sty
 export default class NoteEditorScreen extends NavigationScreen<
     Props,
     State,
-    Event
+    Event,
+    'NoteEditor'
 > {
     constructor(props: Props) {
         super(props, { logic: new Logic(props) })

@@ -12,7 +12,12 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
 import { Message as WebViewMessage, Anchor } from 'src/content-script/types'
 
-export default class Reader extends NavigationScreen<Props, State, Event> {
+export default class Reader extends NavigationScreen<
+    Props,
+    State,
+    Event,
+    'Reader'
+> {
     constructor(props: Props) {
         super(props, { logic: new Logic(props) })
     }

@@ -11,7 +11,8 @@ import MemexButton from 'src/ui/components/memex-btn'
 export default class SettingsMenuScreen extends NavigationScreen<
     Props,
     State,
-    Event
+    Event,
+    'SettingsMenu'
 > {
     constructor(props: Props) {
         super(props, { logic: new Logic(props) })
@@ -26,7 +27,7 @@ export default class SettingsMenuScreen extends NavigationScreen<
     }
 
     private navigateTo = (
-        route: 'Pairing' | 'Overview' | 'Onboarding',
+        route: 'Pairing' | 'Dashboard' | 'Onboarding',
     ) => () => {
         this.props.navigation.navigate(route)
     }
@@ -37,7 +38,7 @@ export default class SettingsMenuScreen extends NavigationScreen<
                 isPaired={this.state.isSynced}
                 versionCode={version}
                 onDevicePairedPress={this.navigateTo('Pairing')}
-                onExitMenuPress={this.navigateTo('Overview')}
+                onExitMenuPress={this.navigateTo('Dashboard')}
                 onSyncPress={this.handleSyncPress}
                 isSyncing={this.state.syncState === 'running'}
                 syncErrorMessage={this.state.syncErrorMessage}

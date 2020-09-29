@@ -11,14 +11,12 @@ import {
     UITaskState,
     UIStorageModules,
     UIServices,
-    NavigationProps,
+    MainNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
-import { DashboardNavigationParams } from './types'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { TAGS_PER_RESULT_LIMIT } from './constants'
 import {
     isSyncEnabled,
@@ -52,7 +50,7 @@ export type Event = UIEvent<{
     setFilteredListName: { name: string }
 }>
 
-export interface Props extends NavigationProps {
+export interface Props extends MainNavProps<'Dashboard'> {
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
     services: UIServices<'sync' | 'localStorage' | 'errorTracker'>
     getNow?: () => number
@@ -79,12 +77,10 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(initList?: string): State {
-        const params =
-            this.props.navigation.getParam(NAV_PARAMS.DASHBOARD) ??
-            ({} as DashboardNavigationParams)
+        const { params } = this.props.route
 
         const selectedListName =
-            initList ?? params.selectedList ?? MOBILE_LIST_NAME
+            initList ?? params?.selectedList ?? MOBILE_LIST_NAME
 
         return {
             syncState: 'pristine',
@@ -97,7 +93,7 @@ export default class Logic extends UILogic<State, Event> {
             actionFinishedAt: 0,
             pages: new Map(),
             selectedListName,
-            filterType: params.filterType ?? 'collection',
+            filterType: params?.filterType ?? 'collection',
         }
     }
 
@@ -198,11 +194,8 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async reload(incoming: IncomingUIEvent<State, Event, 'reload'>) {
-        if (
-            incoming.event.triggerSync &&
-            (await isSyncEnabled(this.props.services))
-        ) {
+    async reload({ event }: IncomingUIEvent<State, Event, 'reload'>) {
+        if (event.triggerSync && (await isSyncEnabled(this.props.services))) {
             this.doSync()
         }
 
@@ -210,9 +203,8 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'reloadState',
             async () => {
-                await this.doLoadMore(
-                    this.getInitialState(incoming.event.initList),
-                )
+                console.log('calling do load more with list:', event.initList)
+                await this.doLoadMore(this.getInitialState(event.initList))
             },
         )
     }

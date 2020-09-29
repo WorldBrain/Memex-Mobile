@@ -2,7 +2,7 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { storageKeys } from '../../../../../../app.json'
 import { OnboardingStage } from 'src/features/onboarding/types'
-import { UIServices, NavigationProps } from 'src/ui/types'
+import { UIServices, MainNavProps } from 'src/ui/types'
 import { isSyncEnabled } from 'src/features/sync/utils'
 
 export interface State {
@@ -11,7 +11,7 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    finishOnboarding: { nextView: 'Sync' | 'Overview' }
+    finishOnboarding: { nextView: 'Sync' | 'Dashboard' }
     goToLastStage: {}
     goToNextStage: {}
     goToPrevStage: {}
@@ -21,7 +21,7 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
     static MAX_ONBOARDING_STAGE: OnboardingStage = 3
 
     constructor(
-        private options: NavigationProps & {
+        private options: MainNavProps & {
             services: UIServices<'localStorage'>
         },
     ) {
