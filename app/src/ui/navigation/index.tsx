@@ -18,6 +18,7 @@ import SettingsMenu from 'src/features/settings-menu/ui/screens/settings-menu'
 import Reader from 'src/features/reader/ui/screens/reader'
 import Login from 'src/features/login/ui/screens/login'
 import { MainNavigatorParamList, ShareNavigatorParamList } from './types'
+import { lightTheme } from './color-themes'
 
 export type NavigationContainerFactory = (deps: UIDependencies) => JSX.Element
 
@@ -25,7 +26,7 @@ const MainStack = createStackNavigator<MainNavigatorParamList>()
 const ShareStack = createStackNavigator<ShareNavigatorParamList>()
 
 export const createMainNavigator: NavigationContainerFactory = deps => (
-    <NavigationContainer>
+    <NavigationContainer theme={lightTheme}>
         <MainStack.Navigator initialRouteName="Dashboard" headerMode="none">
             <MainStack.Screen name="Onboarding">
                 {props => <Onboarding {...props} {...deps} />}
@@ -74,7 +75,7 @@ export const createMainNavigator: NavigationContainerFactory = deps => (
 )
 
 export const createShareNavigator: NavigationContainerFactory = deps => (
-    <NavigationContainer>
+    <NavigationContainer theme={lightTheme}>
         <ShareStack.Navigator initialRouteName="ShareModal" headerMode="none">
             <ShareStack.Screen name="ShareModal">
                 {props => <ShareModal {...props} {...deps} />}
