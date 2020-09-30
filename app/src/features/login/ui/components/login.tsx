@@ -34,6 +34,7 @@ const Login: React.StatelessComponent<Props> = props => (
                 placeholderTextColor="#333"
                 textContentType="emailAddress"
                 editable={!props.isLoading}
+                autoCapitalize="none"
             />
             <TextInput
                 style={styles.textInput}
@@ -44,6 +45,7 @@ const Login: React.StatelessComponent<Props> = props => (
                 secureTextEntry
                 editable={!props.isLoading}
                 placeholderTextColor="#333"
+                autoCapitalize="none"
             />
         </View>
         <View style={styles.actionBtnsContainer}>

@@ -3,13 +3,13 @@ import { Alert } from 'react-native'
 
 import SyncSuccess from 'src/features/sync/ui/components/sync-success-stage'
 import { storageKeys } from '../../../../../../app.json'
-import { MainNavProps, UIServices, StatefulUIElement } from 'src/ui/types'
+import { MainNavProps, UIServices } from 'src/ui/types'
 
 interface Props extends MainNavProps<'Pairing'> {
     services: UIServices<'localStorage'>
 }
 
-export default class RePairScreen extends StatefulUIElement<Props, {}, Event> {
+export default class RePairScreen extends React.PureComponent<Props> {
     private handleRePairConfirmation = async () => {
         await this.props.services.localStorage.clear(storageKeys.syncKey)
         this.props.navigation.navigate('Sync')
