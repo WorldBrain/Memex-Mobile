@@ -1,6 +1,6 @@
 export interface FakeNavigationRequest {
-    type: 'navigate'
-    target: string
+    type: 'navigate' | 'goBack'
+    target?: string
     params?: FakeNavigationParams
 }
 
@@ -11,20 +11,23 @@ export interface FakeNavigationParams {
 export class FakeNavigation {
     private requests: FakeNavigationRequest[] = []
 
-    constructor(private params?: FakeNavigationParams) {}
+    constructor(public params?: FakeNavigationParams) {}
 
     navigate = (target: string, params?: FakeNavigationParams) => {
         this.requests.push({ type: 'navigate', target, params })
     }
 
-    popRequests(): FakeNavigationRequest[] {
+    goBack = (): void => {
+        this.requests.push({ type: 'goBack' })
+    }
+
+    popRequests = (): FakeNavigationRequest[] => {
         const requests = this.requests
         this.requests = []
         return requests
     }
+}
 
-    getParam(name: string, defaultVal?: any) {
-        const value = this.params ? this.params[name] : null
-        return value ?? defaultVal ?? null
-    }
+export class FakeRoute {
+    constructor(public params: FakeNavigationParams = {}) {}
 }

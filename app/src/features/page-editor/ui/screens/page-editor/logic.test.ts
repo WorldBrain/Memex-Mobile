@@ -1,8 +1,7 @@
 import Logic, { Props, State, Event } from './logic'
 import { TestLogicContainer } from 'src/tests/ui-logic'
-import { FakeNavigation } from 'src/tests/navigation'
-import { makeStorageTestFactory } from 'src/index.tests'
-import { Storage } from 'src/storage/types'
+import { FakeNavigation, FakeRoute } from 'src/tests/navigation'
+import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import * as DATA from './logic.test.data'
 import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
@@ -19,28 +18,14 @@ const testPage = {
     lists: [],
 }
 
-const NAV_PARAMS = {}
-
 describe('page editor UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    function setup(options: {
-        storage: Storage
-        localStorage?: LocalStorageService
-    }) {
+    function setup(options: TestDevice) {
         const logic = new Logic({
-            storage: options.storage,
-            navigation: new FakeNavigation({
-                [NAV_PARAMS.PAGE_EDITOR]: { pageUrl: DATA.PAGE_1.url },
-            }) as any,
-            services: {
-                localStorage:
-                    options.localStorage ??
-                    ({
-                        get: () => undefined,
-                        set: () => undefined,
-                    } as any),
-            },
+            ...options,
+            navigation: new FakeNavigation({ pageUrl: DATA.PAGE_1.url }) as any,
+            route: new FakeRoute({ pageUrl: DATA.PAGE_1.url }) as any,
         } as Props)
         const element = new FakeStatefulUIElement<State, Event>(logic)
         const logicContainer = new TestLogicContainer<State, Event>(logic)
@@ -135,22 +120,30 @@ describe('page editor UI logic tests', () => {
         expect(logicContainer.state.page.notes[0].isNotePressed).toBe(false)
     })
 
-    it('should be able to add/remove tags to/from a page', async () => {
+    it('should be able to add/remove tags to/from a page', async context => {
         let createTagValue: any
         let deleteTagValue: any
         const testTags = ['a', 'b', 'c']
         const settingsStorage = new MockSettingsStorage()
 
         const { logicContainer } = setup({
+            ...context,
             storage: {
+                ...context.storage,
                 modules: {
+                    ...context.storage.modules,
                     metaPicker: {
                         createTag: async (args: any) => (createTagValue = args),
                         deleteTag: async (args: any) => (deleteTagValue = args),
                     },
                 },
             } as any,
-            localStorage: new LocalStorageService({ settingsStorage }),
+            services: {
+                ...context.services,
+                localStorage: new LocalStorageService({
+                    settingsStorage,
+                }) as any,
+            },
         })
 
         logicContainer.logic.emitMutation({
@@ -181,15 +174,18 @@ describe('page editor UI logic tests', () => {
         expect(logicContainer.state.page.tags.length).toBe(0)
     })
 
-    it('should be able to add/remove pages to/from a list', async () => {
+    it('should be able to add/remove pages to/from a list', async context => {
         let createListEntryValue: any
         let deleteListEntryValue: any
         const testLists = ['a', 'b', 'c']
         const settingsStorage = new MockSettingsStorage()
 
         const { logicContainer } = setup({
+            ...context,
             storage: {
+                ...context.storage,
                 modules: {
+                    ...context.storage.modules,
                     metaPicker: {
                         createPageListEntry: async (args: any) =>
                             (createListEntryValue = args),
@@ -199,7 +195,10 @@ describe('page editor UI logic tests', () => {
                     },
                 },
             } as any,
-            localStorage: new LocalStorageService({ settingsStorage }),
+            services: {
+                ...context.services,
+                localStorage: new LocalStorageService({ settingsStorage }),
+            },
         })
 
         logicContainer.logic.emitMutation({

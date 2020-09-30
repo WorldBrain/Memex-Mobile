@@ -1,11 +1,8 @@
 import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
-import { makeStorageTestFactory } from 'src/index.tests'
-import { FakeNavigation } from 'src/tests/navigation'
+import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
+import { FakeRoute } from 'src/tests/navigation'
 import { Anchor } from 'src/content-script/types'
-import { MockSentry } from 'src/services/error-tracking/index.tests'
-
-const NAV_PARAMS = {}
 
 const TEST_URL_1 = 'getmemex.com'
 const TEST_TITLE_1 = 'test'
@@ -17,15 +14,15 @@ const TEST_ANCHOR_1: Anchor = {
 describe('reader screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    function setup(
-        options: Omit<Props, 'navigation'> & { navigation: FakeNavigation },
-    ) {
+    function setup(options: TestDevice) {
         const logic = new Logic({
             ...options,
-            navigation: {
-                ...options.navigation,
-                getParam: () => ({ url: TEST_URL_1, title: TEST_TITLE_1 }),
-            } as any,
+            loadContentScript: async () => '',
+            navigation: options.navigation as any,
+            route: new FakeRoute({
+                url: TEST_URL_1,
+                title: TEST_TITLE_1,
+            }) as any,
         })
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
@@ -133,15 +130,12 @@ describe('reader screen UI logic tests', () => {
                 type: 'navigate',
                 target: 'NoteEditor',
                 params: {
-                    [NAV_PARAMS.NOTE_EDITOR]: {
-                        mode: 'create',
-                        highlightText: TEST_ANCHOR_1.quote,
-                        anchor: TEST_ANCHOR_1,
-                        previousRoute: 'Reader',
-                        pageTitle: TEST_TITLE_1,
-                        pageUrl: Logic.formUrl(TEST_URL_1),
-                        readerScrollPercent: 0,
-                    },
+                    mode: 'create',
+                    highlightText: TEST_ANCHOR_1.quote,
+                    anchor: TEST_ANCHOR_1,
+                    pageTitle: TEST_TITLE_1,
+                    pageUrl: Logic.formUrl(TEST_URL_1),
+                    readerScrollPercent: 0,
                 },
             },
         ])
@@ -170,23 +164,20 @@ describe('reader screen UI logic tests', () => {
                 type: 'navigate',
                 target: 'NoteEditor',
                 params: {
-                    [NAV_PARAMS.NOTE_EDITOR]: {
-                        mode: 'update',
-                        noteUrl: object.url,
-                        highlightText: testNote.body,
-                        noteText: testNote.comment,
-                        anchor: testNote.selector,
-                        previousRoute: 'Reader',
-                        pageTitle: TEST_TITLE_1,
-                        pageUrl: Logic.formUrl(TEST_URL_1),
-                        readerScrollPercent: 0,
-                    },
+                    mode: 'update',
+                    noteUrl: object.url,
+                    highlightText: testNote.body,
+                    noteText: testNote.comment,
+                    anchor: testNote.selector,
+                    pageTitle: TEST_TITLE_1,
+                    pageUrl: Logic.formUrl(TEST_URL_1),
+                    readerScrollPercent: 0,
                 },
             },
         ])
     })
 
-    it('should be able to set reader scroll state', dependencies => {
+    it('should be able to set reader scroll state', async dependencies => {
         const { element } = setup(dependencies)
 
         const step = 1
@@ -231,18 +222,13 @@ describe('reader screen UI logic tests', () => {
                 type: 'navigate',
                 target: 'PageEditor',
                 params: {
-                    [NAV_PARAMS.PAGE_EDITOR]: {
-                        mode,
-                        previousRoute: 'Reader',
-                        readerScrollPercent,
-                        pageUrl: Logic.formUrl(TEST_URL_1),
-                    },
+                    mode,
+                    readerScrollPercent,
+                    pageUrl: Logic.formUrl(TEST_URL_1),
                 },
             })
         }
 
         expect(navigation.popRequests()).toEqual(navRequests)
     })
-
-    it('should be able to ')
 })
