@@ -37,23 +37,8 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
     componentDidMount() {
         super.componentDidMount()
-        this.unsubNavFocus = this.props.navigation.addListener(
-            'focus',
-            async () => {
-                const { params } = this.props.route
-
-                if (
-                    params?.selectedList != null &&
-                    params.selectedList !== this.state.selectedListName
-                ) {
-                    this.processEvent('setFilteredListName', {
-                        name: params.selectedList,
-                    })
-                    await this.processEvent('reload', {
-                        initList: params.selectedList,
-                    })
-                }
-            },
+        this.unsubNavFocus = this.props.navigation.addListener('focus', () =>
+            this.processEvent('focusFromNavigation', this.props.route.params),
         )
     }
 

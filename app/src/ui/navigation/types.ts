@@ -1,5 +1,4 @@
 import { NoteEditMode } from 'src/features/overview/ui/screens/note-editor/types'
-import { DashboardFilterType } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import { Anchor } from 'src/content-script/types'
 
@@ -15,12 +14,7 @@ export type MainNavigatorParamList = {
     ListsFilter: {
         selectedList: string
     }
-    Dashboard:
-        | {
-              selectedList?: string
-              filterType?: DashboardFilterType
-          }
-        | undefined
+    Dashboard: { selectedList?: string } | undefined
     PageEditor: {
         readerScrollPercent?: number
         selectedList?: string

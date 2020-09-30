@@ -2,11 +2,7 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { AppState, AppStateStatus } from 'react-native'
 
 import { storageKeys } from '../../../../../../app.json'
-import {
-    UIPageWithNotes as UIPage,
-    UINote,
-    DashboardFilterType,
-} from 'src/features/overview/types'
+import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
 import {
     UITaskState,
     UIStorageModules,
@@ -23,6 +19,8 @@ import {
     shouldAutoSync,
     handleSyncError,
 } from 'src/features/sync/utils'
+import { MainNavigatorParamList } from 'src/ui/navigation/types'
+import ListsFilter from '../lists-filter'
 
 export interface State {
     syncState: UITaskState
@@ -36,7 +34,6 @@ export interface State {
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
-    filterType: DashboardFilterType
 }
 
 export type Event = UIEvent<{
@@ -48,6 +45,7 @@ export type Event = UIEvent<{
     togglePageStar: { url: string }
     toggleResultPress: { url: string }
     setFilteredListName: { name: string }
+    focusFromNavigation: MainNavigatorParamList['Dashboard']
 }>
 
 export interface Props extends MainNavProps<'Dashboard'> {
@@ -93,7 +91,6 @@ export default class Logic extends UILogic<State, Event> {
             actionFinishedAt: 0,
             pages: new Map(),
             selectedListName,
-            filterType: params?.filterType ?? 'collection',
         }
     }
 
@@ -147,6 +144,22 @@ export default class Logic extends UILogic<State, Event> {
         this.props.services.sync.continuousSync.events.removeAllListeners(
             'syncFinished',
         )
+    }
+
+    async focusFromNavigation({
+        event,
+        previousState,
+    }: IncomingUIEvent<State, Event, 'focusFromNavigation'>) {
+        if (
+            !event?.selectedList ||
+            event.selectedList === previousState.selectedListName
+        ) {
+            return
+        }
+
+        this.emitMutation({ selectedListName: { $set: event.selectedList } })
+
+        return this.doLoadMore(this.getInitialState(event.selectedList))
     }
 
     private async doSync() {
@@ -203,7 +216,6 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'reloadState',
             async () => {
-                console.log('calling do load more with list:', event.initList)
                 await this.doLoadMore(this.getInitialState(event.initList))
             },
         )
@@ -262,17 +274,15 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private choosePageEntryLoader({
-        filterType,
+        selectedListName,
     }: State): PageLookupEntryLoader {
-        switch (filterType) {
-            case 'bookmarks':
-                return this.loadEntriesForBookmarks
-            case 'visits':
-                return this.loadEntriesForVisits
-            case 'collection':
-            default:
-                return this.loadEntriesForCollection
+        if (selectedListName === ListsFilter.MAGIC_BMS_FILTER) {
+            return this.loadEntriesForBookmarks
+        } else if (selectedListName === ListsFilter.MAGIC_VISITS_FILTER) {
+            return this.loadEntriesForVisits
         }
+
+        return this.loadEntriesForCollection
     }
 
     private loadEntriesForCollection: PageLookupEntryLoader = async prevState => {

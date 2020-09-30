@@ -11,6 +11,7 @@ import {
 import { UIPage } from 'src/features/overview/types'
 import { Page } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/types'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import ListsFilter from '../lists-filter'
 
 const UI_PAGE_1: UIPage = {
     fullUrl: 'https://www.test.com',
@@ -325,14 +326,18 @@ describe('dashboard screen UI logic tests', () => {
 
         const logic = element.logic as Logic
 
-        element.processMutation({ filterType: { $set: 'bookmarks' } })
+        element.processMutation({
+            selectedListName: { $set: ListsFilter.MAGIC_BMS_FILTER },
+        })
         expect(
             await logic['choosePageEntryLoader'](element.state)(element.state),
         ).toEqual([
             { url: INTEGRATION_TEST_DATA.pages[1].url, date: expect.any(Date) },
         ])
 
-        element.processMutation({ filterType: { $set: 'visits' } })
+        element.processMutation({
+            selectedListName: { $set: ListsFilter.MAGIC_VISITS_FILTER },
+        })
         expect(
             await logic['choosePageEntryLoader'](element.state)(element.state),
         ).toEqual([
@@ -340,7 +345,9 @@ describe('dashboard screen UI logic tests', () => {
             { url: INTEGRATION_TEST_DATA.pages[1].url, date: expect.any(Date) },
         ])
 
-        element.processMutation({ filterType: { $set: 'collection' } })
+        element.processMutation({
+            selectedListName: { $set: MOBILE_LIST_NAME },
+        })
         expect(
             await logic['choosePageEntryLoader'](element.state)(element.state),
         ).toEqual([
