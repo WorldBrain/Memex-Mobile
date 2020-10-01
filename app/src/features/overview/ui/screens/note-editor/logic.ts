@@ -29,7 +29,6 @@ export interface Props extends MainNavProps<'NoteEditor'> {
 export default class Logic extends UILogic<State, Event> {
     static HIGHLIGHT_MAX_LINES = 4
 
-    readerScrollPercent?: number
     highlightAnchor?: Anchor
     pageUrl: string
     pageTitle?: string
@@ -50,7 +49,6 @@ export default class Logic extends UILogic<State, Event> {
         this.noteUrl = params.noteUrl
         this.initNoteText = params.noteText ?? ''
         this.selectedList = params.selectedList
-        this.readerScrollPercent = params.readerScrollPercent
     }
 
     getInitialState(): State {

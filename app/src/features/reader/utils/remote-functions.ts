@@ -3,4 +3,3 @@ export type RemoteFnName =
     | 'createAnnotation'
     | 'renderHighlights'
     | 'renderHighlight'
-    | 'setScrollPercent'

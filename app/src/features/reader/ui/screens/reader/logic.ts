@@ -33,7 +33,6 @@ export interface State {
     isBookmarked: boolean
     isListed: boolean
     hasNotes: boolean
-    readerScrollPercent: number
     htmlSource?: string
     contentScriptSource?: string
     error?: Error
@@ -44,7 +43,6 @@ export interface State {
 export type Event = UIEvent<{
     reportError: null
     setError: { error?: Error }
-    setReaderScrollPercent: { percent: number }
     editHighlight: { highlightUrl: string }
     createHighlight: CreateHighlightArgs
     createAnnotation: CreateHighlightArgs
@@ -98,7 +96,6 @@ export default class Logic extends UILogic<State, Event> {
             isListed: false,
             hasNotes: false,
             highlights: [],
-            readerScrollPercent: params.scrollPercent ?? 0,
         }
     }
 
@@ -288,7 +285,6 @@ export default class Logic extends UILogic<State, Event> {
             anchor: event.anchor,
             pageUrl: previousState.url,
             noteUrl: highlight.url,
-            readerScrollPercent: previousState.readerScrollPercent,
         })
     }
 
@@ -314,14 +310,7 @@ export default class Logic extends UILogic<State, Event> {
             anchor: note.selector,
             pageTitle: previousState.title,
             pageUrl: previousState.url,
-            readerScrollPercent: previousState.readerScrollPercent,
         })
-    }
-
-    setReaderScrollPercent: EventHandler<'setReaderScrollPercent'> = ({
-        event: { percent },
-    }) => {
-        this.emitMutation({ readerScrollPercent: { $set: percent } })
     }
 
     goBack = () => {
@@ -333,7 +322,6 @@ export default class Logic extends UILogic<State, Event> {
         previousState,
     }) => {
         this.props.navigation.navigate('PageEditor', {
-            readerScrollPercent: previousState.readerScrollPercent,
             pageUrl: previousState.url,
             mode,
         })

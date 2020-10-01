@@ -38,14 +38,12 @@ export interface Props extends MainNavProps<'PageEditor'> {
 
 export default class Logic extends UILogic<State, Event> {
     selectedList: string
-    readerScrollPercent?: number
 
     constructor(private props: Props) {
         super()
 
         const { params } = props.route
         this.selectedList = params.selectedList ?? MOBILE_LIST_NAME
-        this.readerScrollPercent = params.readerScrollPercent
     }
 
     getInitialState(): State {

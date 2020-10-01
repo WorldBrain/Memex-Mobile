@@ -69,10 +69,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 return this.processEvent('editHighlight', {
                     highlightUrl: message.payload,
                 })
-            case 'scrollPercent':
-                return this.processEvent('setReaderScrollPercent', {
-                    percent: message.payload,
-                })
             default:
                 console.warn(
                     'Unsupported message received from WebView:',
@@ -114,17 +110,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         return `${this.state.contentScriptSource}; ${renderHighlightsCall}`
     }
 
-    // Wait a bit after the HTML loads before scrolling to try and give whatever JS a chance to render
-    private sendScrollState = () => {
-        this.scrollTimeout = setTimeout(
-            () =>
-                this.runFnInWebView('setScrollPercent', {
-                    percent: this.state.readerScrollPercent,
-                }),
-            500,
-        )
-    }
-
     private renderLoading = () => (
         <View style={[styles.webView, styles.webViewLoader]}>
             <LoadingBalls />
@@ -159,7 +144,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 onNavigationStateChange={this.handleNavStateChange}
                 startInLoadingState
                 renderLoading={this.renderLoading}
-                onLoadEnd={this.sendScrollState}
                 // This flag needs to be set to afford text selection on iOS.
                 //   https://github.com/react-native-community/react-native-webview/issues/1275
                 allowsLinkPreview

@@ -16,7 +16,6 @@ export type MainNavigatorParamList = {
     }
     Dashboard: { selectedList?: string } | undefined
     PageEditor: {
-        readerScrollPercent?: number
         selectedList?: string
         pageUrl: string
         mode: EditorMode
@@ -30,12 +29,10 @@ export type MainNavigatorParamList = {
         noteUrl?: string
         noteText?: string
         highlightText?: string
-        readerScrollPercent?: number
     }
     Reader: {
         url: string
         title: string
-        scrollPercent?: number
     }
 }
 

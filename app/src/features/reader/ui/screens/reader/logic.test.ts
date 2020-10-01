@@ -173,7 +173,6 @@ describe('reader screen UI logic tests', () => {
                     anchor: TEST_ANCHOR_1,
                     pageUrl: Logic.formUrl(TEST_URL_1),
                     noteUrl: renderedHighlight!.url,
-                    readerScrollPercent: 0,
                 },
             },
         ])
@@ -209,22 +208,9 @@ describe('reader screen UI logic tests', () => {
                     anchor: testNote.selector,
                     pageTitle: TEST_TITLE_1,
                     pageUrl: Logic.formUrl(TEST_URL_1),
-                    readerScrollPercent: 0,
                 },
             },
         ])
-    })
-
-    it('should be able to set reader scroll state', async dependencies => {
-        const { element } = setup(dependencies)
-
-        const step = 1
-
-        for (let percent = step; percent < 1; percent += step) {
-            expect(element.state.readerScrollPercent).toEqual(percent - step)
-            element.processEvent('setReaderScrollPercent', { percent })
-            expect(element.state.readerScrollPercent).toEqual(percent)
-        }
     })
 
     it('should be able to nav back to overview', async dependencies => {
@@ -238,35 +224,5 @@ describe('reader screen UI logic tests', () => {
                 target: 'Dashboard',
             },
         ])
-    })
-
-    it('should be able to nav to page editor with state', async dependencies => {
-        const { element, navigation } = setup(dependencies)
-
-        expect(navigation.popRequests()).toEqual([])
-
-        const readerScrollPercent = 0.3
-        const navRequests: any[] = []
-
-        // Change default reader scroll state to see if it appears in nav params
-        element.processEvent('setReaderScrollPercent', {
-            percent: readerScrollPercent,
-        })
-
-        for (const mode of ['collections', 'notes', 'tags'] as any[]) {
-            element.processEvent('goToPageEditor', { mode })
-
-            navRequests.push({
-                type: 'navigate',
-                target: 'PageEditor',
-                params: {
-                    mode,
-                    readerScrollPercent,
-                    pageUrl: Logic.formUrl(TEST_URL_1),
-                },
-            })
-        }
-
-        expect(navigation.popRequests()).toEqual(navRequests)
     })
 })
