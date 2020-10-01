@@ -19,6 +19,11 @@ import { EditorMode } from 'src/features/page-editor/types'
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
+interface CreateHighlightArgs {
+    anchor: Anchor
+    renderHighlight: (h: Highlight) => void
+}
+
 export interface State {
     url: string
     title: string
@@ -41,8 +46,8 @@ export type Event = UIEvent<{
     setError: { error?: Error }
     setReaderScrollPercent: { percent: number }
     editHighlight: { highlightUrl: string }
-    createHighlight: { anchor: Anchor }
-    createAnnotation: { anchor: Anchor }
+    createHighlight: CreateHighlightArgs
+    createAnnotation: CreateHighlightArgs
     setTextSelection: { text?: string }
     goToPageEditor: { mode: EditorMode }
     toggleBookmark: null
@@ -234,10 +239,11 @@ export default class Logic extends UILogic<State, Event> {
         return this.emitMutation({ selectedText: { $set: selectedText } })
     }
 
-    createHighlight: EventHandler<'createHighlight'> = async ({
-        event: { anchor },
+    private _createHighlight = async ({
+        anchor,
+        renderHighlight,
         previousState,
-    }) => {
+    }: { previousState: State } & CreateHighlightArgs): Promise<Highlight> => {
         const { pageEditor } = this.props.storage.modules
 
         const { object } = await pageEditor.createAnnotation({
@@ -247,27 +253,41 @@ export default class Logic extends UILogic<State, Event> {
             body: anchor.quote,
         })
 
+        const newHighlight = { url: object.url, anchor }
+        renderHighlight(newHighlight)
+
         this.emitMutation({
             hasNotes: { $set: true },
             highlights: {
-                $apply: (state: Highlight[]) => [
-                    ...state,
-                    { url: object.url, anchor },
-                ],
+                $apply: (state: Highlight[]) => [...state, newHighlight],
             },
         })
+
+        return newHighlight
+    }
+
+    createHighlight: EventHandler<'createHighlight'> = async ({
+        event,
+        previousState,
+    }) => {
+        await this._createHighlight({ ...event, previousState })
     }
 
     createAnnotation: EventHandler<'createAnnotation'> = async ({
-        event: { anchor },
+        event,
         previousState,
     }) => {
+        const highlight = await this._createHighlight({
+            ...event,
+            previousState,
+        })
+
         this.props.navigation.navigate('NoteEditor', {
-            mode: 'create',
-            highlightText: anchor.quote,
-            anchor,
-            pageTitle: previousState.title,
+            mode: 'update',
+            highlightText: event.anchor.quote,
+            anchor: event.anchor,
             pageUrl: previousState.url,
+            noteUrl: highlight.url,
             readerScrollPercent: previousState.readerScrollPercent,
         })
     }

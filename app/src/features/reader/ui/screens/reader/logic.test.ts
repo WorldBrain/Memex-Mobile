@@ -2,7 +2,7 @@ import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
 import { FakeRoute } from 'src/tests/navigation'
-import { Anchor } from 'src/content-script/types'
+import { Anchor, Highlight } from 'src/content-script/types'
 
 const TEST_URL_1 = 'getmemex.com'
 const TEST_TITLE_1 = 'test'
@@ -96,12 +96,25 @@ describe('reader screen UI logic tests', () => {
         const { element } = setup(dependencies)
         const { pageEditor } = dependencies.storage.modules
 
+        let renderedHighlight: Highlight | null = null
+        const mockRenderHighlight = (h: Highlight) => {
+            renderedHighlight = h
+        }
+
         expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([])
         expect(element.state.hasNotes).toBe(false)
         expect(element.state.highlights).toEqual([])
 
-        await element.processEvent('createHighlight', { anchor: TEST_ANCHOR_1 })
+        expect(renderedHighlight).toBeNull()
+        await element.processEvent('createHighlight', {
+            anchor: TEST_ANCHOR_1,
+            renderHighlight: mockRenderHighlight,
+        })
 
+        expect(renderedHighlight).toEqual({
+            anchor: TEST_ANCHOR_1,
+            url: expect.any(String),
+        })
         expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([
             expect.objectContaining({
                 pageUrl: TEST_URL_1,
@@ -118,23 +131,48 @@ describe('reader screen UI logic tests', () => {
         ])
     })
 
-    it('should be able to signal intent to create an annot from a text selection', async dependencies => {
+    it('should be able to create an annotation from a text selection', async dependencies => {
         const { element, navigation } = setup(dependencies)
+        const { pageEditor } = dependencies.storage.modules
+
+        let renderedHighlight: Highlight | null = null
+        const mockRenderHighlight = (h: Highlight) => {
+            renderedHighlight = h
+        }
 
         await element.processEvent('createAnnotation', {
             anchor: TEST_ANCHOR_1,
+            renderHighlight: mockRenderHighlight,
         })
 
+        expect(renderedHighlight).toEqual({
+            anchor: TEST_ANCHOR_1,
+            url: expect.any(String),
+        })
+        expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([
+            expect.objectContaining({
+                pageUrl: TEST_URL_1,
+                pageTitle: TEST_TITLE_1,
+                selector: TEST_ANCHOR_1,
+                body: TEST_ANCHOR_1.quote,
+            }),
+        ])
+        expect(element.state.hasNotes).toBe(true)
+        expect(element.state.highlights).toEqual([
+            expect.objectContaining({
+                anchor: TEST_ANCHOR_1,
+            }),
+        ])
         expect(navigation.popRequests()).toEqual([
             {
                 type: 'navigate',
                 target: 'NoteEditor',
                 params: {
-                    mode: 'create',
+                    mode: 'update',
                     highlightText: TEST_ANCHOR_1.quote,
                     anchor: TEST_ANCHOR_1,
-                    pageTitle: TEST_TITLE_1,
                     pageUrl: Logic.formUrl(TEST_URL_1),
+                    noteUrl: renderedHighlight!.url,
                     readerScrollPercent: 0,
                 },
             },

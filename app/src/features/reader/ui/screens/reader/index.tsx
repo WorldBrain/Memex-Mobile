@@ -38,17 +38,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
     private runFnInWebView = (fnName: RemoteFnName, arg?: any) =>
         this.webView.injectJavaScript(this.constructJsRemoteFnCall(fnName, arg))
 
-    private async createHighlightThenRender(anchor: Anchor) {
-        await this.processEvent('createHighlight', { anchor })
-
-        const latestIndex = this.state.highlights.length - 1
-
-        this.runFnInWebView(
-            'renderHighlight',
-            this.state.highlights[latestIndex],
-        )
-    }
-
     private handleWebViewMessageReceived = (serialized: string) => {
         let message: WebViewMessage
         try {
@@ -65,10 +54,16 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     text: message.payload,
                 })
             case 'highlight':
-                return this.createHighlightThenRender(message.payload)
+                return this.processEvent('createHighlight', {
+                    anchor: message.payload,
+                    renderHighlight: h =>
+                        this.runFnInWebView('renderHighlight', h),
+                })
             case 'annotation':
                 return this.processEvent('createAnnotation', {
                     anchor: message.payload,
+                    renderHighlight: h =>
+                        this.runFnInWebView('renderHighlight', h),
                 })
             case 'highlightClicked':
                 return this.processEvent('editHighlight', {
