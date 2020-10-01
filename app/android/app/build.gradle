@@ -181,6 +181,7 @@ android {
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
 
 dependencies {
+    implementation project(':react-native-safe-area-context')
     implementation project(':react-native-webview')
     implementation project(':react-native-local-resource')
     implementation project(':@sentry_react-native')

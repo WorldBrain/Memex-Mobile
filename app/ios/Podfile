@@ -64,6 +64,8 @@ target 'app' do
 
   pod 'react-native-webview', :path => '../node_modules/react-native-webview'
 
+  pod 'react-native-safe-area-context', :path => '../node_modules/react-native-safe-area-context'
+
   target 'MemexShare' do
     use_native_modules!
     inherit! :complete
