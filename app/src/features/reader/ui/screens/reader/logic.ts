@@ -3,6 +3,7 @@ import {
     UIEvent,
     IncomingUIEvent,
     UIEventHandler,
+    UIMutation,
 } from 'ui-logic-core'
 
 import {
@@ -16,6 +17,7 @@ import { ReadabilityArticle } from 'src/services/readability/types'
 import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
 import { Anchor, Highlight } from 'src/content-script/types'
 import { EditorMode } from 'src/features/page-editor/types'
+import { UIPageWithNotes } from 'src/features/overview/types'
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
@@ -47,7 +49,7 @@ export type Event = UIEvent<{
     createHighlight: CreateHighlightArgs
     createAnnotation: CreateHighlightArgs
     setTextSelection: { text?: string }
-    goToPageEditor: { mode: EditorMode }
+    navToPageEditor: { mode: EditorMode }
     toggleBookmark: null
     goBack: null
 }>
@@ -313,17 +315,24 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    goBack = () => {
-        this.props.navigation.navigate('Dashboard')
+    goBack = this.props.navigation.goBack
+
+    private updatePageDataFlags = (incomingPage: UIPageWithNotes) => {
+        this.emitMutation({
+            isTagged: { $set: incomingPage.tags?.length > 0 },
+            isListed: { $set: incomingPage.lists?.length > 0 },
+            hasNotes: { $set: incomingPage.notes?.length > 0 },
+        })
     }
 
-    goToPageEditor: EventHandler<'goToPageEditor'> = ({
+    navToPageEditor: EventHandler<'navToPageEditor'> = ({
         event: { mode },
         previousState,
     }) => {
         this.props.navigation.navigate('PageEditor', {
             pageUrl: previousState.url,
             mode,
+            updatePage: page => this.updatePageDataFlags(page),
         })
     }
 

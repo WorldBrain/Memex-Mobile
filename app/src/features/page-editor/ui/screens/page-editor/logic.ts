@@ -31,6 +31,7 @@ export type Event = UIEvent<{
     confirmNoteDelete: { url: string }
     saveNote: { text: string }
     focusFromNavigation: MainNavigatorParamList['PageEditor']
+    goBack: null
 }>
 
 export interface Props extends MainNavProps<'PageEditor'> {
@@ -81,6 +82,7 @@ export default class Logic extends UILogic<State, Event> {
 
         const notes = await pageEditor.findNotes({ url })
         const tags = await metaPicker.findTagsByPage({ url })
+        const lists = await metaPicker.findListsByPage({ url })
 
         const noteTags = new Map<string, string[]>()
 
@@ -99,7 +101,7 @@ export default class Logic extends UILogic<State, Event> {
             titleText: storedPage.fullTitle,
             date: 'a minute ago',
             tags: tags.map(t => t.name),
-            lists: [],
+            lists: lists.map(l => l.name),
             pageUrl: storedPage.url,
             // TODO: unify this map fn with the identical one in DashboardLogic
             notes: notes.map<UINote>(note => ({
@@ -287,6 +289,11 @@ export default class Logic extends UILogic<State, Event> {
                 ],
             }),
         }
+    }
+
+    goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
+        this.props.route.params.updatePage(previousState.page)
+        this.props.navigation.goBack()
     }
 
     private _updateListSuggestionsCache(args: {

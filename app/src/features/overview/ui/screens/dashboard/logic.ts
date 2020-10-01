@@ -41,6 +41,7 @@ export type Event = UIEvent<{
     reload: { initList?: string; triggerSync?: boolean }
     loadMore: {}
     setPages: { pages: UIPage[] }
+    updatePage: { page: UIPage }
     deletePage: { url: string }
     togglePageStar: { url: string }
     toggleResultPress: { url: string }
@@ -399,6 +400,31 @@ export default class Logic extends UILogic<State, Event> {
             page,
         ]) as [string, UIPage][]
         return { pages: { $set: new Map(pageEntries) } }
+    }
+
+    updatePage({
+        event: { page: next },
+    }: IncomingUIEvent<State, Event, 'updatePage'>) {
+        this.emitMutation({
+            pages: {
+                $apply: pages => {
+                    const existingPage = pages.get(next.url)
+
+                    if (!existingPage) {
+                        throw new Error(
+                            'No existing page found in dashboard state to update',
+                        )
+                    }
+
+                    return pages.set(next.url, {
+                        ...existingPage,
+                        tags: next.tags,
+                        lists: next.lists,
+                        notes: next.notes,
+                    })
+                },
+            },
+        })
     }
 
     async deletePage(incoming: IncomingUIEvent<State, Event, 'deletePage'>) {

@@ -218,11 +218,6 @@ describe('reader screen UI logic tests', () => {
 
         expect(navigation.popRequests()).toEqual([])
         element.processEvent('goBack', null)
-        expect(navigation.popRequests()).toEqual([
-            {
-                type: 'navigate',
-                target: 'Dashboard',
-            },
-        ])
+        expect(navigation.popRequests()).toEqual([{ type: 'goBack' }])
     })
 })

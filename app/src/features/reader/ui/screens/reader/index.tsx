@@ -170,15 +170,15 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         this.processEvent('toggleBookmark', null)
                     }
                     onListBtnPress={() =>
-                        this.processEvent('goToPageEditor', {
+                        this.processEvent('navToPageEditor', {
                             mode: 'collections',
                         })
                     }
                     onCommentBtnPress={() =>
-                        this.processEvent('goToPageEditor', { mode: 'notes' })
+                        this.processEvent('navToPageEditor', { mode: 'notes' })
                     }
                     onTagBtnPress={() =>
-                        this.processEvent('goToPageEditor', { mode: 'tags' })
+                        this.processEvent('navToPageEditor', { mode: 'tags' })
                     }
                 />
             </View>

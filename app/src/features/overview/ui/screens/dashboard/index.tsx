@@ -26,7 +26,6 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import SyncRibbon from '../../components/sync-ribbon'
-
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
     private unsubNavFocus!: () => void
@@ -47,10 +46,11 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         this.unsubNavFocus()
     }
 
-    private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
+    private navToPageEditor = ({ fullUrl }: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {
-            pageUrl: page.fullUrl,
+            pageUrl: fullUrl,
             mode,
+            updatePage: page => this.processEvent('updatePage', { page }),
         })
     }
 

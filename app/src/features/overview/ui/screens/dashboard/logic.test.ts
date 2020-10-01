@@ -355,4 +355,112 @@ describe('dashboard screen UI logic tests', () => {
             { url: INTEGRATION_TEST_DATA.pages[0].url, date: expect.any(Date) },
         ])
     })
+
+    it("should be able to update an already tracked page's lists, tags, and notes", async dependencies => {
+        const { storage } = dependencies
+        const { element } = await setup({ ...dependencies, pageSize: 1 })
+
+        await storage.modules.overview.createPage(
+            INTEGRATION_TEST_DATA.pages[0],
+        )
+        await storage.modules.overview.createPage({
+            url: INTEGRATION_TEST_DATA.pages[0].url + '.me',
+            fullUrl: 'https://www.test.com.me',
+            fullTitle: 'This is a test page bla',
+            text:
+                'Hey there this is some test text with lots of test terms included bla.',
+        })
+
+        const mobileListId = await storage.modules.metaPicker.createMobileListIfAbsent()
+        await storage.modules.metaPicker.createPageListEntry({
+            listId: mobileListId,
+            pageUrl: INTEGRATION_TEST_DATA.pages[0].url,
+        })
+        await storage.modules.metaPicker.createPageListEntry({
+            listId: mobileListId,
+            pageUrl: INTEGRATION_TEST_DATA.pages[0].url + '.me',
+        })
+
+        await element.init()
+        expect(element.state.pages).toEqual(
+            new Map([[UI_PAGE_2.url, UI_PAGE_2]]),
+        )
+
+        await element.processEvent('loadMore', {})
+        expect(element.state.pages).toEqual(
+            new Map([
+                [UI_PAGE_2.url, UI_PAGE_2],
+                [UI_PAGE_1.url, UI_PAGE_1],
+            ]),
+        )
+
+        await element.processEvent('updatePage', {
+            page: {
+                ...UI_PAGE_2,
+                lists: ['test'],
+            },
+        })
+
+        expect(element.state.pages).toEqual(
+            new Map([
+                [UI_PAGE_2.url, { ...UI_PAGE_2, lists: ['test'] }],
+                [UI_PAGE_1.url, UI_PAGE_1],
+            ]),
+        )
+
+        await element.processEvent('updatePage', {
+            page: {
+                ...UI_PAGE_2,
+                tags: ['test'],
+            },
+        })
+
+        expect(element.state.pages).toEqual(
+            new Map([
+                [UI_PAGE_2.url, { ...UI_PAGE_2, tags: ['test'] }],
+                [UI_PAGE_1.url, UI_PAGE_1],
+            ]),
+        )
+
+        await element.processEvent('updatePage', {
+            page: {
+                ...UI_PAGE_2,
+                notes: [{ url: 'TESTNOTE' } as any],
+            },
+        })
+
+        expect(element.state.pages).toEqual(
+            new Map([
+                [
+                    UI_PAGE_2.url,
+                    { ...UI_PAGE_2, notes: [{ url: 'TESTNOTE' } as any] },
+                ],
+                [UI_PAGE_1.url, UI_PAGE_1],
+            ]),
+        )
+
+        await element.processEvent('updatePage', {
+            page: {
+                ...UI_PAGE_2,
+                lists: ['test'],
+                tags: ['test'],
+                notes: [{ url: 'TESTNOTE' } as any],
+            },
+        })
+
+        expect(element.state.pages).toEqual(
+            new Map([
+                [
+                    UI_PAGE_2.url,
+                    {
+                        ...UI_PAGE_2,
+                        lists: ['test'],
+                        tags: ['test'],
+                        notes: [{ url: 'TESTNOTE' } as any],
+                    },
+                ],
+                [UI_PAGE_1.url, UI_PAGE_1],
+            ]),
+        )
+    })
 })

@@ -1,6 +1,7 @@
 import { NoteEditMode } from 'src/features/overview/ui/screens/note-editor/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import { Anchor } from 'src/content-script/types'
+import { UIPageWithNotes } from 'src/features/overview/types'
 
 export type MainNavigatorRoutes = keyof MainNavigatorParamList
 export type MainNavigatorParamList = {
@@ -18,6 +19,8 @@ export type MainNavigatorParamList = {
     PageEditor: {
         pageUrl: string
         mode: EditorMode
+        /** Affords sending page changes that occur in this route back up to parent route. */
+        updatePage: (page: UIPageWithNotes) => void
     }
     NoteEditor: {
         mode: NoteEditMode

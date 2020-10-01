@@ -55,8 +55,6 @@ export default class PageEditorScreen extends StatefulUIElement<
             })
     }
 
-    private navBackToDashboard = () => this.props.navigation.goBack()
-
     private renderNotes() {
         return (
             <NotesList
@@ -119,7 +117,7 @@ export default class PageEditorScreen extends StatefulUIElement<
         return (
             <MainLayout
                 {...this.state.page}
-                onBackPress={this.navBackToDashboard}
+                onBackPress={() => this.processEvent('goBack', null)}
                 onAddPress={this.initHandleAddNotePress()}
                 titleText={this.state.page.pageUrl}
             >
