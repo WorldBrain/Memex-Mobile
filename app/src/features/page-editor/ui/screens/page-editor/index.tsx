@@ -1,4 +1,5 @@
 import React from 'react'
+import { View } from 'react-native'
 
 import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
@@ -8,14 +9,30 @@ import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
+import LoadingBalls from 'src/ui/components/loading-balls'
+import styles from './styles'
 
 export default class PageEditorScreen extends StatefulUIElement<
     Props,
     State,
     Event
 > {
+    private unsubNavFocus!: () => void
+
     constructor(props: Props) {
         super(props, new Logic(props))
+    }
+
+    componentDidMount() {
+        super.componentDidMount()
+        this.unsubNavFocus = this.props.navigation.addListener('focus', () =>
+            this.processEvent('focusFromNavigation', this.props.route.params),
+        )
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount()
+        this.unsubNavFocus()
     }
 
     private handleEntryPress = (entry: MetaTypeShape) => {
@@ -33,7 +50,6 @@ export default class PageEditorScreen extends StatefulUIElement<
 
         return () =>
             this.props.navigation.navigate('NoteEditor', {
-                selectedList: (this.logic as Logic).selectedList,
                 pageUrl: this.state.page.fullUrl,
                 mode: 'create',
             })
@@ -48,7 +64,6 @@ export default class PageEditorScreen extends StatefulUIElement<
                     this.processEvent('confirmNoteDelete', { url: n.url })}
                 initNoteEdit={note => () =>
                     this.props.navigation.navigate('NoteEditor', {
-                        selectedList: (this.logic as Logic).selectedList,
                         pageUrl: this.state.page.fullUrl,
                         highlightText: note.noteText,
                         noteText: note.commentText,
@@ -83,7 +98,11 @@ export default class PageEditorScreen extends StatefulUIElement<
 
     private renderEditor() {
         if (this.state.loadState !== 'done') {
-            return null
+            return (
+                <View style={styles.loadingContainer}>
+                    <LoadingBalls />
+                </View>
+            )
         }
 
         switch (this.state.mode) {

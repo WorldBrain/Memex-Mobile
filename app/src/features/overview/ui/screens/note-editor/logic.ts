@@ -35,7 +35,6 @@ export default class Logic extends UILogic<State, Event> {
     noteUrl?: string
     mode: NoteEditMode
     initNoteText: string
-    selectedList?: string
 
     constructor(private props: Props) {
         super()
@@ -48,7 +47,6 @@ export default class Logic extends UILogic<State, Event> {
         this.pageTitle = params.pageTitle
         this.noteUrl = params.noteUrl
         this.initNoteText = params.noteText ?? ''
-        this.selectedList = params.selectedList
     }
 
     getInitialState(): State {

@@ -14,9 +14,8 @@ export type MainNavigatorParamList = {
     ListsFilter: {
         selectedList: string
     }
-    Dashboard: { selectedList?: string } | undefined
+    Dashboard: { selectedList: string } | undefined
     PageEditor: {
-        selectedList?: string
         pageUrl: string
         mode: EditorMode
     }
@@ -25,7 +24,6 @@ export type MainNavigatorParamList = {
         pageUrl: string
         pageTitle?: string
         anchor?: Anchor
-        selectedList?: string
         noteUrl?: string
         noteText?: string
         highlightText?: string

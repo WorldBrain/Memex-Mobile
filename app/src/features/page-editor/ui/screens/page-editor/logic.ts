@@ -16,6 +16,7 @@ import { timeFromNow } from 'src/utils/time-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { updateSuggestionsCache } from 'src/features/page-editor/utils'
 import { INIT_SUGGESTIONS_LIMIT } from 'src/features/meta-picker/ui/screens/meta-picker/constants'
+import { MainNavigatorParamList } from 'src/ui/navigation/types'
 
 export interface State {
     loadState: UITaskState
@@ -29,6 +30,7 @@ export type Event = UIEvent<{
     createEntry: { name: string }
     confirmNoteDelete: { url: string }
     saveNote: { text: string }
+    focusFromNavigation: MainNavigatorParamList['PageEditor']
 }>
 
 export interface Props extends MainNavProps<'PageEditor'> {
@@ -37,13 +39,10 @@ export interface Props extends MainNavProps<'PageEditor'> {
 }
 
 export default class Logic extends UILogic<State, Event> {
-    selectedList: string
-
     constructor(private props: Props) {
         super()
 
         const { params } = props.route
-        this.selectedList = params.selectedList ?? MOBILE_LIST_NAME
     }
 
     getInitialState(): State {
@@ -54,9 +53,15 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+    async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
+        const { params } = this.props.route
+        await this.focusFromNavigation({ previousState, event: params })
+    }
+
+    async focusFromNavigation({
+        event: params,
+    }: IncomingUIEvent<State, Event, 'focusFromNavigation'>) {
         await loadInitial<State>(this, async () => {
-            const { params } = this.props.route
             const page = await this.loadPageData(params.pageUrl)
 
             this.emitMutation({
