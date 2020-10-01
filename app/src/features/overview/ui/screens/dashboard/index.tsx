@@ -88,6 +88,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         this.props.navigation.navigate('Reader', {
             url,
             title: titleText,
+            updatePage: page => this.processEvent('updatePage', { page }),
         })
     }
 

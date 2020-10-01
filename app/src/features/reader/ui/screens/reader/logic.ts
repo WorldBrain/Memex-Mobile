@@ -318,6 +318,8 @@ export default class Logic extends UILogic<State, Event> {
     goBack = this.props.navigation.goBack
 
     private updatePageDataFlags = (incomingPage: UIPageWithNotes) => {
+        // Allow incoming page to go back up to Dashboard so that can also react to changes
+        this.props.route.params.updatePage(incomingPage)
         this.emitMutation({
             isTagged: { $set: incomingPage.tags?.length > 0 },
             isListed: { $set: incomingPage.lists?.length > 0 },

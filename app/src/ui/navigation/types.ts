@@ -34,6 +34,8 @@ export type MainNavigatorParamList = {
     Reader: {
         url: string
         title: string
+        /** Affords sending page changes that occur in this route back up to parent route. */
+        updatePage: (page: UIPageWithNotes) => void
     }
 }
 
