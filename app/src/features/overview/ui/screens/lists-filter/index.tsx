@@ -15,7 +15,7 @@ export default class ListsFilter extends StatefulUIElement<
     State,
     Event
 > {
-    static MAGIC_VISITS_FILTER = 'All History'
+    static MAGIC_VISITS_FILTER = 'All Saved'
     static MAGIC_BMS_FILTER = 'All Bookmarks'
 
     private selectedEntryName?: string
@@ -27,7 +27,7 @@ export default class ListsFilter extends StatefulUIElement<
     }
 
     private get magicFilters(): string[] {
-        return [ListsFilter.MAGIC_VISITS_FILTER, ListsFilter.MAGIC_BMS_FILTER]
+        return [ListsFilter.MAGIC_VISITS_FILTER]
     }
 
     private handleEntryPress = async (item: MetaTypeShape) => {

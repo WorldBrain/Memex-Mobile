@@ -157,9 +157,19 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        this.emitMutation({ selectedListName: { $set: event.selectedList } })
+        // While this.emitMutation is NOT async, if you remove this await then the state update doesn't happen somehow :S
+        // Please don't remove the await!
+        // TODO: find cause of this bug in `ui-logic-core` lib
+        await this.emitMutation({
+            selectedListName: { $set: event.selectedList },
+        })
 
-        return this.doLoadMore(this.getInitialState(event.selectedList))
+        await executeUITask<State, 'reloadState', void>(
+            this,
+            'reloadState',
+            async () =>
+                this.doLoadMore(this.getInitialState(event.selectedList)),
+        )
     }
 
     private async doSync() {
