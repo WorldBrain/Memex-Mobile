@@ -6,7 +6,9 @@ import Logic, { Props, State, Event } from './logic'
 import SettingsMenu from '../../components/settings-menu'
 import SettingsLink from '../../components/settings-link'
 import OutLink from '../../components/out-link'
-import MemexButton from 'src/ui/components/memex-btn'
+import Button from 'src/ui/components/memex-btn'
+import { View, Text } from 'react-native'
+import styles from '../../components/settings-menu.styles'
 
 export default class SettingsMenuScreen extends StatefulUIElement<
     Props,
@@ -63,12 +65,14 @@ export default class SettingsMenuScreen extends StatefulUIElement<
                     Report Bugs
                 </OutLink>
                 {/* TODO: REMOVE THIS BEFORE MERGE */}
-                <MemexButton
-                    title="DEBUG: LOG OUT"
-                    onPress={() =>
-                        (this.props.services as any)['auth'].signOut()
-                    }
-                />
+                <View style={styles.logoutButton}>
+                    <Button
+                        title="LOG OUT"
+                        onPress={() =>
+                            (this.props.services as any)['auth'].signOut()
+                        }
+                    />
+                </View>
             </SettingsMenu>
         )
     }
