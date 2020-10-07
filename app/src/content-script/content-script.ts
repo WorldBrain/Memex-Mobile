@@ -23,7 +23,6 @@ export class WebViewContentScript {
             createAnnotation: this.createAnnotation,
             renderHighlights: this.renderHighlights,
             renderHighlight: this.renderHighlight,
-            setScrollPercent: this.setScrollPercent,
         })
     }
 
@@ -98,41 +97,6 @@ export class WebViewContentScript {
         markRange({ range, cssClass: HIGHLIGHT_CLASS })
 
         this.attachEventListenersToNewHighlights(url)
-    }
-
-    private getScrollHeight = (el: Element) => el.scrollHeight - el.clientHeight
-
-    private calcScrollPercent = (): number => {
-        const html = this.document.body.parentNode as Element
-
-        return (
-            (this.document.body.scrollTop || html.scrollTop) /
-            this.getScrollHeight(html)
-        )
-    }
-
-    calcAndSendScrollPercent = () =>
-        this.props.postMessageToRN({
-            type: 'scrollPercent',
-            payload: this.calcScrollPercent(),
-        })
-
-    setScrollPercent = async ({
-        percent,
-        skipThreshold = 0.05,
-    }: {
-        percent: number
-        skipThreshold?: number
-    }) => {
-        const html = this.document.body.parentNode as Element
-
-        if (percent < skipThreshold) {
-            return
-        }
-
-        this.window.scroll({
-            top: percent * this.getScrollHeight(html),
-        })
     }
 
     private attachEventListenersToNewHighlights(highlightUrl: string) {

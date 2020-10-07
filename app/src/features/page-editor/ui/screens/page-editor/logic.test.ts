@@ -1,9 +1,7 @@
 import Logic, { Props, State, Event } from './logic'
 import { TestLogicContainer } from 'src/tests/ui-logic'
-import { FakeNavigation } from 'src/tests/navigation'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
-import { makeStorageTestFactory } from 'src/index.tests'
-import { Storage } from 'src/storage/types'
+import { FakeNavigation, FakeRoute } from 'src/tests/navigation'
+import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import * as DATA from './logic.test.data'
 import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
@@ -23,23 +21,14 @@ const testPage = {
 describe('page editor UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    function setup(options: {
-        storage: Storage
-        localStorage?: LocalStorageService
-    }) {
+    function setup({
+        route = new FakeRoute({ pageUrl: DATA.PAGE_1.url }) as any,
+        ...options
+    }: TestDevice) {
         const logic = new Logic({
-            storage: options.storage,
-            navigation: new FakeNavigation({
-                [NAV_PARAMS.PAGE_EDITOR]: { pageUrl: DATA.PAGE_1.url },
-            }) as any,
-            services: {
-                localStorage:
-                    options.localStorage ??
-                    ({
-                        get: () => undefined,
-                        set: () => undefined,
-                    } as any),
-            },
+            ...options,
+            navigation: new FakeNavigation({ pageUrl: DATA.PAGE_1.url }) as any,
+            route,
         } as Props)
         const element = new FakeStatefulUIElement<State, Event>(logic)
         const logicContainer = new TestLogicContainer<State, Event>(logic)
@@ -48,7 +37,10 @@ describe('page editor UI logic tests', () => {
     }
 
     it('should be able to load init page data for display', async context => {
-        const { element } = setup(context)
+        const { element } = setup({
+            ...context,
+            route: new FakeRoute({ pageUrl: DATA.PAGE_1.url }) as any,
+        })
         const { manager } = context.storage
 
         await manager.collection('pages').createObject(DATA.PAGE_1)
@@ -134,22 +126,30 @@ describe('page editor UI logic tests', () => {
         expect(logicContainer.state.page.notes[0].isNotePressed).toBe(false)
     })
 
-    it('should be able to add/remove tags to/from a page', async () => {
+    it('should be able to add/remove tags to/from a page', async context => {
         let createTagValue: any
         let deleteTagValue: any
         const testTags = ['a', 'b', 'c']
         const settingsStorage = new MockSettingsStorage()
 
         const { logicContainer } = setup({
+            ...context,
             storage: {
+                ...context.storage,
                 modules: {
+                    ...context.storage.modules,
                     metaPicker: {
                         createTag: async (args: any) => (createTagValue = args),
                         deleteTag: async (args: any) => (deleteTagValue = args),
                     },
                 },
             } as any,
-            localStorage: new LocalStorageService({ settingsStorage }),
+            services: {
+                ...context.services,
+                localStorage: new LocalStorageService({
+                    settingsStorage,
+                }) as any,
+            },
         })
 
         logicContainer.logic.emitMutation({
@@ -180,15 +180,18 @@ describe('page editor UI logic tests', () => {
         expect(logicContainer.state.page.tags.length).toBe(0)
     })
 
-    it('should be able to add/remove pages to/from a list', async () => {
+    it('should be able to add/remove pages to/from a list', async context => {
         let createListEntryValue: any
         let deleteListEntryValue: any
         const testLists = ['a', 'b', 'c']
         const settingsStorage = new MockSettingsStorage()
 
         const { logicContainer } = setup({
+            ...context,
             storage: {
+                ...context.storage,
                 modules: {
+                    ...context.storage.modules,
                     metaPicker: {
                         createPageListEntry: async (args: any) =>
                             (createListEntryValue = args),
@@ -198,7 +201,10 @@ describe('page editor UI logic tests', () => {
                     },
                 },
             } as any,
-            localStorage: new LocalStorageService({ settingsStorage }),
+            services: {
+                ...context.services,
+                localStorage: new LocalStorageService({ settingsStorage }),
+            },
         })
 
         logicContainer.logic.emitMutation({
@@ -230,5 +236,52 @@ describe('page editor UI logic tests', () => {
             expect(deleteListEntryValue).toEqual({ url: testPage.url, name })
         }
         expect(logicContainer.state.page.lists.length).toBe(0)
+    })
+
+    it('should be able to nav back, passing page state to update param', async context => {
+        let updatedPage: any
+        const mockUpdatePage = (page: any) => {
+            updatedPage = page
+        }
+
+        const { logicContainer } = setup({
+            ...context,
+            route: new FakeRoute({
+                pageUrl: DATA.PAGE_1.url,
+                updatePage: mockUpdatePage,
+            }) as any,
+        })
+
+        const TEST_NOTE_TEXT_1 = 'test 1'
+        const TEST_TAG_1 = 'test 1'
+        const TEST_LIST_1 = 'test 1'
+
+        logicContainer.logic.emitMutation({
+            page: { $set: testPage as any },
+            mode: { $set: 'notes' },
+        })
+        expect(logicContainer.state.page.notes.length).toBe(0)
+
+        await logicContainer.processEvent('saveNote', {
+            text: TEST_NOTE_TEXT_1,
+        })
+
+        logicContainer.logic.emitMutation({ mode: { $set: 'tags' } })
+        await logicContainer.processEvent('createEntry', { name: TEST_TAG_1 })
+
+        logicContainer.logic.emitMutation({ mode: { $set: 'collections' } })
+        await logicContainer.processEvent('createEntry', { name: TEST_LIST_1 })
+
+        expect(updatedPage).toBeUndefined()
+        await logicContainer.processEvent('goBack', null)
+        expect(updatedPage).toEqual(
+            expect.objectContaining({
+                tags: [TEST_TAG_1],
+                lists: [TEST_LIST_1],
+                notes: [
+                    expect.objectContaining({ commentText: TEST_NOTE_TEXT_1 }),
+                ],
+            }),
+        )
     })
 })

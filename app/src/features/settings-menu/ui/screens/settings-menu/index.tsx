@@ -1,20 +1,22 @@
 import React from 'react'
 
 import { version } from '../../../../../../app.json'
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import SettingsMenu from '../../components/settings-menu'
 import SettingsLink from '../../components/settings-link'
 import OutLink from '../../components/out-link'
-import MemexButton from 'src/ui/components/memex-btn'
+import Button from 'src/ui/components/memex-btn'
+import { View, Text } from 'react-native'
+import styles from '../../components/settings-menu.styles'
 
-export default class SettingsMenuScreen extends NavigationScreen<
+export default class SettingsMenuScreen extends StatefulUIElement<
     Props,
     State,
     Event
 > {
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
     private handleSyncPress = () => {
@@ -26,7 +28,7 @@ export default class SettingsMenuScreen extends NavigationScreen<
     }
 
     private navigateTo = (
-        route: 'Pairing' | 'Overview' | 'Onboarding',
+        route: 'Pairing' | 'Dashboard' | 'Onboarding',
     ) => () => {
         this.props.navigation.navigate(route)
     }
@@ -37,7 +39,7 @@ export default class SettingsMenuScreen extends NavigationScreen<
                 isPaired={this.state.isSynced}
                 versionCode={version}
                 onDevicePairedPress={this.navigateTo('Pairing')}
-                onExitMenuPress={this.navigateTo('Overview')}
+                onExitMenuPress={this.navigateTo('Dashboard')}
                 onSyncPress={this.handleSyncPress}
                 isSyncing={this.state.syncState === 'running'}
                 syncErrorMessage={this.state.syncErrorMessage}
@@ -63,12 +65,12 @@ export default class SettingsMenuScreen extends NavigationScreen<
                     Report Bugs
                 </OutLink>
                 {/* TODO: REMOVE THIS BEFORE MERGE */}
-                <MemexButton
-                    title="DEBUG: LOG OUT"
-                    onPress={() =>
-                        (this.props.services as any)['auth'].signOut()
-                    }
-                />
+                <View style={styles.logoutButton}>
+                    <Button
+                        title="LOG OUT"
+                        onPress={() => this.props.services.auth.signOut()}
+                    />
+                </View>
             </SettingsMenu>
         )
     }

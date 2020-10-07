@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { AppRegistry, Dimensions } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-import 'react-native-gesture-handler'
+
 import { name as appName, shareExtName } from '../../app.json'
 import {
-    createApp,
-    createShareUI,
-    NavigationContainerCreator,
+    createMainNavigator,
+    createShareNavigator,
+    NavigationContainerFactory,
 } from './navigation'
 import { UIDependencies } from './types'
 import LoadingScreen from './components/loading-screen'
@@ -33,14 +33,14 @@ export class UI {
         })
 
         const setupContainerComponent = (
-            containerCreator: NavigationContainerCreator,
+            containerCreator: NavigationContainerFactory,
         ) => () =>
-            class AbstractContainer extends Component<{}, State> {
+            class extends Component<{}, State> {
                 state: State = {}
 
                 async componentDidMount() {
                     const dependencies = await setupPromise
-                    this.setState(() => ({ dependencies }))
+                    this.setState({ dependencies })
                 }
 
                 render() {
@@ -48,21 +48,18 @@ export class UI {
                         return <LoadingScreen />
                     }
 
-                    const AppContainer = containerCreator(
-                        this.state.dependencies,
-                    )
-                    return <AppContainer />
+                    return containerCreator(this.state.dependencies)
                 }
             }
 
         AppRegistry.registerComponent(
             appName,
-            setupContainerComponent(createApp),
+            setupContainerComponent(createMainNavigator),
         )
 
         AppRegistry.registerComponent(
             shareExtName,
-            setupContainerComponent(createShareUI),
+            setupContainerComponent(createShareNavigator),
         )
     }
 

@@ -1,11 +1,6 @@
 import { UILogic, UIEvent, IncomingUIEvent } from 'ui-logic-core'
 
-import {
-    UIServices,
-    UITaskState,
-    UIStorageModules,
-    NavigationProps,
-} from 'src/ui/types'
+import { UIServices, UITaskState, UIStorageModules } from 'src/ui/types'
 import { storageKeys } from '../../../../../../app.json'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MetaTypeShape, MetaType } from 'src/features/meta-picker/types'
@@ -26,7 +21,7 @@ export type Event = UIEvent<{
     reload: { selected: string[] }
 }>
 
-export interface Props extends NavigationProps {
+export interface Props {
     onEntryPress: (item: MetaTypeShape) => Promise<void>
     storage: UIStorageModules<'metaPicker'>
     services: UIServices<'localStorage'>

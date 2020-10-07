@@ -3,25 +3,28 @@ import {
     UIEvent,
     IncomingUIEvent,
     UIEventHandler,
+    UIMutation,
 } from 'ui-logic-core'
 
 import {
     UITaskState,
     UIStorageModules,
     UIServices,
-    NavigationProps,
+    MainNavProps,
 } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { ReadabilityArticle } from 'src/services/readability/types'
 import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
-import { ReaderNavigationParams } from './types'
 import { Anchor, Highlight } from 'src/content-script/types'
-import { NoteEditorNavigationParams } from 'src/features/overview/ui/screens/note-editor/types'
-import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
 import { EditorMode } from 'src/features/page-editor/types'
+import { UIPageWithNotes } from 'src/features/overview/types'
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
+
+interface CreateHighlightArgs {
+    anchor: Anchor
+    renderHighlight: (h: Highlight) => void
+}
 
 export interface State {
     url: string
@@ -32,7 +35,6 @@ export interface State {
     isBookmarked: boolean
     isListed: boolean
     hasNotes: boolean
-    readerScrollPercent: number
     htmlSource?: string
     contentScriptSource?: string
     error?: Error
@@ -43,12 +45,11 @@ export interface State {
 export type Event = UIEvent<{
     reportError: null
     setError: { error?: Error }
-    setReaderScrollPercent: { percent: number }
     editHighlight: { highlightUrl: string }
-    createHighlight: { anchor: Anchor }
-    createAnnotation: { anchor: Anchor }
+    createHighlight: CreateHighlightArgs
+    createAnnotation: CreateHighlightArgs
     setTextSelection: { text?: string }
-    goToPageEditor: { mode: EditorMode }
+    navToPageEditor: { mode: EditorMode }
     toggleBookmark: null
     goBack: null
 }>
@@ -59,7 +60,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
     EventName
 >
 
-export interface Props extends NavigationProps {
+export interface Props extends MainNavProps<'Reader'> {
     storage: UIStorageModules<
         'reader' | 'overview' | 'pageEditor' | 'metaPicker'
     >
@@ -81,9 +82,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(): State {
-        const params = this.props.navigation.getParam(
-            NAV_PARAMS.READER,
-        ) as ReaderNavigationParams
+        const { params } = this.props.route
 
         if (!params?.url) {
             throw new Error("Navigation error: reader didn't receive URL")
@@ -99,7 +98,6 @@ export default class Logic extends UILogic<State, Event> {
             isListed: false,
             hasNotes: false,
             highlights: [],
-            readerScrollPercent: params.scrollPercent ?? 0,
         }
     }
 
@@ -240,10 +238,11 @@ export default class Logic extends UILogic<State, Event> {
         return this.emitMutation({ selectedText: { $set: selectedText } })
     }
 
-    createHighlight: EventHandler<'createHighlight'> = async ({
-        event: { anchor },
+    private _createHighlight = async ({
+        anchor,
+        renderHighlight,
         previousState,
-    }) => {
+    }: { previousState: State } & CreateHighlightArgs): Promise<Highlight> => {
         const { pageEditor } = this.props.storage.modules
 
         const { object } = await pageEditor.createAnnotation({
@@ -253,31 +252,41 @@ export default class Logic extends UILogic<State, Event> {
             body: anchor.quote,
         })
 
+        const newHighlight = { url: object.url, anchor }
+        renderHighlight(newHighlight)
+
         this.emitMutation({
             hasNotes: { $set: true },
             highlights: {
-                $apply: (state: Highlight[]) => [
-                    ...state,
-                    { url: object.url, anchor },
-                ],
+                $apply: (state: Highlight[]) => [...state, newHighlight],
             },
         })
+
+        return newHighlight
+    }
+
+    createHighlight: EventHandler<'createHighlight'> = async ({
+        event,
+        previousState,
+    }) => {
+        await this._createHighlight({ ...event, previousState })
     }
 
     createAnnotation: EventHandler<'createAnnotation'> = async ({
-        event: { anchor },
+        event,
         previousState,
     }) => {
+        const highlight = await this._createHighlight({
+            ...event,
+            previousState,
+        })
+
         this.props.navigation.navigate('NoteEditor', {
-            [NAV_PARAMS.NOTE_EDITOR]: {
-                mode: 'create',
-                highlightText: anchor.quote,
-                anchor,
-                previousRoute: 'Reader',
-                pageTitle: previousState.title,
-                pageUrl: previousState.url,
-                readerScrollPercent: previousState.readerScrollPercent,
-            } as NoteEditorNavigationParams,
+            mode: 'update',
+            highlightText: event.anchor.quote,
+            anchor: event.anchor,
+            pageUrl: previousState.url,
+            noteUrl: highlight.url,
         })
     }
 
@@ -296,41 +305,36 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         navigation.navigate('NoteEditor', {
-            [NAV_PARAMS.NOTE_EDITOR]: {
-                mode: 'update',
-                noteUrl: note.url,
-                highlightText: note.body,
-                noteText: note.comment,
-                anchor: note.selector,
-                previousRoute: 'Reader',
-                pageTitle: previousState.title,
-                pageUrl: previousState.url,
-                readerScrollPercent: previousState.readerScrollPercent,
-            } as NoteEditorNavigationParams,
+            mode: 'update',
+            noteUrl: note.url,
+            highlightText: note.body,
+            noteText: note.comment,
+            anchor: note.selector,
+            pageTitle: previousState.title,
+            pageUrl: previousState.url,
         })
     }
 
-    setReaderScrollPercent: EventHandler<'setReaderScrollPercent'> = ({
-        event: { percent },
-    }) => {
-        this.emitMutation({ readerScrollPercent: { $set: percent } })
+    goBack = this.props.navigation.goBack
+
+    private updatePageDataFlags = (incomingPage: UIPageWithNotes) => {
+        // Allow incoming page to go back up to Dashboard so that can also react to changes
+        this.props.route.params.updatePage(incomingPage)
+        this.emitMutation({
+            isTagged: { $set: incomingPage.tags?.length > 0 },
+            isListed: { $set: incomingPage.lists?.length > 0 },
+            hasNotes: { $set: incomingPage.notes?.length > 0 },
+        })
     }
 
-    goBack = () => {
-        this.props.navigation.navigate('Overview')
-    }
-
-    goToPageEditor: EventHandler<'goToPageEditor'> = ({
+    navToPageEditor: EventHandler<'navToPageEditor'> = ({
         event: { mode },
         previousState,
     }) => {
         this.props.navigation.navigate('PageEditor', {
-            [NAV_PARAMS.PAGE_EDITOR]: {
-                previousRoute: 'Reader',
-                readerScrollPercent: previousState.readerScrollPercent,
-                pageUrl: previousState.url,
-                mode,
-            } as PageEditorNavigationParams,
+            pageUrl: previousState.url,
+            mode,
+            updatePage: page => this.updatePageDataFlags(page),
         })
     }
 

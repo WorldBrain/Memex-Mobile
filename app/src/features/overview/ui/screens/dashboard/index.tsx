@@ -14,9 +14,8 @@ import {
 import throttle from 'lodash/throttle'
 
 import Logic, { State, Event, Props } from './logic'
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import styles from './styles'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
@@ -27,23 +26,31 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import SyncRibbon from '../../components/sync-ribbon'
-import { ReaderNavigationParams } from 'src/features/reader/ui/screens/reader/types'
-import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
-
-export default class Dashboard extends NavigationScreen<Props, State, Event> {
+export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
+    private unsubNavFocus!: () => void
 
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
-    private navToPageEditor = (page: UIPage, mode: EditorMode) => () => {
+    componentDidMount() {
+        super.componentDidMount()
+        this.unsubNavFocus = this.props.navigation.addListener('focus', () =>
+            this.processEvent('focusFromNavigation', this.props.route.params),
+        )
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount()
+        this.unsubNavFocus()
+    }
+
+    private navToPageEditor = ({ fullUrl }: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {
-            [NAV_PARAMS.PAGE_EDITOR]: {
-                selectedList: this.state.selectedListName,
-                pageUrl: page.fullUrl,
-                mode,
-            } as PageEditorNavigationParams,
+            pageUrl: fullUrl,
+            mode,
+            updatePage: page => this.processEvent('updatePage', { page }),
         })
     }
 
@@ -79,10 +86,9 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
 
     private initHandleReaderPress = ({ url, titleText }: UIPage) => () => {
         this.props.navigation.navigate('Reader', {
-            [NAV_PARAMS.READER]: {
-                url,
-                title: titleText,
-            } as ReaderNavigationParams,
+            url,
+            title: titleText,
+            updatePage: page => this.processEvent('updatePage', { page }),
         })
     }
 
@@ -128,9 +134,8 @@ export default class Dashboard extends NavigationScreen<Props, State, Event> {
         if (this.state.selectedListName === MOBILE_LIST_NAME) {
             return
         }
-        this.processEvent('setFilteredListName', {
-            name: MOBILE_LIST_NAME,
-        })
+        this.props.navigation.setParams({ selectedList: MOBILE_LIST_NAME })
+        this.processEvent('setFilteredListName', { name: MOBILE_LIST_NAME })
         this.processEvent('reload', { initList: MOBILE_LIST_NAME })
     }
 

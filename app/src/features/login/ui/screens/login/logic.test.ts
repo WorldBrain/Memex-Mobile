@@ -2,25 +2,21 @@ import expect from 'expect'
 
 import { storageKeys } from '../../../../../../app.json'
 import Logic, { State, Event } from './logic'
-import { makeStorageTestFactory } from 'src/index.tests'
-import { FakeNavigation } from 'src/tests/navigation'
-import { Services } from 'src/services/types'
+import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 
 describe('login UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    function setup(options: { services: Services; previousRoute?: string }) {
-        const navigation = new FakeNavigation()
-
+    function setup(options: TestDevice) {
         const logic = new Logic({
-            navigation: navigation as any,
+            navigation: options.navigation as any,
+            route: options.route as any,
             services: options.services,
-            previousRoute: (options.previousRoute as any) ?? 'Overview',
         })
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
-        return { logic, element, navigation }
+        return { logic, element }
     }
 
     it('should be able to change email input value', async context => {
@@ -52,26 +48,22 @@ describe('login UI logic tests', () => {
     })
 
     it('should nav back to prev route and set skip sync flag on cancel', async context => {
-        const previousRoute = 'testRoute'
-        const { element, navigation } = setup({ ...context, previousRoute })
+        const { element } = setup(context)
         const { localStorage } = context.services
 
-        expect(navigation.popRequests()).toEqual([])
+        expect(context.navigation.popRequests()).toEqual([])
         expect(await localStorage.get(storageKeys.skipAutoSync)).toBeFalsy()
 
         await element.processEvent('cancelLogin', null)
 
         expect(await localStorage.get(storageKeys.skipAutoSync)).toBe(true)
-        expect(navigation.popRequests()).toEqual([
-            { type: 'navigate', target: previousRoute },
-        ])
+        expect(context.navigation.popRequests()).toEqual([{ type: 'goBack' }])
     })
 
     it('should nav back to prev route on submit success', async context => {
-        const previousRoute = 'testRoute'
-        const { element, navigation } = setup({ ...context, previousRoute })
+        const { element } = setup(context)
 
-        expect(navigation.popRequests()).toEqual([])
+        expect(context.navigation.popRequests()).toEqual([])
 
         element.processEvent('changeEmailInput', { value: 'test@test.com' })
         element.processEvent('changePasswordInput', { value: 'password' })
@@ -82,16 +74,13 @@ describe('login UI logic tests', () => {
         await submitP
         expect(element.state.loginState).toEqual('done')
 
-        expect(navigation.popRequests()).toEqual([
-            { type: 'navigate', target: previousRoute },
-        ])
+        expect(context.navigation.popRequests()).toEqual([{ type: 'goBack' }])
     })
 
     it('should set error state and not navigate on submit failure', async context => {
-        const previousRoute = 'testRoute'
-        const { element, navigation } = setup({ ...context, previousRoute })
+        const { element } = setup(context)
 
-        expect(navigation.popRequests()).toEqual([])
+        expect(context.navigation.popRequests()).toEqual([])
 
         element.processEvent('changeEmailInput', { value: 'test@test.com' })
         // NOTE: any password that isn't `password` will fail here
@@ -103,6 +92,6 @@ describe('login UI logic tests', () => {
         await submitP
         expect(element.state.loginState).toEqual('error')
 
-        expect(navigation.popRequests()).toEqual([])
+        expect(context.navigation.popRequests()).toEqual([])
     })
 })

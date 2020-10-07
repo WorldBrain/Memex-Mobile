@@ -1,10 +1,8 @@
 import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
-import { makeStorageTestFactory } from 'src/index.tests'
-import { FakeNavigation } from 'src/tests/navigation'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
-import { Anchor } from 'src/content-script/types'
-import { MockSentry } from 'src/services/error-tracking/index.tests'
+import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
+import { FakeRoute } from 'src/tests/navigation'
+import { Anchor, Highlight } from 'src/content-script/types'
 
 const TEST_URL_1 = 'getmemex.com'
 const TEST_TITLE_1 = 'test'
@@ -16,15 +14,15 @@ const TEST_ANCHOR_1: Anchor = {
 describe('reader screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    function setup(
-        options: Omit<Props, 'navigation'> & { navigation: FakeNavigation },
-    ) {
+    function setup(options: TestDevice) {
         const logic = new Logic({
             ...options,
-            navigation: {
-                ...options.navigation,
-                getParam: () => ({ url: TEST_URL_1, title: TEST_TITLE_1 }),
-            } as any,
+            loadContentScript: async () => '',
+            navigation: options.navigation as any,
+            route: new FakeRoute({
+                url: TEST_URL_1,
+                title: TEST_TITLE_1,
+            }) as any,
         })
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
@@ -98,12 +96,25 @@ describe('reader screen UI logic tests', () => {
         const { element } = setup(dependencies)
         const { pageEditor } = dependencies.storage.modules
 
+        let renderedHighlight: Highlight | null = null
+        const mockRenderHighlight = (h: Highlight) => {
+            renderedHighlight = h
+        }
+
         expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([])
         expect(element.state.hasNotes).toBe(false)
         expect(element.state.highlights).toEqual([])
 
-        await element.processEvent('createHighlight', { anchor: TEST_ANCHOR_1 })
+        expect(renderedHighlight).toBeNull()
+        await element.processEvent('createHighlight', {
+            anchor: TEST_ANCHOR_1,
+            renderHighlight: mockRenderHighlight,
+        })
 
+        expect(renderedHighlight).toEqual({
+            anchor: TEST_ANCHOR_1,
+            url: expect.any(String),
+        })
         expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([
             expect.objectContaining({
                 pageUrl: TEST_URL_1,
@@ -120,27 +131,48 @@ describe('reader screen UI logic tests', () => {
         ])
     })
 
-    it('should be able to signal intent to create an annot from a text selection', async dependencies => {
+    it('should be able to create an annotation from a text selection', async dependencies => {
         const { element, navigation } = setup(dependencies)
+        const { pageEditor } = dependencies.storage.modules
+
+        let renderedHighlight: Highlight | null = null
+        const mockRenderHighlight = (h: Highlight) => {
+            renderedHighlight = h
+        }
 
         await element.processEvent('createAnnotation', {
             anchor: TEST_ANCHOR_1,
+            renderHighlight: mockRenderHighlight,
         })
 
+        expect(renderedHighlight).toEqual({
+            anchor: TEST_ANCHOR_1,
+            url: expect.any(String),
+        })
+        expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([
+            expect.objectContaining({
+                pageUrl: TEST_URL_1,
+                pageTitle: TEST_TITLE_1,
+                selector: TEST_ANCHOR_1,
+                body: TEST_ANCHOR_1.quote,
+            }),
+        ])
+        expect(element.state.hasNotes).toBe(true)
+        expect(element.state.highlights).toEqual([
+            expect.objectContaining({
+                anchor: TEST_ANCHOR_1,
+            }),
+        ])
         expect(navigation.popRequests()).toEqual([
             {
                 type: 'navigate',
                 target: 'NoteEditor',
                 params: {
-                    [NAV_PARAMS.NOTE_EDITOR]: {
-                        mode: 'create',
-                        highlightText: TEST_ANCHOR_1.quote,
-                        anchor: TEST_ANCHOR_1,
-                        previousRoute: 'Reader',
-                        pageTitle: TEST_TITLE_1,
-                        pageUrl: Logic.formUrl(TEST_URL_1),
-                        readerScrollPercent: 0,
-                    },
+                    mode: 'update',
+                    highlightText: TEST_ANCHOR_1.quote,
+                    anchor: TEST_ANCHOR_1,
+                    pageUrl: Logic.formUrl(TEST_URL_1),
+                    noteUrl: renderedHighlight!.url,
                 },
             },
         ])
@@ -169,32 +201,16 @@ describe('reader screen UI logic tests', () => {
                 type: 'navigate',
                 target: 'NoteEditor',
                 params: {
-                    [NAV_PARAMS.NOTE_EDITOR]: {
-                        mode: 'update',
-                        noteUrl: object.url,
-                        highlightText: testNote.body,
-                        noteText: testNote.comment,
-                        anchor: testNote.selector,
-                        previousRoute: 'Reader',
-                        pageTitle: TEST_TITLE_1,
-                        pageUrl: Logic.formUrl(TEST_URL_1),
-                        readerScrollPercent: 0,
-                    },
+                    mode: 'update',
+                    noteUrl: object.url,
+                    highlightText: testNote.body,
+                    noteText: testNote.comment,
+                    anchor: testNote.selector,
+                    pageTitle: TEST_TITLE_1,
+                    pageUrl: Logic.formUrl(TEST_URL_1),
                 },
             },
         ])
-    })
-
-    it('should be able to set reader scroll state', dependencies => {
-        const { element } = setup(dependencies)
-
-        const step = 1
-
-        for (let percent = step; percent < 1; percent += step) {
-            expect(element.state.readerScrollPercent).toEqual(percent - step)
-            element.processEvent('setReaderScrollPercent', { percent })
-            expect(element.state.readerScrollPercent).toEqual(percent)
-        }
     })
 
     it('should be able to nav back to overview', async dependencies => {
@@ -202,46 +218,6 @@ describe('reader screen UI logic tests', () => {
 
         expect(navigation.popRequests()).toEqual([])
         element.processEvent('goBack', null)
-        expect(navigation.popRequests()).toEqual([
-            {
-                type: 'navigate',
-                target: 'Overview',
-            },
-        ])
+        expect(navigation.popRequests()).toEqual([{ type: 'goBack' }])
     })
-
-    it('should be able to nav to page editor with state', async dependencies => {
-        const { element, navigation } = setup(dependencies)
-
-        expect(navigation.popRequests()).toEqual([])
-
-        const readerScrollPercent = 0.3
-        const navRequests: any[] = []
-
-        // Change default reader scroll state to see if it appears in nav params
-        element.processEvent('setReaderScrollPercent', {
-            percent: readerScrollPercent,
-        })
-
-        for (const mode of ['collections', 'notes', 'tags'] as any[]) {
-            element.processEvent('goToPageEditor', { mode })
-
-            navRequests.push({
-                type: 'navigate',
-                target: 'PageEditor',
-                params: {
-                    [NAV_PARAMS.PAGE_EDITOR]: {
-                        mode,
-                        previousRoute: 'Reader',
-                        readerScrollPercent,
-                        pageUrl: Logic.formUrl(TEST_URL_1),
-                    },
-                },
-            })
-        }
-
-        expect(navigation.popRequests()).toEqual(navRequests)
-    })
-
-    it('should be able to ')
 })

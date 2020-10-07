@@ -1,16 +1,8 @@
 import React from 'react'
-import {
-    createSwitchNavigator,
-    // NOTE: Sadly stack navigators seem to stop the share extension working :S
-    // createStackNavigator,
-    createAppContainer,
-    NavigationContainer,
-    NavigationScreenProp,
-    NavigationRoute,
-} from 'react-navigation'
+import { createStackNavigator } from '@react-navigation/stack'
+import { NavigationContainer } from '@react-navigation/native'
 
 import { loadContentScript } from 'src/features/reader/utils/load-content-script'
-
 import { UIDependencies } from '../types'
 import ShareModal from 'src/features/page-share/ui/screens/share-modal'
 import ListsFilter from 'src/features/overview/ui/screens/lists-filter'
@@ -25,87 +17,72 @@ import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
 import SettingsMenu from 'src/features/settings-menu/ui/screens/settings-menu'
 import Reader from 'src/features/reader/ui/screens/reader'
 import Login from 'src/features/login/ui/screens/login'
+import { MainNavigatorParamList, ShareNavigatorParamList } from './types'
+import { lightTheme } from './color-themes'
 
-export type NavigationContainerCreator = (
-    deps: UIDependencies,
-) => NavigationContainer
+export type NavigationContainerFactory = (deps: UIDependencies) => JSX.Element
 
-// const OverviewNavigator = createStackNavigator(
-//     {
-//         Overview: { screen: Overview },
-//         PageEditor: { screen: PageEditor },
-//     },
-//     { headerMode: 'none' },
-// )
+const MainStack = createStackNavigator<MainNavigatorParamList>()
+const ShareStack = createStackNavigator<ShareNavigatorParamList>()
 
-const createMainNavigator: NavigationContainerCreator = deps =>
-    createSwitchNavigator(
-        {
-            Onboarding: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <Onboarding {...props} {...deps} />,
-            PageEditor: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <PageEditor {...props} {...deps} />,
-            NoteEditor: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <NoteEditor {...props} {...deps} />,
-            Overview: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <Dashboard {...props} {...deps} />,
-            Login: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <Login {...props} {...deps} previousRoute="Overview" />,
-            ListsFilter: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <ListsFilter {...props} {...deps} />,
-            DebugConsole: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <DebugConsole {...props} {...deps} />,
-            MVPOverview: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <MVPOverview {...props} {...deps} />,
-            SettingsMenu: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <SettingsMenu {...props} {...deps} />,
-            Sync: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <Sync {...props} {...deps} />,
-            Pairing: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <Pairing {...props} {...deps} />,
-            Reader: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => (
-                <Reader
-                    {...props}
-                    {...deps}
-                    loadContentScript={loadContentScript}
-                />
-            ),
-        },
-        {
-            initialRouteName: 'Overview',
-        },
-    )
+export const createMainNavigator: NavigationContainerFactory = deps => (
+    <NavigationContainer theme={lightTheme}>
+        <MainStack.Navigator initialRouteName="Dashboard" headerMode="none">
+            <MainStack.Screen name="Onboarding">
+                {props => <Onboarding {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="PageEditor">
+                {props => <PageEditor {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="NoteEditor">
+                {props => <NoteEditor {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="Dashboard">
+                {props => <Dashboard {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="Login">
+                {props => <Login {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="ListsFilter">
+                {props => <ListsFilter {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="DebugConsole">
+                {props => <DebugConsole {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="MVPOverview">
+                {props => <MVPOverview {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="SettingsMenu">
+                {props => <SettingsMenu {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="Sync">
+                {props => <Sync {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="Pairing">
+                {props => <Pairing {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="Reader">
+                {props => (
+                    <Reader
+                        {...props}
+                        {...deps}
+                        loadContentScript={loadContentScript}
+                    />
+                )}
+            </MainStack.Screen>
+        </MainStack.Navigator>
+    </NavigationContainer>
+)
 
-const createShareNavigator: NavigationContainerCreator = deps =>
-    createSwitchNavigator(
-        {
-            ShareModal: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <ShareModal {...props} {...deps} />,
-            Login: (props: {
-                navigation: NavigationScreenProp<NavigationRoute>
-            }) => <Login {...props} {...deps} previousRoute="ShareModal" />,
-        },
-        {
-            initialRouteName: 'ShareModal',
-        },
-    )
-
-export const createApp: NavigationContainerCreator = deps =>
-    createAppContainer(createMainNavigator(deps))
-
-export const createShareUI: NavigationContainerCreator = deps =>
-    createAppContainer(createShareNavigator(deps))
+export const createShareNavigator: NavigationContainerFactory = deps => (
+    <NavigationContainer theme={lightTheme}>
+        <ShareStack.Navigator initialRouteName="ShareModal" headerMode="none">
+            <ShareStack.Screen name="ShareModal">
+                {props => <ShareModal {...props} {...deps} />}
+            </ShareStack.Screen>
+            <ShareStack.Screen name="Login">
+                {props => <Login {...props} {...deps} />}
+            </ShareStack.Screen>
+        </ShareStack.Navigator>
+    </NavigationContainer>
+)

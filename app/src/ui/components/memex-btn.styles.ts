@@ -9,6 +9,7 @@ export default EStyleSheet.create({
         borderRadius: 25,
         width: '85%',
         maxHeight: '3.5rem',
+        paddingHorizontal: 20,
     },
     buttonSecondary: {
         backgroundColor: '#5671CF',

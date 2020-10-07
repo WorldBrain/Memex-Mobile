@@ -3,7 +3,7 @@ import { View, Linking } from 'react-native'
 import { WebView, WebViewNavigation } from 'react-native-webview'
 
 import Logic, { State, Event, Props } from './logic'
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import ActionBar from '../../components/action-bar'
 import ReaderWebView from '../../components/web-view'
 import ErrorView from '../../components/error-view'
@@ -12,9 +12,9 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
 import { Message as WebViewMessage, Anchor } from 'src/content-script/types'
 
-export default class Reader extends NavigationScreen<Props, State, Event> {
+export default class Reader extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
     private scrollTimeout: number = 0
@@ -38,17 +38,6 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
     private runFnInWebView = (fnName: RemoteFnName, arg?: any) =>
         this.webView.injectJavaScript(this.constructJsRemoteFnCall(fnName, arg))
 
-    private async createHighlightThenRender(anchor: Anchor) {
-        await this.processEvent('createHighlight', { anchor })
-
-        const latestIndex = this.state.highlights.length - 1
-
-        this.runFnInWebView(
-            'renderHighlight',
-            this.state.highlights[latestIndex],
-        )
-    }
-
     private handleWebViewMessageReceived = (serialized: string) => {
         let message: WebViewMessage
         try {
@@ -65,18 +54,20 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                     text: message.payload,
                 })
             case 'highlight':
-                return this.createHighlightThenRender(message.payload)
+                return this.processEvent('createHighlight', {
+                    anchor: message.payload,
+                    renderHighlight: h =>
+                        this.runFnInWebView('renderHighlight', h),
+                })
             case 'annotation':
                 return this.processEvent('createAnnotation', {
                     anchor: message.payload,
+                    renderHighlight: h =>
+                        this.runFnInWebView('renderHighlight', h),
                 })
             case 'highlightClicked':
                 return this.processEvent('editHighlight', {
                     highlightUrl: message.payload,
-                })
-            case 'scrollPercent':
-                return this.processEvent('setReaderScrollPercent', {
-                    percent: message.payload,
                 })
             default:
                 console.warn(
@@ -119,17 +110,6 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
         return `${this.state.contentScriptSource}; ${renderHighlightsCall}`
     }
 
-    // Wait a bit after the HTML loads before scrolling to try and give whatever JS a chance to render
-    private sendScrollState = () => {
-        this.scrollTimeout = setTimeout(
-            () =>
-                this.runFnInWebView('setScrollPercent', {
-                    percent: this.state.readerScrollPercent,
-                }),
-            500,
-        )
-    }
-
     private renderLoading = () => (
         <View style={[styles.webView, styles.webViewLoader]}>
             <LoadingBalls />
@@ -164,7 +144,6 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                 onNavigationStateChange={this.handleNavStateChange}
                 startInLoadingState
                 renderLoading={this.renderLoading}
-                onLoadEnd={this.sendScrollState}
                 // This flag needs to be set to afford text selection on iOS.
                 //   https://github.com/react-native-community/react-native-webview/issues/1275
                 allowsLinkPreview
@@ -191,15 +170,15 @@ export default class Reader extends NavigationScreen<Props, State, Event> {
                         this.processEvent('toggleBookmark', null)
                     }
                     onListBtnPress={() =>
-                        this.processEvent('goToPageEditor', {
+                        this.processEvent('navToPageEditor', {
                             mode: 'collections',
                         })
                     }
                     onCommentBtnPress={() =>
-                        this.processEvent('goToPageEditor', { mode: 'notes' })
+                        this.processEvent('navToPageEditor', { mode: 'notes' })
                     }
                     onTagBtnPress={() =>
-                        this.processEvent('goToPageEditor', { mode: 'tags' })
+                        this.processEvent('navToPageEditor', { mode: 'tags' })
                     }
                 />
             </View>

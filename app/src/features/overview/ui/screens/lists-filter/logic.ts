@@ -1,9 +1,8 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
-import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
+import { UILogic, UIEvent } from 'ui-logic-core'
 
-import { NavigationProps } from 'src/ui/types'
+import { MainNavProps } from 'src/ui/types'
 
-export interface Props extends NavigationProps {}
+export interface Props extends MainNavProps<'ListsFilter'> {}
 
 export interface State {}
 

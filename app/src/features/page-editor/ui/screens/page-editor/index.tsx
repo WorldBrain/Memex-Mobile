@@ -1,6 +1,7 @@
 import React from 'react'
+import { View } from 'react-native'
 
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import MainLayout from '../../components/main-layout'
 import Footer from '../../components/footer'
@@ -8,18 +9,30 @@ import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
-import { NoteEditorNavigationParams } from 'src/features/overview/ui/screens/note-editor/types'
-import { ReaderNavigationParams } from 'src/features/reader/ui/screens/reader/types'
-import { DashboardNavigationParams } from 'src/features/overview/ui/screens/dashboard/types'
+import LoadingBalls from 'src/ui/components/loading-balls'
+import styles from './styles'
 
-export default class PageEditorScreen extends NavigationScreen<
+export default class PageEditorScreen extends StatefulUIElement<
     Props,
     State,
     Event
 > {
+    private unsubNavFocus!: () => void
+
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
+    }
+
+    componentDidMount() {
+        super.componentDidMount()
+        this.unsubNavFocus = this.props.navigation.addListener('focus', () =>
+            this.processEvent('focusFromNavigation', this.props.route.params),
+        )
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount()
+        this.unsubNavFocus()
     }
 
     private handleEntryPress = (entry: MetaTypeShape) => {
@@ -37,37 +50,9 @@ export default class PageEditorScreen extends NavigationScreen<
 
         return () =>
             this.props.navigation.navigate('NoteEditor', {
-                [NAV_PARAMS.NOTE_EDITOR]: {
-                    selectedList: (this.logic as Logic).selectedList,
-                    pageUrl: this.state.page.fullUrl,
-                    previousRoute: 'PageEditor',
-                    __prevPreviousRoute: 'Reader',
-                    mode: 'create',
-                } as NoteEditorNavigationParams,
+                pageUrl: this.state.page.fullUrl,
+                mode: 'create',
             })
-    }
-
-    private navBackToDashboard = () => {
-        const { navigate } = this.props.navigation
-        const logic = this.logic as Logic
-
-        switch (logic.previousRoute) {
-            case 'Reader':
-                return navigate('Reader', {
-                    [NAV_PARAMS.READER]: {
-                        url: this.state.page.url,
-                        title: this.state.page.titleText,
-                        scrollPercent: logic.readerScrollPercent,
-                    } as ReaderNavigationParams,
-                })
-            case 'Dashboard':
-            default:
-                return navigate('Overview', {
-                    [NAV_PARAMS.DASHBOARD]: {
-                        selectedList: (this.logic as Logic).selectedList,
-                    } as DashboardNavigationParams,
-                })
-        }
     }
 
     private renderNotes() {
@@ -77,16 +62,11 @@ export default class PageEditorScreen extends NavigationScreen<
                     this.processEvent('confirmNoteDelete', { url: n.url })}
                 initNoteEdit={note => () =>
                     this.props.navigation.navigate('NoteEditor', {
-                        [NAV_PARAMS.NOTE_EDITOR]: {
-                            selectedList: (this.logic as Logic).selectedList,
-                            pageUrl: this.state.page.fullUrl,
-                            highlightText: note.noteText,
-                            noteText: note.commentText,
-                            previousRoute: 'PageEditor',
-                            __prevPreviousRoute: 'Reader',
-                            noteUrl: note.url,
-                            mode: 'update',
-                        } as NoteEditorNavigationParams,
+                        pageUrl: this.state.page.fullUrl,
+                        highlightText: note.noteText,
+                        noteText: note.commentText,
+                        noteUrl: note.url,
+                        mode: 'update',
                     })}
                 initNotePress={n => () =>
                     this.processEvent('toggleNotePress', { url: n.url })}
@@ -116,7 +96,11 @@ export default class PageEditorScreen extends NavigationScreen<
 
     private renderEditor() {
         if (this.state.loadState !== 'done') {
-            return null
+            return (
+                <View style={styles.loadingContainer}>
+                    <LoadingBalls />
+                </View>
+            )
         }
 
         switch (this.state.mode) {
@@ -133,7 +117,7 @@ export default class PageEditorScreen extends NavigationScreen<
         return (
             <MainLayout
                 {...this.state.page}
-                onBackPress={this.navBackToDashboard}
+                onBackPress={() => this.processEvent('goBack', null)}
                 onAddPress={this.initHandleAddNotePress()}
                 titleText={this.state.page.pageUrl}
             >

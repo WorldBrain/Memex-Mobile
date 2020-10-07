@@ -14,17 +14,19 @@ import { Services } from './services/types'
 import { LocalStorageService } from './services/local-storage'
 import { MockSentry } from './services/error-tracking/index.tests'
 import { ErrorTrackingService } from './services/error-tracking'
-import { FakeNavigation } from './tests/navigation'
+import { FakeNavigation, FakeRoute } from './tests/navigation'
 import { MockSettingsStorage } from './features/settings/storage/mock-storage'
 import { MockKeychainPackage } from './services/keychain/mock-keychain-package'
 import { registerSingleDeviceSyncTests } from './services/sync/index.tests'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
+import { RouteProp } from '@react-navigation/native'
 
 export interface TestDevice {
     storage: Storage
     services: Services
-    navigation: FakeNavigation
     auth: MemoryAuthService
+    navigation: FakeNavigation
+    route: RouteProp<any, any>
 }
 export type MultiDeviceTestFunction = (
     context: MultiDeviceTestContext,
@@ -97,6 +99,7 @@ export function makeStorageTestFactory() {
                     const signalTransportFactory = lazyMemorySignalTransportFactory()
                     const sharedSyncLog = await createMemorySharedSyncLog()
 
+                    const route = new FakeRoute()
                     const navigation = new FakeNavigation()
                     const auth = new MemoryAuthService()
                     const localStorage = new LocalStorageService({
@@ -130,6 +133,7 @@ export function makeStorageTestFactory() {
                             storage,
                             services,
                             navigation,
+                            route: route as any,
                             auth,
                         })
                     } finally {
@@ -172,6 +176,7 @@ export function makeMultiDeviceTestFactory() {
                     },
                 })
 
+                const route = new FakeRoute()
                 const navigation = new FakeNavigation()
                 const auth = new MemoryAuthService()
                 const localStorage = new LocalStorageService({
@@ -200,7 +205,13 @@ export function makeMultiDeviceTestFactory() {
                 })
                 services.sync.initialSync.wrtc = wrtc
 
-                const device = { storage, services, auth, navigation }
+                const device = {
+                    storage,
+                    services,
+                    auth,
+                    navigation,
+                    route: route as any,
+                }
                 createdDevices.push(device)
                 return device
             }

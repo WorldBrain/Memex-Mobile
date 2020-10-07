@@ -1,6 +1,4 @@
-import { NavigationProps } from '../types'
-import { NAV_PARAMS } from './constants'
-import { ReaderNavigationParams } from 'src/features/reader/ui/screens/reader/types'
+import { MainNavProps } from '../types'
 
 export interface DeepLinkParams {
     routeName: string
@@ -22,7 +20,9 @@ export function deriveParams(link: string): DeepLinkParams {
     return { routeName, routeParam }
 }
 
-export function handleDeepLinkNav(args: { link: string } & NavigationProps) {
+export function handleDeepLinkNav(
+    args: { link: string } & MainNavProps<'Reader'>,
+) {
     const { routeName, routeParam } = deriveParams(args.link)
 
     console.log('DEEP LINK ROUTE:', routeName)
@@ -33,9 +33,8 @@ export function handleDeepLinkNav(args: { link: string } & NavigationProps) {
     switch (routeName) {
         case 'reader':
             navigate('Reader', {
-                [NAV_PARAMS.READER]: {
-                    url: routeParam,
-                } as ReaderNavigationParams,
+                url: routeParam,
+                title: 'Hi',
             })
             break
         default:

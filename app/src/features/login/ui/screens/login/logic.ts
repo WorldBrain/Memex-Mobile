@@ -1,7 +1,7 @@
 import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
 
 import { storageKeys } from '../../../../../../app.json'
-import { UITaskState, UIServices, NavigationProps } from 'src/ui/types'
+import { UITaskState, UIServices, MainNavProps } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -23,8 +23,7 @@ export type Event = UIEvent<{
     cancelLogin: null
 }>
 
-export interface Props extends NavigationProps {
-    previousRoute: 'Overview' | 'ShareModal'
+export interface Props extends MainNavProps<'Login'> {
     services: UIServices<'auth' | 'localStorage'>
 }
 
@@ -53,7 +52,7 @@ export default class Logic extends UILogic<State, Event> {
         const { localStorage } = this.props.services
 
         await localStorage.set(storageKeys.skipAutoSync, true)
-        this.navBackToPrevRoute()
+        this.props.navigation.goBack()
     }
 
     submitLogin: EventHandler<'submitLogin'> = async ({
@@ -66,11 +65,8 @@ export default class Logic extends UILogic<State, Event> {
             'loginState',
             async () => {
                 await auth.loginWithEmailAndPassword(email, password)
-                this.navBackToPrevRoute()
+                this.props.navigation.goBack()
             },
         )
     }
-
-    private navBackToPrevRoute = () =>
-        this.props.navigation.navigate(this.props.previousRoute)
 }

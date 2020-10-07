@@ -1,16 +1,9 @@
 import { Alert } from 'react-native'
 
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
-import { NavigationProps, UIStorageModules, UITaskState } from 'src/ui/types'
+import { MainNavProps, UIStorageModules, UITaskState } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
-import {
-    NoteEditorNavigationParams,
-    NoteEditMode,
-    PreviousRoute,
-} from './types'
-import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
-import { ReaderNavigationParams } from 'src/features/reader/ui/screens/reader/types'
+import { NoteEditMode } from './types'
 import { Anchor } from 'src/content-script/types'
 
 export interface State {
@@ -29,31 +22,24 @@ export type Event = UIEvent<{
     setShowAllText: { show: boolean }
 }>
 
-export interface Props extends NavigationProps {
+export interface Props extends MainNavProps<'NoteEditor'> {
     storage: UIStorageModules<'metaPicker' | 'pageEditor'>
 }
 
 export default class Logic extends UILogic<State, Event> {
     static HIGHLIGHT_MAX_LINES = 4
 
-    /** TODO: This is a hack - fix the navigation lib so we don't have to manage this state */
-    __prevPreviousRoute?: string
-    previousRoute: PreviousRoute
-    readerScrollPercent?: number
     highlightAnchor?: Anchor
     pageUrl: string
     pageTitle?: string
     noteUrl?: string
     mode: NoteEditMode
     initNoteText: string
-    selectedList?: string
 
     constructor(private props: Props) {
         super()
 
-        const params = props.navigation.getParam(
-            NAV_PARAMS.NOTE_EDITOR,
-        ) as NoteEditorNavigationParams
+        const { params } = props.route
 
         this.mode = params.mode
         this.highlightAnchor = params.anchor
@@ -61,16 +47,10 @@ export default class Logic extends UILogic<State, Event> {
         this.pageTitle = params.pageTitle
         this.noteUrl = params.noteUrl
         this.initNoteText = params.noteText ?? ''
-        this.selectedList = params.selectedList
-        this.previousRoute = params.previousRoute
-        this.__prevPreviousRoute = params.__prevPreviousRoute
-        this.readerScrollPercent = params.readerScrollPercent
     }
 
     getInitialState(): State {
-        const params = this.props.navigation.getParam(
-            NAV_PARAMS.NOTE_EDITOR,
-        ) as NoteEditorNavigationParams
+        const { params } = this.props.route
 
         return {
             noteText: params.noteText ?? '',
@@ -80,30 +60,7 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    private navigateBack = () => {
-        const { navigate } = this.props.navigation
-
-        switch (this.previousRoute) {
-            case 'Reader':
-                return navigate('Reader', {
-                    [NAV_PARAMS.READER]: {
-                        url: this.pageUrl,
-                        title: this.pageTitle,
-                        scrollPercent: this.readerScrollPercent,
-                    } as ReaderNavigationParams,
-                })
-            case 'PageEditor':
-            default:
-                return navigate('PageEditor', {
-                    [NAV_PARAMS.PAGE_EDITOR]: {
-                        mode: 'notes',
-                        pageUrl: this.pageUrl,
-                        selectedList: this.selectedList,
-                        previousRoute: this.__prevPreviousRoute,
-                    } as PageEditorNavigationParams,
-                })
-        }
-    }
+    private navigateBack = () => this.props.navigation.goBack()
 
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
         if (previousState.noteText?.trim() !== this.initNoteText.trim()) {

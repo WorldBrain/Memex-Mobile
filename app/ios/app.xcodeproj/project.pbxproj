@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* appTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* appTests.m */; };
 		0C5C83EF62BA4E6CB160D14D /* Poppins-Italic.woff in Resources */ = {isa = PBXBuildFile; fileRef = 1D18BAB8C4114A3AAB6C6013 /* Poppins-Italic.woff */; };

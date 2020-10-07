@@ -1,12 +1,16 @@
 import React from 'react'
 
-import { NavigationScreen } from 'src/ui/types'
+import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import Login from '../../components/login'
 
-export default class LoginScreen extends NavigationScreen<Props, State, Event> {
+export default class LoginScreen extends StatefulUIElement<
+    Props,
+    State,
+    Event
+> {
     constructor(props: Props) {
-        super(props, { logic: new Logic(props) })
+        super(props, new Logic(props))
     }
 
     render() {

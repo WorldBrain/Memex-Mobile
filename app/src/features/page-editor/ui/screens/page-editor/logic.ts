@@ -5,9 +5,8 @@ import { VALID_TAG_PATTERN } from '@worldbrain/memex-common/lib/storage/constant
 import { storageKeys } from '../../../../../../app.json'
 import { UIPageWithNotes as Page, UINote } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import {
-    NavigationProps,
+    MainNavProps,
     UIStorageModules,
     UITaskState,
     UIServices,
@@ -15,10 +14,9 @@ import {
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
-import { PageEditorNavigationParams } from 'src/features/page-editor/ui/screens/page-editor/types'
-import { PreviousRoute } from './types'
 import { updateSuggestionsCache } from 'src/features/page-editor/utils'
 import { INIT_SUGGESTIONS_LIMIT } from 'src/features/meta-picker/ui/screens/meta-picker/constants'
+import { MainNavigatorParamList } from 'src/ui/navigation/types'
 
 export interface State {
     loadState: UITaskState
@@ -32,27 +30,20 @@ export type Event = UIEvent<{
     createEntry: { name: string }
     confirmNoteDelete: { url: string }
     saveNote: { text: string }
+    focusFromNavigation: MainNavigatorParamList['PageEditor']
+    goBack: null
 }>
 
-export interface Props extends NavigationProps {
+export interface Props extends MainNavProps<'PageEditor'> {
     services: UIServices<'localStorage'>
     storage: UIStorageModules<'metaPicker' | 'pageEditor' | 'overview'>
 }
 
 export default class Logic extends UILogic<State, Event> {
-    selectedList: string
-    previousRoute: PreviousRoute
-    readerScrollPercent?: number
-
     constructor(private props: Props) {
         super()
 
-        const params = props.navigation.getParam(
-            NAV_PARAMS.PAGE_EDITOR,
-        ) as PageEditorNavigationParams
-        this.selectedList = params.selectedList ?? MOBILE_LIST_NAME
-        this.previousRoute = params.previousRoute ?? 'Dashboard'
-        this.readerScrollPercent = params.readerScrollPercent
+        const { params } = props.route
     }
 
     getInitialState(): State {
@@ -63,11 +54,15 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+    async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
+        const { params } = this.props.route
+        await this.focusFromNavigation({ previousState, event: params })
+    }
+
+    async focusFromNavigation({
+        event: params,
+    }: IncomingUIEvent<State, Event, 'focusFromNavigation'>) {
         await loadInitial<State>(this, async () => {
-            const params = this.props.navigation.getParam(
-                NAV_PARAMS.PAGE_EDITOR,
-            ) as PageEditorNavigationParams
             const page = await this.loadPageData(params.pageUrl)
 
             this.emitMutation({
@@ -87,6 +82,7 @@ export default class Logic extends UILogic<State, Event> {
 
         const notes = await pageEditor.findNotes({ url })
         const tags = await metaPicker.findTagsByPage({ url })
+        const lists = await metaPicker.findListsByPage({ url })
 
         const noteTags = new Map<string, string[]>()
 
@@ -105,7 +101,7 @@ export default class Logic extends UILogic<State, Event> {
             titleText: storedPage.fullTitle,
             date: 'a minute ago',
             tags: tags.map(t => t.name),
-            lists: [],
+            lists: lists.map(l => l.name),
             pageUrl: storedPage.url,
             // TODO: unify this map fn with the identical one in DashboardLogic
             notes: notes.map<UINote>(note => ({
@@ -293,6 +289,11 @@ export default class Logic extends UILogic<State, Event> {
                 ],
             }),
         }
+    }
+
+    goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
+        this.props.route.params.updatePage(previousState.page)
+        this.props.navigation.goBack()
     }
 
     private _updateListSuggestionsCache(args: {

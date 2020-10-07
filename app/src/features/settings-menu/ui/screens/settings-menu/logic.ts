@@ -1,6 +1,6 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { UITaskState, UIServices, NavigationProps } from 'src/ui/types'
+import { UITaskState, UIServices, MainNavProps } from 'src/ui/types'
 import { executeUITask, loadInitial } from 'src/ui/utils'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 
@@ -17,8 +17,8 @@ export type Event = UIEvent<{
     clearSyncError: null
 }>
 
-export interface Props extends NavigationProps {
-    services: UIServices<'localStorage' | 'sync' | 'errorTracker'>
+export interface Props extends MainNavProps<'SettingsMenu'> {
+    services: UIServices<'localStorage' | 'sync' | 'auth' | 'errorTracker'>
 }
 
 export default class Logic extends UILogic<State, Event> {

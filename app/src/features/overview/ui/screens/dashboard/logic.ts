@@ -2,29 +2,25 @@ import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 import { AppState, AppStateStatus } from 'react-native'
 
 import { storageKeys } from '../../../../../../app.json'
-import {
-    UIPageWithNotes as UIPage,
-    UINote,
-    DashboardFilterType,
-} from 'src/features/overview/types'
+import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
 import {
     UITaskState,
     UIStorageModules,
     UIServices,
-    NavigationProps,
+    MainNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
-import { DashboardNavigationParams } from './types'
-import { NAV_PARAMS } from 'src/ui/navigation/constants'
 import { TAGS_PER_RESULT_LIMIT } from './constants'
 import {
     isSyncEnabled,
     shouldAutoSync,
     handleSyncError,
 } from 'src/features/sync/utils'
+import { MainNavigatorParamList } from 'src/ui/navigation/types'
+import ListsFilter from '../lists-filter'
 
 export interface State {
     syncState: UITaskState
@@ -38,7 +34,6 @@ export interface State {
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
-    filterType: DashboardFilterType
 }
 
 export type Event = UIEvent<{
@@ -46,13 +41,15 @@ export type Event = UIEvent<{
     reload: { initList?: string; triggerSync?: boolean }
     loadMore: {}
     setPages: { pages: UIPage[] }
+    updatePage: { page: UIPage }
     deletePage: { url: string }
     togglePageStar: { url: string }
     toggleResultPress: { url: string }
     setFilteredListName: { name: string }
+    focusFromNavigation: MainNavigatorParamList['Dashboard']
 }>
 
-export interface Props extends NavigationProps {
+export interface Props extends MainNavProps<'Dashboard'> {
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
     services: UIServices<'sync' | 'localStorage' | 'errorTracker'>
     getNow?: () => number
@@ -79,12 +76,10 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     getInitialState(initList?: string): State {
-        const params =
-            this.props.navigation.getParam(NAV_PARAMS.DASHBOARD) ??
-            ({} as DashboardNavigationParams)
+        const { params } = this.props.route
 
         const selectedListName =
-            initList ?? params.selectedList ?? MOBILE_LIST_NAME
+            initList ?? params?.selectedList ?? MOBILE_LIST_NAME
 
         return {
             syncState: 'pristine',
@@ -97,7 +92,6 @@ export default class Logic extends UILogic<State, Event> {
             actionFinishedAt: 0,
             pages: new Map(),
             selectedListName,
-            filterType: params.filterType ?? 'collection',
         }
     }
 
@@ -153,6 +147,32 @@ export default class Logic extends UILogic<State, Event> {
         )
     }
 
+    async focusFromNavigation({
+        event,
+        previousState,
+    }: IncomingUIEvent<State, Event, 'focusFromNavigation'>) {
+        if (
+            !event?.selectedList ||
+            event.selectedList === previousState.selectedListName
+        ) {
+            return
+        }
+
+        // While this.emitMutation is NOT async, if you remove this await then the state update doesn't happen somehow :S
+        // Please don't remove the await!
+        // TODO: find cause of this bug in `ui-logic-core` lib
+        await this.emitMutation({
+            selectedListName: { $set: event.selectedList },
+        })
+
+        await executeUITask<State, 'reloadState', void>(
+            this,
+            'reloadState',
+            async () =>
+                this.doLoadMore(this.getInitialState(event.selectedList)),
+        )
+    }
+
     private async doSync() {
         const { sync } = this.props.services
 
@@ -198,11 +218,8 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async reload(incoming: IncomingUIEvent<State, Event, 'reload'>) {
-        if (
-            incoming.event.triggerSync &&
-            (await isSyncEnabled(this.props.services))
-        ) {
+    async reload({ event }: IncomingUIEvent<State, Event, 'reload'>) {
+        if (event.triggerSync && (await isSyncEnabled(this.props.services))) {
             this.doSync()
         }
 
@@ -210,9 +227,7 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'reloadState',
             async () => {
-                await this.doLoadMore(
-                    this.getInitialState(incoming.event.initList),
-                )
+                await this.doLoadMore(this.getInitialState(event.initList))
             },
         )
     }
@@ -270,17 +285,15 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private choosePageEntryLoader({
-        filterType,
+        selectedListName,
     }: State): PageLookupEntryLoader {
-        switch (filterType) {
-            case 'bookmarks':
-                return this.loadEntriesForBookmarks
-            case 'visits':
-                return this.loadEntriesForVisits
-            case 'collection':
-            default:
-                return this.loadEntriesForCollection
+        if (selectedListName === ListsFilter.MAGIC_BMS_FILTER) {
+            return this.loadEntriesForBookmarks
+        } else if (selectedListName === ListsFilter.MAGIC_VISITS_FILTER) {
+            return this.loadEntriesForVisits
         }
+
+        return this.loadEntriesForCollection
     }
 
     private loadEntriesForCollection: PageLookupEntryLoader = async prevState => {
@@ -387,6 +400,31 @@ export default class Logic extends UILogic<State, Event> {
             page,
         ]) as [string, UIPage][]
         return { pages: { $set: new Map(pageEntries) } }
+    }
+
+    updatePage({
+        event: { page: next },
+    }: IncomingUIEvent<State, Event, 'updatePage'>) {
+        this.emitMutation({
+            pages: {
+                $apply: pages => {
+                    const existingPage = pages.get(next.url)
+
+                    if (!existingPage) {
+                        throw new Error(
+                            'No existing page found in dashboard state to update',
+                        )
+                    }
+
+                    return pages.set(next.url, {
+                        ...existingPage,
+                        tags: next.tags,
+                        lists: next.lists,
+                        notes: next.notes,
+                    })
+                },
+            },
+        })
     }
 
     async deletePage(incoming: IncomingUIEvent<State, Event, 'deletePage'>) {
