@@ -36,7 +36,9 @@ export const isSyncEnabled = async ({
 
 export const handleSyncError = (
     error: Error,
-    opts: { services: UIServices<'errorTracker'> } & MainNavProps,
+    opts: { services: UIServices<'errorTracker'> } & MainNavProps<
+        'Dashboard' | 'SettingsMenu'
+    >,
 ): { errorHandled: boolean } => {
     if (
         error.message.startsWith(`Could not find collection definition for '`)

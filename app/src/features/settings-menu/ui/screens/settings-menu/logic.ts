@@ -18,7 +18,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends MainNavProps<'SettingsMenu'> {
-    services: UIServices<'localStorage' | 'sync' | 'errorTracker'>
+    services: UIServices<'localStorage' | 'sync' | 'auth' | 'errorTracker'>
 }
 
 export default class Logic extends UILogic<State, Event> {

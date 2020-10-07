@@ -68,9 +68,7 @@ export default class SettingsMenuScreen extends StatefulUIElement<
                 <View style={styles.logoutButton}>
                     <Button
                         title="LOG OUT"
-                        onPress={() =>
-                            (this.props.services as any)['auth'].signOut()
-                        }
+                        onPress={() => this.props.services.auth.signOut()}
                     />
                 </View>
             </SettingsMenu>

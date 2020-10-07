@@ -112,7 +112,7 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        if (!handleSyncError(error, this.props).errorHandled) {
+        if (!handleSyncError(error, this.props as any).errorHandled) {
             this.emitMutation({ errorMessage: { $set: error.message } })
         }
     }
