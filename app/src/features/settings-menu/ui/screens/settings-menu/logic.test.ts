@@ -1,5 +1,6 @@
 import expect from 'expect'
 
+import { storageKeys } from '../../../../../../app.json'
 import Logic, { State, Event } from './logic'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
@@ -19,9 +20,12 @@ describe('settings menu UI logic tests', () => {
     }) {
         const logic = new Logic({
             services: {
-                localStorage: new LocalStorageService({
-                    settingsStorage: new MockSettingsStorage(),
-                }),
+                ...options.services,
+                localStorage:
+                    options.services.localStorage ??
+                    new LocalStorageService({
+                        settingsStorage: new MockSettingsStorage(),
+                    }),
                 sync: {
                     ...options.services.sync,
                     continuousSync: {
@@ -54,6 +58,66 @@ describe('settings menu UI logic tests', () => {
 
         return { logic, initialState, element }
     }
+
+    it('should init with correct logged in state + ', async context => {
+        const localStorage = new LocalStorageService({
+            settingsStorage: new MockSettingsStorage(),
+        })
+        await localStorage.set(storageKeys.syncKey, true)
+
+        const { element: element1 } = await setup({
+            ...context,
+            services: {
+                ...context.services,
+                localStorage,
+                auth: { getCurrentUser: async () => null },
+            },
+        })
+
+        expect(element1.state.isSynced).toBe(false)
+        expect(element1.state.isLoggedIn).toBe(false)
+        await element1.init()
+        expect(element1.state.isLoggedIn).toBe(false)
+        expect(element1.state.isSynced).toBe(true)
+
+        await localStorage.set(storageKeys.syncKey, false)
+        const { element: element2 } = await setup({
+            ...context,
+            services: {
+                ...context.services,
+                localStorage,
+                auth: {
+                    getCurrentUser: async () => ({ displayName: 'jon' } as any),
+                },
+            },
+        })
+
+        expect(element2.state.isLoggedIn).toBe(false)
+        expect(element1.state.isLoggedIn).toBe(false)
+        await element2.init()
+        expect(element2.state.isLoggedIn).toBe(true)
+        expect(element1.state.isLoggedIn).toBe(false)
+    })
+
+    it('should be able to log out ', async context => {
+        const { element } = await setup({
+            ...context,
+            services: {
+                ...context.services,
+                auth: {
+                    signOut: () => undefined,
+                    getCurrentUser: async () => ({ displayName: 'jon' } as any),
+                },
+            },
+        })
+
+        expect(element.state.isLoggedIn).toBe(false)
+        await element.init()
+        expect(element.state.isLoggedIn).toBe(true)
+
+        await element.processEvent('logout')
+        expect(element.state.isLoggedIn).toBe(false)
+    })
 
     it('should show error view if sync error encountered', async context => {
         const errMsg = 'this is a test'

@@ -1,4 +1,10 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import {
+    UILogic,
+    UIEvent,
+    UIEventHandler,
+    IncomingUIEvent,
+    UIMutation,
+} from 'ui-logic-core'
 
 import { UITaskState, UIServices, MainNavProps } from 'src/ui/types'
 import { executeUITask, loadInitial } from 'src/ui/utils'
@@ -8,14 +14,22 @@ export interface State {
     loadState: UITaskState
     syncState: UITaskState
     syncErrorMessage?: string
+    isLoggedIn: boolean
     isSynced: boolean
 }
 
 export type Event = UIEvent<{
     setSyncStatus: { value: boolean }
+    logout: null
     syncNow: null
     clearSyncError: null
 }>
+
+type EventHandler<EventName extends keyof Event> = UIEventHandler<
+    State,
+    Event,
+    EventName
+>
 
 export interface Props extends MainNavProps<'SettingsMenu'> {
     services: UIServices<'localStorage' | 'sync' | 'auth' | 'errorTracker'>
@@ -29,6 +43,7 @@ export default class Logic extends UILogic<State, Event> {
     getInitialState(): State {
         return {
             isSynced: false,
+            isLoggedIn: false,
             syncState: 'pristine',
             loadState: 'pristine',
         }
@@ -38,6 +53,11 @@ export default class Logic extends UILogic<State, Event> {
         await loadInitial<State>(this, async () => {
             if (await isSyncEnabled(this.props.services)) {
                 this.emitMutation({ isSynced: { $set: true } })
+            }
+
+            const user = await this.props.services.auth.getCurrentUser()
+            if (user != null) {
+                this.emitMutation({ isLoggedIn: { $set: true } })
             }
         })
     }
@@ -62,6 +82,12 @@ export default class Logic extends UILogic<State, Event> {
         if (!handleSyncError(error, this.props).errorHandled) {
             this.emitMutation({ syncErrorMessage: { $set: error.message } })
         }
+    }
+
+    logout: EventHandler<'logout'> = ({}) => {
+        this.props.services.auth.signOut()
+
+        this.emitMutation({ isLoggedIn: { $set: false } })
     }
 
     async syncNow() {

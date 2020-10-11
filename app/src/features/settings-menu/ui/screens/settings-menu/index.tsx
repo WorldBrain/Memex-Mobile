@@ -7,7 +7,7 @@ import SettingsMenu from '../../components/settings-menu'
 import SettingsLink from '../../components/settings-link'
 import OutLink from '../../components/out-link'
 import Button from 'src/ui/components/memex-btn'
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import styles from '../../components/settings-menu.styles'
 
 export default class SettingsMenuScreen extends StatefulUIElement<
@@ -64,11 +64,11 @@ export default class SettingsMenuScreen extends StatefulUIElement<
                 >
                     Report Bugs
                 </OutLink>
-                {/* TODO: REMOVE THIS BEFORE MERGE */}
                 <View style={styles.logoutButton}>
                     <Button
-                        title="LOG OUT"
-                        onPress={() => this.props.services.auth.signOut()}
+                        title="Log out"
+                        disabled={!this.state.isLoggedIn}
+                        onPress={() => this.processEvent('logout', null)}
                     />
                 </View>
             </SettingsMenu>
