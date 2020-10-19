@@ -24,7 +24,7 @@ import EmptyResults from '../../components/empty-results'
 import DashboardNav from '../../components/dashboard-navigation'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
-import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
 import SyncRibbon from '../../components/sync-ribbon'
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -50,7 +50,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         this.props.navigation.navigate('PageEditor', {
             pageUrl: fullUrl,
             mode,
-            updatePage: page => this.processEvent('updatePage', { page }),
+            updatePage: (page) => this.processEvent('updatePage', { page }),
         })
     }
 
@@ -88,7 +88,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         this.props.navigation.navigate('Reader', {
             url,
             title: titleText,
-            updatePage: page => this.processEvent('updatePage', { page }),
+            updatePage: (page) => this.processEvent('updatePage', { page }),
         })
     }
 
@@ -131,12 +131,16 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     }
 
     private handleLogoPress = () => {
-        if (this.state.selectedListName === MOBILE_LIST_NAME) {
+        if (this.state.selectedListName === SPECIAL_LIST_NAMES.MOBILE) {
             return
         }
-        this.props.navigation.setParams({ selectedList: MOBILE_LIST_NAME })
-        this.processEvent('setFilteredListName', { name: MOBILE_LIST_NAME })
-        this.processEvent('reload', { initList: MOBILE_LIST_NAME })
+        this.props.navigation.setParams({
+            selectedList: SPECIAL_LIST_NAMES.MOBILE,
+        })
+        this.processEvent('setFilteredListName', {
+            name: SPECIAL_LIST_NAMES.MOBILE,
+        })
+        this.processEvent('reload', { initList: SPECIAL_LIST_NAMES.MOBILE })
     }
 
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
@@ -192,7 +196,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     }
 
     private renderNavTitle(): string {
-        if (this.state.selectedListName !== MOBILE_LIST_NAME) {
+        if (this.state.selectedListName !== SPECIAL_LIST_NAMES.MOBILE) {
             return this.state.selectedListName
         }
 

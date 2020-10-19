@@ -13,7 +13,6 @@ import {
 } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
-import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
 import { updateSuggestionsCache } from 'src/features/page-editor/utils'
 import { INIT_SUGGESTIONS_LIMIT } from 'src/features/meta-picker/ui/screens/meta-picker/constants'
 import { MainNavigatorParamList } from 'src/ui/navigation/types'
@@ -92,7 +91,7 @@ export default class Logic extends UILogic<State, Event> {
             })
             noteTags.set(
                 note.url,
-                tags.map(t => t.name),
+                tags.map((t) => t.name),
             )
         }
 
@@ -100,11 +99,11 @@ export default class Logic extends UILogic<State, Event> {
             ...storedPage,
             titleText: storedPage.fullTitle,
             date: 'a minute ago',
-            tags: tags.map(t => t.name),
-            lists: lists.map(l => l.name),
+            tags: tags.map((t) => t.name),
+            lists: lists.map((l) => l.name),
             pageUrl: storedPage.url,
             // TODO: unify this map fn with the identical one in DashboardLogic
-            notes: notes.map<UINote>(note => ({
+            notes: notes.map<UINote>((note) => ({
                 domain: storedPage.domain,
                 fullUrl: url,
                 url: note.url,
@@ -124,9 +123,9 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'toggleNotePress'>,
     ): UIMutation<State> {
         return {
-            page: state => {
+            page: (state) => {
                 const noteIndex = state.notes.findIndex(
-                    note => note.url === incoming.event.url,
+                    (note) => note.url === incoming.event.url,
                 )
 
                 return {
@@ -154,7 +153,7 @@ export default class Logic extends UILogic<State, Event> {
 
         if (previousState.mode === 'tags') {
             this.emitMutation({
-                page: state => {
+                page: (state) => {
                     const i = state.tags.indexOf(name)
 
                     const tags = [
@@ -168,7 +167,7 @@ export default class Logic extends UILogic<State, Event> {
             await metaPicker.deleteTag({ url, name })
         } else {
             this.emitMutation({
-                page: state => {
+                page: (state) => {
                     const i = state.lists.indexOf(name)
 
                     const lists = [
@@ -189,7 +188,7 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         this.emitMutation({
-            page: state => ({
+            page: (state) => ({
                 ...state,
                 tags: [...state.tags, name],
             }),
@@ -203,7 +202,7 @@ export default class Logic extends UILogic<State, Event> {
         const { metaPicker } = this.props.storage.modules
 
         this.emitMutation({
-            page: state => ({
+            page: (state) => ({
                 ...state,
                 lists: [...state.lists, name],
             }),
@@ -250,9 +249,9 @@ export default class Logic extends UILogic<State, Event> {
 
     private async deleteNote(url: string) {
         this.emitMutation({
-            page: state => {
+            page: (state) => {
                 const noteIndex = state.notes.findIndex(
-                    note => note.url === url,
+                    (note) => note.url === url,
                 )
 
                 return {
@@ -306,7 +305,7 @@ export default class Logic extends UILogic<State, Event> {
         return updateSuggestionsCache({
             ...args,
             suggestionLimit: INIT_SUGGESTIONS_LIMIT,
-            setCache: async suggestions =>
+            setCache: async (suggestions) =>
                 localStorage.set(storageKeys.listSuggestionsCache, suggestions),
             getCache: async () => {
                 const suggestions = await localStorage.get<string[]>(
@@ -327,7 +326,7 @@ export default class Logic extends UILogic<State, Event> {
         return updateSuggestionsCache({
             ...args,
             suggestionLimit: INIT_SUGGESTIONS_LIMIT,
-            setCache: async suggestions =>
+            setCache: async (suggestions) =>
                 localStorage.set(storageKeys.tagSuggestionsCache, suggestions),
             getCache: async () => {
                 const suggestions = await localStorage.get<string[]>(

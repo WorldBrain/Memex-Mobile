@@ -10,7 +10,7 @@ import {
     MainNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { TAGS_PER_RESULT_LIMIT } from './constants'
@@ -79,7 +79,7 @@ export default class Logic extends UILogic<State, Event> {
         const { params } = this.props.route
 
         const selectedListName =
-            initList ?? params?.selectedList ?? MOBILE_LIST_NAME
+            initList ?? params?.selectedList ?? SPECIAL_LIST_NAMES.MOBILE
 
         return {
             syncState: 'pristine',
@@ -199,7 +199,7 @@ export default class Logic extends UILogic<State, Event> {
             async () => {
                 await sync.continuousSync
                     .maybeDoIncrementalSync()
-                    .catch(err => this.props.services.errorTracker.track(err))
+                    .catch((err) => this.props.services.errorTracker.track(err))
             },
         )
     }
@@ -296,7 +296,9 @@ export default class Logic extends UILogic<State, Event> {
         return this.loadEntriesForCollection
     }
 
-    private loadEntriesForCollection: PageLookupEntryLoader = async prevState => {
+    private loadEntriesForCollection: PageLookupEntryLoader = async (
+        prevState,
+    ) => {
         const { metaPicker } = this.props.storage.modules
 
         const selectedLists = await metaPicker.findListsByNames({
@@ -315,15 +317,17 @@ export default class Logic extends UILogic<State, Event> {
             },
         )
 
-        listEntries = listEntries.filter(entry => !!entry.pageUrl)
+        listEntries = listEntries.filter((entry) => !!entry.pageUrl)
 
-        return listEntries.map(entry => ({
+        return listEntries.map((entry) => ({
             url: entry.pageUrl,
             date: entry.createdAt,
         }))
     }
 
-    private loadEntriesForBookmarks: PageLookupEntryLoader = async prevState => {
+    private loadEntriesForBookmarks: PageLookupEntryLoader = async (
+        prevState,
+    ) => {
         const { overview } = this.props.storage.modules
 
         const bookmarks = await overview.findLatestBookmarks({
@@ -331,10 +335,10 @@ export default class Logic extends UILogic<State, Event> {
             limit: this.pageSize,
         })
 
-        return bookmarks.map(bm => ({ url: bm.url, date: new Date(bm.time) }))
+        return bookmarks.map((bm) => ({ url: bm.url, date: new Date(bm.time) }))
     }
 
-    private loadEntriesForVisits: PageLookupEntryLoader = async prevState => {
+    private loadEntriesForVisits: PageLookupEntryLoader = async (prevState) => {
         const { overview } = this.props.storage.modules
 
         const visits = await overview.findLatestVisitsByPage({
@@ -342,7 +346,7 @@ export default class Logic extends UILogic<State, Event> {
             limit: this.pageSize,
         })
 
-        return visits.map(visit => ({
+        return visits.map((visit) => ({
             url: visit.url,
             date: new Date(visit.time),
         }))
@@ -374,9 +378,9 @@ export default class Logic extends UILogic<State, Event> {
             titleText: page.fullTitle || page.url,
             isStarred: !!page.isStarred,
             date: timeFromNow(date),
-            tags: tags.map(tag => tag.name),
-            lists: lists.map(list => list.name),
-            notes: notes.map<UINote>(note => ({
+            tags: tags.map((tag) => tag.name),
+            lists: lists.map((list) => list.name),
+            notes: notes.map<UINote>((note) => ({
                 domain: page!.domain,
                 fullUrl: page!.url,
                 url: note.url,
@@ -395,7 +399,7 @@ export default class Logic extends UILogic<State, Event> {
     setPages(
         incoming: IncomingUIEvent<State, Event, 'setPages'>,
     ): UIMutation<State> {
-        const pageEntries = incoming.event.pages.map(page => [
+        const pageEntries = incoming.event.pages.map((page) => [
             page.url,
             page,
         ]) as [string, UIPage][]
@@ -407,7 +411,7 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'updatePage'>) {
         this.emitMutation({
             pages: {
-                $apply: pages => {
+                $apply: (pages) => {
                     const existingPage = pages.get(next.url)
 
                     if (!existingPage) {
@@ -440,7 +444,7 @@ export default class Logic extends UILogic<State, Event> {
                         url: incoming.event.url,
                     })
                     this.emitMutation({
-                        pages: state => {
+                        pages: (state) => {
                             state.delete(incoming.event.url)
                             return state
                         },
@@ -473,7 +477,7 @@ export default class Logic extends UILogic<State, Event> {
                         isStarred,
                     })
                     this.emitMutation({
-                        pages: state => {
+                        pages: (state) => {
                             const current = state.get(url)!
                             return state.set(url, { ...current, isStarred })
                         },
@@ -491,7 +495,7 @@ export default class Logic extends UILogic<State, Event> {
         event: { url },
     }: IncomingUIEvent<State, Event, 'toggleResultPress'>): UIMutation<State> {
         return {
-            pages: state => {
+            pages: (state) => {
                 const page = state.get(url)!
                 return state.set(url, {
                     ...page,

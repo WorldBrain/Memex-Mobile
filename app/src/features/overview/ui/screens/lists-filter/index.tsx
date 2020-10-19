@@ -7,7 +7,7 @@ import Navigation from '../../components/navigation'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaTypeShape } from 'src/features/meta-picker/types'
 import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
-import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
 import styles from './styles'
 
 export default class ListsFilter extends StatefulUIElement<
@@ -32,7 +32,9 @@ export default class ListsFilter extends StatefulUIElement<
 
     private handleEntryPress = async (item: MetaTypeShape) => {
         this.props.navigation.navigate('Dashboard', {
-            selectedList: item.isChecked ? MOBILE_LIST_NAME : item.name,
+            selectedList: item.isChecked
+                ? SPECIAL_LIST_NAMES.MOBILE
+                : item.name,
         })
     }
 
@@ -63,7 +65,7 @@ export default class ListsFilter extends StatefulUIElement<
                     singleSelect
                     type="collections"
                     initSelectedEntry={
-                        this.selectedEntryName === MOBILE_LIST_NAME
+                        this.selectedEntryName === SPECIAL_LIST_NAMES.MOBILE
                             ? undefined
                             : this.selectedEntryName
                     }

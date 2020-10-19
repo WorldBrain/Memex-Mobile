@@ -11,7 +11,7 @@ import {
     ShareNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
 import {
     shouldAutoSync,
@@ -178,7 +178,7 @@ export default class Logic extends UILogic<State, Event> {
             'tagsState',
             async () => {
                 const tags = await metaPicker.findTagsByPage({ url })
-                const tagsToAdd = tags.map(tag => tag.name)
+                const tagsToAdd = tags.map((tag) => tag.name)
 
                 this.emitMutation({ tagsToAdd: { $set: tagsToAdd } })
                 this.initValues.tagsToAdd = tagsToAdd
@@ -192,7 +192,7 @@ export default class Logic extends UILogic<State, Event> {
                 const collections = await metaPicker.findListsByPage({
                     url,
                 })
-                const collectionsToAdd = collections.map(c => c.name)
+                const collectionsToAdd = collections.map((c) => c.name)
 
                 this.emitMutation({
                     collectionsToAdd: {
@@ -264,7 +264,7 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'toggleTag'>,
     ): UIMutation<State> {
         return {
-            tagsToAdd: state => {
+            tagsToAdd: (state) => {
                 const index = state.indexOf(incoming.event.name)
 
                 if (index !== -1) {
@@ -280,7 +280,7 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'toggleCollection'>,
     ): UIMutation<State> {
         return {
-            collectionsToAdd: state => {
+            collectionsToAdd: (state) => {
                 const index = state.indexOf(incoming.event.name)
 
                 if (index !== -1) {
@@ -380,7 +380,7 @@ export default class Logic extends UILogic<State, Event> {
         await metaPicker.createMobileListIfAbsent()
         await metaPicker.setPageLists({
             url: state.pageUrl,
-            lists: [MOBILE_LIST_NAME],
+            lists: [SPECIAL_LIST_NAMES.MOBILE],
         })
     }
 
@@ -394,7 +394,7 @@ export default class Logic extends UILogic<State, Event> {
 
         await metaPicker.setPageLists({
             url: state.pageUrl,
-            lists: [...state.collectionsToAdd, MOBILE_LIST_NAME],
+            lists: [...state.collectionsToAdd, SPECIAL_LIST_NAMES.MOBILE],
         })
         await metaPicker.setPageTags({
             url: state.pageUrl,

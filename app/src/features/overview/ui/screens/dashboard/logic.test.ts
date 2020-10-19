@@ -10,7 +10,7 @@ import {
 } from 'src/tests/shared-fixtures/integration'
 import { UIPage } from 'src/features/overview/types'
 import { Page } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/types'
-import { MOBILE_LIST_NAME } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/constants'
+import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
 import ListsFilter from '../lists-filter'
 
 const UI_PAGE_1: UIPage = {
@@ -74,7 +74,7 @@ describe('dashboard screen UI logic tests', () => {
         })
     }
 
-    it('should load correctly without any saved pages', async dependencies => {
+    it('should load correctly without any saved pages', async (dependencies) => {
         const { element } = await setup(dependencies)
 
         await element.init()
@@ -85,7 +85,7 @@ describe('dashboard screen UI logic tests', () => {
                 loadState: 'done',
                 reloadState: 'pristine',
                 loadMoreState: 'pristine',
-                selectedListName: MOBILE_LIST_NAME,
+                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 couldHaveMore: false,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
@@ -94,7 +94,7 @@ describe('dashboard screen UI logic tests', () => {
         )
     })
 
-    it('should load correctly with saved pages', async dependencies => {
+    it('should load correctly with saved pages', async (dependencies) => {
         const { element } = await setup(dependencies)
 
         await insertIntegrationTestData(dependencies)
@@ -111,7 +111,7 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: false,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
-                selectedListName: MOBILE_LIST_NAME,
+                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([
                     [
                         'test.com',
@@ -127,7 +127,7 @@ describe('dashboard screen UI logic tests', () => {
         )
     })
 
-    it('should paginate correctly', async dependencies => {
+    it('should paginate correctly', async (dependencies) => {
         const { storage } = dependencies
         const { element } = await setup({ ...dependencies, pageSize: 1 })
 
@@ -164,7 +164,7 @@ describe('dashboard screen UI logic tests', () => {
                 actionState: 'pristine',
                 actionFinishedAt: 0,
                 pages: new Map([['test.com.me', UI_PAGE_2]]),
-                selectedListName: MOBILE_LIST_NAME,
+                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
             }),
         )
 
@@ -179,7 +179,7 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: true,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
-                selectedListName: MOBILE_LIST_NAME,
+                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([
                     ['test.com.me', UI_PAGE_2],
                     ['test.com', UI_PAGE_1],
@@ -198,7 +198,7 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: false,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
-                selectedListName: MOBILE_LIST_NAME,
+                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([
                     ['test.com.me', UI_PAGE_2],
                     ['test.com', UI_PAGE_1],
@@ -217,13 +217,13 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: true,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
-                selectedListName: MOBILE_LIST_NAME,
+                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([['test.com.me', UI_PAGE_2]]),
             }),
         )
     })
 
-    it('should be able to delete pages', async dependencies => {
+    it('should be able to delete pages', async (dependencies) => {
         const { storage } = dependencies
         const { element } = await setup(dependencies)
 
@@ -249,7 +249,7 @@ describe('dashboard screen UI logic tests', () => {
                 action: 'delete',
                 actionState: 'done',
                 actionFinishedAt: expect.any(Number),
-                selectedListName: MOBILE_LIST_NAME,
+                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([]),
             }),
         )
@@ -265,7 +265,7 @@ describe('dashboard screen UI logic tests', () => {
         expect(secondElement.state.pages).toEqual(new Map([]))
     })
 
-    it('should be able to star + unstar pages', async dependencies => {
+    it('should be able to star + unstar pages', async (dependencies) => {
         const { storage } = dependencies
         const { element } = await setup(dependencies)
 
@@ -295,7 +295,7 @@ describe('dashboard screen UI logic tests', () => {
         expect(pageC.isStarred).toBe(false)
     })
 
-    it('reload should be able to trigger sync ', async dependencies => {
+    it('reload should be able to trigger sync ', async (dependencies) => {
         const { element } = await setup(dependencies)
 
         expect(element.state.syncState).toEqual('pristine')
@@ -305,7 +305,7 @@ describe('dashboard screen UI logic tests', () => {
         expect(element.state.syncState).not.toEqual('pristine')
     })
 
-    it('should be able to switch look up of latest collection entries, bookmarks, or visits, depending on set filter', async dependencies => {
+    it('should be able to switch look up of latest collection entries, bookmarks, or visits, depending on set filter', async (dependencies) => {
         const {
             storage: {
                 modules: { overview },
@@ -346,7 +346,7 @@ describe('dashboard screen UI logic tests', () => {
         ])
 
         element.processMutation({
-            selectedListName: { $set: MOBILE_LIST_NAME },
+            selectedListName: { $set: SPECIAL_LIST_NAMES.MOBILE },
         })
         expect(
             await logic['choosePageEntryLoader'](element.state)(element.state),
@@ -356,7 +356,7 @@ describe('dashboard screen UI logic tests', () => {
         ])
     })
 
-    it("should be able to update an already tracked page's lists, tags, and notes", async dependencies => {
+    it("should be able to update an already tracked page's lists, tags, and notes", async (dependencies) => {
         const { storage } = dependencies
         const { element } = await setup({ ...dependencies, pageSize: 1 })
 
