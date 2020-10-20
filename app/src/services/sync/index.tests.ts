@@ -18,7 +18,7 @@ export async function doInitialSync(params: {
         initialMessage,
     })
     await Promise.all(
-        [params.source, params.target].map(device =>
+        [params.source, params.target].map((device) =>
             device.services.sync.initialSync.waitForInitialSync(),
         ),
     )
@@ -120,6 +120,18 @@ export function registerSingleDeviceSyncTests(
     })
 }
 
+type StorageContents = { [collection: string]: any[] }
+
+const delTextFields = ({
+    pages = [],
+    customLists = [],
+    ...storageContents
+}: StorageContents): StorageContents => ({
+    ...storageContents,
+    pages: pages.map(({ text, ...page }) => page),
+    customLists: customLists.map(({ searchableName, ...list }) => list),
+})
+
 async function incrementalSyncAndCheck(devices: [TestDevice, TestDevice]) {
     const firstDeviceStorageContents = await getStorageContents(
         devices[0].storage.manager,
@@ -135,8 +147,8 @@ async function incrementalSyncAndCheck(devices: [TestDevice, TestDevice]) {
             exclude: new Set(['clientSyncLogEntry', 'syncDeviceInfo']),
         },
     )
-    for (const page of firstDeviceStorageContents['pages'] || []) {
-        delete page.text
-    }
-    expect(firstDeviceStorageContents).toEqual(secondDeviceStorageContents)
+
+    expect(delTextFields(firstDeviceStorageContents)).toEqual(
+        delTextFields(secondDeviceStorageContents),
+    )
 }
