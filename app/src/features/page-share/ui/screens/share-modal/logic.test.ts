@@ -10,6 +10,10 @@ import * as DATA from './logic.test.data'
 import { List } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
 import { FakeNavigation } from 'src/tests/navigation'
 import { Services } from 'src/services/types'
+import {
+    SPECIAL_LIST_NAMES,
+    SPECIAL_LIST_IDS,
+} from '@worldbrain/memex-storage/lib/lists/constants'
 
 describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -68,7 +72,7 @@ describe('share modal UI logic tests', () => {
         return { logic, initialState, element }
     }
 
-    it('should detect unsupported applications (no URL shared)', async context => {
+    it('should detect unsupported applications (no URL shared)', async (context) => {
         const { element } = await setup({
             ...context,
             getSharedUrl: () => {
@@ -91,7 +95,7 @@ describe('share modal UI logic tests', () => {
         }
     })
 
-    it('should load correctly with a URL, but no stored page', async context => {
+    it('should load correctly with a URL, but no stored page', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
         const { element } = await setup({
             ...context,
@@ -113,7 +117,7 @@ describe('share modal UI logic tests', () => {
         }
     })
 
-    it('should set error message state if sync error encountered', async context => {
+    it('should set error message state if sync error encountered', async (context) => {
         const errMsg = 'this is a test'
         const pageUrl = DATA.PAGE_URL_1
 
@@ -128,7 +132,7 @@ describe('share modal UI logic tests', () => {
         expect(element.state.errorMessage).toEqual(errMsg)
     })
 
-    it('should clear error message state if retry sync is succesfull', async context => {
+    it('should clear error message state if retry sync is succesfull', async (context) => {
         const errMsg = 'this is a test'
         const pageUrl = DATA.PAGE_URL_1
         let shouldFail = true
@@ -148,7 +152,7 @@ describe('share modal UI logic tests', () => {
         expect(element.state.errorMessage).toBeUndefined()
     })
 
-    it('should update error message state if retry sync is unssuccesfull', async context => {
+    it('should update error message state if retry sync is unssuccesfull', async (context) => {
         let errMsg = 'this is a test'
         const pageUrl = DATA.PAGE_URL_1
 
@@ -167,7 +171,7 @@ describe('share modal UI logic tests', () => {
         expect(element.state.errorMessage).toEqual(errMsg)
     })
 
-    it('should correctly load page starred', async context => {
+    it('should correctly load page starred', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
         await context.storage.modules.overview.starPage({
             url: pageUrl,
@@ -193,7 +197,7 @@ describe('share modal UI logic tests', () => {
         }
     })
 
-    it('should correctly load tags', async context => {
+    it('should correctly load tags', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
         await context.storage.modules.metaPicker.createTag({
             url: pageUrl,
@@ -223,7 +227,7 @@ describe('share modal UI logic tests', () => {
         }
     })
 
-    it('should correctly associated lists', async context => {
+    it('should correctly associated lists', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
         const {
             object: { id: listId },
@@ -231,7 +235,7 @@ describe('share modal UI logic tests', () => {
             name: 'My list',
         })
         await context.storage.modules.metaPicker.createPageListEntry({
-            pageUrl,
+            fullPageUrl: pageUrl,
             listId,
         })
         const { element } = await setup({
@@ -254,7 +258,7 @@ describe('share modal UI logic tests', () => {
         }
     })
 
-    it('should be able to undo a page save', async context => {
+    it('should be able to undo a page save', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
         const url = DATA.PAGE_URL_1_NORM
         const { element } = await setup({
@@ -461,7 +465,7 @@ describe('share modal UI logic tests', () => {
         expect(nextStateB.collectionsToAdd.length).toBe(0)
     })
 
-    it('should be able to store a page', async context => {
+    it('should be able to store a page', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const TEST_DATA = new DATA.TestData({
             url: DATA.PAGE_URL_1,
@@ -485,9 +489,15 @@ describe('share modal UI logic tests', () => {
             .findObjects({})
         expect(lists).toEqual([
             expect.objectContaining({
+                name: SPECIAL_LIST_NAMES.INBOX,
+                id: SPECIAL_LIST_IDS.INBOX,
                 isDeletable: false,
                 isNestable: false,
-                name: 'Saved from Mobile',
+            }),
+            expect.objectContaining({
+                name: SPECIAL_LIST_NAMES.MOBILE,
+                isDeletable: false,
+                isNestable: false,
             }),
         ])
         expect(
@@ -498,11 +508,12 @@ describe('share modal UI logic tests', () => {
             expect.objectContaining({
                 fullUrl: DATA.PAGE_URL_1,
                 pageUrl: DATA.PAGE_URL_1_NORM,
+                listId: SPECIAL_LIST_IDS.INBOX,
             }),
         ])
     })
 
-    it('should be able to store a page with a note', async context => {
+    it('should be able to store a page with a note', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const TEST_DATA = new DATA.TestData({
             url: DATA.PAGE_URL_1,
@@ -530,7 +541,7 @@ describe('share modal UI logic tests', () => {
         ).toEqual([TEST_DATA.NOTE])
     })
 
-    it('should be able to store a page with a note on a URL with hash fragment', async context => {
+    it('should be able to store a page with a note on a URL with hash fragment', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const TEST_DATA = new DATA.TestData({
             url: DATA.PAGE_URL_2,
@@ -560,7 +571,7 @@ describe('share modal UI logic tests', () => {
         ).toEqual([TEST_DATA.NOTE])
     })
 
-    it('should skip store for already stored page, but still create a new visit', async context => {
+    it('should skip store for already stored page, but still create a new visit', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const TEST_DATA = new DATA.TestData({
             url: DATA.PAGE_URL_1,

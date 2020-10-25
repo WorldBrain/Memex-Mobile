@@ -36,7 +36,7 @@ describe('page editor UI logic tests', () => {
         return { logic, logicContainer, element }
     }
 
-    it('should be able to load init page data for display', async context => {
+    it('should be able to load init page data for display', async (context) => {
         const { element } = setup({
             ...context,
             route: new FakeRoute({ pageUrl: DATA.PAGE_1.url }) as any,
@@ -86,7 +86,7 @@ describe('page editor UI logic tests', () => {
         )
     })
 
-    it('should be able to set save notes', async context => {
+    it('should be able to set save notes', async (context) => {
         const { logicContainer } = setup(context)
 
         logicContainer.logic.emitMutation({
@@ -104,7 +104,7 @@ describe('page editor UI logic tests', () => {
         expect(note.commentText).toEqual(testText)
     })
 
-    it('should be able to toggle note being pressed', async context => {
+    it('should be able to toggle note being pressed', async (context) => {
         const { logicContainer } = setup(context)
 
         logicContainer.logic.emitMutation({
@@ -126,7 +126,7 @@ describe('page editor UI logic tests', () => {
         expect(logicContainer.state.page.notes[0].isNotePressed).toBe(false)
     })
 
-    it('should be able to add/remove tags to/from a page', async context => {
+    it('should be able to add/remove tags to/from a page', async (context) => {
         let createTagValue: any
         let deleteTagValue: any
         const testTags = ['a', 'b', 'c']
@@ -180,7 +180,7 @@ describe('page editor UI logic tests', () => {
         expect(logicContainer.state.page.tags.length).toBe(0)
     })
 
-    it('should be able to add/remove pages to/from a list', async context => {
+    it('should be able to add/remove pages to/from a list', async (context) => {
         let createListEntryValue: any
         let deleteListEntryValue: any
         const testLists = ['a', 'b', 'c']
@@ -218,7 +218,7 @@ describe('page editor UI logic tests', () => {
         for (const name of testLists) {
             await logicContainer.processEvent('createEntry', { name })
             expect(createListEntryValue).toEqual({
-                pageUrl: testPage.url,
+                fullPageUrl: testPage.url,
                 listId: expect.any(Number),
             })
             tmpCache.unshift(name)
@@ -238,7 +238,7 @@ describe('page editor UI logic tests', () => {
         expect(logicContainer.state.page.lists.length).toBe(0)
     })
 
-    it('should be able to nav back, passing page state to update param', async context => {
+    it('should be able to nav back, passing page state to update param', async (context) => {
         let updatedPage: any
         const mockUpdatePage = (page: any) => {
             updatedPage = page
@@ -247,7 +247,7 @@ describe('page editor UI logic tests', () => {
         const { logicContainer } = setup({
             ...context,
             route: new FakeRoute({
-                pageUrl: DATA.PAGE_1.url,
+                fullPageUrl: DATA.PAGE_1.url,
                 updatePage: mockUpdatePage,
             }) as any,
         })

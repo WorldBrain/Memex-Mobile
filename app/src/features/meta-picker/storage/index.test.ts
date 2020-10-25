@@ -3,6 +3,10 @@ import expect from 'expect'
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
 import * as pageData from 'src/features/overview/storage/index.test.data'
+import {
+    SPECIAL_LIST_NAMES,
+    SPECIAL_LIST_IDS,
+} from '@worldbrain/memex-storage/lib/lists/constants'
 
 const it = makeStorageTestFactory()
 
@@ -20,7 +24,7 @@ describe('meta picker StorageModule', () => {
         }
 
         const pageTags = await metaPicker.findTagsByPage({ url: page.url })
-        expect(pageTags.map(tag => tag.name)).toEqual(
+        expect(pageTags.map((tag) => tag.name)).toEqual(
             expect.arrayContaining(data.tags),
         )
 
@@ -42,7 +46,7 @@ describe('meta picker StorageModule', () => {
 
         const lists = await metaPicker.findListsByNames({ names: data.lists })
         expect(lists.length).toBe(data.lists.length)
-        expect(lists.map(l => l.name)).toEqual(
+        expect(lists.map((l) => l.name)).toEqual(
             expect.arrayContaining(data.lists),
         )
     })
@@ -67,7 +71,7 @@ describe('meta picker StorageModule', () => {
 
             for (const listId of listIds) {
                 await metaPicker.createPageListEntry({
-                    pageUrl: page.url,
+                    fullPageUrl: page.url,
                     listId,
                 })
             }
@@ -77,8 +81,8 @@ describe('meta picker StorageModule', () => {
             const entries = await metaPicker.findPageListEntriesByList({
                 listId,
             })
-            expect(entries.map(e => e.pageUrl).sort()).toEqual(
-                pageData.pages.map(p => p.url).sort(),
+            expect(entries.map((e) => e.pageUrl).sort()).toEqual(
+                pageData.pages.map((p) => p.url).sort(),
             )
         }
 
@@ -86,7 +90,7 @@ describe('meta picker StorageModule', () => {
             const entries = await metaPicker.findPageListEntriesByPage({
                 url: page.url,
             })
-            expect(entries.map(e => +e.listId).sort()).toEqual(listIds.sort())
+            expect(entries.map((e) => +e.listId).sort()).toEqual(listIds.sort())
         }
     })
 
@@ -110,7 +114,7 @@ describe('meta picker StorageModule', () => {
 
             for (const listId of listIds) {
                 await metaPicker.createPageListEntry({
-                    pageUrl: page.url,
+                    fullPageUrl: page.url,
                     listId,
                 })
             }
@@ -154,7 +158,7 @@ describe('meta picker StorageModule', () => {
 
             for (const listId of listIds) {
                 await metaPicker.createPageListEntry({
-                    pageUrl: page.url,
+                    fullPageUrl: page.url,
                     listId,
                 })
             }
@@ -227,14 +231,14 @@ describe('meta picker StorageModule', () => {
             url: pageData.pages[0].url,
         })
         expect(tagSuggestions.length).toBe(4)
-        expect(tagSuggestions.map(s => s.name)).toEqual(
+        expect(tagSuggestions.map((s) => s.name)).toEqual(
             expect.arrayContaining(data.tags),
         )
         expect(
-            tagSuggestions.filter(s => s.isChecked).map(s => s.name),
+            tagSuggestions.filter((s) => s.isChecked).map((s) => s.name),
         ).toEqual(expect.arrayContaining([data.tags[0], data.tags[1]]))
         expect(
-            tagSuggestions.filter(s => !s.isChecked).map(s => s.name),
+            tagSuggestions.filter((s) => !s.isChecked).map((s) => s.name),
         ).toEqual(expect.arrayContaining([data.tags[2], data.tags[3]]))
     })
 
@@ -258,7 +262,7 @@ describe('meta picker StorageModule', () => {
 
         for (const idx of [2, 0, 1]) {
             await metaPicker.createPageListEntry({
-                pageUrl: pageData.pages[idx].url,
+                fullPageUrl: pageData.pages[idx].url,
                 listId: listIds[0],
             })
         }
@@ -304,19 +308,19 @@ describe('meta picker StorageModule', () => {
         expect(listIds.length).toBe(data.lists.length)
 
         await metaPicker.createPageListEntry({
-            pageUrl: pageData.pages[0].url,
+            fullPageUrl: pageData.pages[0].url,
             listId: listIds[0],
         })
         await metaPicker.createPageListEntry({
-            pageUrl: pageData.pages[0].url,
+            fullPageUrl: pageData.pages[0].url,
             listId: listIds[1],
         })
         await metaPicker.createPageListEntry({
-            pageUrl: pageData.pages[1].url,
+            fullPageUrl: pageData.pages[1].url,
             listId: listIds[2],
         })
         await metaPicker.createPageListEntry({
-            pageUrl: pageData.pages[1].url,
+            fullPageUrl: pageData.pages[1].url,
             listId: listIds[3],
         })
 
@@ -324,14 +328,14 @@ describe('meta picker StorageModule', () => {
             url: pageData.pages[0].url,
         })
         expect(listSuggestions.length).toBe(4)
-        expect(listSuggestions.map(s => s.name)).toEqual(
+        expect(listSuggestions.map((s) => s.name)).toEqual(
             expect.arrayContaining(data.lists),
         )
         expect(
-            listSuggestions.filter(s => s.isChecked).map(s => s.name),
+            listSuggestions.filter((s) => s.isChecked).map((s) => s.name),
         ).toEqual(expect.arrayContaining([data.lists[0], data.lists[1]]))
         expect(
-            listSuggestions.filter(s => !s.isChecked).map(s => s.name),
+            listSuggestions.filter((s) => !s.isChecked).map((s) => s.name),
         ).toEqual(expect.arrayContaining([data.lists[2], data.lists[3]]))
     })
 
@@ -354,7 +358,7 @@ describe('meta picker StorageModule', () => {
         const pageTagsBefore = await metaPicker.findTagsByPage({
             url: pageData.pages[0].url,
         })
-        expect(pageTagsBefore.map(t => t.name)).toEqual(
+        expect(pageTagsBefore.map((t) => t.name)).toEqual(
             expect.arrayContaining([data.tags[0], data.tags[1]]),
         )
 
@@ -367,10 +371,10 @@ describe('meta picker StorageModule', () => {
         const pageTagsAfter = await metaPicker.findTagsByPage({
             url: pageData.pages[0].url,
         })
-        expect(pageTagsAfter.map(t => t.name)).not.toEqual(
+        expect(pageTagsAfter.map((t) => t.name)).not.toEqual(
             expect.arrayContaining([data.tags[0], data.tags[1]]),
         )
-        expect(pageTagsAfter.map(t => t.name)).toEqual(
+        expect(pageTagsAfter.map((t) => t.name)).toEqual(
             expect.arrayContaining([data.tags[1], data.tags[2]]),
         )
     })
@@ -392,18 +396,18 @@ describe('meta picker StorageModule', () => {
         expect(listIds.length).toBe(data.lists.length)
 
         await metaPicker.createPageListEntry({
-            pageUrl: pageData.pages[0].url,
+            fullPageUrl: pageData.pages[0].url,
             listId: listIds[0],
         })
         await metaPicker.createPageListEntry({
-            pageUrl: pageData.pages[0].url,
+            fullPageUrl: pageData.pages[0].url,
             listId: listIds[1],
         })
 
         const pageEntriesBefore = await metaPicker.findPageListEntriesByPage({
             url: pageData.pages[0].url,
         })
-        expect(pageEntriesBefore.map(e => e.listId)).toEqual(
+        expect(pageEntriesBefore.map((e) => e.listId)).toEqual(
             expect.arrayContaining([listIds[0], listIds[1]]),
         )
 
@@ -415,11 +419,138 @@ describe('meta picker StorageModule', () => {
         const pageEntriesAfter = await metaPicker.findPageListEntriesByPage({
             url: pageData.pages[0].url,
         })
-        expect(pageEntriesAfter.map(e => e.listId)).not.toEqual(
+        expect(pageEntriesAfter.map((e) => e.listId)).not.toEqual(
             expect.arrayContaining([listIds[0], listIds[1]]),
         )
-        expect(pageEntriesAfter.map(e => e.listId)).toEqual(
+        expect(pageEntriesAfter.map((e) => e.listId)).toEqual(
             expect.arrayContaining([listIds[1], listIds[2]]),
         )
+    })
+
+    it('should be able to add Inbox list entries', async ({
+        storage: {
+            manager,
+            modules: { metaPicker, overview },
+        },
+    }) => {
+        await overview.createPage(pageData.pages[0])
+        await overview.createPage(pageData.pages[1])
+
+        expect(
+            await manager.collection('customLists').findAllObjects({}),
+        ).toEqual([])
+        expect(
+            await manager.collection('pageListEntries').findAllObjects({}),
+        ).toEqual([])
+
+        await metaPicker.createInboxListEntry({
+            fullPageUrl: pageData.pages[0].fullUrl,
+        })
+
+        expect(
+            await manager.collection('customLists').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                id: SPECIAL_LIST_IDS.INBOX,
+                name: SPECIAL_LIST_NAMES.INBOX,
+            }),
+        ])
+        expect(
+            await manager.collection('pageListEntries').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                fullUrl: pageData.pages[0].fullUrl,
+                pageUrl: pageData.pages[0].url,
+                listId: SPECIAL_LIST_IDS.INBOX,
+            }),
+        ])
+
+        await metaPicker.createInboxListEntry({
+            fullPageUrl: pageData.pages[1].fullUrl,
+        })
+
+        expect(
+            await manager.collection('customLists').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                id: SPECIAL_LIST_IDS.INBOX,
+                name: SPECIAL_LIST_NAMES.INBOX,
+            }),
+        ])
+        expect(
+            await manager.collection('pageListEntries').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                fullUrl: pageData.pages[0].fullUrl,
+                pageUrl: pageData.pages[0].url,
+                listId: SPECIAL_LIST_IDS.INBOX,
+            }),
+            expect.objectContaining({
+                fullUrl: pageData.pages[1].fullUrl,
+                pageUrl: pageData.pages[1].url,
+                listId: SPECIAL_LIST_IDS.INBOX,
+            }),
+        ])
+    })
+
+    it('should be able to add Mobile list entries', async ({
+        storage: {
+            manager,
+            modules: { metaPicker, overview },
+        },
+    }) => {
+        await overview.createPage(pageData.pages[0])
+        await overview.createPage(pageData.pages[1])
+
+        expect(
+            await manager.collection('customLists').findAllObjects({}),
+        ).toEqual([])
+        expect(
+            await manager.collection('pageListEntries').findAllObjects({}),
+        ).toEqual([])
+
+        await metaPicker.createMobileListEntry({
+            fullPageUrl: pageData.pages[0].fullUrl,
+        })
+
+        expect(
+            await manager.collection('customLists').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                name: SPECIAL_LIST_NAMES.MOBILE,
+            }),
+        ])
+        expect(
+            await manager.collection('pageListEntries').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                fullUrl: pageData.pages[0].fullUrl,
+                pageUrl: pageData.pages[0].url,
+            }),
+        ])
+
+        await metaPicker.createMobileListEntry({
+            fullPageUrl: pageData.pages[1].fullUrl,
+        })
+
+        expect(
+            await manager.collection('customLists').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                name: SPECIAL_LIST_NAMES.MOBILE,
+            }),
+        ])
+        expect(
+            await manager.collection('pageListEntries').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                fullUrl: pageData.pages[0].fullUrl,
+                pageUrl: pageData.pages[0].url,
+            }),
+            expect.objectContaining({
+                fullUrl: pageData.pages[1].fullUrl,
+                pageUrl: pageData.pages[1].url,
+            }),
+        ])
     })
 })

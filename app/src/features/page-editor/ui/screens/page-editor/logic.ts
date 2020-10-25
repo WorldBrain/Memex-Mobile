@@ -217,7 +217,7 @@ export default class Logic extends UILogic<State, Event> {
             listId = lists[0].id
         }
 
-        await metaPicker.createPageListEntry({ pageUrl: url, listId })
+        await metaPicker.createPageListEntry({ fullPageUrl: url, listId })
         await this._updateListSuggestionsCache({ added: name })
     }
 

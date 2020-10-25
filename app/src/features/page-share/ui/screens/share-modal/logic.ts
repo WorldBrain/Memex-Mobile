@@ -377,11 +377,8 @@ export default class Logic extends UILogic<State, Event> {
 
         await overview.visitPage({ url: state.pageUrl })
 
-        await metaPicker.createMobileListIfAbsent()
-        await metaPicker.setPageLists({
-            url: state.pageUrl,
-            lists: [SPECIAL_LIST_NAMES.MOBILE],
-        })
+        await metaPicker.createInboxListEntry({ fullPageUrl: state.pageUrl })
+        await metaPicker.createMobileListEntry({ fullPageUrl: state.pageUrl })
     }
 
     private async storePageFinal(state: State, customTimestamp?: number) {

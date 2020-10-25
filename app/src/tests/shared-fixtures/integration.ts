@@ -73,7 +73,7 @@ export async function insertIntegrationTestData(options: { storage: Storage }) {
     }
 
     await options.storage.modules.metaPicker.createPageListEntry({
-        pageUrl: INTEGRATION_TEST_DATA.pages[0].url,
+        fullPageUrl: INTEGRATION_TEST_DATA.pages[0].url,
         listId: listIds[0],
     })
 }
