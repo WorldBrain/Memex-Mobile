@@ -65,6 +65,8 @@ export interface Props extends ShareNavProps<'ShareModal'> {
 }
 
 export default class Logic extends UILogic<State, Event> {
+    /** If this instance is working with a page that's already indexed, this will be set to the visit time (created in `init`). */
+    private existingPageVisitTime: number | null = null
     syncRunning: Promise<void | SyncReturnValue> | null = null
     initValues: {
         isStarred: boolean
@@ -169,7 +171,8 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        await overview.visitPage({ url })
+        this.existingPageVisitTime = Date.now()
+        await overview.visitPage({ url, time: this.existingPageVisitTime })
 
         const bookmarkP = executeUITask<State, 'bookmarkState', void>(
             this,
@@ -317,7 +320,17 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ showSavingPage: { $set: true } })
 
         try {
-            await overview.deletePage({ url: incoming.previousState.pageUrl })
+            // Only delete the visit if this page was indexed prior, else delete the page if newly indexed
+            if (this.existingPageVisitTime) {
+                await overview.deleteVisit({
+                    url: incoming.previousState.pageUrl,
+                    time: this.existingPageVisitTime,
+                })
+            } else {
+                await overview.deletePage({
+                    url: incoming.previousState.pageUrl,
+                })
+            }
         } catch (err) {
         } finally {
             this.emitMutation({ isModalShown: { $set: false } })
