@@ -2,7 +2,7 @@ import expect from 'expect'
 
 import { storageKeys } from '../../../../../../app.json'
 import Logic, { State, Event } from './logic'
-import { makeStorageTestFactory } from 'src/index.tests'
+import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
 import { Storage } from 'src/storage/types'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 
@@ -18,13 +18,13 @@ import {
 describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    async function setup(options: {
-        services: Services
-        storage: Storage
-        getSharedText?: () => string
-        getSharedUrl?: () => string
-        syncError?: () => string | undefined
-    }) {
+    async function setup(
+        options: TestDevice & {
+            getSharedText?: () => string
+            getSharedUrl?: () => string
+            syncError?: () => string | undefined
+        },
+    ) {
         await options.services.localStorage.set(storageKeys.syncKey, true)
 
         const logic = new Logic({
@@ -65,6 +65,7 @@ describe('share modal UI logic tests', () => {
             },
             storage: options.storage,
             navigation: new FakeNavigation() as any,
+            route: options.route as any,
         })
         const initialState = logic.getInitialState()
         const element = new FakeStatefulUIElement<State, Event>(logic)
@@ -173,6 +174,10 @@ describe('share modal UI logic tests', () => {
 
     it('should correctly load page starred', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
+        await context.storage.modules.overview.createPage({
+            url: pageUrl,
+            fullUrl: pageUrl,
+        } as any)
         await context.storage.modules.overview.starPage({
             url: pageUrl,
             time: Date.now(),
@@ -199,6 +204,10 @@ describe('share modal UI logic tests', () => {
 
     it('should correctly load tags', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
+        await context.storage.modules.overview.createPage({
+            url: pageUrl,
+            fullUrl: pageUrl,
+        } as any)
         await context.storage.modules.metaPicker.createTag({
             url: pageUrl,
             name: 'tagA',
@@ -227,8 +236,12 @@ describe('share modal UI logic tests', () => {
         }
     })
 
-    it('should correctly associated lists', async (context) => {
+    it('should correctly associate lists', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
+        await context.storage.modules.overview.createPage({
+            url: pageUrl,
+            fullUrl: pageUrl,
+        } as any)
         const {
             object: { id: listId },
         } = await context.storage.modules.metaPicker.createList({
@@ -569,34 +582,5 @@ describe('share modal UI logic tests', () => {
                 .collection('annotations')
                 .findObjects({}),
         ).toEqual([TEST_DATA.NOTE])
-    })
-
-    it('should skip store for already stored page, but still create a new visit', async (context) => {
-        const { logic, initialState: state } = await setup(context)
-        const TEST_DATA = new DATA.TestData({
-            url: DATA.PAGE_URL_1,
-            normalizedUrl: DATA.PAGE_URL_1_NORM,
-        })
-
-        await logic['storePage']({ ...state, pageUrl: DATA.PAGE_URL_1 })
-
-        expect(
-            await context.storage.manager.collection('pages').findObjects({}),
-        ).toEqual([TEST_DATA.PAGE])
-        expect(
-            await context.storage.manager.collection('visits').findObjects({}),
-        ).toEqual([{ url: TEST_DATA.PAGE.url, time: expect.any(Number) }])
-
-        await logic['storePageInit']({ ...state, pageUrl: DATA.PAGE_URL_1 })
-
-        expect(
-            await context.storage.manager.collection('pages').findObjects({}),
-        ).toEqual([TEST_DATA.PAGE])
-        expect(
-            await context.storage.manager.collection('visits').findObjects({}),
-        ).toEqual([
-            { url: TEST_DATA.PAGE.url, time: expect.any(Number) },
-            { url: TEST_DATA.PAGE.url, time: expect.any(Number) },
-        ])
     })
 })

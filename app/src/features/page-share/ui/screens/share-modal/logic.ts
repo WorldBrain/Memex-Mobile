@@ -65,7 +65,7 @@ export interface Props extends ShareNavProps<'ShareModal'> {
 }
 
 export default class Logic extends UILogic<State, Event> {
-    syncRunning: Promise<void | SyncReturnValue> = Promise.resolve()
+    syncRunning: Promise<void | SyncReturnValue> | null = null
     initValues: {
         isStarred: boolean
         tagsToAdd: string[]
@@ -120,7 +120,7 @@ export default class Logic extends UILogic<State, Event> {
     private async doSync() {
         const { sync } = this.props.services
 
-        if (this.syncRunning) {
+        if (this.syncRunning !== null) {
             // TODO: abort any running pull sync, do a push sync
             await this.syncRunning
         }
@@ -138,6 +138,7 @@ export default class Logic extends UILogic<State, Event> {
         this.syncRunning = sync.continuousSync.forceIncrementalSync()
 
         await this.syncRunning
+        this.syncRunning = null
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
@@ -158,9 +159,17 @@ export default class Logic extends UILogic<State, Event> {
 
         const { overview, metaPicker } = this.props.storage.modules
 
-        const pageP = loadInitial<State>(this, async () => {
-            await this.storePageInit({ pageUrl: url } as State)
-        })
+        const isNewPage = (await overview.findPage({ url })) == null
+
+        // No need to do state hydration from DB if this is new page, just index it
+        if (isNewPage) {
+            await loadInitial<State>(this, async () => {
+                await this.storePageInit({ pageUrl: url } as State)
+            })
+            return
+        }
+
+        await overview.visitPage({ url })
 
         const bookmarkP = executeUITask<State, 'bookmarkState', void>(
             this,
@@ -203,7 +212,7 @@ export default class Logic extends UILogic<State, Event> {
             },
         )
 
-        await Promise.all([pageP, bookmarkP, tagsP, listsP])
+        await Promise.all([bookmarkP, tagsP, listsP])
     }
 
     cleanup() {
@@ -362,11 +371,6 @@ export default class Logic extends UILogic<State, Event> {
 
     private async storePageInit(state: State) {
         const { overview, metaPicker } = this.props.storage.modules
-
-        if ((await overview.findPage({ url: state.pageUrl })) != null) {
-            await overview.visitPage({ url: state.pageUrl })
-            return
-        }
 
         await overview.createPage({
             url: state.pageUrl,
