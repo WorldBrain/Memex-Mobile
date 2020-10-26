@@ -75,7 +75,9 @@ export default class ShareModalScreen extends StatefulUIElement<
         return this.processEvent('undoPageSave', null)
     }
 
-    private handleSave = () => {
+    private handleSave = async () => {
+        await this.processEvent('savePageTitle', null)
+
         if (this.isInputDirty) {
             this.processEvent('save', null)
         } else {

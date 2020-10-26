@@ -1,7 +1,7 @@
 import { JSDOMParser } from 'readability-node'
 import { XMLSerializer, DOMParser } from 'xmldom-silent'
 
-import { PageFetcherAPI } from './types'
+import { PageFetcherAPI, PageDocument } from './types'
 
 export class PageFetcherService implements PageFetcherAPI {
     private xmlSerializer: XMLSerializer
@@ -31,7 +31,7 @@ export class PageFetcherService implements PageFetcherAPI {
         return this.xmlSerializer.serializeToString(xhtmlDocument)
     }
 
-    private constructDocumentFromHtml(html: string): Document {
+    private constructDocumentFromHtml(html: string): PageDocument {
         const doc = this.jsDomParser.parse(html.trim())
 
         if (this.jsDomParser.errorState) {

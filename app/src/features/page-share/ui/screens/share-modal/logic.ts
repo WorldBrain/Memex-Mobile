@@ -18,6 +18,7 @@ import {
     isSyncEnabled,
     handleSyncError,
 } from 'src/features/sync/utils'
+import { PageDocument } from 'src/services/page-fetcher/types'
 
 export interface State {
     loadState: UITaskState
@@ -41,6 +42,7 @@ export interface State {
 
 export type Event = UIEvent<{
     save: null
+    savePageTitle: null
     retrySync: null
 
     undoPageSave: null
@@ -60,7 +62,9 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends ShareNavProps<'ShareModal'> {
-    services: UIServices<'sync' | 'shareExt' | 'errorTracker' | 'localStorage'>
+    services: UIServices<
+        'sync' | 'shareExt' | 'errorTracker' | 'localStorage' | 'pageFetcher'
+    >
     storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
 }
 
@@ -68,6 +72,7 @@ export default class Logic extends UILogic<State, Event> {
     /** If this instance is working with a page that's already indexed, this will be set to the visit time (created in `init`). */
     private existingPageVisitTime: number | null = null
     syncRunning: Promise<void | SyncReturnValue> | null = null
+    pageTitleFetchRunning: Promise<string> | null = null
     initValues: {
         isStarred: boolean
         tagsToAdd: string[]
@@ -143,6 +148,13 @@ export default class Logic extends UILogic<State, Event> {
         this.syncRunning = null
     }
 
+    private async fetchPageTitle(url: string) {
+        const { pageFetcher } = this.props.services
+
+        const doc = await pageFetcher.fetchPageDOM(url)
+        return doc.title
+    }
+
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         if (await shouldAutoSync(this.props.services)) {
             this.doSync()
@@ -157,6 +169,7 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
+        this.pageTitleFetchRunning = this.fetchPageTitle(url)
         this.emitMutation({ pageUrl: { $set: url } })
 
         const { overview, metaPicker } = this.props.storage.modules
@@ -337,9 +350,32 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async save(incoming: IncomingUIEvent<State, Event, 'save'>) {
+    async savePageTitle({
+        previousState,
+    }: IncomingUIEvent<State, Event, 'savePageTitle'>) {
+        if (!this.pageTitleFetchRunning) {
+            // Init logic somehow was not run - edge case
+            return
+        }
+
+        const { overview } = this.props.storage.modules
+
+        let pageTitle: string
+        try {
+            pageTitle = await this.pageTitleFetchRunning
+        } catch (err) {
+            pageTitle = previousState.pageUrl // If title fetch fails, fallback to using URL
+        }
+
+        await overview.updatePageTitle({
+            url: previousState.pageUrl,
+            title: pageTitle,
+        })
+    }
+
+    async save({ previousState }: IncomingUIEvent<State, Event, 'save'>) {
         this.emitMutation({ showSavingPage: { $set: true } })
-        await this.storePageFinal(incoming.previousState)
+        await this.storePageFinal(previousState)
 
         if (await isSyncEnabled(this.props.services)) {
             await this.doSync()
