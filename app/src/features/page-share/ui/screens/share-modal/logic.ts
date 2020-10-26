@@ -169,15 +169,18 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        this.pageTitleFetchRunning = this.fetchPageTitle(url)
         this.emitMutation({ pageUrl: { $set: url } })
 
         const { overview, metaPicker } = this.props.storage.modules
 
-        const isNewPage = (await overview.findPage({ url })) == null
+        const existingPage = await overview.findPage({ url })
+
+        if (!existingPage?.fullTitle?.length) {
+            this.pageTitleFetchRunning = this.fetchPageTitle(url)
+        }
 
         // No need to do state hydration from DB if this is new page, just index it
-        if (isNewPage) {
+        if (existingPage == null) {
             await loadInitial<State>(this, async () => {
                 await this.storePageInit({ pageUrl: url } as State)
             })
@@ -353,8 +356,8 @@ export default class Logic extends UILogic<State, Event> {
     async savePageTitle({
         previousState,
     }: IncomingUIEvent<State, Event, 'savePageTitle'>) {
+        // Init logic somehow was not run due to page title already being indexed
         if (!this.pageTitleFetchRunning) {
-            // Init logic somehow was not run - edge case
             return
         }
 

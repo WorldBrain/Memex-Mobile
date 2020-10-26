@@ -212,6 +212,55 @@ describe('share modal UI logic tests', () => {
         )
     })
 
+    it('should not start page title fetch on init if title is already indexed', async (context) => {
+        const fullPageUrl = DATA.PAGE_URL_1
+        const normalizedPageUrl = DATA.PAGE_URL_1_NORM
+        const testTitle = 'test title'
+
+        const { element, logic, trackedErrors } = await setup({
+            ...context,
+            getSharedUrl: () => fullPageUrl,
+            getPageTitle: async () => ({ title: testTitle }),
+        })
+
+        await context.storage.modules.overview.createPage({
+            url: normalizedPageUrl,
+            fullUrl: fullPageUrl,
+            fullTitle: testTitle,
+            text: '',
+        })
+
+        const lookupPage = () =>
+            context.storage.manager
+                .collection('pages')
+                .findObject({ url: normalizedPageUrl })
+
+        expect(await lookupPage()).toEqual(
+            expect.objectContaining({
+                url: normalizedPageUrl,
+                fullUrl: fullPageUrl,
+                fullTitle: testTitle,
+                text: '',
+            }),
+        )
+
+        expect(logic.pageTitleFetchRunning).toBe(null)
+        await element.init()
+        expect(logic.pageTitleFetchRunning).toBe(null)
+
+        await element.processEvent('savePageTitle', null)
+        expect(logic.pageTitleFetchRunning).toBe(null)
+        expect(trackedErrors).toEqual([])
+        expect(await lookupPage()).toEqual(
+            expect.objectContaining({
+                url: normalizedPageUrl,
+                fullUrl: fullPageUrl,
+                fullTitle: testTitle,
+                text: '',
+            }),
+        )
+    })
+
     it('should set error message state if sync error encountered', async (context) => {
         const errMsg = 'this is a test'
         const pageUrl = DATA.PAGE_URL_1
