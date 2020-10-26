@@ -20,12 +20,17 @@ describe('share modal UI logic tests', () => {
 
     async function setup(
         options: TestDevice & {
+            getPageTitle?: () => Promise<{ title: string }>
             getSharedText?: () => string
             getSharedUrl?: () => string
             syncError?: () => string | undefined
         },
     ) {
         await options.services.localStorage.set(storageKeys.syncKey, true)
+        const pageFetcher = options.getPageTitle
+            ? ({ fetchPageDOM: options.getPageTitle } as any)
+            : options.services.pageFetcher
+        const trackedErrors: Error[] = []
 
         const logic = new Logic({
             services: {
@@ -38,7 +43,12 @@ describe('share modal UI logic tests', () => {
                         ? options.getSharedUrl
                         : () => 'http://test.com',
                 } as any) as any,
-                errorTracker: { track: () => undefined } as any,
+                pageFetcher,
+                errorTracker: {
+                    track: (err: Error) => {
+                        trackedErrors.push(err)
+                    },
+                } as any,
                 sync: {
                     ...options.services.sync,
                     continuousSync: {
@@ -70,7 +80,7 @@ describe('share modal UI logic tests', () => {
         const initialState = logic.getInitialState()
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
-        return { logic, initialState, element }
+        return { logic, initialState, element, trackedErrors }
     }
 
     it('should detect unsupported applications (no URL shared)', async (context) => {
@@ -116,6 +126,90 @@ describe('share modal UI logic tests', () => {
         } finally {
             await element.cleanup()
         }
+    })
+
+    it('should start page title fetch on init, then write fetched title on save', async (context) => {
+        const fullPageUrl = DATA.PAGE_URL_1
+        const normalizedPageUrl = DATA.PAGE_URL_1_NORM
+        const testTitle = 'test title'
+
+        const { element, logic, trackedErrors } = await setup({
+            ...context,
+            getSharedUrl: () => fullPageUrl,
+            getPageTitle: async () => ({ title: testTitle }),
+        })
+
+        const lookupPage = () =>
+            context.storage.manager
+                .collection('pages')
+                .findObject({ url: normalizedPageUrl })
+
+        expect(await lookupPage()).toBe(null)
+        expect(logic.pageTitleFetchRunning).toBe(null)
+        await element.init()
+        expect(await lookupPage()).toEqual(
+            expect.objectContaining({
+                url: normalizedPageUrl,
+                fullUrl: fullPageUrl,
+                fullTitle: '',
+                text: '',
+            }),
+        )
+        expect(logic.pageTitleFetchRunning).not.toBe(null)
+
+        await element.processEvent('savePageTitle', null)
+        expect(trackedErrors).toEqual([])
+        expect(await lookupPage()).toEqual(
+            expect.objectContaining({
+                url: normalizedPageUrl,
+                fullUrl: fullPageUrl,
+                fullTitle: testTitle,
+                text: '',
+            }),
+        )
+    })
+
+    it('should start page title fetch on init, then write no title on save due to fetch error', async (context) => {
+        const fullPageUrl = DATA.PAGE_URL_1
+        const normalizedPageUrl = DATA.PAGE_URL_1_NORM
+        const dummyError = new Error('test')
+
+        const { element, logic, trackedErrors } = await setup({
+            ...context,
+            getSharedUrl: () => fullPageUrl,
+            getPageTitle: async () => {
+                throw dummyError
+            },
+        })
+
+        const lookupPage = () =>
+            context.storage.manager
+                .collection('pages')
+                .findObject({ url: normalizedPageUrl })
+
+        expect(await lookupPage()).toBe(null)
+        expect(logic.pageTitleFetchRunning).toBe(null)
+        await element.init()
+        expect(await lookupPage()).toEqual(
+            expect.objectContaining({
+                url: normalizedPageUrl,
+                fullUrl: fullPageUrl,
+                fullTitle: '',
+                text: '',
+            }),
+        )
+        expect(logic.pageTitleFetchRunning).not.toBe(null)
+
+        await element.processEvent('savePageTitle', null)
+        expect(trackedErrors).toEqual([dummyError])
+        expect(await lookupPage()).toEqual(
+            expect.objectContaining({
+                url: normalizedPageUrl,
+                fullUrl: fullPageUrl,
+                fullTitle: '',
+                text: '',
+            }),
+        )
     })
 
     it('should set error message state if sync error encountered', async (context) => {

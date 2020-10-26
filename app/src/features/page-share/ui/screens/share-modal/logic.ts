@@ -359,18 +359,17 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const { overview } = this.props.storage.modules
+        const { errorTracker } = this.props.services
 
-        let pageTitle: string
         try {
-            pageTitle = await this.pageTitleFetchRunning
+            const pageTitle = await this.pageTitleFetchRunning
+            await overview.updatePageTitle({
+                url: previousState.pageUrl,
+                title: pageTitle,
+            })
         } catch (err) {
-            pageTitle = previousState.pageUrl // If title fetch fails, fallback to using URL
+            errorTracker.track(err)
         }
-
-        await overview.updatePageTitle({
-            url: previousState.pageUrl,
-            title: pageTitle,
-        })
     }
 
     async save({ previousState }: IncomingUIEvent<State, Event, 'save'>) {
