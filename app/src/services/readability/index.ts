@@ -1,5 +1,4 @@
-import { Readability, JSDOMParser } from 'readability-node'
-import { XMLSerializer, DOMParser } from 'xmldom-silent'
+import { Readability } from 'readability-node'
 import UrlParser from 'url-parse'
 
 import {
@@ -7,6 +6,7 @@ import {
     ReadabilityArticle,
     ReadabilityURL,
 } from './types'
+import { PageFetcherAPI } from '../page-fetcher/types'
 
 /*
 Implementation inspired by `react-native-webview-readability` package:
@@ -15,6 +15,7 @@ https://github.com/poptocrack/react-native-webview-readability
 
 export interface Props {
     urlParser?: (url: string) => UrlParser
+    pageFetcher: PageFetcherAPI
 }
 
 export class ReadabilityService implements ReadabilityServiceAPI {
@@ -44,37 +45,6 @@ export class ReadabilityService implements ReadabilityServiceAPI {
         }
     }
 
-    private convertHtmlToXhtml(html: string): string {
-        const xhtmlDocument = new DOMParser({
-            errorHandler: (level: string, msg: string) => {
-                if (level === 'error') {
-                    throw new Error('Unable to convert HTML to XHTML: ' + msg)
-                }
-            },
-        }).parseFromString(html, 'text/html')
-
-        return new XMLSerializer().serializeToString(xhtmlDocument)
-    }
-
-    private constructDocumentFromHtml(html: string): Document {
-        const domParser = new JSDOMParser()
-        const doc = domParser.parse(html.trim())
-
-        if (domParser.errorState) {
-            throw new Error(
-                'Failed attempt at constructing Document from HTML: ' +
-                    domParser.errorState,
-            )
-        }
-
-        return doc
-    }
-
-    private async fetchPageHtml(url: string): Promise<string> {
-        const response = await fetch(url)
-        return response.text()
-    }
-
     private async parseDocument(
         urlParts: ReadabilityURL,
         doc: Document,
@@ -84,9 +54,7 @@ export class ReadabilityService implements ReadabilityServiceAPI {
 
     async fetchAndParse({ url }: { url: string }): Promise<ReadabilityArticle> {
         const urlDesc = this.deriveUrlDescriptor(url)
-        const html = await this.fetchPageHtml(url)
-        const xhtml = this.convertHtmlToXhtml(html)
-        const doc = this.constructDocumentFromHtml(xhtml)
+        const doc = await this.props.pageFetcher.fetchPageDOM(url)
 
         return this.parseDocument(urlDesc, doc)
     }

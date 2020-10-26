@@ -7,6 +7,7 @@ import { LocalStorageService } from './local-storage'
 import { ErrorTrackingService } from './error-tracking'
 import { BackgroundProcessService } from './background-processing'
 import { ResourceLoaderService } from './resource-loader'
+import { PageFetcherService } from './page-fetcher'
 
 export interface Services {
     auth: MemexGoAuthService
@@ -14,6 +15,7 @@ export interface Services {
     shareExt: ShareExtService
     keychain: KeychainService
     readability: ReadabilityService
+    pageFetcher: PageFetcherService
     localStorage: LocalStorageService
     errorTracker: ErrorTrackingService
     resourceLoader: ResourceLoaderService

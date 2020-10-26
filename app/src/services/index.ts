@@ -16,6 +16,7 @@ import { KeychainService } from './keychain'
 import { KeychainAPI } from './keychain/types'
 import { ReadabilityService } from './readability'
 import { ResourceLoaderService } from './resource-loader'
+import { PageFetcherService } from './page-fetcher'
 
 export interface CreateServicesOptions {
     auth?: AuthService
@@ -38,15 +39,17 @@ export async function createServices(
     const auth =
         (options.auth as MemexGoAuthService) ??
         new MemexGoAuthService(options.firebase)
+    const pageFetcher = new PageFetcherService()
 
     return {
         auth,
+        pageFetcher,
         localStorage,
         shareExt: new ShareExtService({ normalizeUrl: options.normalizeUrl }),
         backgroundProcess: new BackgroundProcessService({}),
         keychain: new KeychainService({ keychain: options.keychain }),
         errorTracker: options.errorTracker,
-        readability: new ReadabilityService({}),
+        readability: new ReadabilityService({ pageFetcher }),
         resourceLoader: new ResourceLoaderService({}),
         sync: new SyncService({
             devicePlatform: options.devicePlatform,
