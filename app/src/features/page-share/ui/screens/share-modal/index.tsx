@@ -190,17 +190,17 @@ export default class ShareModalScreen extends StatefulUIElement<
                 <StarPage
                     isStarred={this.state.isStarred}
                     onPress={this.handleStarPress}
-                    loading={this.state.bookmarkState !== 'done'}
+                    loading={this.state.bookmarkState === 'running'}
                 />
                 <AddCollection
                     onPress={this.handleMetaViewTypeSwitch('collections')}
                     count={this.state.collectionsToAdd.length}
-                    loading={this.state.collectionsState !== 'done'}
+                    loading={this.state.collectionsState === 'running'}
                 />
                 <AddTags
                     onPress={this.handleMetaViewTypeSwitch('tags')}
                     count={this.state.tagsToAdd.length}
-                    loading={this.state.tagsState !== 'done'}
+                    loading={this.state.tagsState === 'running'}
                 />
             </>
         )

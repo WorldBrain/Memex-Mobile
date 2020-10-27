@@ -73,11 +73,11 @@ export default class Logic extends UILogic<State, Event> {
     private existingPageVisitTime: number | null = null
     syncRunning: Promise<void | SyncReturnValue> | null = null
     pageTitleFetchRunning: Promise<string> | null = null
-    initValues: {
-        isStarred: boolean
-        tagsToAdd: string[]
-        collectionsToAdd: string[]
-    } = {} as any
+    initValues: Pick<State, 'isStarred' | 'tagsToAdd' | 'collectionsToAdd'> = {
+        isStarred: false,
+        tagsToAdd: [],
+        collectionsToAdd: [],
+    }
 
     constructor(private props: Props) {
         super()
@@ -94,11 +94,9 @@ export default class Logic extends UILogic<State, Event> {
             pageUrl: '',
             showSavingPage: false,
             isModalShown: true,
-            isStarred: false,
-            tagsToAdd: [],
-            collectionsToAdd: [],
             noteText: '',
             statusText: '',
+            ...this.initValues,
         }
     }
 
@@ -148,7 +146,7 @@ export default class Logic extends UILogic<State, Event> {
         this.syncRunning = null
     }
 
-    private async fetchPageTitle(url: string) {
+    private async fetchPageTitle(url: string): Promise<string> {
         const { pageFetcher } = this.props.services
 
         const doc = await pageFetcher.fetchPageDOM(url)
