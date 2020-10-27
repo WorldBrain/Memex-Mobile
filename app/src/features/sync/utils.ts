@@ -1,6 +1,6 @@
 import { Alert } from 'react-native'
 
-import { UIServices, MainNavProps } from 'src/ui/types'
+import { UIServices, MainNavProps, ShareNavProps } from 'src/ui/types'
 import { storageKeys } from '../../../app.json'
 
 export const shouldAutoSync = async ({
@@ -34,16 +34,26 @@ export const isSyncEnabled = async ({
     return true
 }
 
+type SyncErrorNavProps =
+    | MainNavProps<'Dashboard' | 'SettingsMenu'>
+    | ShareNavProps<'ShareModal'>
+
 export const handleSyncError = (
     error: Error,
-    opts: { services: UIServices<'errorTracker'> } & MainNavProps<
-        'Dashboard' | 'SettingsMenu'
-    >,
+    opts: {
+        services: UIServices<'errorTracker'>
+        handleAppUpdateNeeded?: (title: string, subtitle: string) => void
+    } & SyncErrorNavProps,
 ): { errorHandled: boolean } => {
+    const handleAppUpdateNeeded = opts.handleAppUpdateNeeded ?? Alert.alert
+
     if (
-        error.message.startsWith(`Could not find collection definition for '`)
+        error.message.startsWith(
+            `Could not find collection definition for '`,
+        ) ||
+        /^No entity column "\w+" was found\.$/.test(error.message)
     ) {
-        Alert.alert(
+        handleAppUpdateNeeded(
             'Please update your app',
             'Sync is being attempted with a future version of the Memex extension.',
         )
@@ -51,7 +61,9 @@ export const handleSyncError = (
     }
 
     if (error.message === 'Cannot Sync without authenticated user') {
-        opts.navigation.navigate('Login')
+        ;(opts.navigation as MainNavProps<'Login'>['navigation']).navigate(
+            'Login',
+        )
         return { errorHandled: true }
     }
 

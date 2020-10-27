@@ -18,7 +18,6 @@ import {
     isSyncEnabled,
     handleSyncError,
 } from 'src/features/sync/utils'
-import { PageDocument } from 'src/services/page-fetcher/types'
 
 export interface State {
     loadState: UITaskState
@@ -101,23 +100,15 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private handleSyncError(error: Error) {
-        // Handle this differently as the default `handleSyncError` branch sends a system alert,
-        //  which does not work in iOS extensions
-        if (
-            error.message.startsWith(
-                `Could not find collection definition for '`,
-            )
-        ) {
-            this.emitMutation({
-                errorMessage: {
-                    $set:
-                        'Please update your app.\nSync is being attempted with a future version of the Memex extension',
-                },
-            })
-            return
-        }
+        const { errorHandled } = handleSyncError(error, {
+            ...this.props,
+            handleAppUpdateNeeded: (title, subtitle) =>
+                this.emitMutation({
+                    errorMessage: { $set: `${title}\n${subtitle}` },
+                }),
+        })
 
-        if (!handleSyncError(error, this.props as any).errorHandled) {
+        if (!errorHandled) {
             this.emitMutation({ errorMessage: { $set: error.message } })
         }
     }
