@@ -17,14 +17,14 @@ export class PageFetcherService implements PageFetcherAPI {
     }
 
     private handleDOMParsingError = (level: string, msg: string) => {
-        if (level === 'error') {
+        if (['error', 'fatalError'].includes(level)) {
             throw new Error('Unable to parse DOM from HTML string: ' + msg)
         }
     }
 
     private convertHtmlToXhtml(html: string): string {
         const xhtmlDocument = this.xmlDomParser.parseFromString(
-            html,
+            html.trim(),
             'text/html',
         )
 
