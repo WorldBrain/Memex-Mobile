@@ -46,6 +46,11 @@ export class PageFetcherService implements PageFetcherAPI {
 
     fetchPageHTML: PageFetcherAPI['fetchPageHTML'] = async (url) => {
         const response = await fetch(url)
+
+        if (!response.ok) {
+            throw new Error('fetch failed: ' + response.statusText)
+        }
+
         return response.text()
     }
 
