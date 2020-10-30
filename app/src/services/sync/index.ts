@@ -1,8 +1,6 @@
 import { generateSecureRandom } from 'react-native-securerandom'
 import StorageManager from '@worldbrain/storex'
-const WebRTC = require('react-native-webrtc')
-const Peer = require('simple-peer')
-
+import some from 'lodash/some'
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
 import { SyncSettingsStore } from '@worldbrain/storex-sync/lib/integration/settings'
 import SyncService, {
@@ -12,19 +10,21 @@ import {
     MemexSyncSetting,
     MemexSyncDevicePlatform,
 } from '@worldbrain/memex-common/lib/sync/types'
-
+import { TweetNaclSyncEncryption } from '@worldbrain/memex-common/lib/sync/secrets/tweetnacl'
+import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
+const WebRTC = require('react-native-webrtc')
+const Peer = require('simple-peer')
+
 import { LocalStorageService } from '../local-storage'
 import {
     MemexClientSyncLogStorage,
     MemexSyncInfoStorage,
 } from 'src/features/sync/storage'
 import { PRODUCT_VERSION } from 'src/constants'
-import { TweetNaclSyncEncryption } from '@worldbrain/memex-common/lib/sync/secrets/tweetnacl'
-import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 import { AUTO_SYNC_TIMEOUT, AUTO_SYNC_COLLECTIONS } from './constants'
-import some from 'lodash/some'
 import { ErrorTracker } from '../error-tracking/types'
+import { postReceiveProcessor } from './post-receive-processor'
 
 export default class AppSyncService extends SyncService {
     static DEF_CONTINUOUS_SYNC_BATCH_SIZE = 15
@@ -46,6 +46,7 @@ export default class AppSyncService extends SyncService {
     }) {
         super({
             ...options,
+            postReceiveProcessor,
             settingStore: new MemexSyncSettingStore(options),
             productType: 'app',
             productVersion: PRODUCT_VERSION,
@@ -53,12 +54,12 @@ export default class AppSyncService extends SyncService {
             syncEncryption: options.disableEncryption
                 ? undefined
                 : new TweetNaclSyncEncryption({
-                      randomBytes: n => generateSecureRandom(n),
+                      randomBytes: (n) => generateSecureRandom(n),
                   }),
         })
 
         this.initialSync.wrtc = WebRTC
-        this.initialSync.processCreationConstraintError = error => {
+        this.initialSync.processCreationConstraintError = (error) => {
             options.errorTracker.track(error)
         }
         this.initialSync.getPeer = async ({ initiator }) => {
@@ -85,7 +86,7 @@ export default class AppSyncService extends SyncService {
         if (
             !some(
                 info.changes,
-                change => AUTO_SYNC_COLLECTIONS[change.collection],
+                (change) => AUTO_SYNC_COLLECTIONS[change.collection],
             )
         ) {
             return
