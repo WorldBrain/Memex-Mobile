@@ -21,7 +21,7 @@ const createSimpleHtml = (args: {
     </html>
 `
 
-describe('readability service tests', () => {
+describe('page fetcher service tests', () => {
     function setup() {
         const service = new PageFetcherService()
         return { service }
@@ -50,7 +50,7 @@ describe('readability service tests', () => {
             <body>
                 <br>
                 <p>content</p>
-                <b><i>memex</b></i>
+                <b><i>memex</i></b>
                 <input type=text disabled />
             </body>
         </html>
