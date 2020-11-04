@@ -7,6 +7,10 @@ import { SyncInfoStorage } from '@worldbrain/memex-common/lib/sync/storage'
 export class MemexClientSyncLogStorage extends ClientSyncLogStorage {
     getConfig(): StorageModuleConfig {
         const config = super.getConfig()
+
+        // This is needed as storex-sync keeps its own versions for the collections that come with it,
+        //  though for use with the rest of the Memex Go collections those internal versions need
+        //  to be mapped to Memex Go versions.
         config.collections = mapCollectionVersions({
             collectionDefinitions: config.collections!,
             mappings: [
@@ -18,8 +22,13 @@ export class MemexClientSyncLogStorage extends ClientSyncLogStorage {
                     moduleVersion: new Date('2020-07-15'),
                     applicationVersion: STORAGE_VERSIONS[20].version,
                 },
+                {
+                    moduleVersion: new Date('2020-08-21'),
+                    applicationVersion: STORAGE_VERSIONS[23].version,
+                },
             ],
         })
+
         for (const collectionDefinition of [
             config.collections!.clientSyncLogEntry,
             ...config.collections!.clientSyncLogEntry.history!,
@@ -27,6 +36,7 @@ export class MemexClientSyncLogStorage extends ClientSyncLogStorage {
             collectionDefinition.backup = false
             collectionDefinition.watch = false
         }
+
         return config
     }
 }
