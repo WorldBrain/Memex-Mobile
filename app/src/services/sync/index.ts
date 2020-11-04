@@ -1,4 +1,5 @@
 import { generateSecureRandom } from 'react-native-securerandom'
+import { COLLECTION_NAMES as PAGES_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/pages/constants'
 import StorageManager from '@worldbrain/storex'
 import some from 'lodash/some'
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'
@@ -24,7 +25,6 @@ import {
 import { PRODUCT_VERSION } from 'src/constants'
 import { AUTO_SYNC_TIMEOUT, AUTO_SYNC_COLLECTIONS } from './constants'
 import { ErrorTracker } from '../error-tracking/types'
-import { postReceiveProcessor } from './post-receive-processor'
 
 export default class AppSyncService extends SyncService {
     static DEF_CONTINUOUS_SYNC_BATCH_SIZE = 15
@@ -46,7 +46,6 @@ export default class AppSyncService extends SyncService {
     }) {
         super({
             ...options,
-            postReceiveProcessor,
             settingStore: new MemexSyncSettingStore(options),
             productType: 'app',
             productVersion: PRODUCT_VERSION,
@@ -79,6 +78,26 @@ export default class AppSyncService extends SyncService {
                 reconnectTimer: 1000,
                 ...params,
             })
+        }
+
+        this.executeReconciliationOperation = async (
+            name: string,
+            ...args: any[]
+        ) => {
+            // If incoming create op is for pages and `page.fullUrl` is missing,
+            //  fill it in with `page.url`
+            if (
+                name === 'createObject' &&
+                args[0] === PAGES_COLLECTION_NAMES.page &&
+                args[1].fullUrl == null &&
+                args[1].url != null
+            ) {
+                args[1].fullUrl = args[1].url
+            }
+
+            return super.executeReconciliationOperation
+                ? super.executeReconciliationOperation(name, ...args)
+                : options.storageManager.operation(name, ...args)
         }
     }
 
