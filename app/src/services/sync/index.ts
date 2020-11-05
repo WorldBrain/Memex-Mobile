@@ -97,7 +97,7 @@ export default class AppSyncService extends SyncService {
 
             return super.executeReconciliationOperation
                 ? super.executeReconciliationOperation(name, ...args)
-                : options.storageManager.operation(name, ...args)
+                : options.storageManager.backend.operation(name, ...args)
         }
     }
 
