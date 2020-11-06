@@ -20,6 +20,7 @@ import { MockKeychainPackage } from './services/keychain/mock-keychain-package'
 import { registerSingleDeviceSyncTests } from './services/sync/index.tests'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 import { RouteProp } from '@react-navigation/native'
+import { ConnectionOptions } from 'typeorm'
 
 export interface TestDevice {
     storage: Storage
@@ -36,6 +37,7 @@ export interface MultiDeviceTestContext {
 }
 export type TestDeviceFactory = (options?: {
     debugSql?: boolean
+    backend?: 'dexie' | 'typeorm'
     extraPostChangeWatcher?: (
         context: StorageOperationEvent<'post'>,
     ) => void | Promise<void>
@@ -86,7 +88,7 @@ export function makeStorageTestFactory() {
                     'should work on a single device',
                     options?.mark,
                 ),
-                async function(this: any) {
+                async function (this: any) {
                     const storage = await createStorage({
                         typeORMConnectionOpts: {
                             type: 'sqlite',
@@ -158,7 +160,7 @@ export function makeMultiDeviceTestFactory() {
             return
         }
 
-        it(description, async function(this: any) {
+        it(description, async function (this: any) {
             const signalTransportFactory = lazyMemorySignalTransportFactory()
             const createdDevices: Array<{
                 storage: Storage
@@ -166,15 +168,18 @@ export function makeMultiDeviceTestFactory() {
             }> = []
             const sharedSyncLog = await createMemorySharedSyncLog()
 
-            const createDevice: TestDeviceFactory = async options => {
-                const storage = await createStorage({
-                    typeORMConnectionOpts: {
-                        type: 'sqlite',
-                        database: ':memory:',
-                        name: `connection-${connIterator++}`,
-                        logging: !!(options && options.debugSql),
-                    },
-                })
+            const createDevice: TestDeviceFactory = async (options) => {
+                const typeORMConnectionOpts: ConnectionOptions | undefined =
+                    options?.backend === 'dexie'
+                        ? undefined
+                        : {
+                              type: 'sqlite',
+                              database: ':memory:',
+                              name: `connection-${connIterator++}`,
+                              logging: !!(options && options.debugSql),
+                          }
+
+                const storage = await createStorage({ typeORMConnectionOpts })
 
                 const route = new FakeRoute()
                 const navigation = new FakeNavigation()

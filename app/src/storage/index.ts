@@ -24,23 +24,30 @@ import {
 } from 'src/features/sync/storage'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 import { filterSyncLog } from '@worldbrain/memex-common/lib/sync/sync-logging'
+import { DexieStorageBackend } from '@worldbrain/storex-backend-dexie'
+import inMemory from '@worldbrain/storex-backend-dexie/lib/in-memory'
+import extractTerms from '@worldbrain/memex-stemmer'
 
 export interface CreateStorageOptions {
-    typeORMConnectionOpts: ConnectionOptions
+    typeORMConnectionOpts?: ConnectionOptions
 }
 
 export async function createStorage({
     typeORMConnectionOpts,
 }: CreateStorageOptions): Promise<Storage> {
-    const connectionOptions = {
-        ...defaultConnectionOpts,
-        ...typeORMConnectionOpts,
-    } as ConnectionOptions
-
-    const backend = new TypeORMStorageBackend({
-        connectionOptions,
-        legacyMemexCompatibility: true,
-    })
+    const backend = typeORMConnectionOpts
+        ? new TypeORMStorageBackend({
+              connectionOptions: {
+                  ...defaultConnectionOpts,
+                  ...typeORMConnectionOpts,
+              } as ConnectionOptions,
+              legacyMemexCompatibility: true,
+          })
+        : new DexieStorageBackend({
+              idbImplementation: inMemory(),
+              dbName: 'unittest',
+              stemmer: extractTerms,
+          })
 
     for (const plugin of createStorexPlugins()) {
         backend.use(plugin)
@@ -87,10 +94,10 @@ export async function setStorageMiddleware(options: {
     options.storage.manager.setMiddleware([
         new ChangeWatchMiddleware({
             storageManager: options.storage.manager,
-            shouldWatchCollection: collection => {
+            shouldWatchCollection: (collection) => {
                 return syncedCollections.has(collection)
             },
-            postprocessOperation: async context => {
+            postprocessOperation: async (context) => {
                 if (options.enableAutoSync) {
                     await options.services.sync.handleStorageChange(context)
                 }
