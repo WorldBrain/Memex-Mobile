@@ -84,15 +84,37 @@ export default class AppSyncService extends SyncService {
             name: string,
             ...args: any[]
         ) => {
-            // If incoming create op is for pages and `page.fullUrl` is missing,
-            //  fill it in with `page.url`
-            if (
-                name === 'createObject' &&
-                args[0] === PAGES_COLLECTION_NAMES.page &&
-                args[1].fullUrl == null &&
-                args[1].url != null
-            ) {
-                args[1].fullUrl = args[1].url
+            const isAffectedData = (
+                op: string,
+                collection: string,
+                data: any,
+            ): boolean =>
+                op === 'createObject' &&
+                collection === PAGES_COLLECTION_NAMES.page &&
+                data.fullUrl == null &&
+                data.url != null
+
+            const fixAffectedData = (data: any) => ({
+                ...data,
+                fullUrl: data.url,
+            })
+
+            if (name === 'executeBatch') {
+                args[0] = args[0].map((entry: any) => {
+                    if (
+                        isAffectedData(
+                            entry.operation,
+                            entry.collection,
+                            entry.args,
+                        )
+                    ) {
+                        return { ...entry, args: fixAffectedData(entry.args) }
+                    }
+
+                    return entry
+                })
+            } else if (isAffectedData(name, args[0], args[1])) {
+                args[1] = fixAffectedData(args[1])
             }
 
             return super.executeReconciliationOperation
