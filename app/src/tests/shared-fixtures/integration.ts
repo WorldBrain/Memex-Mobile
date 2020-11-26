@@ -104,6 +104,7 @@ export async function checkIntegrationTestData(options: { storage: Storage }) {
             {
                 id: expect.any(Number),
                 name: 'testA',
+                searchableName: 'testA',
                 isDeletable: false,
                 isNestable: false,
                 createdAt: expect.any(Date),
@@ -111,6 +112,7 @@ export async function checkIntegrationTestData(options: { storage: Storage }) {
             {
                 id: expect.any(Number),
                 name: 'testB',
+                searchableName: 'testB',
                 isDeletable: false,
                 isNestable: false,
                 createdAt: expect.any(Date),
@@ -118,6 +120,7 @@ export async function checkIntegrationTestData(options: { storage: Storage }) {
             {
                 id: expect.any(Number),
                 name: 'testC',
+                searchableName: 'testC',
                 isDeletable: false,
                 isNestable: false,
                 createdAt: expect.any(Date),
@@ -125,6 +128,7 @@ export async function checkIntegrationTestData(options: { storage: Storage }) {
             {
                 id: expect.any(Number),
                 name: 'testD',
+                searchableName: 'testD',
                 isDeletable: false,
                 isNestable: false,
                 createdAt: expect.any(Date),
