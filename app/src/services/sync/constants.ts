@@ -1,4 +1,5 @@
 import { COLLECTION_NAMES as READER_COLL_NAMES } from '@worldbrain/memex-storage/lib/reader/constants'
+import { COLLECTION_NAMES as ANNOTATION_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/annotations/constants'
 
 export const SYNC_STORAGE_AREA_KEYS = {
     continuousSyncEnabled: 'enable-continuous-sync',
@@ -22,6 +23,7 @@ export const AUTO_SYNC_COLLECTIONS: { [collection: string]: boolean } = {
     customListDescriptions: true,
     sharedAnnotationMetadata: true,
     pageListEntryDescriptions: true,
+    [ANNOTATION_COLLECTION_NAMES.annotationPrivacy]: true,
     [READER_COLL_NAMES.readablePage]: true,
 
     clientSyncLogEntry: false,
