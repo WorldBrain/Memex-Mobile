@@ -70,10 +70,10 @@ platform :ios do
             clean: true,
             silent: true,
             configuration: options[:production] ? 'Release' : 'Development',
-            export_options: {
-                method: "app-store",
-                provisioningProfiles: prov_profiles
-            }
+            # export_options: {
+            #     method: "app-store",
+            #     provisioningProfiles: prov_profiles
+            # }
         )
     end
 
