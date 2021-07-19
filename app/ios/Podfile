@@ -72,6 +72,15 @@ target 'app' do
   end
 end
 
+pre_install do |installer|
+  ## Fix for images not appearing in-app in iOS >14
+  puts("Image fix for ios14: remove this when upgradeing to >= 0.63.3")
+  find = "_currentFrame.CGImage;"
+  replace = "_currentFrame.CGImage ;} else { [super displayLayer:layer];"
+  op = `sed -ie "s/#{find}/#{replace}/" ../node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.m`
+  puts("Image fix for ios14 done")
+end
+
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
