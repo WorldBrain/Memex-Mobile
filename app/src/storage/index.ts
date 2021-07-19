@@ -10,6 +10,7 @@ import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/feat
 import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
 import { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/lib/sync/constants'
+import PersonalCloudStorage from '@worldbrain/memex-common/lib/personal-cloud/storage'
 
 import defaultConnectionOpts from './default-connection-opts'
 import { Storage } from './types'
@@ -113,8 +114,13 @@ export async function setStorageMiddleware(options: {
 export async function createServerStorage() {
     const manager = createServerStorageManager()
     const sharedSyncLog = createSharedSyncLog(manager)
+    const personalCloud = new PersonalCloudStorage({
+        storageManager: manager,
+        autoPkType: 'string',
+    })
     registerModuleMapCollections(manager.registry, {
         sharedSyncLog,
+        personalCloud,
     })
     await manager.finishInitialization()
 
@@ -122,6 +128,7 @@ export async function createServerStorage() {
         manager,
         modules: {
             sharedSyncLog,
+            personalCloud,
         },
     }
 }
