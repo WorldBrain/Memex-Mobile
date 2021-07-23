@@ -1,16 +1,21 @@
 import { ConnectionOptions } from 'typeorm'
 import StorageManager from '@worldbrain/storex'
+import { updateOrCreate } from '@worldbrain/storex/lib/utils'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
-import { registerModuleMapCollections } from '@worldbrain/storex-pattern-modules'
+import {
+    registerModuleMapCollections,
+    _defaultOperationExecutor,
+} from '@worldbrain/storex-pattern-modules'
 import { ChangeWatchMiddleware } from '@worldbrain/storex-middleware-change-watcher'
 import { extractUrlParts, normalizeUrl } from '@worldbrain/memex-url-utils'
 import { createStorexPlugins } from '@worldbrain/memex-storage/lib/mobile-app/plugins'
+import UserStorage from '@worldbrain/memex-common/lib/user-management/storage'
 import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
 import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
 import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
 import { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/lib/sync/constants'
-import PersonalCloudStorage from '@worldbrain/memex-common/lib/personal-cloud/storage'
+import PersonalCloudServerStorage from '@worldbrain/memex-common/lib/personal-cloud/storage'
 
 import defaultConnectionOpts from './default-connection-opts'
 import { Storage } from './types'
@@ -28,13 +33,26 @@ import { filterSyncLog } from '@worldbrain/memex-common/lib/sync/sync-logging'
 import { DexieStorageBackend } from '@worldbrain/storex-backend-dexie'
 import inMemory from '@worldbrain/storex-backend-dexie/lib/in-memory'
 import extractTerms from '@worldbrain/memex-stemmer'
+import { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
+import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
+import { FirestoreStorageBackend } from '@worldbrain/storex-backend-firestore'
+import type { PersonalCloudBackend } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 
 export interface CreateStorageOptions {
+    services: Pick<Services, 'auth'>
     typeORMConnectionOpts?: ConnectionOptions
+    createDeviceId: (userId: string | number) => Promise<string | number>
+    createPersonalCloudBackend: (
+        storageManager: StorageManager,
+        modules: Pick<Storage['modules'], 'settings'>,
+    ) => PersonalCloudBackend
 }
 
 export async function createStorage({
+    services,
+    createDeviceId,
     typeORMConnectionOpts,
+    createPersonalCloudBackend,
 }: CreateStorageOptions): Promise<Storage> {
     const backend = typeORMConnectionOpts
         ? new TypeORMStorageBackend({
@@ -55,8 +73,10 @@ export async function createStorage({
     }
 
     const storageManager = new StorageManager({ backend })
+    const settings = new SettingsStorage({ storageManager })
 
     const modules: Storage['modules'] = {
+        settings,
         overview: new OverviewStorage({
             storageManager,
             normalizeUrl,
@@ -66,12 +86,43 @@ export async function createStorage({
         pageEditor: new PageEditorStorage({ storageManager, normalizeUrl }),
         clientSyncLog: new MemexClientSyncLogStorage({ storageManager }),
         syncInfo: new MemexSyncInfoStorage({ storageManager }),
-        settings: new SettingsStorage({ storageManager }),
         reader: new ReaderStorage({ storageManager, normalizeUrl }),
         contentSharing: new ContentSharingClientStorage({ storageManager }),
+        personalCloud: new PersonalCloudStorage({
+            backend: createPersonalCloudBackend(storageManager, {
+                settings,
+            }),
+            storageManager,
+            createDeviceId,
+            getDeviceId: async () => 1,
+            setDeviceId: async (id) => undefined,
+            getUserId: async () =>
+                (await services.auth.getCurrentUser())?.id ?? null,
+            userIdChanges: () => authChanges(services.auth),
+            writeIncomingData: async (params) => {
+                // WARNING: Keep in mind this skips all storage middleware
+                await updateOrCreate({
+                    ...params,
+                    storageManager,
+                    executeOperation: (...args) =>
+                        storageManager.backend.operation(...args),
+                })
+            },
+        }),
     }
 
-    registerModuleMapCollections(storageManager.registry, modules as any)
+    registerModuleMapCollections(storageManager.registry, {
+        settings: modules.settings,
+        overview: modules.overview,
+        metaPicker: modules.metaPicker,
+        pageEditor: modules.pageEditor,
+        clientSyncLog: modules.clientSyncLog,
+        syncInfo: modules.syncInfo,
+        reader: modules.reader,
+        contentSharing: modules.contentSharing,
+        personalCloudAction: modules.personalCloud.actionQueue.storage,
+    })
+
     await storageManager.finishInitialization()
     await storageManager.backend.migrate()
 
@@ -113,21 +164,30 @@ export async function setStorageMiddleware(options: {
 
 export async function createServerStorage() {
     const manager = createServerStorageManager()
+    const operationExecuter = (storageModuleName: string) =>
+        _defaultOperationExecutor(manager)
     const sharedSyncLog = createSharedSyncLog(manager)
-    const personalCloud = new PersonalCloudStorage({
+    const userManagement = new UserStorage({
+        storageManager: manager,
+        operationExecuter: operationExecuter('users'),
+    })
+    const personalCloud = new PersonalCloudServerStorage({
         storageManager: manager,
         autoPkType: 'string',
     })
     registerModuleMapCollections(manager.registry, {
         sharedSyncLog,
         personalCloud,
+        userManagement,
     })
     await manager.finishInitialization()
 
     return {
         manager,
+        backend: manager.backend as FirestoreStorageBackend,
         modules: {
             sharedSyncLog,
+            userManagement,
             personalCloud,
         },
     }

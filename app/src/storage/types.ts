@@ -10,6 +10,7 @@ import {
 } from 'src/features/sync/storage'
 import { SettingsStorage } from 'src/features/settings/storage'
 import { ReaderStorage } from 'src/features/reader/storage'
+import { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 
 export interface Storage {
     manager: StorageManager
@@ -22,6 +23,7 @@ export interface StorageModules {
     pageEditor: PageEditorStorage
     clientSyncLog: MemexClientSyncLogStorage
     contentSharing: ContentSharingClientStorage
+    personalCloud: PersonalCloudStorage
     syncInfo: MemexSyncInfoStorage
     settings: SettingsStorage
     reader: ReaderStorage

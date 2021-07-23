@@ -9,7 +9,7 @@ import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/m
 import { MemorySignalTransportManager } from 'simple-signalling/lib/memory'
 import { createStorage, setStorageMiddleware } from 'src/storage'
 import { Storage } from 'src/storage/types'
-import { createServices } from './services'
+import { createCoreServices } from './services'
 import { Services } from './services/types'
 import { LocalStorageService } from './services/local-storage'
 import { MockSentry } from './services/error-tracking/index.tests'
@@ -111,7 +111,7 @@ export function makeStorageTestFactory() {
                         new MockSentry() as any,
                         { dsn: 'test.com' },
                     )
-                    const services = await createServices({
+                    const services = await createCoreServices({
                         devicePlatform: 'integration-tests',
                         storage,
                         normalizeUrl,
@@ -191,7 +191,7 @@ export function makeMultiDeviceTestFactory() {
                     new MockSentry() as any,
                     { dsn: 'test.com' },
                 )
-                const services = await createServices({
+                const services = await createCoreServices({
                     devicePlatform: 'integration-tests',
                     auth,
                     storage,
