@@ -70,7 +70,11 @@ export async function main() {
             location: 'Shared',
             database: 'memex',
         },
-        createPersonalCloudBackend: (storageManager, { settings }) =>
+        createPersonalCloudBackend: (
+            storageManager,
+            { settings },
+            getDeviceId,
+        ) =>
             new FirestorePersonalCloudBackend({
                 personalCloudService: firebaseService<PersonalCloudService>(
                     'personalCloud',
@@ -100,6 +104,7 @@ export async function main() {
                     settings.getSetting({ key: 'lastSeenUpdateTime' }),
                 setLastUpdateSeenTime: (value) =>
                     settings.setSetting({ key: 'lastSeenUpdateTime', value }),
+                getDeviceId,
             }),
         createDeviceId: async (userId) => {
             const device = await serverStorage.modules.personalCloud.createDeviceInfo(

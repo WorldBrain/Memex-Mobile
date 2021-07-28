@@ -12,7 +12,7 @@ import {
     PersonalCloudBackend,
     PersonalCloudUpdateType,
     PersonalCloudUpdateBatch,
-    ClientStorageType,
+    PersonalCloudClientStorageType,
 } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import { getCurrentSchemaVersion } from '@worldbrain/memex-common/lib/storage/utils'
 
@@ -28,7 +28,7 @@ export interface Dependencies {
     getDeviceId(): Promise<string | number>
     setDeviceId(deviceId: string | number): Promise<void>
     writeIncomingData(params: {
-        storageType: ClientStorageType
+        storageType: PersonalCloudClientStorageType
         collection: string
         where?: { [key: string]: any }
         updates: { [key: string]: any }
@@ -104,7 +104,7 @@ export class PersonalCloudStorage {
                                 object[
                                     key
                                 ] = await this.dependencies.backend.downloadFromMedia(
-                                    { path },
+                                    { path: path.path },
                                 )
                             },
                         ),
@@ -112,7 +112,8 @@ export class PersonalCloudStorage {
                 }
 
                 await this.dependencies.writeIncomingData({
-                    storageType: update.storage ?? 'normal',
+                    storageType:
+                        update.storage ?? PersonalCloudClientStorageType.Normal,
                     collection: update.collection,
                     updates: update.object,
                     where: update.where,

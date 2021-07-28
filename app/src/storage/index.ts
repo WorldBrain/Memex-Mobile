@@ -36,7 +36,10 @@ import extractTerms from '@worldbrain/memex-stemmer'
 import { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
 import { FirestoreStorageBackend } from '@worldbrain/storex-backend-firestore'
-import type { PersonalCloudBackend } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
+import type {
+    PersonalCloudBackend,
+    PersonalCloudDeviceId,
+} from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 
 export interface CreateStorageOptions {
     services: Pick<Services, 'auth'>
@@ -45,6 +48,7 @@ export interface CreateStorageOptions {
     createPersonalCloudBackend: (
         storageManager: StorageManager,
         modules: Pick<Storage['modules'], 'settings'>,
+        getDeviceId: () => Promise<PersonalCloudDeviceId>,
     ) => PersonalCloudBackend
 }
 
@@ -75,6 +79,8 @@ export async function createStorage({
     const storageManager = new StorageManager({ backend })
     const settings = new SettingsStorage({ storageManager })
 
+    const getDeviceId = async () => settings.getSetting({ key: 'deviceId' })
+
     const modules: Storage['modules'] = {
         settings,
         overview: new OverviewStorage({
@@ -89,13 +95,18 @@ export async function createStorage({
         reader: new ReaderStorage({ storageManager, normalizeUrl }),
         contentSharing: new ContentSharingClientStorage({ storageManager }),
         personalCloud: new PersonalCloudStorage({
-            backend: createPersonalCloudBackend(storageManager, {
-                settings,
-            }),
+            backend: createPersonalCloudBackend(
+                storageManager,
+                {
+                    settings,
+                },
+                getDeviceId,
+            ),
             storageManager,
             createDeviceId,
-            getDeviceId: async () => 1,
-            setDeviceId: async (id) => undefined,
+            getDeviceId,
+            setDeviceId: async (value) =>
+                settings.setSetting({ key: 'deviceId', value }),
             getUserId: async () =>
                 (await services.auth.getCurrentUser())?.id ?? null,
             userIdChanges: () => authChanges(services.auth),
