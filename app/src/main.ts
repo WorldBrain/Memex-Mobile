@@ -7,8 +7,6 @@ import '@react-native-firebase/auth'
 import '@react-native-firebase/functions'
 import * as Sentry from '@sentry/react-native'
 import { normalizeUrl } from '@worldbrain/memex-url-utils'
-import { createSelfTests } from '@worldbrain/memex-common/lib/self-tests'
-import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
 import FirestorePersonalCloudBackend from '@worldbrain/memex-common/lib/personal-cloud/backend/firestore'
 import type { PersonalCloudService } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
@@ -41,9 +39,9 @@ import { ErrorTrackingService } from './services/error-tracking'
 import SyncService from './services/sync'
 import { MockSentry } from './services/error-tracking/index.tests'
 import { KeychainPackage } from './services/keychain/keychain'
-import { insertIntegrationTestData } from './tests/shared-fixtures/integration'
 import { runMigrations } from 'src/utils/quick-and-dirty-migrations'
 import { Services } from './services/types'
+import { createSelfTests } from 'src/tests/self-tests'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -62,7 +60,6 @@ export async function main() {
         firebase,
     })
     const serverStorage = await createServerStorage()
-
     const storage = await createStorage({
         services: coreServices,
         typeORMConnectionOpts: {
@@ -157,18 +154,15 @@ export async function main() {
     await runMigrations(dependencies)
 
     ui.initialize({ dependencies })
-
+    const selfTests = createSelfTests({
+        storageManager: storage.manager,
+        storageModules: storage.modules,
+        services,
+        getServerStorageManager: async () => serverStorage.manager,
+    })
+    // await selfTests.cloudReceive()
     Object.assign(globalThis, {
         ...dependencies,
-        selfTests: await createSelfTests({
-            storage,
-            services,
-            auth: {
-                setUser: async ({ id }) => services.auth.setUser(TEST_USER),
-            },
-            intergrationTestData: {
-                insert: () => insertIntegrationTestData({ storage }),
-            },
-        }),
+        selfTests,
     })
 }
