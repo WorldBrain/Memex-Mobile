@@ -11,7 +11,7 @@ export function createSelfTests(options: {
     getServerStorageManager: () => Promise<StorageManager>
 }) {
     const {
-        storageModules: { personalCloud },
+        storageModules: { personalCloud, settings },
     } = options
 
     const ensureTestUser = async () => {
@@ -162,6 +162,8 @@ export function createSelfTests(options: {
             console.log('setting id as null')
             await personalCloud['dependencies'].setDeviceId(null as any)
             console.log('set id as null')
+            await settings.setSetting({ key: 'lastSeenUpdateTime', value: 0 })
+            console.log('set last seen update time to 0')
             await options.storageModules.personalCloud.loadDeviceId()
             console.log('loaded device id')
         },

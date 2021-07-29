@@ -164,6 +164,8 @@ export async function main() {
     await setupFirebaseAuth(dependencies)
     await setupContinuousSync(dependencies)
 
+    await storage.modules.personalCloud.setup()
+
     await runMigrations(dependencies)
 
     ui.initialize({ dependencies })
