@@ -14,7 +14,6 @@ import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/featur
 import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
 import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
 import { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
-import { SYNCED_COLLECTIONS } from '@worldbrain/memex-common/lib/sync/constants'
 import PersonalCloudServerStorage from '@worldbrain/memex-common/lib/personal-cloud/storage'
 
 import defaultConnectionOpts from './default-connection-opts'
@@ -29,11 +28,11 @@ import {
     MemexSyncInfoStorage,
 } from 'src/features/sync/storage'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
-import { filterSyncLog } from '@worldbrain/memex-common/lib/sync/sync-logging'
 import { DexieStorageBackend } from '@worldbrain/storex-backend-dexie'
 import inMemory from '@worldbrain/storex-backend-dexie/lib/in-memory'
 import extractTerms from '@worldbrain/memex-stemmer'
 import { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
+import { CLOUD_SYNCED_COLLECTIONS } from 'src/features/personal-cloud/storage/constants'
 import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
 import { FirestoreStorageBackend } from '@worldbrain/storex-backend-firestore'
 import type {
@@ -150,14 +149,13 @@ export async function setStorageMiddleware(options: {
         context: StorageOperationEvent<'post'>,
     ) => void | Promise<void>
 }) {
-    const syncedCollections = new Set(SYNCED_COLLECTIONS)
+    const watchedCollections = new Set(CLOUD_SYNCED_COLLECTIONS)
 
     options.storage.manager.setMiddleware([
         new ChangeWatchMiddleware({
             storageManager: options.storage.manager,
-            shouldWatchCollection: (collection) => {
-                return syncedCollections.has(collection)
-            },
+            shouldWatchCollection: (collection) =>
+                watchedCollections.has(collection),
             postprocessOperation: async (event) => {
                 await Promise.all([
                     options.storage.modules.personalCloud.handlePostStorageChange(
