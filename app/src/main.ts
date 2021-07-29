@@ -159,11 +159,7 @@ export async function main() {
 
     const dependencies = { storage, services }
 
-    await setStorageMiddleware({
-        ...dependencies,
-        enableAutoSync: true,
-    })
-
+    await setStorageMiddleware(dependencies)
     await setupBackgroundSync(dependencies)
     await setupFirebaseAuth(dependencies)
     await setupContinuousSync(dependencies)

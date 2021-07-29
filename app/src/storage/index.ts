@@ -146,30 +146,27 @@ export async function createStorage({
 export async function setStorageMiddleware(options: {
     storage: Storage
     services: Services
-    enableAutoSync?: boolean
     extraPostChangeWatcher?: (
         context: StorageOperationEvent<'post'>,
     ) => void | Promise<void>
 }) {
     const syncedCollections = new Set(SYNCED_COLLECTIONS)
-    const syncLoggingMiddleware = await options.services.sync.createSyncLoggingMiddleware()
-    syncLoggingMiddleware.changeInfoPreprocessor = filterSyncLog
+
     options.storage.manager.setMiddleware([
         new ChangeWatchMiddleware({
             storageManager: options.storage.manager,
             shouldWatchCollection: (collection) => {
                 return syncedCollections.has(collection)
             },
-            postprocessOperation: async (context) => {
-                if (options.enableAutoSync) {
-                    await options.services.sync.handleStorageChange(context)
-                }
-                if (options.extraPostChangeWatcher) {
-                    await options.extraPostChangeWatcher(context)
-                }
+            postprocessOperation: async (event) => {
+                await Promise.all([
+                    options.storage.modules.personalCloud.handlePostStorageChange(
+                        event,
+                    ),
+                    options.extraPostChangeWatcher?.(event),
+                ])
             },
         }),
-        syncLoggingMiddleware,
     ])
 }
 
@@ -192,7 +189,6 @@ export async function createServerStorage() {
         userManagement,
     })
     await manager.finishInitialization()
-
     return {
         manager,
         backend: manager.backend as FirestoreStorageBackend,
