@@ -47,7 +47,7 @@
         "dom-anchor-text-position": "^5.0.0",
         "dom-anchor-text-quote": "^4.0.2",
         "expo-keep-awake": "^8.0.0",
-        "firebase": "^7.1.0",
+        "firebase": "^8.2.3",
         "get-browser-rtc": "^1.0.2",
         "global": "^4.4.0",
         "immutability-helper": "^3.0.0",
