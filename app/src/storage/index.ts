@@ -32,6 +32,7 @@ import { DexieStorageBackend } from '@worldbrain/storex-backend-dexie'
 import inMemory from '@worldbrain/storex-backend-dexie/lib/in-memory'
 import extractTerms from '@worldbrain/memex-stemmer'
 import { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
+import { CopyPasterStorage } from 'src/features/copy-paster/storage'
 import { CLOUD_SYNCED_COLLECTIONS } from 'src/features/personal-cloud/storage/constants'
 import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
 import { FirestoreStorageBackend } from '@worldbrain/storex-backend-firestore'
@@ -89,6 +90,7 @@ export async function createStorage({
         }),
         metaPicker: new MetaPickerStorage({ storageManager, normalizeUrl }),
         pageEditor: new PageEditorStorage({ storageManager, normalizeUrl }),
+        copyPaster: new CopyPasterStorage({ storageManager }),
         clientSyncLog: new MemexClientSyncLogStorage({ storageManager }),
         syncInfo: new MemexSyncInfoStorage({ storageManager }),
         reader: new ReaderStorage({ storageManager, normalizeUrl }),
@@ -131,6 +133,7 @@ export async function createStorage({
         reader: modules.reader,
         contentSharing: modules.contentSharing,
         personalCloudAction: modules.personalCloud.actionQueue.storage,
+        copyPaster: modules.copyPaster,
     })
 
     await storageManager.finishInitialization()

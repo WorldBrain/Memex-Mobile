@@ -11,6 +11,7 @@ import {
 import { SettingsStorage } from 'src/features/settings/storage'
 import { ReaderStorage } from 'src/features/reader/storage'
 import { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
+import { CopyPasterStorage } from 'src/features/copy-paster/storage'
 
 export interface Storage {
     manager: StorageManager
@@ -21,6 +22,7 @@ export interface StorageModules {
     overview: OverviewStorage
     metaPicker: MetaPickerStorage
     pageEditor: PageEditorStorage
+    copyPaster: CopyPasterStorage
     clientSyncLog: MemexClientSyncLogStorage
     contentSharing: ContentSharingClientStorage
     personalCloud: PersonalCloudStorage
