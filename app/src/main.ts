@@ -53,22 +53,28 @@ export async function main() {
     const sentry = __DEV__ ? (new MockSentry() as any) : Sentry
     const errorTracker = new ErrorTrackingService(sentry, { dsn: sentryDsn })
 
-    // TODO: put this all behind a env flag or something
-    const emulatorAddress = '10.0.2.2'
-    const getEmulatorAddress = (args: { port: number; noProtocol?: boolean }) =>
-        args.noProtocol
-            ? `${emulatorAddress}:${args.port}`
-            : `http://${emulatorAddress}:${args.port}`
-    await firebase.firestore().settings({
-        host: getEmulatorAddress({ port: 8080, noProtocol: true }),
-        ssl: false,
-        ignoreUndefinedProperties: true,
-    })
-    firebase.database().useEmulator(emulatorAddress, 9000)
-    firebase.auth().useEmulator(getEmulatorAddress({ port: 9099 }))
-    firebase
-        .functions()
-        .useFunctionsEmulator(getEmulatorAddress({ port: 5001 }))
+    if (process.env['USE_FIREBASE_EMULATOR']) {
+        console.log('DEBUG: attempting connect to Firebase emulator')
+        const emulatorAddress = '10.0.2.2' // TODO: this address works on Android emulators - need to differentiate for iOS + real devices
+        const getEmulatorAddress = (args: {
+            port: number
+            noProtocol?: boolean
+        }) =>
+            args.noProtocol
+                ? `${emulatorAddress}:${args.port}`
+                : `http://${emulatorAddress}:${args.port}`
+
+        await firebase.firestore().settings({
+            host: getEmulatorAddress({ port: 8080, noProtocol: true }),
+            ssl: false,
+            ignoreUndefinedProperties: true,
+        })
+        firebase.database().useEmulator(emulatorAddress, 9000)
+        firebase.auth().useEmulator(getEmulatorAddress({ port: 9099 }))
+        firebase
+            .functions()
+            .useFunctionsEmulator(getEmulatorAddress({ port: 5001 }))
+    }
 
     const coreServices = await createCoreServices({
         keychain: new KeychainPackage({ server: 'worldbrain.io' }),
