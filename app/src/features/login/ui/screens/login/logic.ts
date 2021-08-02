@@ -67,14 +67,19 @@ export default class Logic extends UILogic<State, Event> {
     submitLogin: EventHandler<'submitLogin'> = async ({
         previousState: { emailInputValue: email, passwordInputValue: password },
     }) => {
-        const { auth } = this.props.services
+        const { services, navigation, route } = this.props
 
         await executeUITask<State, 'loginState', void>(
             this,
             'loginState',
             async () => {
-                await auth.loginWithEmailAndPassword(email, password)
-                this.props.navigation.goBack()
+                await services.auth.loginWithEmailAndPassword(email, password)
+
+                if (route.params.nextRoute) {
+                    navigation.navigate(route.params.nextRoute)
+                } else {
+                    navigation.goBack()
+                }
             },
         )
     }

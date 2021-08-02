@@ -50,7 +50,7 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
             false,
         )
 
-        await this.options.navigation.navigate('Sync')
+        this.options.navigation.navigate('CloudSync')
     }
 
     goToLastStage: EventHandler<'goToLastStage'> = () => {

@@ -11,7 +11,7 @@ export async function loadInitial<State extends { loadState: UITaskState }>(
 export async function executeUITask<
     State,
     Key extends keyof State,
-    ReturnValue
+    ReturnValue = void
 >(
     logic: UILogic<State, any>,
     key: Key,

@@ -6,7 +6,7 @@ import navigationStyles from 'src/features/overview/ui/components/navigation.sty
 
 const ExitIcon = require('../img/closeIcon.png')
 const SettingsIcon = require('../img/menuIcon.png')
-const MemexIcon = require('../img/MemexIcon.png')
+const MemexIcon = require('../../../../ui/assets/MemexIcon.png')
 
 export interface Props extends NavProps {
     icon: 'exit' | 'settings'
@@ -14,7 +14,7 @@ export interface Props extends NavProps {
     onLeftIconPress?: () => void
 }
 
-const DashboardNavigation: React.StatelessComponent<Props> = props => (
+const DashboardNavigation: React.StatelessComponent<Props> = (props) => (
     <Navigation
         {...props}
         renderLeftIcon={() => (

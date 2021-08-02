@@ -13,6 +13,7 @@ import MVPOverview from 'src/features/overview/ui/screens/mvp-overview'
 import Pairing from 'src/features/overview/ui/screens/pairing-screen'
 import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
 import Sync from 'src/features/sync/ui/screens/sync'
+import CloudSync from 'src/features/personal-cloud/ui/sync-screen'
 import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
 import SettingsMenu from 'src/features/settings-menu/ui/screens/settings-menu'
 import Reader from 'src/features/reader/ui/screens/reader'
@@ -25,44 +26,47 @@ export type NavigationContainerFactory = (deps: UIDependencies) => JSX.Element
 const MainStack = createStackNavigator<MainNavigatorParamList>()
 const ShareStack = createStackNavigator<ShareNavigatorParamList>()
 
-export const createMainNavigator: NavigationContainerFactory = deps => (
+export const createMainNavigator: NavigationContainerFactory = (deps) => (
     <NavigationContainer theme={lightTheme}>
         <MainStack.Navigator initialRouteName="Dashboard" headerMode="none">
             <MainStack.Screen name="Onboarding">
-                {props => <Onboarding {...props} {...deps} />}
+                {(props) => <Onboarding {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="PageEditor">
-                {props => <PageEditor {...props} {...deps} />}
+                {(props) => <PageEditor {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="NoteEditor">
-                {props => <NoteEditor {...props} {...deps} />}
+                {(props) => <NoteEditor {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="Dashboard">
-                {props => <Dashboard {...props} {...deps} />}
+                {(props) => <Dashboard {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="Login">
-                {props => <Login {...props} {...deps} />}
+                {(props) => <Login {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="ListsFilter">
-                {props => <ListsFilter {...props} {...deps} />}
+                {(props) => <ListsFilter {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="DebugConsole">
-                {props => <DebugConsole {...props} {...deps} />}
+                {(props) => <DebugConsole {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="MVPOverview">
-                {props => <MVPOverview {...props} {...deps} />}
+                {(props) => <MVPOverview {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="SettingsMenu">
-                {props => <SettingsMenu {...props} {...deps} />}
+                {(props) => <SettingsMenu {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="Sync">
-                {props => <Sync {...props} {...deps} />}
+                {(props) => <Sync {...props} {...deps} />}
+            </MainStack.Screen>
+            <MainStack.Screen name="CloudSync">
+                {(props) => <CloudSync {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="Pairing">
-                {props => <Pairing {...props} {...deps} />}
+                {(props) => <Pairing {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="Reader">
-                {props => (
+                {(props) => (
                     <Reader
                         {...props}
                         {...deps}
@@ -74,14 +78,14 @@ export const createMainNavigator: NavigationContainerFactory = deps => (
     </NavigationContainer>
 )
 
-export const createShareNavigator: NavigationContainerFactory = deps => (
+export const createShareNavigator: NavigationContainerFactory = (deps) => (
     <NavigationContainer theme={lightTheme}>
         <ShareStack.Navigator initialRouteName="ShareModal" headerMode="none">
             <ShareStack.Screen name="ShareModal">
-                {props => <ShareModal {...props} {...deps} />}
+                {(props) => <ShareModal {...props} {...deps} />}
             </ShareStack.Screen>
             <ShareStack.Screen name="Login">
-                {props => <Login {...props} {...deps} />}
+                {(props) => <Login {...props} {...deps} />}
             </ShareStack.Screen>
         </ShareStack.Navigator>
     </NavigationContainer>

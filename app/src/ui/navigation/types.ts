@@ -10,8 +10,11 @@ export type MainNavigatorParamList = {
     MVPOverview: undefined
     Onboarding: undefined
     Pairing: undefined
-    Login: undefined
     Sync: undefined
+    CloudSync: undefined
+    Login: {
+        nextRoute?: keyof MainNavigatorParamList
+    }
     ListsFilter: {
         selectedList: string
     }
