@@ -16,17 +16,22 @@ export default class LoginScreen extends StatefulUIElement<
     render() {
         return (
             <Login
+                mode={this.state.mode}
                 hasError={this.state.loginState === 'error'}
                 isLoading={this.state.loginState === 'running'}
                 emailInputValue={this.state.emailInputValue}
                 passwordInputValue={this.state.passwordInputValue}
+                onModeToggle={() => this.processEvent('toggleMode', null)}
                 onLoginPress={() => this.processEvent('submitLogin', null)}
                 onCancelPress={() => this.processEvent('cancelLogin', null)}
-                onEmailChange={value =>
+                onEmailChange={(value) =>
                     this.processEvent('changeEmailInput', { value })
                 }
-                onPasswordChange={value =>
+                onPasswordChange={(value) =>
                     this.processEvent('changePasswordInput', { value })
+                }
+                onPasswordForgot={() =>
+                    console.log('you forgot your password...')
                 }
             />
         )

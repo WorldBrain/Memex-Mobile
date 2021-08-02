@@ -19,7 +19,19 @@ describe('login UI logic tests', () => {
         return { logic, element }
     }
 
-    it('should be able to change email input value', async context => {
+    it('should be able to toggle login/signup mode', async (context) => {
+        const { element } = setup(context)
+
+        expect(element.state.mode).toEqual('login')
+        await element.processEvent('toggleMode', null)
+        expect(element.state.mode).toEqual('signup')
+        await element.processEvent('toggleMode', null)
+        expect(element.state.mode).toEqual('login')
+        await element.processEvent('toggleMode', null)
+        expect(element.state.mode).toEqual('signup')
+    })
+
+    it('should be able to change email input value', async (context) => {
         const { element } = setup(context)
         const testEmail = 'test@test.com'
 
@@ -32,7 +44,7 @@ describe('login UI logic tests', () => {
         }
     })
 
-    it('should be able to change password input value', async context => {
+    it('should be able to change password input value', async (context) => {
         const { element } = setup(context)
         const testPassword = 'test1234'
 
@@ -47,7 +59,7 @@ describe('login UI logic tests', () => {
         }
     })
 
-    it('should nav back to prev route and set skip sync flag on cancel', async context => {
+    it('should nav back to prev route and set skip sync flag on cancel', async (context) => {
         const { element } = setup(context)
         const { localStorage } = context.services
 
@@ -60,7 +72,7 @@ describe('login UI logic tests', () => {
         expect(context.navigation.popRequests()).toEqual([{ type: 'goBack' }])
     })
 
-    it('should nav back to prev route on submit success', async context => {
+    it('should nav back to prev route on submit success', async (context) => {
         const { element } = setup(context)
 
         expect(context.navigation.popRequests()).toEqual([])
@@ -77,7 +89,7 @@ describe('login UI logic tests', () => {
         expect(context.navigation.popRequests()).toEqual([{ type: 'goBack' }])
     })
 
-    it('should set error state and not navigate on submit failure', async context => {
+    it('should set error state and not navigate on submit failure', async (context) => {
         const { element } = setup(context)
 
         expect(context.navigation.popRequests()).toEqual([])

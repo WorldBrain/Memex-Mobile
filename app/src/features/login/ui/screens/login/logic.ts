@@ -3,6 +3,7 @@ import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
 import { storageKeys } from '../../../../../../app.json'
 import { UITaskState, UIServices, MainNavProps } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
+import type { LoginMode } from '../../types'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,
@@ -14,6 +15,7 @@ export interface State {
     loginState: UITaskState
     emailInputValue: string
     passwordInputValue: string
+    mode: LoginMode
 }
 
 export type Event = UIEvent<{
@@ -21,6 +23,7 @@ export type Event = UIEvent<{
     changePasswordInput: { value: string }
     submitLogin: null
     cancelLogin: null
+    toggleMode: null
 }>
 
 export interface Props extends MainNavProps<'Login'> {
@@ -34,10 +37,16 @@ export default class Logic extends UILogic<State, Event> {
 
     getInitialState(): State {
         return {
+            mode: 'login',
             emailInputValue: '',
             passwordInputValue: '',
             loginState: 'pristine',
         }
+    }
+
+    toggleMode: EventHandler<'toggleMode'> = ({ previousState }) => {
+        const nextMode = previousState.mode === 'login' ? 'signup' : 'login'
+        this.emitMutation({ mode: { $set: nextMode } })
     }
 
     changeEmailInput: EventHandler<'changeEmailInput'> = ({ event }) => {

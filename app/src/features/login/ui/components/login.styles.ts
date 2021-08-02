@@ -53,6 +53,14 @@ export default EStyleSheet.create({
         height: 30,
         marginTop: 15,
     },
+    modeButton: {
+        height: 30,
+        marginTop: 15,
+    },
+    forgotPasswordButton: {
+        height: 30,
+        marginTop: 15,
+    },
     errorTitle: {
         fontSize: '1.1rem',
         paddingHorizontal: 30,
