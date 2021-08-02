@@ -34,13 +34,13 @@ export default class OnboardingScreen extends StatefulUIElement<
             <OnboardingLayout
                 {...(props as any)}
                 screenIndex={this.state.onboardingStage}
-                onNextPress={() => this.processEvent('goToNextStage', {})}
-                onBackPress={() => this.processEvent('goToPrevStage', {})}
+                onNextPress={() => this.processEvent('goToNextStage', null)}
+                onBackPress={() => this.processEvent('goToPrevStage', null)}
                 onSkipPress={() => {
                     if (props.onSkipPress) {
                         props.onSkipPress()
                     } else {
-                        this.processEvent('goToLastStage', {})
+                        this.processEvent('goToLastStage', null)
                     }
                 }}
             />

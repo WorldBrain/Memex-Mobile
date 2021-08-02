@@ -1,27 +1,33 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
 
 import { storageKeys } from '../../../../../../app.json'
 import { OnboardingStage } from 'src/features/onboarding/types'
 import { UIServices, MainNavProps } from 'src/ui/types'
 import { isSyncEnabled } from 'src/features/sync/utils'
 
+type EventHandler<EventName extends keyof Event> = UIEventHandler<
+    State,
+    Event,
+    EventName
+>
+
 export interface State {
+    isExistingUser: boolean
     onboardingStage: OnboardingStage
-    isSynced: boolean
 }
 
 export type Event = UIEvent<{
     finishOnboarding: { nextView: 'Sync' | 'Dashboard' }
-    goToLastStage: {}
-    goToNextStage: {}
-    goToPrevStage: {}
+    goToLastStage: null
+    goToNextStage: null
+    goToPrevStage: null
 }>
 
 export default class OnboardingScreenLogic extends UILogic<State, Event> {
-    static MAX_ONBOARDING_STAGE: OnboardingStage = 3
+    static MAX_ONBOARDING_STAGE: OnboardingStage = 2
 
     constructor(
-        private options: MainNavProps & {
+        private options: MainNavProps<'Onboarding'> & {
             services: UIServices<'localStorage'>
         },
     ) {
@@ -29,62 +35,53 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
     }
 
     getInitialState(): State {
-        return { onboardingStage: 0, isSynced: false }
+        return { onboardingStage: 0, isExistingUser: false }
     }
 
     async init() {
         if (await isSyncEnabled(this.options.services)) {
-            this.emitMutation({ isSynced: { $set: true } })
+            this.emitMutation({ isExistingUser: { $set: true } })
         }
     }
 
-    async finishOnboarding(
-        incoming: IncomingUIEvent<State, Event, 'finishOnboarding'>,
-    ) {
+    finishOnboarding: EventHandler<'finishOnboarding'> = async ({ event }) => {
         await this.options.services.localStorage.set(
             storageKeys.showOnboarding,
             false,
         )
 
-        await this.options.navigation.navigate(incoming.event.nextView)
+        await this.options.navigation.navigate(event.nextView)
     }
 
-    goToLastStage(
-        incoming: IncomingUIEvent<State, Event, 'goToLastStage'>,
-    ): UIMutation<State> {
-        return {
+    goToLastStage: EventHandler<'goToLastStage'> = () => {
+        this.emitMutation({
             onboardingStage: {
-                $set: (OnboardingScreenLogic.MAX_ONBOARDING_STAGE -
-                    1) as OnboardingStage,
+                $set: OnboardingScreenLogic.MAX_ONBOARDING_STAGE,
             },
-        }
+        })
     }
 
-    goToNextStage(
-        incoming: IncomingUIEvent<State, Event, 'goToNextStage'>,
-    ): UIMutation<State> {
-        const nextStage = (incoming.previousState.onboardingStage +
-            1) as OnboardingStage
+    goToNextStage: EventHandler<'goToNextStage'> = ({ previousState }) => {
+        const maxStage =
+            OnboardingScreenLogic.MAX_ONBOARDING_STAGE -
+            (previousState.isExistingUser ? 1 : 0)
+        const nextStage = (previousState.onboardingStage + 1) as OnboardingStage
 
-        if (nextStage >= OnboardingScreenLogic.MAX_ONBOARDING_STAGE) {
+        if (nextStage > maxStage) {
             this.processUIEvent('finishOnboarding', {
-                ...incoming,
+                previousState,
                 event: { nextView: 'Sync' },
             })
-            return {}
+        } else {
+            this.emitMutation({ onboardingStage: { $set: nextStage } })
         }
-
-        return { onboardingStage: { $set: nextStage } }
     }
 
-    goToPrevStage(
-        incoming: IncomingUIEvent<State, Event, 'goToPrevStage'>,
-    ): UIMutation<State> {
-        return {
+    goToPrevStage: EventHandler<'goToPrevStage'> = ({ previousState }) => {
+        this.emitMutation({
             onboardingStage: {
-                $set: (incoming.previousState.onboardingStage -
-                    1) as OnboardingStage,
+                $set: (previousState.onboardingStage - 1) as OnboardingStage,
             },
-        }
+        })
     }
 }
