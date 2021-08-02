@@ -12,10 +12,10 @@ export interface Props {
     onSkipPress: () => void
     screenIndex: number
     showBackBtn?: boolean
-    children: JSX.Element
+    children: React.ReactNode
 }
 
-const OnboardingLayout: React.StatelessComponent<Props> = props => (
+const OnboardingLayout: React.StatelessComponent<Props> = (props) => (
     <EmptyLayout style={styles.background}>
         {props.children}
 

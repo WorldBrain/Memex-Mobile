@@ -17,8 +17,9 @@ export interface Props {
     subtitleText?: string
     showScreenProgress?: boolean
     disableMainBtn?: boolean
+    children: React.ReactNode
     onBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
-    onCancelBtnPress: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
+    onCancelBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
 }
 
 const SyncLayout: React.StatelessComponent<Props> = ({
@@ -38,12 +39,14 @@ const SyncLayout: React.StatelessComponent<Props> = ({
                 disabled={props.disableMainBtn}
                 // __notReallyDisabled
             />
-            <Button
-                title={cancelBtnText}
-                onPress={props.onCancelBtnPress}
-                style={styles.cancelButton}
-                empty
-            />
+            {props.onCancelBtnPress && (
+                <Button
+                    title={cancelBtnText}
+                    onPress={props.onCancelBtnPress}
+                    style={styles.cancelButton}
+                    empty
+                />
+            )}
         </View>
     </EmptyLayout>
 )

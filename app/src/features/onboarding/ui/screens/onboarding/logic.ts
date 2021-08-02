@@ -17,10 +17,10 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    finishOnboarding: { nextView: 'Sync' | 'Dashboard' }
     goToLastStage: null
     goToNextStage: null
     goToPrevStage: null
+    finishOnboarding: null
 }>
 
 export default class OnboardingScreenLogic extends UILogic<State, Event> {
@@ -44,13 +44,13 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
         }
     }
 
-    finishOnboarding: EventHandler<'finishOnboarding'> = async ({ event }) => {
+    finishOnboarding: EventHandler<'finishOnboarding'> = async () => {
         await this.options.services.localStorage.set(
             storageKeys.showOnboarding,
             false,
         )
 
-        await this.options.navigation.navigate(event.nextView)
+        await this.options.navigation.navigate('Sync')
     }
 
     goToLastStage: EventHandler<'goToLastStage'> = () => {
@@ -70,7 +70,7 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
         if (nextStage > maxStage) {
             this.processUIEvent('finishOnboarding', {
                 previousState,
-                event: { nextView: 'Sync' },
+                event: null,
             })
         } else {
             this.emitMutation({ onboardingStage: { $set: nextStage } })

@@ -2,8 +2,8 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 
 export default EStyleSheet.create({
     titleText: {
-        position: 'absolute',
-        top: '10%',
+        position: 'relative',
+        top: '2rem',
         fontSize: '2rem',
         width: '70%',
         textAlign: 'center',
@@ -12,7 +12,7 @@ export default EStyleSheet.create({
     },
     subtitleText: {
         position: 'relative',
-        top: '1rem',
+        top: '2rem',
         fontSize: '1rem',
         marginBottom: '2rem',
         marginTop: '2rem',
