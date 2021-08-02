@@ -21,10 +21,11 @@ import { registerSingleDeviceSyncTests } from './services/sync/index.tests'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 import { RouteProp } from '@react-navigation/native'
 import { ConnectionOptions } from 'typeorm'
+import { NullPersonalCloudBackend } from '@worldbrain/memex-common/lib/personal-cloud/backend/null'
 
 export interface TestDevice {
     storage: Storage
-    services: Services
+    services: Omit<Services, 'sync'>
     auth: MemoryAuthService
     navigation: FakeNavigation
     route: RouteProp<any, any>
@@ -89,15 +90,6 @@ export function makeStorageTestFactory() {
                     options?.mark,
                 ),
                 async function (this: any) {
-                    const storage = await createStorage({
-                        typeORMConnectionOpts: {
-                            type: 'sqlite',
-                            database: ':memory:',
-                            name: `connection-${connIterator++}`,
-                            logging: options.debugSql,
-                        },
-                    })
-
                     const signalTransportFactory = lazyMemorySignalTransportFactory()
                     const sharedSyncLog = await createMemorySharedSyncLog()
 
@@ -111,24 +103,38 @@ export function makeStorageTestFactory() {
                         new MockSentry() as any,
                         { dsn: 'test.com' },
                     )
-                    const services = await createCoreServices({
-                        devicePlatform: 'integration-tests',
-                        storage,
+                    const storage = await createStorage({
+                        services: {
+                            auth: auth as any,
+                        },
+                        createPersonalCloudBackend: (
+                            storageManager,
+                            storageModules,
+                        ) => new NullPersonalCloudBackend(),
+                        createDeviceId: async (userId) => 'test-device-1',
+                        typeORMConnectionOpts: {
+                            type: 'sqlite',
+                            database: ':memory:',
+                            name: `connection-${connIterator++}`,
+                            logging: options.debugSql,
+                        },
+                    })
+
+                    const coreServices = await createCoreServices({
                         normalizeUrl,
-                        signalTransportFactory,
-                        sharedSyncLog,
-                        localStorage,
                         errorTracker,
-                        disableSyncEncryption: true,
                         keychain: new MockKeychainPackage(),
                         firebase: {} as any,
                         auth,
                     })
-                    await setStorageMiddleware({
-                        services,
-                        storage,
-                    })
-                    services.sync.initialSync.wrtc = wrtc
+                    const services = {
+                        ...coreServices,
+                        localStorage,
+                    }
+                    await setStorageMiddleware({ storage })
+
+                    // TODO: figure out what to do with sync
+                    // services.sync.initialSync.wrtc = wrtc
 
                     try {
                         await test.call(this, {
@@ -164,7 +170,7 @@ export function makeMultiDeviceTestFactory() {
             const signalTransportFactory = lazyMemorySignalTransportFactory()
             const createdDevices: Array<{
                 storage: Storage
-                services: Services
+                services: Omit<Services, 'sync'>
             }> = []
             const sharedSyncLog = await createMemorySharedSyncLog()
 
@@ -178,12 +184,22 @@ export function makeMultiDeviceTestFactory() {
                               name: `connection-${connIterator++}`,
                               logging: !!(options && options.debugSql),
                           }
+                const auth = new MemoryAuthService()
 
-                const storage = await createStorage({ typeORMConnectionOpts })
+                const storage = await createStorage({
+                    typeORMConnectionOpts,
+                    services: {
+                        auth: auth as any,
+                    },
+                    createPersonalCloudBackend: (
+                        storageManager,
+                        storageModules,
+                    ) => new NullPersonalCloudBackend(),
+                    createDeviceId: async (userId) => 'test-device-1',
+                })
 
                 const route = new FakeRoute()
                 const navigation = new FakeNavigation()
-                const auth = new MemoryAuthService()
                 const localStorage = new LocalStorageService({
                     settingsStorage: new MockSettingsStorage(),
                 })
@@ -191,24 +207,21 @@ export function makeMultiDeviceTestFactory() {
                     new MockSentry() as any,
                     { dsn: 'test.com' },
                 )
-                const services = await createCoreServices({
-                    devicePlatform: 'integration-tests',
+                const coreServices = await createCoreServices({
                     auth,
-                    storage,
                     normalizeUrl,
-                    signalTransportFactory,
-                    sharedSyncLog,
-                    localStorage,
                     errorTracker,
-                    disableSyncEncryption: true,
                     keychain: new MockKeychainPackage(),
                 })
+                const services = { ...coreServices, localStorage }
+
                 await setStorageMiddleware({
-                    services,
                     storage,
                     extraPostChangeWatcher: options?.extraPostChangeWatcher,
                 })
-                services.sync.initialSync.wrtc = wrtc
+
+                // TODO: Figure out what to do with sync
+                // services.sync.initialSync.wrtc = wrtc
 
                 const device = {
                     storage,

@@ -11,17 +11,17 @@ export async function doInitialSync(params: {
     source: TestDevice
     target: TestDevice
 }) {
-    const {
-        initialMessage,
-    } = await params.source.services.sync.initialSync.requestInitialSync()
-    await params.target.services.sync.initialSync.answerInitialSync({
-        initialMessage,
-    })
-    await Promise.all(
-        [params.source, params.target].map((device) =>
-            device.services.sync.initialSync.waitForInitialSync(),
-        ),
-    )
+    // const {
+    //     initialMessage,
+    // } = await params.source.services.sync.initialSync.requestInitialSync()
+    // await params.target.services.sync.initialSync.answerInitialSync({
+    //     initialMessage,
+    // })
+    // await Promise.all(
+    //     [params.source, params.target].map((device) =>
+    //         device.services.sync.initialSync.waitForInitialSync(),
+    //     ),
+    // )
 }
 
 export function registerSingleDeviceSyncTests(
@@ -139,8 +139,8 @@ async function incrementalSyncAndCheck(devices: [TestDevice, TestDevice]) {
             exclude: new Set(['clientSyncLogEntry', 'syncDeviceInfo']),
         },
     )
-    await devices[0].services.sync.continuousSync.forceIncrementalSync()
-    await devices[1].services.sync.continuousSync.forceIncrementalSync()
+    // await devices[0].services.sync.continuousSync.forceIncrementalSync()
+    // await devices[1].services.sync.continuousSync.forceIncrementalSync()
     const secondDeviceStorageContents = await getStorageContents(
         devices[1].storage.manager,
         {

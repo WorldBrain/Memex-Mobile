@@ -147,7 +147,6 @@ export async function createStorage({
 
 export async function setStorageMiddleware(options: {
     storage: Storage
-    services: Services
     extraPostChangeWatcher?: (
         context: StorageOperationEvent<'post'>,
     ) => void | Promise<void>
