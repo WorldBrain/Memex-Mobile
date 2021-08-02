@@ -12,7 +12,7 @@ import styles from './action-bar-segment.styles'
 
 export interface Props {
     isConfirming?: boolean
-    showReaderBanner?: boolean
+    showBanner?: boolean
     onLeftBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
     onRightBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
     leftBtnText?: string
@@ -25,10 +25,18 @@ const ActionBar: React.StatelessComponent<Props> = ({
     ...props
 }) => (
     <>
-        {props.showReaderBanner && (
-            <View style={[styles.readerSegmentContainer, styles.readerSegment]}>
-                <Text style={styles.readerSegmentText}>
-                    New: Annotate page within app!
+        {props.showBanner && (
+            <View style={[styles.bannerSegmentContainer, styles.bannerSegment]}>
+                <Text
+                    style={[
+                        styles.bannerSegmentText,
+                        styles.bannerSegmentTextBold,
+                    ]}
+                >
+                    New:{' '}
+                </Text>
+                <Text style={styles.bannerSegmentText}>
+                    Multi-device sync. Go to the app to set up.
                 </Text>
             </View>
         )}

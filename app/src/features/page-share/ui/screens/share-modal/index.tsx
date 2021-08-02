@@ -175,7 +175,7 @@ export default class ShareModalScreen extends StatefulUIElement<
         return (
             <>
                 <ActionBar
-                    showReaderBanner
+                    showBanner
                     leftBtnText="Undo"
                     onLeftBtnPress={this.handleUndo}
                     onRightBtnPress={this.handleSave}

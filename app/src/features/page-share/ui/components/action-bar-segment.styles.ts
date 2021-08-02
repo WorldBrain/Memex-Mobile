@@ -38,24 +38,22 @@ export default EStyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    readerSegmentContainer: {
+    bannerSegmentContainer: {
         backgroundColor: '#e4e4e4',
         borderTopRightRadius: 10,
         borderTopLeftRadius: 10,
     },
-    readerSegment: {
+    bannerSegment: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 10,
     },
-    readerSegmentText: {
-        fontSize: '1.2rem',
-        fontWeight: 'bold',
+    bannerSegmentText: {
+        fontSize: '1.1rem',
     },
-    readerSegmentArrow: {
-        position: 'absolute',
-        right: 20,
+    bannerSegmentTextBold: {
+        fontWeight: 'bold',
     },
 })
