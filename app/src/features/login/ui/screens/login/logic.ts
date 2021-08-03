@@ -75,7 +75,7 @@ export default class Logic extends UILogic<State, Event> {
             async () => {
                 await services.auth.loginWithEmailAndPassword(email, password)
 
-                if (route.params.nextRoute) {
+                if (route.params?.nextRoute) {
                     navigation.navigate(route.params.nextRoute)
                 } else {
                     navigation.goBack()

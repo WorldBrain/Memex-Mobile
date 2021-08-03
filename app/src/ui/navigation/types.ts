@@ -12,9 +12,11 @@ export type MainNavigatorParamList = {
     Pairing: undefined
     Sync: undefined
     CloudSync: undefined
-    Login: {
-        nextRoute?: keyof MainNavigatorParamList
-    }
+    Login:
+        | {
+              nextRoute?: keyof MainNavigatorParamList
+          }
+        | undefined
     ListsFilter: {
         selectedList: string
     }
