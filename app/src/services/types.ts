@@ -3,7 +3,7 @@ import { MemexGoAuthService } from './auth'
 import { KeychainService } from './keychain'
 import { ShareExtService } from './share-ext'
 import { ReadabilityService } from './readability'
-import { LocalStorageService } from './local-storage'
+import { StorageService } from './settings-storage'
 import { ErrorTrackingService } from './error-tracking'
 import { BackgroundProcessService } from './background-processing'
 import { ResourceLoaderService } from './resource-loader'
@@ -16,7 +16,8 @@ export interface Services {
     keychain: KeychainService
     readability: ReadabilityService
     pageFetcher: PageFetcherService
-    localStorage: LocalStorageService
+    syncStorage: StorageService
+    localStorage: StorageService
     errorTracker: ErrorTrackingService
     resourceLoader: ResourceLoaderService
     backgroundProcess: BackgroundProcessService

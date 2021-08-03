@@ -6,7 +6,7 @@ import {
     checkIntegrationTestData,
 } from 'src/tests/shared-fixtures/integration'
 import { FakeNavigation } from 'src/tests/navigation'
-import { LocalStorageService } from 'src/services/local-storage'
+import { StorageService } from 'src/services/settings-storage'
 import { TestLogicContainer } from 'src/tests/ui-logic'
 import SyncScreenLogic, {
     Props,
@@ -20,7 +20,7 @@ const multiDeviceTest = makeMultiDeviceTestFactory()
 describe('SyncScreen', () => {
     function createMockDependencies() {
         const navigation = new FakeNavigation()
-        const localStorage = new LocalStorageService({
+        const localStorage = new StorageService({
             settingsStorage: new MockSettingsStorage(),
         })
         return {
@@ -68,7 +68,7 @@ describe('SyncScreen', () => {
             ]
 
             expect(
-                userInterfaces.map(ui => ui.logicContainer.state.status),
+                userInterfaces.map((ui) => ui.logicContainer.state.status),
             ).toEqual(['setup', 'setup'])
 
             await userInterfaces[0].logicContainer.processEvent(
@@ -80,7 +80,7 @@ describe('SyncScreen', () => {
                 undefined,
             )
             expect(
-                userInterfaces.map(ui => ui.logicContainer.state.status),
+                userInterfaces.map((ui) => ui.logicContainer.state.status),
             ).toEqual(['setup', 'setup'])
 
             await userInterfaces[1].logicContainer.processEvent(

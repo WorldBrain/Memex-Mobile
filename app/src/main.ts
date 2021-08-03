@@ -34,7 +34,7 @@ import {
 } from './services/setup'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
-import { LocalStorageService } from './services/local-storage'
+import { StorageService } from './services/settings-storage'
 import { ErrorTrackingService } from './services/error-tracking'
 import SyncService from './services/sync'
 import { MockSentry } from './services/error-tracking/index.tests'
@@ -92,7 +92,7 @@ export async function main() {
         },
         createPersonalCloudBackend: (
             storageManager,
-            { settings },
+            { localSettings },
             getDeviceId,
         ) =>
             new FirestorePersonalCloudBackend({
@@ -121,9 +121,12 @@ export async function main() {
                         .collection('objects') as any
                 },
                 getLastUpdateSeenTime: () =>
-                    settings.getSetting({ key: 'lastSeenUpdateTime' }),
+                    localSettings.getSetting({ key: 'lastSeenUpdateTime' }),
                 setLastUpdateSeenTime: (value) =>
-                    settings.setSetting({ key: 'lastSeenUpdateTime', value }),
+                    localSettings.setSetting({
+                        key: 'lastSeenUpdateTime',
+                        value,
+                    }),
                 getDeviceId,
             }),
         createDeviceId: async (userId) => {
@@ -141,8 +144,12 @@ export async function main() {
         },
     })
 
-    const localStorage = new LocalStorageService({
-        settingsStorage: storage.modules.settings,
+    const localStorage = new StorageService({
+        settingsStorage: storage.modules.localSettings,
+    })
+
+    const syncStorage = new StorageService({
+        settingsStorage: storage.modules.syncSettings,
     })
 
     const syncService = new SyncService({
@@ -161,6 +168,7 @@ export async function main() {
         ...coreServices,
         sync: syncService,
         localStorage,
+        syncStorage,
     }
 
     const dependencies = { storage, services }
@@ -181,7 +189,8 @@ export async function main() {
         services,
         getServerStorageManager: async () => serverStorage.manager,
     })
-    await selfTests.cloudReceive()
+    await localStorage.set('@MemexApp_sync-key', true)
+    // await selfTests.cloudReceive()
     Object.assign(globalThis, {
         ...dependencies,
         selfTests,

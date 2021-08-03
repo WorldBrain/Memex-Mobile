@@ -1,9 +1,9 @@
-import { LocalStorageService } from '.'
+import { StorageService } from '.'
 import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 
 describe('local storage service tests', () => {
     function setup() {
-        const storage = new LocalStorageService({
+        const storage = new StorageService({
             settingsStorage: new MockSettingsStorage(),
         })
         return { storage }

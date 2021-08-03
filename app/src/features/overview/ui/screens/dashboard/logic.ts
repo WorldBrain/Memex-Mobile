@@ -51,7 +51,9 @@ export type Event = UIEvent<{
 
 export interface Props extends MainNavProps<'Dashboard'> {
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
-    services: UIServices<'sync' | 'localStorage' | 'errorTracker'>
+    services: UIServices<
+        'sync' | 'localStorage' | 'syncStorage' | 'errorTracker'
+    >
     getNow?: () => number
     pageSize?: number
 }

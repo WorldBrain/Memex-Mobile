@@ -1,11 +1,11 @@
-import { LocalStorageAPI } from './types'
+import { StorageAPI } from './types'
 import { SettableSettings } from 'src/features/settings/types'
 
 export interface Props {
     settingsStorage: SettableSettings
 }
 
-export class LocalStorageService implements LocalStorageAPI {
+export class StorageService implements StorageAPI {
     constructor(private props: Props) {}
 
     async get<T = any>(key: string) {

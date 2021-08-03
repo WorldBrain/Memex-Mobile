@@ -11,7 +11,7 @@ import { createStorage, setStorageMiddleware } from 'src/storage'
 import { Storage } from 'src/storage/types'
 import { createCoreServices } from './services'
 import { Services } from './services/types'
-import { LocalStorageService } from './services/local-storage'
+import { StorageService } from './services/settings-storage'
 import { MockSentry } from './services/error-tracking/index.tests'
 import { ErrorTrackingService } from './services/error-tracking'
 import { FakeNavigation, FakeRoute } from './tests/navigation'
@@ -96,7 +96,10 @@ export function makeStorageTestFactory() {
                     const route = new FakeRoute()
                     const navigation = new FakeNavigation()
                     const auth = new MemoryAuthService()
-                    const localStorage = new LocalStorageService({
+                    const localStorage = new StorageService({
+                        settingsStorage: new MockSettingsStorage(),
+                    })
+                    const syncStorage = new StorageService({
                         settingsStorage: new MockSettingsStorage(),
                     })
                     const errorTracker = new ErrorTrackingService(
@@ -130,6 +133,7 @@ export function makeStorageTestFactory() {
                     const services = {
                         ...coreServices,
                         localStorage,
+                        syncStorage,
                     }
                     await setStorageMiddleware({ storage })
 
@@ -200,7 +204,10 @@ export function makeMultiDeviceTestFactory() {
 
                 const route = new FakeRoute()
                 const navigation = new FakeNavigation()
-                const localStorage = new LocalStorageService({
+                const localStorage = new StorageService({
+                    settingsStorage: new MockSettingsStorage(),
+                })
+                const syncStorage = new StorageService({
                     settingsStorage: new MockSettingsStorage(),
                 })
                 const errorTracker = new ErrorTrackingService(
@@ -213,7 +220,7 @@ export function makeMultiDeviceTestFactory() {
                     errorTracker,
                     keychain: new MockKeychainPackage(),
                 })
-                const services = { ...coreServices, localStorage }
+                const services = { ...coreServices, localStorage, syncStorage }
 
                 await setStorageMiddleware({
                     storage,

@@ -4,7 +4,7 @@ import {
     migrations,
 } from './quick-and-dirty-migrations'
 import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
-import { LocalStorageService } from 'src/services/local-storage'
+import { StorageService } from 'src/services/settings-storage'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { createStorage, setStorageMiddleware } from 'src/storage'
 
@@ -18,7 +18,7 @@ describe('Quick and dirty migration setup tests', () => {
     }
 
     function setupTest() {
-        const localStorage = new LocalStorageService({
+        const localStorage = new StorageService({
             settingsStorage: new MockSettingsStorage(),
         })
 

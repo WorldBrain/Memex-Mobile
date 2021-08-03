@@ -4,7 +4,7 @@ import { storageKeys } from '../../../../../../app.json'
 import Logic, { State, Event } from './logic'
 import { makeStorageTestFactory } from 'src/index.tests'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
-import { LocalStorageService } from 'src/services/local-storage/index'
+import { StorageService } from 'src/services/settings-storage/index'
 import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 import { FakeNavigation } from 'src/tests/navigation'
 import { Services } from 'src/services/types'
@@ -23,7 +23,7 @@ describe('settings menu UI logic tests', () => {
                 ...options.services,
                 localStorage:
                     options.services.localStorage ??
-                    new LocalStorageService({
+                    new StorageService({
                         settingsStorage: new MockSettingsStorage(),
                     }),
                 sync: {
@@ -59,8 +59,8 @@ describe('settings menu UI logic tests', () => {
         return { logic, initialState, element }
     }
 
-    it('should init with correct logged in state + ', async context => {
-        const localStorage = new LocalStorageService({
+    it('should init with correct logged in state + ', async (context) => {
+        const localStorage = new StorageService({
             settingsStorage: new MockSettingsStorage(),
         })
         await localStorage.set(storageKeys.syncKey, true)
@@ -99,7 +99,7 @@ describe('settings menu UI logic tests', () => {
         expect(element1.state.isLoggedIn).toBe(false)
     })
 
-    it('should be able to log out ', async context => {
+    it('should be able to log out ', async (context) => {
         const { element } = await setup({
             ...context,
             services: {
@@ -119,7 +119,7 @@ describe('settings menu UI logic tests', () => {
         expect(element.state.isLoggedIn).toBe(false)
     })
 
-    it('should show error view if sync error encountered', async context => {
+    it('should show error view if sync error encountered', async (context) => {
         const errMsg = 'this is a test'
 
         const { element } = await setup({
@@ -132,7 +132,7 @@ describe('settings menu UI logic tests', () => {
         expect(element.state.syncErrorMessage).toEqual(errMsg)
     })
 
-    it('should clear error message state if retry sync is succesfull', async context => {
+    it('should clear error message state if retry sync is succesfull', async (context) => {
         const errMsg = 'this is a test'
         let shouldFail = true
 
@@ -150,7 +150,7 @@ describe('settings menu UI logic tests', () => {
         expect(element.state.syncErrorMessage).toBeUndefined()
     })
 
-    it('should update error message state if retry sync is unssuccesfull', async context => {
+    it('should update error message state if retry sync is unssuccesfull', async (context) => {
         let errMsg = 'this is a test'
 
         const { element } = await setup({

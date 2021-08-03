@@ -10,7 +10,7 @@ import styles from './styles'
 import { isSyncEnabled } from 'src/features/sync/utils'
 
 export interface Props extends MainNavProps<'MVPOverview'> {
-    services: UIServices<'localStorage' | 'sync'>
+    services: UIServices<'localStorage' | 'syncStorage' | 'sync'>
 }
 
 export default class MVPOverviewMenu extends StatefulUIElement<

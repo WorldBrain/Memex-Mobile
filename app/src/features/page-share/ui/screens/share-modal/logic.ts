@@ -62,7 +62,12 @@ export type Event = UIEvent<{
 
 export interface Props extends ShareNavProps<'ShareModal'> {
     services: UIServices<
-        'sync' | 'shareExt' | 'errorTracker' | 'localStorage' | 'pageFetcher'
+        | 'sync'
+        | 'shareExt'
+        | 'errorTracker'
+        | 'localStorage'
+        | 'syncStorage'
+        | 'pageFetcher'
     >
     storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
 }

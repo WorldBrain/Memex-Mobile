@@ -17,7 +17,7 @@ import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 const WebRTC = require('react-native-webrtc')
 const Peer = require('simple-peer')
 
-import { LocalStorageService } from '../local-storage'
+import { StorageService } from '../settings-storage'
 import {
     MemexClientSyncLogStorage,
     MemexSyncInfoStorage,
@@ -35,7 +35,7 @@ export default class AppSyncService extends SyncService {
         auth: AuthService
         storageManager: StorageManager
         signalTransportFactory: SignalTransportFactory
-        localStorage: LocalStorageService
+        localStorage: StorageService
         clientSyncLog: MemexClientSyncLogStorage
         syncInfoStorage: MemexSyncInfoStorage
         devicePlatform: MemexSyncDevicePlatform
@@ -154,7 +154,7 @@ export default class AppSyncService extends SyncService {
 }
 
 class MemexSyncSettingStore implements SyncSettingsStore {
-    constructor(private options: { localStorage: LocalStorageService }) {}
+    constructor(private options: { localStorage: StorageService }) {}
 
     async retrieveSetting(key: MemexSyncSetting) {
         return this.options.localStorage.get(key)

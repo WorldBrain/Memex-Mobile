@@ -28,7 +28,7 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
 
     constructor(
         private options: MainNavProps<'Onboarding'> & {
-            services: UIServices<'localStorage'>
+            services: UIServices<'syncStorage' | 'localStorage'>
         },
     ) {
         super()

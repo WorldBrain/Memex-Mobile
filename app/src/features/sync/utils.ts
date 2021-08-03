@@ -5,8 +5,9 @@ import { storageKeys } from '../../../app.json'
 
 export const shouldAutoSync = async ({
     localStorage,
-}: UIServices<'localStorage'>): Promise<boolean> => {
-    const syncEnabled = await isSyncEnabled({ localStorage })
+    syncStorage,
+}: UIServices<'localStorage' | 'syncStorage'>): Promise<boolean> => {
+    const syncEnabled = await isSyncEnabled({ localStorage, syncStorage })
 
     if (!syncEnabled) {
         return false
@@ -24,14 +25,12 @@ export const shouldAutoSync = async ({
 
 export const isSyncEnabled = async ({
     localStorage,
-}: UIServices<'localStorage'>): Promise<boolean> => {
-    const syncEnabled = await localStorage.get(storageKeys.syncKey)
+    syncStorage,
+}: UIServices<'localStorage' | 'syncStorage'>): Promise<boolean> => {
+    const syncEnabledLocal = await localStorage.get(storageKeys.syncKey)
+    const syncEnabledSync = await syncStorage.get(storageKeys.syncKey)
 
-    if (!syncEnabled) {
-        return false
-    }
-
-    return true
+    return syncEnabledSync || syncEnabledLocal
 }
 
 type SyncErrorNavProps =

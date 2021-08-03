@@ -11,7 +11,7 @@ export function createSelfTests(options: {
     getServerStorageManager: () => Promise<StorageManager>
 }) {
     const {
-        storageModules: { personalCloud, settings },
+        storageModules: { personalCloud, localSettings: settings },
     } = options
 
     const ensureTestUser = async () => {

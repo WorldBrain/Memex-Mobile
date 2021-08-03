@@ -47,7 +47,7 @@ export interface CreateStorageOptions {
     createDeviceId: (userId: string | number) => Promise<string | number>
     createPersonalCloudBackend: (
         storageManager: StorageManager,
-        modules: Pick<Storage['modules'], 'settings'>,
+        modules: Pick<Storage['modules'], 'localSettings'>,
         getDeviceId: () => Promise<PersonalCloudDeviceId>,
     ) => PersonalCloudBackend
 }
@@ -77,12 +77,22 @@ export async function createStorage({
     }
 
     const storageManager = new StorageManager({ backend })
-    const settings = new SettingsStorage({ storageManager })
+    const syncSettings = new SettingsStorage({
+        storageManager,
+        collectionName: SettingsStorage.SYNC_SETTINGS_COLL_NAME,
+        collectionVersion: new Date('2019-12-16'),
+    })
+    const localSettings = new SettingsStorage({
+        storageManager,
+        collectionName: SettingsStorage.LOCAL_SETTINGS_COLL_NAME,
+        collectionVersion: new Date('2021-08-03'),
+    })
 
-    const getDeviceId = async () => settings.getSetting({ key: 'deviceId' })
+    const getDeviceId = async () => syncSettings.getSetting({ key: 'deviceId' })
 
     const modules: Storage['modules'] = {
-        settings,
+        syncSettings,
+        localSettings,
         overview: new OverviewStorage({
             storageManager,
             normalizeUrl,
@@ -98,16 +108,14 @@ export async function createStorage({
         personalCloud: new PersonalCloudStorage({
             backend: createPersonalCloudBackend(
                 storageManager,
-                {
-                    settings,
-                },
+                { localSettings },
                 getDeviceId,
             ),
             storageManager,
             createDeviceId,
             getDeviceId,
             setDeviceId: async (value) =>
-                settings.setSetting({ key: 'deviceId', value }),
+                syncSettings.setSetting({ key: 'deviceId', value }),
             getUserId: async () =>
                 (await services.auth.getCurrentUser())?.id ?? null,
             userIdChanges: () => authChanges(services.auth),
@@ -124,7 +132,8 @@ export async function createStorage({
     }
 
     registerModuleMapCollections(storageManager.registry, {
-        settings: modules.settings,
+        syncSettings: modules.syncSettings,
+        localSettings: modules.localSettings,
         overview: modules.overview,
         metaPicker: modules.metaPicker,
         pageEditor: modules.pageEditor,

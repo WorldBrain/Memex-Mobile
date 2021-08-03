@@ -27,6 +27,7 @@ export interface StorageModules {
     contentSharing: ContentSharingClientStorage
     personalCloud: PersonalCloudStorage
     syncInfo: MemexSyncInfoStorage
-    settings: SettingsStorage
+    syncSettings: SettingsStorage
+    localSettings: SettingsStorage
     reader: ReaderStorage
 }

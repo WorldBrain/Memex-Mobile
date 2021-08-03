@@ -24,7 +24,7 @@ export type Event = UIEvent<{
 export interface Props {
     onEntryPress: (item: MetaTypeShape) => Promise<void>
     storage: UIStorageModules<'metaPicker'>
-    services: UIServices<'localStorage'>
+    services: UIServices<'syncStorage'>
     suggestInputPlaceholder?: string
     initSelectedEntries?: string[]
     initSelectedEntry?: string
@@ -68,16 +68,16 @@ export default class Logic extends UILogic<State, Event> {
         limit = INIT_SUGGESTIONS_LIMIT,
     ): Promise<MetaTypeShape[]> {
         const { metaPicker } = this.props.storage.modules
-        const { localStorage } = this.props.services
+        const { syncStorage } = this.props.services
 
         const storageKey =
             this.props.type === 'tags'
                 ? storageKeys.tagSuggestionsCache
                 : storageKeys.listSuggestionsCache
 
-        const cache = (await localStorage.get<string[]>(storageKey)) ?? []
+        const cache = (await syncStorage.get<string[]>(storageKey)) ?? []
 
-        const suggestions: MetaTypeShape[] = cache.map(name => ({
+        const suggestions: MetaTypeShape[] = cache.map((name) => ({
             name,
             isChecked: false,
         }))
@@ -104,16 +104,16 @@ export default class Logic extends UILogic<State, Event> {
         const entries = new Map<string, MetaTypeShape>()
         selected = selected ?? this.calculateSelectedEntries()
 
-        this.props.extraEntries?.forEach(name => {
+        this.props.extraEntries?.forEach((name) => {
             entries.set(name, { name, isChecked: false })
         })
 
         const loadedSuggestions = await this.loadSuggestions()
-        loadedSuggestions.forEach(res => {
+        loadedSuggestions.forEach((res) => {
             entries.set(res.name, res)
         })
 
-        selected.forEach(name => {
+        selected.forEach((name) => {
             entries.set(name, { name, isChecked: true })
         })
 
@@ -162,7 +162,7 @@ export default class Logic extends UILogic<State, Event> {
             collection,
             query: { name: text },
         })
-        const entries = results.map(res => [
+        const entries = results.map((res) => [
             res.name,
             { ...res, isChecked: selected.includes(res.name) },
         ]) as [string, MetaTypeShape][]

@@ -32,7 +32,9 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export interface Props extends MainNavProps<'SettingsMenu'> {
-    services: UIServices<'localStorage' | 'sync' | 'auth' | 'errorTracker'>
+    services: UIServices<
+        'localStorage' | 'syncStorage' | 'sync' | 'auth' | 'errorTracker'
+    >
 }
 
 export default class Logic extends UILogic<State, Event> {

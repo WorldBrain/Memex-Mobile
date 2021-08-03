@@ -15,7 +15,7 @@ import styles from './styles'
 const pairImg = require('../../assets/device-pair.png')
 
 interface Props extends MainNavProps<'Onboarding'> {
-    services: UIServices<'localStorage'>
+    services: UIServices<'localStorage' | 'syncStorage'>
 }
 
 export default class OnboardingScreen extends StatefulUIElement<

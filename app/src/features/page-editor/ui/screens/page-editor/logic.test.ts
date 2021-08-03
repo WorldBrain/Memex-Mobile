@@ -5,7 +5,7 @@ import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import * as DATA from './logic.test.data'
 import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
-import { LocalStorageService } from 'src/services/local-storage'
+import { StorageService } from 'src/services/settings-storage'
 
 const testText = 'this is a test'
 const testPage = {
@@ -141,14 +141,17 @@ describe('page editor UI logic tests', () => {
                     metaPicker: {
                         createTag: async (args: any) => (createTagValue = args),
                         deleteTag: async (args: any) => (deleteTagValue = args),
-                    },
+                    } as any,
                 },
-            } as any,
+            },
             services: {
                 ...context.services,
-                localStorage: new LocalStorageService({
+                localStorage: new StorageService({
                     settingsStorage,
-                }) as any,
+                }),
+                syncStorage: new StorageService({
+                    settingsStorage,
+                }),
             },
         })
 
@@ -203,7 +206,8 @@ describe('page editor UI logic tests', () => {
             } as any,
             services: {
                 ...context.services,
-                localStorage: new LocalStorageService({ settingsStorage }),
+                localStorage: new StorageService({ settingsStorage }),
+                syncStorage: new StorageService({ settingsStorage }),
             },
         })
 

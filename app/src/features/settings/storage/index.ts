@@ -1,43 +1,54 @@
 import {
     StorageModule,
     StorageModuleConfig,
+    StorageModuleConstructorArgs,
 } from '@worldbrain/storex-pattern-modules'
 import { SettableSettings } from '../types'
 
+export interface Props extends StorageModuleConstructorArgs {
+    collectionName: 'settings' | 'localSettings'
+    collectionVersion: Date
+}
+
 export class SettingsStorage extends StorageModule implements SettableSettings {
-    static SETTINGS_COLL_NAME = 'settings'
+    static SYNC_SETTINGS_COLL_NAME: Props['collectionName'] = 'settings'
+    static LOCAL_SETTINGS_COLL_NAME: Props['collectionName'] = 'localSettings'
+
+    constructor(private props: Props) {
+        super(props)
+    }
 
     getConfig(): StorageModuleConfig {
         return {
             collections: {
-                [SettingsStorage.SETTINGS_COLL_NAME]: {
-                    version: new Date('2019-12-16'),
+                [this.props.collectionName]: {
+                    version: this.props.collectionVersion,
                     fields: {
                         key: { type: 'string' },
                         value: { type: 'json', optional: true },
                     },
-                    indices: [{ field: ['key'], pk: true }],
+                    indices: [{ field: 'key', pk: true }],
                 },
             },
             operations: {
                 getSetting: {
                     operation: 'findObject',
-                    collection: SettingsStorage.SETTINGS_COLL_NAME,
+                    collection: this.props.collectionName,
                     args: { key: '$key:string' },
                 },
                 createSetting: {
                     operation: 'createObject',
-                    collection: SettingsStorage.SETTINGS_COLL_NAME,
+                    collection: this.props.collectionName,
                     args: { key: '$key:string', value: '$value:any' },
                 },
                 updateSetting: {
                     operation: 'updateObject',
-                    collection: SettingsStorage.SETTINGS_COLL_NAME,
+                    collection: this.props.collectionName,
                     args: [{ key: '$key:string' }, { value: '$value:any' }],
                 },
                 deleteSetting: {
                     operation: 'deleteObjects',
-                    collection: SettingsStorage.SETTINGS_COLL_NAME,
+                    collection: this.props.collectionName,
                     args: { key: '$key:string' },
                 },
             },

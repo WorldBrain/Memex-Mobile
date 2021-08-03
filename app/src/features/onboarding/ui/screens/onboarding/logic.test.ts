@@ -1,5 +1,5 @@
 import { storageKeys } from '../../../../../../app.json'
-import { LocalStorageService } from 'src/services/local-storage'
+import { StorageService } from 'src/services/settings-storage'
 import OnboardingScreenLogic, { Event, State } from './logic'
 import { TestLogicContainer } from 'src/tests/ui-logic'
 import { FakeNavigation } from 'src/tests/navigation'
@@ -8,7 +8,7 @@ import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 describe('onboarding UI logic tests', () => {
     function setup() {
         const navigation = new FakeNavigation()
-        const localStorage = new LocalStorageService({
+        const localStorage = new StorageService({
             settingsStorage: new MockSettingsStorage(),
         })
         const logic = new OnboardingScreenLogic({

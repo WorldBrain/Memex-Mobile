@@ -21,7 +21,9 @@ export type SyncScreenEvent = UIEvent<{
 }>
 
 export interface Props extends MainNavProps<'Sync'> {
-    services: UIServices<'localStorage' | 'sync' | 'errorTracker'>
+    services: UIServices<
+        'localStorage' | 'syncStorage' | 'sync' | 'errorTracker'
+    >
     suppressErrorLogging?: boolean
     syncStallTimeout?: number
 }

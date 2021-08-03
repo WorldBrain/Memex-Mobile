@@ -34,7 +34,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends MainNavProps<'PageEditor'> {
-    services: UIServices<'localStorage'>
+    services: UIServices<'syncStorage'>
     storage: UIStorageModules<'metaPicker' | 'pageEditor' | 'overview'>
 }
 
@@ -300,15 +300,15 @@ export default class Logic extends UILogic<State, Event> {
         removed?: string
         updated?: [string, string]
     }) {
-        const { localStorage } = this.props.services
+        const { syncStorage } = this.props.services
 
         return updateSuggestionsCache({
             ...args,
             suggestionLimit: INIT_SUGGESTIONS_LIMIT,
             setCache: async (suggestions) =>
-                localStorage.set(storageKeys.listSuggestionsCache, suggestions),
+                syncStorage.set(storageKeys.listSuggestionsCache, suggestions),
             getCache: async () => {
-                const suggestions = await localStorage.get<string[]>(
+                const suggestions = await syncStorage.get<string[]>(
                     storageKeys.listSuggestionsCache,
                 )
                 return suggestions ?? []
@@ -321,15 +321,15 @@ export default class Logic extends UILogic<State, Event> {
         removed?: string
         updated?: [string, string]
     }) {
-        const { localStorage } = this.props.services
+        const { syncStorage } = this.props.services
 
         return updateSuggestionsCache({
             ...args,
             suggestionLimit: INIT_SUGGESTIONS_LIMIT,
             setCache: async (suggestions) =>
-                localStorage.set(storageKeys.tagSuggestionsCache, suggestions),
+                syncStorage.set(storageKeys.tagSuggestionsCache, suggestions),
             getCache: async () => {
-                const suggestions = await localStorage.get<string[]>(
+                const suggestions = await syncStorage.get<string[]>(
                     storageKeys.tagSuggestionsCache,
                 )
                 return suggestions ?? []
