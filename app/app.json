@@ -12,6 +12,7 @@
         "syncKey": "@MemexApp_sync-key",
         "listSuggestionsCache": "@MemexApp_list-suggestions-cache",
         "tagSuggestionsCache": "@MemexApp_tag-suggestions-cache",
-        "skipAutoSync": "@MemexApp_skip-auto-sync"
+        "skipAutoSync": "@MemexApp_skip-auto-sync",
+        "cloudSettingsMigrationRun": "@MemexApp_run-cloud-settings-migration"
     }
 }

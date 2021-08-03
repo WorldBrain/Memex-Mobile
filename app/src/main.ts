@@ -39,7 +39,7 @@ import { ErrorTrackingService } from './services/error-tracking'
 import SyncService from './services/sync'
 import { MockSentry } from './services/error-tracking/index.tests'
 import { KeychainPackage } from './services/keychain/keychain'
-import { runMigrations } from 'src/utils/quick-and-dirty-migrations'
+import { migrateSettings } from 'src/utils/migrate-settings-for-cloud'
 import { Services } from './services/types'
 import { createSelfTests } from 'src/tests/self-tests'
 
@@ -180,7 +180,7 @@ export async function main() {
 
     await storage.modules.personalCloud.setup()
 
-    await runMigrations(dependencies)
+    await migrateSettings(services)
 
     ui.initialize({ dependencies })
     const selfTests = createSelfTests({
@@ -189,7 +189,6 @@ export async function main() {
         services,
         getServerStorageManager: async () => serverStorage.manager,
     })
-    await localStorage.set('@MemexApp_sync-key', true)
     // await selfTests.cloudReceive()
     Object.assign(globalThis, {
         ...dependencies,
