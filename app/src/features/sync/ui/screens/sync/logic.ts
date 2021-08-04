@@ -22,7 +22,7 @@ export type SyncScreenEvent = UIEvent<{
 
 export interface Props extends MainNavProps<'Sync'> {
     services: UIServices<
-        'localStorage' | 'syncStorage' | 'sync' | 'errorTracker'
+        'localStorage' | 'syncStorage' | 'cloudSync' | 'errorTracker'
     >
     suppressErrorLogging?: boolean
     syncStallTimeout?: number
@@ -95,7 +95,7 @@ export default class SyncScreenLogic extends UILogic<
     async doSync(
         incoming: IncomingUIEvent<SyncScreenState, SyncScreenEvent, 'doSync'>,
     ) {
-        const { sync, localStorage, errorTracker } = this.props.services
+        const { localStorage, errorTracker } = this.props.services
 
         this.emitMutation({ status: { $set: 'syncing' } })
         const timeBefore = Date.now()
@@ -103,40 +103,40 @@ export default class SyncScreenLogic extends UILogic<
 
         let timerId = this.detectStall()
 
-        sync.initialSync.events.addListener('progress', ({ progress }) => {
-            syncProgress = progress
+        // sync.initialSync.events.addListener('progress', ({ progress }) => {
+        //     syncProgress = progress
 
-            clearTimeout(timerId)
-            timerId = this.detectStall()
-        })
+        //     clearTimeout(timerId)
+        //     timerId = this.detectStall()
+        // })
 
-        try {
-            await sync.initialSync.answerInitialSync({
-                initialMessage: incoming.event.initialMessage,
-            })
-            await sync.initialSync.waitForInitialSync()
-            await localStorage.set(storageKeys.syncKey, true)
-            await sync.continuousSync.setup()
+        // try {
+        //     await sync.initialSync.answerInitialSync({
+        //         initialMessage: incoming.event.initialMessage,
+        //     })
+        //     await sync.initialSync.waitForInitialSync()
+        //     await localStorage.set(storageKeys.syncKey, true)
+        //     await sync.continuousSync.setup()
 
-            await this.emitMutation({ status: { $set: 'success' } })
-        } catch (e) {
-            if (!this.props.suppressErrorLogging) {
-                console.error('Error during initial sync')
-                console.error(e)
-            }
+        //     await this.emitMutation({ status: { $set: 'success' } })
+        // } catch (e) {
+        //     if (!this.props.suppressErrorLogging) {
+        //         console.error('Error during initial sync')
+        //         console.error(e)
+        //     }
 
-            errorTracker.track(e)
-            this.emitMutation({
-                status: { $set: 'failure' },
-                errMsg: {
-                    $set: `MSG: ${e.message}\nNAME: ${e.name} \n STACK: ${e.stack}`,
-                },
-            })
-        } finally {
-            SyncScreenLogic.logSyncStats(timeBefore, syncProgress)
-            sync.initialSync.events.removeAllListeners('progress')
-            clearTimeout(timerId)
-        }
+        //     errorTracker.track(e)
+        //     this.emitMutation({
+        //         status: { $set: 'failure' },
+        //         errMsg: {
+        //             $set: `MSG: ${e.message}\nNAME: ${e.name} \n STACK: ${e.stack}`,
+        //         },
+        //     })
+        // } finally {
+        //     SyncScreenLogic.logSyncStats(timeBefore, syncProgress)
+        //     sync.initialSync.events.removeAllListeners('progress')
+        //     clearTimeout(timerId)
+        // }
     }
 
     setManualInputText(

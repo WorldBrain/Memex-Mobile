@@ -49,29 +49,10 @@ describe('share modal UI logic tests', () => {
                         trackedErrors.push(err)
                     },
                 } as any,
-                sync: {
-                    ...options.services.sync,
-                    continuousSync: {
-                        ...options.services.sync.continuousSync,
-                        forceIncrementalSync: async () => {
-                            if (options.syncError && options.syncError()) {
-                                options.services.sync.continuousSync.events.emit(
-                                    'syncFinished',
-                                    {
-                                        hasChanges: false,
-                                        error: new Error(options.syncError()),
-                                    },
-                                )
-                            } else {
-                                options.services.sync.continuousSync.events.emit(
-                                    'syncFinished',
-                                    { hasChanges: true },
-                                )
-                                return options.services.sync.continuousSync.forceIncrementalSync()
-                            }
-                        },
-                    },
-                } as any,
+                cloudSync: {
+                    runContinuousSync: async () => ({ totalChanges: 0 }),
+                    runInitialSync: async () => {},
+                },
             },
             storage: options.storage,
             navigation: new FakeNavigation() as any,

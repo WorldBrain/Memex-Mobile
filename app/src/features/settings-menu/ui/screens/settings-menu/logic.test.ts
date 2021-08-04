@@ -26,32 +26,20 @@ describe('settings menu UI logic tests', () => {
                     new StorageService({
                         settingsStorage: new MockSettingsStorage(),
                     }),
-                sync: {
-                    ...options.services.sync,
-                    continuousSync: {
-                        ...options.services.sync.continuousSync,
-                        forceIncrementalSync: async () => {
-                            if (options.syncError && options.syncError()) {
-                                options.services.sync.continuousSync.events.emit(
-                                    'syncFinished',
-                                    {
-                                        hasChanges: false,
-                                        error: new Error(options.syncError()),
-                                    },
-                                )
-                            } else {
-                                options.services.sync.continuousSync.events.emit(
-                                    'syncFinished',
-                                    { hasChanges: true },
-                                )
-                                return options.services.sync.continuousSync.forceIncrementalSync()
-                            }
-                        },
+                errorTracker: { track: () => undefined } as any,
+                cloudSync: {
+                    runContinuousSync: async () => {
+                        const syncError = options.syncError?.()
+                        if (syncError != null) {
+                            throw new Error(syncError)
+                        }
+                        return { totalChanges: 0 }
                     },
+                    runInitialSync: async () => {},
                 },
-                errorTracker: { track: () => undefined },
-            } as any,
+            },
             navigation: new FakeNavigation() as any,
+            route: { key: 'SettingsMenu', name: 'SettingsMenu' },
         })
         const initialState = logic.getInitialState()
         const element = new FakeStatefulUIElement<State, Event>(logic)
@@ -70,7 +58,7 @@ describe('settings menu UI logic tests', () => {
             services: {
                 ...context.services,
                 localStorage,
-                auth: { getCurrentUser: async () => null },
+                auth: { getCurrentUser: async () => null } as any,
             },
         })
 

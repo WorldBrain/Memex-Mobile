@@ -1,5 +1,5 @@
 import SyncService from './sync'
-import { CloudSyncService } from './cloud-sync'
+import type { CloudSyncAPI } from './cloud-sync/types'
 import { MemexGoAuthService } from './auth'
 import { KeychainService } from './keychain'
 import { ShareExtService } from './share-ext'
@@ -13,7 +13,7 @@ import { PageFetcherService } from './page-fetcher'
 export interface Services {
     auth: MemexGoAuthService
     sync: SyncService
-    cloudSync: CloudSyncService
+    cloudSync: CloudSyncAPI
     shareExt: ShareExtService
     keychain: KeychainService
     readability: ReadabilityService

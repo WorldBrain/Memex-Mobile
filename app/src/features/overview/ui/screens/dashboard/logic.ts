@@ -52,7 +52,7 @@ export type Event = UIEvent<{
 export interface Props extends MainNavProps<'Dashboard'> {
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
     services: UIServices<
-        'sync' | 'localStorage' | 'syncStorage' | 'errorTracker'
+        'cloudSync' | 'localStorage' | 'syncStorage' | 'errorTracker'
     >
     getNow?: () => number
     pageSize?: number
@@ -143,10 +143,6 @@ export default class Logic extends UILogic<State, Event> {
         if (this.removeAppChangeListener) {
             this.removeAppChangeListener()
         }
-
-        this.props.services.sync.continuousSync.events.removeAllListeners(
-            'syncFinished',
-        )
     }
 
     async focusFromNavigation({
@@ -176,34 +172,20 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async doSync() {
-        const { sync } = this.props.services
+        const { cloudSync } = this.props.services
 
-        sync.continuousSync.events.addListener(
-            'syncFinished',
-            ({ hasChanges, error }) => {
-                if (error) {
-                    handleSyncError(error, this.props)
-                }
-
-                if (hasChanges) {
+        await executeUITask<State, 'syncState'>(this, 'syncState', async () => {
+            try {
+                const { totalChanges } = await cloudSync.runContinuousSync()
+                if (totalChanges > 0) {
                     this.emitMutation({
                         shouldShowSyncRibbon: { $set: true },
                     })
                 }
-
-                sync.continuousSync.events.removeAllListeners('syncFinished')
-            },
-        )
-
-        await executeUITask<State, 'syncState', void>(
-            this,
-            'syncState',
-            async () => {
-                await sync.continuousSync
-                    .maybeDoIncrementalSync()
-                    .catch((err) => this.props.services.errorTracker.track(err))
-            },
-        )
+            } catch (err) {
+                handleSyncError(err, this.props)
+            }
+        })
     }
 
     setSyncRibbonShow(

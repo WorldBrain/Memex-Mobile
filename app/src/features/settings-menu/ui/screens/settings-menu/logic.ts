@@ -33,7 +33,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 
 export interface Props extends MainNavProps<'SettingsMenu'> {
     services: UIServices<
-        'localStorage' | 'syncStorage' | 'sync' | 'auth' | 'errorTracker'
+        'localStorage' | 'syncStorage' | 'cloudSync' | 'auth' | 'errorTracker'
     >
 }
 
@@ -64,12 +64,6 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    cleanup() {
-        this.props.services.sync.continuousSync.events.removeAllListeners(
-            'syncFinished',
-        )
-    }
-
     clearSyncError() {
         this.emitMutation({ syncErrorMessage: { $set: undefined } })
     }
@@ -93,28 +87,15 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async syncNow() {
-        const { sync } = this.props.services
+        const { cloudSync } = this.props.services
 
-        sync.continuousSync.events.addListener('syncFinished', ({ error }) => {
-            if (error) {
-                this.handleSyncError(error)
-            } else {
+        await executeUITask<State, 'syncState'>(this, 'syncState', async () => {
+            try {
+                await cloudSync.runContinuousSync()
                 this.clearSyncError()
+            } catch (err) {
+                this.handleSyncError(err)
             }
-
-            sync.continuousSync.events.removeAllListeners('syncFinished')
         })
-
-        await executeUITask<State, 'syncState', void>(
-            this,
-            'syncState',
-            async () => {
-                try {
-                    await sync.continuousSync.forceIncrementalSync()
-                } catch (err) {
-                    this.handleSyncError(err)
-                }
-            },
-        )
     }
 }

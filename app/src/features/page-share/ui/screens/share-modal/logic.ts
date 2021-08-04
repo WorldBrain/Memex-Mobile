@@ -1,6 +1,5 @@
 // tslint:disable:no-console
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
-import { SyncReturnValue } from '@worldbrain/storex-sync'
 
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
 import {
@@ -62,7 +61,7 @@ export type Event = UIEvent<{
 
 export interface Props extends ShareNavProps<'ShareModal'> {
     services: UIServices<
-        | 'sync'
+        | 'cloudSync'
         | 'shareExt'
         | 'errorTracker'
         | 'localStorage'
@@ -75,7 +74,7 @@ export interface Props extends ShareNavProps<'ShareModal'> {
 export default class Logic extends UILogic<State, Event> {
     /** If this instance is working with a page that's already indexed, this will be set to the visit time (created in `init`). */
     private existingPageVisitTime: number | null = null
-    syncRunning: Promise<void | SyncReturnValue> | null = null
+    syncRunning: Promise<void> | null = null
     pageTitleFetchRunning: Promise<string> | null = null
     initValues: Pick<State, 'isStarred' | 'tagsToAdd' | 'collectionsToAdd'> = {
         isStarred: false,
@@ -118,26 +117,23 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    private async doSync() {
-        const { sync } = this.props.services
+    private async _doSync() {
+        const { cloudSync } = this.props.services
 
+        try {
+            await cloudSync.runContinuousSync()
+            this.clearSyncError()
+        } catch (err) {
+            this.handleSyncError(err)
+        }
+    }
+
+    private async doSync() {
         if (this.syncRunning !== null) {
-            // TODO: abort any running pull sync, do a push sync
             await this.syncRunning
         }
 
-        sync.continuousSync.events.addListener('syncFinished', ({ error }) => {
-            if (error) {
-                this.handleSyncError(error)
-            } else {
-                this.clearSyncError()
-            }
-
-            sync.continuousSync.events.removeAllListeners('syncFinished')
-        })
-
-        this.syncRunning = sync.continuousSync.forceIncrementalSync()
-
+        this.syncRunning = this._doSync()
         await this.syncRunning
         this.syncRunning = null
     }
@@ -226,12 +222,6 @@ export default class Logic extends UILogic<State, Event> {
         )
 
         await Promise.all([bookmarkP, tagsP, listsP])
-    }
-
-    cleanup() {
-        this.props.services.sync.continuousSync.events.removeAllListeners(
-            'syncFinished',
-        )
     }
 
     async retrySync() {
