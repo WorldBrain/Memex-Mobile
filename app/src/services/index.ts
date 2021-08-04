@@ -23,7 +23,9 @@ export interface CreateServicesOptions {
 
 export async function createCoreServices(
     options: CreateServicesOptions,
-): Promise<Omit<Services, 'sync' | 'localStorage'>> {
+): Promise<
+    Omit<Services, 'sync' | 'localStorage' | 'syncStorage' | 'cloudSync'>
+> {
     const auth =
         (options.auth as MemexGoAuthService) ??
         new MemexGoAuthService(options.firebase)

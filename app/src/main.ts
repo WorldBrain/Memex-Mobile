@@ -42,6 +42,7 @@ import { KeychainPackage } from './services/keychain/keychain'
 import { migrateSettings } from 'src/utils/migrate-settings-for-cloud'
 import { Services } from './services/types'
 import { createSelfTests } from 'src/tests/self-tests'
+import { CloudSyncService } from './services/cloud-sync'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -164,8 +165,13 @@ export async function main() {
         auth: coreServices.auth,
     })
 
+    const cloudSyncService = new CloudSyncService({
+        storage: storage.modules.personalCloud,
+    })
+
     const services: Services = {
         ...coreServices,
+        cloudSync: cloudSyncService,
         sync: syncService,
         localStorage,
         syncStorage,

@@ -91,7 +91,15 @@ export class PersonalCloudStorage {
         }
     }
 
-    async integrateUpdates(updates: PersonalCloudUpdateBatch) {
+    async integrateAllUpdates() {
+        const allUpdates: PersonalCloudUpdateBatch = []
+        for await (const updates of this.dependencies.backend.streamUpdates()) {
+            allUpdates.push(...updates)
+        }
+        await this.integrateUpdates(allUpdates)
+    }
+
+    private async integrateUpdates(updates: PersonalCloudUpdateBatch) {
         const { releaseMutex } = await this.pullMutex.lock()
         const { storageManager } = this.dependencies
         for (const update of updates) {
