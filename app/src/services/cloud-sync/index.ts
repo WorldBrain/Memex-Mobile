@@ -24,9 +24,12 @@ export class CloudSyncService implements CloudSyncAPI {
 
     runContinuousSync: CloudSyncAPI['runContinuousSync'] = async () => {
         if (!this.isStorageSetup()) {
-            return
+            return { totalChanges: -1 }
         }
 
-        await this.props.storage.integrateAllUpdates()
+        const {
+            updatesIntegrated,
+        } = await this.props.storage.integrateAllUpdates()
+        return { totalChanges: updatesIntegrated }
     }
 }

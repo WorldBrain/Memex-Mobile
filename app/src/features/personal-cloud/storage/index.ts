@@ -16,7 +16,11 @@ import {
 } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import { getCurrentSchemaVersion } from '@worldbrain/memex-common/lib/storage/utils'
 
-import { PersonalCloudAction, PersonalCloudActionType } from './types'
+import {
+    PersonalCloudAction,
+    PersonalCloudActionType,
+    UpdateIntegrationResult,
+} from './types'
 import { PERSONAL_CLOUD_ACTION_RETRY_INTERVAL } from './constants'
 
 export interface Dependencies {
@@ -85,23 +89,32 @@ export class PersonalCloudStorage {
         }
     }
 
-    async integrateContinuously() {
+    async integrateContinuously(): Promise<UpdateIntegrationResult> {
+        let updatesIntegratedCount = 0
+
         for await (const updates of this.dependencies.backend.streamUpdates()) {
-            await this.integrateUpdates(updates)
+            const { updatesIntegrated } = await this.integrateUpdates(updates)
+            updatesIntegratedCount += updatesIntegrated
         }
+
+        return { updatesIntegrated: updatesIntegratedCount }
     }
 
-    async integrateAllUpdates() {
+    async integrateAllUpdates(): Promise<UpdateIntegrationResult> {
         const allUpdates: PersonalCloudUpdateBatch = []
         for await (const updates of this.dependencies.backend.streamUpdates()) {
             allUpdates.push(...updates)
         }
-        await this.integrateUpdates(allUpdates)
+        return this.integrateUpdates(allUpdates)
     }
 
-    private async integrateUpdates(updates: PersonalCloudUpdateBatch) {
+    private async integrateUpdates(
+        updates: PersonalCloudUpdateBatch,
+    ): Promise<UpdateIntegrationResult> {
         const { releaseMutex } = await this.pullMutex.lock()
         const { storageManager } = this.dependencies
+        let updatesIntegrated = 0
+
         for (const update of updates) {
             if (update.type === PersonalCloudUpdateType.Overwrite) {
                 const object = update.object
@@ -126,15 +139,19 @@ export class PersonalCloudStorage {
                     updates: update.object,
                     where: update.where,
                 })
+                updatesIntegrated++
             } else if (update.type === PersonalCloudUpdateType.Delete) {
                 await storageManager.backend.operation(
                     'deleteObjects',
                     update.collection,
                     update.where,
                 )
+                updatesIntegrated++
             }
         }
+
         releaseMutex()
+        return { updatesIntegrated }
     }
 
     executeAction: ActionExecutor<PersonalCloudAction> = async ({ action }) => {

@@ -18,3 +18,7 @@ export interface ExecuteClientInstructionsAction {
     type: PersonalCloudActionType.ExecuteClientInstructions
     clientInstructions: PersonalCloudClientInstruction[]
 }
+
+export interface UpdateIntegrationResult {
+    updatesIntegrated: number
+}
