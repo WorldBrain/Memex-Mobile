@@ -20,7 +20,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends MainNavProps<'CloudSync'> {
-    services: UIServices<'errorTracker' | 'localStorage' | 'auth'>
+    services: UIServices<'errorTracker' | 'localStorage' | 'auth' | 'cloudSync'>
 }
 
 export default class SyncScreenLogic extends UILogic<State, Event> {
@@ -55,10 +55,11 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
     }
 
     private doSync = async () => {
+        const { cloudSync } = this.props.services
+
         await executeUITask<State, 'syncState'>(this, 'syncState', async () => {
             try {
-                // TODO: insert sync here
-                await new Promise((resolve, reject) => setTimeout(resolve, 500))
+                await cloudSync.runInitialSync()
                 this.handleSyncSuccess()
             } catch (err) {
                 this.handleSyncError(err)
