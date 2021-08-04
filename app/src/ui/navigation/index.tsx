@@ -9,7 +9,6 @@ import ListsFilter from 'src/features/overview/ui/screens/lists-filter'
 import Dashboard from 'src/features/overview/ui/screens/dashboard'
 import NoteEditor from 'src/features/overview/ui/screens/note-editor'
 import DebugConsole from 'src/features/overview/ui/screens/debug-console'
-import MVPOverview from 'src/features/overview/ui/screens/mvp-overview'
 import Pairing from 'src/features/overview/ui/screens/pairing-screen'
 import Onboarding from 'src/features/onboarding/ui/screens/onboarding'
 import Sync from 'src/features/sync/ui/screens/sync'
@@ -49,9 +48,6 @@ export const createMainNavigator: NavigationContainerFactory = (deps) => (
             </MainStack.Screen>
             <MainStack.Screen name="DebugConsole">
                 {(props) => <DebugConsole {...props} {...deps} />}
-            </MainStack.Screen>
-            <MainStack.Screen name="MVPOverview">
-                {(props) => <MVPOverview {...props} {...deps} />}
             </MainStack.Screen>
             <MainStack.Screen name="SettingsMenu">
                 {(props) => <SettingsMenu {...props} {...deps} />}

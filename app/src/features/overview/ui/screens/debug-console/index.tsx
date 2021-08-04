@@ -24,8 +24,7 @@ export default class DebugConsoleScreen extends StatefulUIElement<
     private initSetLogType = (type: LogType) => () =>
         this.processEvent('setLogType', { type })
 
-    private handleBackPress = () =>
-        this.props.navigation.navigate('MVPOverview')
+    private handleBackPress = () => this.props.navigation.goBack()
 
     private handleClearPress = () => {
         switch (this.state.logType) {

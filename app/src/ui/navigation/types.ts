@@ -7,7 +7,6 @@ export type MainNavigatorRoutes = keyof MainNavigatorParamList
 export type MainNavigatorParamList = {
     DebugConsole: undefined
     SettingsMenu: undefined
-    MVPOverview: undefined
     Onboarding: undefined
     Pairing: undefined
     Sync: undefined
