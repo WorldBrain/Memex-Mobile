@@ -15,12 +15,12 @@ import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/feat
 import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
 import { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import PersonalCloudServerStorage from '@worldbrain/memex-common/lib/personal-cloud/storage'
+import { storageKeys } from '../../app.json'
 
 import defaultConnectionOpts from './default-connection-opts'
 import { Storage } from './types'
 import { SettingsStorage } from 'src/features/settings/storage'
 import { ReaderStorage } from 'src/features/reader/storage'
-import { Services } from 'src/services/types'
 import { createServerStorageManager } from './server'
 import { createSharedSyncLog } from 'src/services/sync/shared-sync-log'
 import {
@@ -40,9 +40,10 @@ import type {
     PersonalCloudBackend,
     PersonalCloudDeviceId,
 } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
+import type { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 
 export interface CreateStorageOptions {
-    services: Pick<Services, 'auth'>
+    authService: AuthService
     typeORMConnectionOpts?: ConnectionOptions
     createDeviceId: (userId: string | number) => Promise<string | number>
     createPersonalCloudBackend: (
@@ -53,7 +54,7 @@ export interface CreateStorageOptions {
 }
 
 export async function createStorage({
-    services,
+    authService,
     createDeviceId,
     typeORMConnectionOpts,
     createPersonalCloudBackend,
@@ -88,7 +89,8 @@ export async function createStorage({
         collectionVersion: new Date('2021-08-03'),
     })
 
-    const getDeviceId = async () => syncSettings.getSetting({ key: 'deviceId' })
+    const getDeviceId = async () =>
+        localSettings.getSetting({ key: storageKeys.deviceId })
 
     const modules: Storage['modules'] = {
         syncSettings,
@@ -115,10 +117,10 @@ export async function createStorage({
             createDeviceId,
             getDeviceId,
             setDeviceId: async (value) =>
-                syncSettings.setSetting({ key: 'deviceId', value }),
+                localSettings.setSetting({ key: storageKeys.deviceId, value }),
             getUserId: async () =>
-                (await services.auth.getCurrentUser())?.id ?? null,
-            userIdChanges: () => authChanges(services.auth),
+                (await authService.getCurrentUser())?.id ?? null,
+            userIdChanges: () => authChanges(authService),
             writeIncomingData: async (params) => {
                 // WARNING: Keep in mind this skips all storage middleware
                 await updateOrCreate({

@@ -12,6 +12,9 @@ import { KeychainAPI } from './keychain/types'
 import { ReadabilityService } from './readability'
 import { ResourceLoaderService } from './resource-loader'
 import { PageFetcherService } from './page-fetcher'
+import { StorageService } from './settings-storage'
+import { CloudSyncService } from './cloud-sync'
+import { StorageModules } from 'src/storage/types'
 
 export interface CreateServicesOptions {
     auth?: AuthService
@@ -19,13 +22,15 @@ export interface CreateServicesOptions {
     keychain: KeychainAPI
     errorTracker: ErrorTrackingService
     normalizeUrl: URLNormalizer
+    storageModules: Pick<
+        StorageModules,
+        'localSettings' | 'syncSettings' | 'personalCloud'
+    >
 }
 
-export async function createCoreServices(
+export async function createServices(
     options: CreateServicesOptions,
-): Promise<
-    Omit<Services, 'sync' | 'localStorage' | 'syncStorage' | 'cloudSync'>
-> {
+): Promise<Omit<Services, 'sync'>> {
     const auth =
         (options.auth as MemexGoAuthService) ??
         new MemexGoAuthService(options.firebase)
@@ -34,6 +39,15 @@ export async function createCoreServices(
     return {
         auth,
         pageFetcher,
+        cloudSync: new CloudSyncService({
+            storage: options.storageModules.personalCloud,
+        }),
+        localStorage: new StorageService({
+            settingsStorage: options.storageModules.localSettings,
+        }),
+        syncStorage: new StorageService({
+            settingsStorage: options.storageModules.syncSettings,
+        }),
         shareExt: new ShareExtService({ normalizeUrl: options.normalizeUrl }),
         backgroundProcess: new BackgroundProcessService({}),
         keychain: new KeychainService({ keychain: options.keychain }),

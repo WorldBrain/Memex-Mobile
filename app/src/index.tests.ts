@@ -9,7 +9,7 @@ import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/m
 import { MemorySignalTransportManager } from 'simple-signalling/lib/memory'
 import { createStorage, setStorageMiddleware } from 'src/storage'
 import { Storage } from 'src/storage/types'
-import { createCoreServices } from './services'
+import { createServices } from './services'
 import { Services } from './services/types'
 import { StorageService } from './services/settings-storage'
 import { MockSentry } from './services/error-tracking/index.tests'
@@ -95,21 +95,14 @@ export function makeStorageTestFactory() {
 
                     const route = new FakeRoute()
                     const navigation = new FakeNavigation()
-                    const auth = new MemoryAuthService()
-                    const localStorage = new StorageService({
-                        settingsStorage: new MockSettingsStorage(),
-                    })
-                    const syncStorage = new StorageService({
-                        settingsStorage: new MockSettingsStorage(),
-                    })
+                    const authService = new MemoryAuthService()
+
                     const errorTracker = new ErrorTrackingService(
                         new MockSentry() as any,
                         { dsn: 'test.com' },
                     )
                     const storage = await createStorage({
-                        services: {
-                            auth: auth as any,
-                        },
+                        authService,
                         createPersonalCloudBackend: (
                             storageManager,
                             storageModules,
@@ -123,18 +116,15 @@ export function makeStorageTestFactory() {
                         },
                     })
 
-                    const coreServices = await createCoreServices({
+                    const services = await createServices({
                         normalizeUrl,
                         errorTracker,
                         keychain: new MockKeychainPackage(),
                         firebase: {} as any,
-                        auth,
+                        storageModules: storage.modules,
+                        auth: authService,
                     })
-                    const services = {
-                        ...coreServices,
-                        localStorage,
-                        syncStorage,
-                    }
+
                     await setStorageMiddleware({ storage })
 
                     // TODO: figure out what to do with sync
@@ -146,7 +136,7 @@ export function makeStorageTestFactory() {
                             services,
                             navigation,
                             route: route as any,
-                            auth,
+                            auth: authService,
                         })
                     } finally {
                     }
@@ -188,13 +178,11 @@ export function makeMultiDeviceTestFactory() {
                               name: `connection-${connIterator++}`,
                               logging: !!(options && options.debugSql),
                           }
-                const auth = new MemoryAuthService()
+                const authService = new MemoryAuthService()
 
                 const storage = await createStorage({
                     typeORMConnectionOpts,
-                    services: {
-                        auth: auth as any,
-                    },
+                    authService,
                     createPersonalCloudBackend: (
                         storageManager,
                         storageModules,
@@ -204,23 +192,18 @@ export function makeMultiDeviceTestFactory() {
 
                 const route = new FakeRoute()
                 const navigation = new FakeNavigation()
-                const localStorage = new StorageService({
-                    settingsStorage: new MockSettingsStorage(),
-                })
-                const syncStorage = new StorageService({
-                    settingsStorage: new MockSettingsStorage(),
-                })
+
                 const errorTracker = new ErrorTrackingService(
                     new MockSentry() as any,
                     { dsn: 'test.com' },
                 )
-                const coreServices = await createCoreServices({
-                    auth,
+                const services = await createServices({
+                    auth: authService,
                     normalizeUrl,
                     errorTracker,
                     keychain: new MockKeychainPackage(),
+                    storageModules: storage.modules,
                 })
-                const services = { ...coreServices, localStorage, syncStorage }
 
                 await setStorageMiddleware({
                     storage,
@@ -233,7 +216,7 @@ export function makeMultiDeviceTestFactory() {
                 const device = {
                     storage,
                     services,
-                    auth,
+                    auth: authService,
                     navigation,
                     route: route as any,
                 }

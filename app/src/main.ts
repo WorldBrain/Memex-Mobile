@@ -20,13 +20,13 @@ import {
 } from '@worldbrain/memex-common/lib/personal-cloud/storage/types'
 
 import './polyfills'
-import { sentryDsn } from '../app.json'
+import { sentryDsn, storageKeys } from '../app.json'
 import {
     createStorage,
     setStorageMiddleware,
     createServerStorage,
 } from './storage'
-import { createCoreServices } from './services'
+import { createServices } from './services'
 import {
     setupBackgroundSync,
     setupFirebaseAuth,
@@ -34,15 +34,13 @@ import {
 } from './services/setup'
 import { UI } from './ui'
 import { createFirebaseSignalTransport } from './services/sync/signalling'
-import { StorageService } from './services/settings-storage'
 import { ErrorTrackingService } from './services/error-tracking'
 import SyncService from './services/sync'
+import { MemexGoAuthService } from './services/auth'
 import { MockSentry } from './services/error-tracking/index.tests'
 import { KeychainPackage } from './services/keychain/keychain'
 import { migrateSettings } from 'src/utils/migrate-settings-for-cloud'
-import { Services } from './services/types'
 import { createSelfTests } from 'src/tests/self-tests'
-import { CloudSyncService } from './services/cloud-sync'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -77,15 +75,10 @@ export async function main() {
             .useFunctionsEmulator(getEmulatorAddress({ port: 5001 }))
     }
 
-    const coreServices = await createCoreServices({
-        keychain: new KeychainPackage({ server: 'worldbrain.io' }),
-        normalizeUrl,
-        errorTracker,
-        firebase,
-    })
+    const authService = new MemexGoAuthService(firebase as any)
     const serverStorage = await createServerStorage()
     const storage = await createStorage({
-        services: coreServices,
+        authService,
         typeORMConnectionOpts: {
             type: 'react-native',
             location: 'Shared',
@@ -109,9 +102,9 @@ export async function main() {
                 ),
                 getCurrentSchemaVersion: () =>
                     getCurrentSchemaVersion(storageManager),
-                userChanges: () => authChanges(services.auth),
+                userChanges: () => authChanges(authService),
                 getUserChangesReference: async () => {
-                    const currentUser = await services.auth.getCurrentUser()
+                    const currentUser = await authService.getCurrentUser()
                     if (!currentUser) {
                         return null
                     }
@@ -122,10 +115,12 @@ export async function main() {
                         .collection('objects') as any
                 },
                 getLastUpdateSeenTime: () =>
-                    localSettings.getSetting({ key: 'lastSeenUpdateTime' }),
+                    localSettings.getSetting({
+                        key: storageKeys.lastSeenUpdateTime,
+                    }),
                 setLastUpdateSeenTime: (value) =>
                     localSettings.setSetting({
-                        key: 'lastSeenUpdateTime',
+                        key: storageKeys.lastSeenUpdateTime,
                         value,
                     }),
                 getDeviceId,
@@ -145,12 +140,13 @@ export async function main() {
         },
     })
 
-    const localStorage = new StorageService({
-        settingsStorage: storage.modules.localSettings,
-    })
-
-    const syncStorage = new StorageService({
-        settingsStorage: storage.modules.syncSettings,
+    const coreServices = await createServices({
+        keychain: new KeychainPackage({ server: 'worldbrain.io' }),
+        storageModules: storage.modules,
+        auth: authService,
+        normalizeUrl,
+        errorTracker,
+        firebase,
     })
 
     const syncService = new SyncService({
@@ -161,20 +157,13 @@ export async function main() {
         syncInfoStorage: storage.modules.syncInfo,
         getSharedSyncLog: async () => serverStorage.modules.sharedSyncLog,
         errorTracker,
-        localStorage,
+        localStorage: coreServices.localStorage,
         auth: coreServices.auth,
     })
 
-    const cloudSyncService = new CloudSyncService({
-        storage: storage.modules.personalCloud,
-    })
-
-    const services: Services = {
+    const services = {
         ...coreServices,
-        cloudSync: cloudSyncService,
         sync: syncService,
-        localStorage,
-        syncStorage,
     }
 
     const dependencies = { storage, services }
