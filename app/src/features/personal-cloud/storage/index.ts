@@ -63,9 +63,8 @@ export class PersonalCloudStorage {
         )
         await this.actionQueue.setup({ paused: true })
 
-        // These will never return, so don't await for it
+        // This will never return, so don't await for it
         this.observeAuthChanges()
-        this.integrateContinuously()
     }
 
     async observeAuthChanges() {
@@ -101,11 +100,8 @@ export class PersonalCloudStorage {
     }
 
     async integrateAllUpdates(): Promise<UpdateIntegrationResult> {
-        const allUpdates: PersonalCloudUpdateBatch = []
-        for await (const updates of this.dependencies.backend.streamUpdates()) {
-            allUpdates.push(...updates)
-        }
-        return this.integrateUpdates(allUpdates)
+        const updateBatch = await this.dependencies.backend.bulkDownloadUpdates()
+        return this.integrateUpdates(updateBatch)
     }
 
     private async integrateUpdates(
