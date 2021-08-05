@@ -62,9 +62,7 @@ export class PersonalCloudStorage {
             this.dependencies.storageManager,
         )
         await this.actionQueue.setup({ paused: true })
-
-        // This will never return, so don't await for it
-        this.observeAuthChanges()
+        await this.loadDeviceId()
     }
 
     async observeAuthChanges() {
