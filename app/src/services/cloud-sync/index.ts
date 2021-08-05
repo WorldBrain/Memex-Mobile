@@ -8,28 +8,27 @@ export interface Props {
 export class CloudSyncService implements CloudSyncAPI {
     constructor(private props: Props) {}
 
-    private isStorageSetup(): boolean {
-        return this.props.storage.deviceId != null
-    }
-
     runInitialSync: CloudSyncAPI['runInitialSync'] = async () => {
-        if (!this.isStorageSetup()) {
-            return
-        }
-
-        console.log('performing initial sync...')
-        // TODO: insert init sync here
-        await new Promise((resolve, reject) => setTimeout(resolve, 1000))
-    }
-
-    runContinuousSync: CloudSyncAPI['runContinuousSync'] = async () => {
-        if (!this.isStorageSetup()) {
-            return { totalChanges: -1 }
-        }
-
+        await this.props.storage.loadDeviceId()
+        console.log('INIT-SYNC: integrating updates')
         const {
             updatesIntegrated,
         } = await this.props.storage.integrateAllUpdates()
+        console.log('INIT-SYNC: integrated updates:', updatesIntegrated)
+    }
+
+    runContinuousSync: CloudSyncAPI['runContinuousSync'] = async () => {
+        if (this.props.storage.deviceId == null) {
+            console.log('CONT-SYNC: device ID not setup')
+            return { totalChanges: -1 }
+        }
+
+        console.log('CONT-SYNC: integrating updates')
+        const {
+            updatesIntegrated,
+        } = await this.props.storage.integrateAllUpdates()
+        console.log('CONT-SYNC: integrated updates:', updatesIntegrated)
+
         return { totalChanges: updatesIntegrated }
     }
 }
