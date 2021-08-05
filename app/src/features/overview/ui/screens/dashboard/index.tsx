@@ -177,7 +177,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     ListEmptyComponent={
                         <EmptyResults
                             goToPairing={() =>
-                                this.props.navigation.navigate('Sync')
+                                this.props.navigation.navigate('CloudSync')
                             }
                             goToTutorial={() =>
                                 this.props.navigation.navigate('Onboarding')

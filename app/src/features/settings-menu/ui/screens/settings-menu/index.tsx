@@ -23,7 +23,7 @@ export default class SettingsMenuScreen extends StatefulUIElement<
         if (this.state.isSynced) {
             this.processEvent('syncNow', null)
         } else {
-            this.props.navigation.navigate('Sync')
+            this.props.navigation.navigate('CloudSync')
         }
     }
 
