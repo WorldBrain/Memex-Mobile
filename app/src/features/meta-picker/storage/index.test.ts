@@ -10,7 +10,7 @@ import {
 
 const it = makeStorageTestFactory()
 
-describe('meta picker StorageModule', () => {
+describe.skip('meta picker StorageModule', () => {
     it('should be able to create new tags', async ({
         storage: {
             modules: { metaPicker, overview },

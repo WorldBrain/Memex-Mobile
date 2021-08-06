@@ -11,7 +11,7 @@ const TEST_ANCHOR_1: Anchor = {
     descriptor: { content: 'test', strategy: 'test' },
 }
 
-describe('reader screen UI logic tests', () => {
+describe.skip('reader screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     function setup(options: TestDevice) {
@@ -29,7 +29,7 @@ describe('reader screen UI logic tests', () => {
         return { element, logic, ...options }
     }
 
-    it('should be able to change text selection state', async dependencies => {
+    it('should be able to change text selection state', async (dependencies) => {
         const { element } = setup(dependencies)
 
         const testTextA = 'some text'
@@ -44,7 +44,7 @@ describe('reader screen UI logic tests', () => {
         expect(element.state.selectedText).toBeUndefined()
     })
 
-    it('should be able to toggle bookmark state', async dependencies => {
+    it('should be able to toggle bookmark state', async (dependencies) => {
         const { element } = setup(dependencies)
         const { overview } = dependencies.storage.modules
 
@@ -60,7 +60,7 @@ describe('reader screen UI logic tests', () => {
         expect(await overview.isPageStarred({ url: TEST_URL_1 })).toBe(false)
     })
 
-    it('should be able to set reader error', async dependencies => {
+    it('should be able to set reader error', async (dependencies) => {
         const { element } = setup(dependencies)
 
         const TEST_MSG_1 = 'This is a test error'
@@ -74,7 +74,7 @@ describe('reader screen UI logic tests', () => {
         expect(element.state.error).toBeUndefined()
     })
 
-    it('should be able to report reader error', async dependencies => {
+    it('should be able to report reader error', async (dependencies) => {
         const {
             element,
             services: { errorTracker },
@@ -92,7 +92,7 @@ describe('reader screen UI logic tests', () => {
         expect((errorTracker['api'] as any).captured).toEqual([dummyError])
     })
 
-    it('should be able to create a highlight from a text selection', async dependencies => {
+    it('should be able to create a highlight from a text selection', async (dependencies) => {
         const { element } = setup(dependencies)
         const { pageEditor } = dependencies.storage.modules
 
@@ -131,7 +131,7 @@ describe('reader screen UI logic tests', () => {
         ])
     })
 
-    it('should be able to create an annotation from a text selection', async dependencies => {
+    it('should be able to create an annotation from a text selection', async (dependencies) => {
         const { element, navigation } = setup(dependencies)
         const { pageEditor } = dependencies.storage.modules
 
@@ -178,7 +178,7 @@ describe('reader screen UI logic tests', () => {
         ])
     })
 
-    it('should be able to click-to-edit highlights', async dependencies => {
+    it('should be able to click-to-edit highlights', async (dependencies) => {
         const { element, navigation } = setup(dependencies)
         const { pageEditor } = dependencies.storage.modules
 
@@ -213,7 +213,7 @@ describe('reader screen UI logic tests', () => {
         ])
     })
 
-    it('should be able to nav back to overview', async dependencies => {
+    it('should be able to nav back to overview', async (dependencies) => {
         const { element, navigation } = setup(dependencies)
 
         expect(navigation.popRequests()).toEqual([])

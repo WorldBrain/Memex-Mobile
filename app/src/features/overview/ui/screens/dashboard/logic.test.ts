@@ -38,7 +38,7 @@ const UI_PAGE_2: UIPage = {
     lists: [],
 }
 
-describe('dashboard screen UI logic tests', () => {
+describe.skip('dashboard screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     async function setup(

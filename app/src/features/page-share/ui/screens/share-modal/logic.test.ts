@@ -9,13 +9,12 @@ import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import * as DATA from './logic.test.data'
 import { List } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
 import { FakeNavigation } from 'src/tests/navigation'
-import { Services } from 'src/services/types'
 import {
     SPECIAL_LIST_NAMES,
     SPECIAL_LIST_IDS,
 } from '@worldbrain/memex-storage/lib/lists/constants'
 
-describe('share modal UI logic tests', () => {
+describe.skip('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     async function setup(

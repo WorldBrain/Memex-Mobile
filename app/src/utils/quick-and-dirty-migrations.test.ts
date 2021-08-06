@@ -25,7 +25,7 @@ describe('Quick and dirty migration setup tests', () => {
         return { localStorage }
     }
 
-    it('should only run migrations once', async () => {
+    it.skip('should only run migrations once', async () => {
         const { localStorage } = setupTest()
 
         const deps = {
@@ -105,7 +105,7 @@ describe('Quick and dirty migrations tests', () => {
         },
     ]
 
-    it('should be able to correctly set newly indexed sync fields', async () => {
+    it.skip('should be able to correctly set newly indexed sync fields', async () => {
         const { db } = await setupTest()
 
         for (const entry of dummyEntries) {

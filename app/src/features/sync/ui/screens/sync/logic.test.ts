@@ -17,7 +17,7 @@ import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 
 const multiDeviceTest = makeMultiDeviceTestFactory()
 
-describe('SyncScreen', () => {
+describe.skip('SyncScreen', () => {
     function createMockDependencies() {
         const navigation = new FakeNavigation()
         const localStorage = new StorageService({

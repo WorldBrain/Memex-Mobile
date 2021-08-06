@@ -5,7 +5,7 @@ import * as DATA from './index.test.data'
 
 const it = makeStorageTestFactory()
 
-describe('reader StorageModule', () => {
+describe.skip('reader StorageModule', () => {
     it('should be able to create new readable page archives', async ({
         storage: {
             modules: { reader },

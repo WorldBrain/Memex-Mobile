@@ -21,7 +21,7 @@ function testPageEquality(
     expect(dbPage.hostname).toBe(urlParts.hostname)
 }
 
-describe('overview StorageModule', () => {
+describe.skip('overview StorageModule', () => {
     it('should be able to create new pages', async ({
         storage: {
             modules: { overview },
@@ -128,7 +128,7 @@ describe('overview StorageModule', () => {
                 await overview.visitPage({ url: page.url, time })
             }
             expect(await overview.findPageVisits(page)).toEqual(
-                data.visitTimestamps.map(time => ({ time, url: page.url })),
+                data.visitTimestamps.map((time) => ({ time, url: page.url })),
             )
         }
     })
@@ -149,7 +149,7 @@ describe('overview StorageModule', () => {
                 await overview.visitPage({ url: page.url, time })
             }
             expect(await overview.findPageVisits(page)).toEqual(
-                data.visitTimestamps.map(time => ({ time, url: page.url })),
+                data.visitTimestamps.map((time) => ({ time, url: page.url })),
             )
 
             await overview.deletePage(page)

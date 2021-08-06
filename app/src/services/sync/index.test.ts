@@ -8,7 +8,7 @@ import { doInitialSync } from './index.tests'
 import { AUTO_SYNC_COLLECTIONS } from './constants'
 import { MemexInitialSync } from '@worldbrain/memex-common/lib/sync'
 
-describe('SyncService', () => {
+describe.skip('SyncService', () => {
     const it = makeMultiDeviceTestFactory()
 
     it('should be able to do an initial sync', async ({ createDevice }) => {
