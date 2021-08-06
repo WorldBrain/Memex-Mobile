@@ -14,11 +14,7 @@ import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constant
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { TAGS_PER_RESULT_LIMIT } from './constants'
-import {
-    isSyncEnabled,
-    shouldAutoSync,
-    handleSyncError,
-} from 'src/features/sync/utils'
+import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 import { MainNavigatorParamList } from 'src/ui/navigation/types'
 import ListsFilter from '../lists-filter'
 
@@ -130,13 +126,12 @@ export default class Logic extends UILogic<State, Event> {
         this.removeAppChangeListener = () =>
             AppState.removeEventListener('change', handleAppStatusChange)
 
-        if (await shouldAutoSync(this.props.services)) {
-            this.doSync()
-        }
-
-        await loadInitial<State>(this, async () => {
-            await this.doLoadMore(this.getInitialState())
-        })
+        await Promise.all([
+            this.doSync(),
+            loadInitial<State>(this, async () => {
+                await this.doLoadMore(this.getInitialState())
+            }),
+        ])
     }
 
     cleanup() {

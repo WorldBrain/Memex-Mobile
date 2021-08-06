@@ -12,11 +12,7 @@ import {
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
-import {
-    shouldAutoSync,
-    isSyncEnabled,
-    handleSyncError,
-} from 'src/features/sync/utils'
+import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 
 export interface State {
     loadState: UITaskState
@@ -146,9 +142,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
-        if (await shouldAutoSync(this.props.services)) {
-            this.doSync()
-        }
+        this.doSync()
 
         let url: string
 
