@@ -48,7 +48,7 @@ describe('onboarding UI logic tests', () => {
         expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(null)
         await logicContainer.processEvent('goToNextStage', null)
         expect(navigation.popRequests()).toEqual([
-            { type: 'navigate', target: 'Sync' },
+            { type: 'navigate', target: 'CloudSync' },
         ])
         expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(
             false,
@@ -77,7 +77,7 @@ describe('onboarding UI logic tests', () => {
         expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(null)
         await logicContainer.processEvent('goToNextStage', null)
         expect(navigation.popRequests()).toEqual([
-            { type: 'navigate', target: 'Sync' },
+            { type: 'navigate', target: 'CloudSync' },
         ])
         expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(
             false,

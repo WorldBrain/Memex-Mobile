@@ -18,7 +18,7 @@ describe('meta picker UI logic tests', () => {
         const logic = new Logic({
             ...deps,
             services: {
-                localStorage: {
+                syncStorage: {
                     get: () => undefined,
                     set: () => undefined,
                 } as any,
