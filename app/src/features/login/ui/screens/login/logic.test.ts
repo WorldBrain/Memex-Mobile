@@ -1,6 +1,5 @@
 import expect from 'expect'
 
-import { storageKeys } from '../../../../../../app.json'
 import Logic, { State, Event } from './logic'
 import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
@@ -59,24 +58,69 @@ describe('login UI logic tests', () => {
         }
     })
 
-    it('should nav back to prev route and set skip sync flag on cancel', async (context) => {
+    it('should nav back to prev route on submit success, if route param not specified', async (context) => {
         const { element } = setup(context)
-        const { localStorage } = context.services
 
         expect(context.navigation.popRequests()).toEqual([])
-        expect(await localStorage.get(storageKeys.skipAutoSync)).toBeFalsy()
 
-        await element.processEvent('cancelLogin', null)
+        element.processEvent('changeEmailInput', { value: 'test@test.com' })
+        element.processEvent('changePasswordInput', { value: 'password' })
 
-        expect(await localStorage.get(storageKeys.skipAutoSync)).toBe(true)
+        expect(element.state.loginState).toEqual('pristine')
+        const submitP = element.processEvent('submitLogin', null)
+        expect(element.state.loginState).toEqual('running')
+        await submitP
+        expect(element.state.loginState).toEqual('done')
+
         expect(context.navigation.popRequests()).toEqual([{ type: 'goBack' }])
     })
 
-    it('should nav back to prev route on submit success', async (context) => {
-        const { element } = setup(context)
+    it('should nav to particular route on submit success, if route param specified', async (context) => {
+        const nextRoute = 'CloudSync'
+        const { element } = setup({
+            ...context,
+            route: { ...context.route, params: { nextRoute } },
+        })
 
         expect(context.navigation.popRequests()).toEqual([])
 
+        element.processEvent('changeEmailInput', { value: 'test@test.com' })
+        element.processEvent('changePasswordInput', { value: 'password' })
+
+        expect(element.state.loginState).toEqual('pristine')
+        const submitP = element.processEvent('submitLogin', null)
+        expect(element.state.loginState).toEqual('running')
+        await submitP
+        expect(element.state.loginState).toEqual('done')
+
+        expect(context.navigation.popRequests()).toEqual([
+            { type: 'navigate', target: nextRoute },
+        ])
+    })
+
+    it('should sign up new account instead of login if mode switched to sign-up form', async (context) => {
+        let newAccount = null
+        const { element } = setup({
+            ...context,
+            services: {
+                ...context.services,
+                auth: {
+                    ...context.services.auth,
+                    signupWithEmailAndPassword: async (
+                        email: string,
+                        password: string,
+                    ) => {
+                        newAccount = { email, password }
+                    },
+                } as any,
+            },
+        })
+
+        expect(context.navigation.popRequests()).toEqual([])
+
+        expect(element.state.mode).toEqual('login')
+        element.processEvent('toggleMode', null)
+        expect(element.state.mode).toEqual('signup')
         element.processEvent('changeEmailInput', { value: 'test@test.com' })
         element.processEvent('changePasswordInput', { value: 'password' })
 

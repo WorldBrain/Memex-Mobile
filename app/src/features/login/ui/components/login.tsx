@@ -11,11 +11,9 @@ export interface Props {
     mode: LoginMode
     hasError?: boolean
     isLoading?: boolean
-    showCancelBtn?: boolean
     emailInputValue: string
     passwordInputValue: string
     onLoginPress: TouchEventHandler
-    onCancelPress: TouchEventHandler
     onModeToggle: () => void
     onPasswordForgot: () => void
     onEmailChange: (text: string) => void
@@ -79,14 +77,6 @@ const Login: React.StatelessComponent<Props> = (props) => (
                 style={styles.loginButton}
                 onPress={props.onLoginPress}
             />
-            {props.showCancelBtn && (
-                <Button
-                    title="Cancel"
-                    style={styles.cancelButton}
-                    onPress={props.onCancelPress}
-                    empty
-                />
-            )}
         </View>
         <View style={styles.extraContainer}>
             {props.isLoading && <LoadingBalls />}

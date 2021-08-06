@@ -23,7 +23,6 @@ export default class LoginScreen extends StatefulUIElement<
                 passwordInputValue={this.state.passwordInputValue}
                 onModeToggle={() => this.processEvent('toggleMode', null)}
                 onLoginPress={() => this.processEvent('submitLogin', null)}
-                onCancelPress={() => this.processEvent('cancelLogin', null)}
                 onEmailChange={(value) =>
                     this.processEvent('changeEmailInput', { value })
                 }

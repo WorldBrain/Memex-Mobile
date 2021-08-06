@@ -19,15 +19,14 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    changeEmailInput: { value: string }
     changePasswordInput: { value: string }
+    changeEmailInput: { value: string }
     submitLogin: null
-    cancelLogin: null
     toggleMode: null
 }>
 
 export interface Props extends MainNavProps<'Login'> {
-    services: UIServices<'auth' | 'localStorage'>
+    services: UIServices<'auth'>
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -57,23 +56,28 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ passwordInputValue: { $set: event.value } })
     }
 
-    cancelLogin: EventHandler<'cancelLogin'> = async () => {
-        const { localStorage } = this.props.services
-
-        await localStorage.set(storageKeys.skipAutoSync, true)
-        this.props.navigation.goBack()
-    }
-
     submitLogin: EventHandler<'submitLogin'> = async ({
-        previousState: { emailInputValue: email, passwordInputValue: password },
+        previousState: {
+            mode,
+            emailInputValue: email,
+            passwordInputValue: password,
+        },
     }) => {
-        const { services, navigation, route } = this.props
+        const {
+            services: { auth },
+            navigation,
+            route,
+        } = this.props
 
         await executeUITask<State, 'loginState', void>(
             this,
             'loginState',
             async () => {
-                await services.auth.loginWithEmailAndPassword(email, password)
+                if (mode === 'login') {
+                    await auth.loginWithEmailAndPassword(email, password)
+                } else {
+                    await auth.signupWithEmailAndPassword(email, password)
+                }
 
                 if (route.params?.nextRoute) {
                     navigation.navigate(route.params.nextRoute)
