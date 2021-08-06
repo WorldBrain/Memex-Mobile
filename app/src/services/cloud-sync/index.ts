@@ -19,8 +19,8 @@ export class CloudSyncService implements CloudSyncAPI {
 
     runContinuousSync: CloudSyncAPI['runContinuousSync'] = async () => {
         if (this.props.storage.deviceId == null) {
-            console.log('CONT-SYNC: device ID not setup')
-            return { totalChanges: -1 }
+            console.log('CONT-SYNC: device ID not setup -- setting up...')
+            await this.props.storage.loadDeviceId()
         }
 
         console.log('CONT-SYNC: integrating updates')

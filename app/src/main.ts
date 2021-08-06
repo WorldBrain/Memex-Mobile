@@ -188,7 +188,8 @@ export async function main() {
         services,
         getServerStorageManager: async () => serverStorage.manager,
     })
-    // await selfTests.cloudReceive()
+    await selfTests.cloudReceive()
+    await authService.signOut()
     Object.assign(globalThis, {
         ...dependencies,
         selfTests,
