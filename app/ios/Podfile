@@ -40,16 +40,16 @@ target 'app' do
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
 
 
-  pod 'Firebase/Core', '~> 6.25.0'
+  pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
-  pod 'Firebase/Database'
+  pod 'Firebase/Database', '~> 8.4.0'
   pod 'Firebase/Functions'
 
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
-  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app/RNFBApp.podspec'
+  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
   pod 'react-native-webrtc', :path => '../node_modules/react-native-webrtc'
 
   pod 'react-native-camera', path: '../node_modules/react-native-camera'
