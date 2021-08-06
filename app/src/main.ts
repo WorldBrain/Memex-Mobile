@@ -54,7 +54,8 @@ export async function main() {
 
     if (process.env['USE_FIREBASE_EMULATOR']) {
         console.log('DEBUG: attempting connect to Firebase emulator')
-        const emulatorAddress = '10.0.2.2' // TODO: this address works on Android emulators - need to differentiate for iOS + real devices
+        const emulatorAddress =
+            Platform.OS === 'android' ? '10.0.2.2' : 'localhost'
         const getEmulatorAddress = (args: {
             port: number
             noProtocol?: boolean
@@ -129,7 +130,10 @@ export async function main() {
             const device = await serverStorage.modules.personalCloud.createDeviceInfo(
                 {
                     device: {
-                        os: PersonalDeviceOs.IOS,
+                        os:
+                            Platform.OS === 'android'
+                                ? PersonalDeviceOs.Android
+                                : PersonalDeviceOs.IOS,
                         type: PersonalDeviceType.Mobile,
                         product: PersonalDeviceProduct.MobileApp,
                     },
