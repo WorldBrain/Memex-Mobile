@@ -2,9 +2,6 @@ globalThis.process.version = '1.1.1'
 
 import 'react-native-gesture-handler'
 import { Platform } from 'react-native'
-import firebase from '@react-native-firebase/app'
-import '@react-native-firebase/auth'
-import '@react-native-firebase/functions'
 import * as Sentry from '@sentry/react-native'
 import { normalizeUrl } from '@worldbrain/memex-url-utils'
 import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
@@ -21,6 +18,7 @@ import {
 
 import './polyfills'
 import { sentryDsn, storageKeys } from '../app.json'
+import { getFirebase, connectToEmulator } from 'src/firebase'
 import {
     createStorage,
     setStorageMiddleware,
@@ -53,31 +51,12 @@ export async function main() {
     const errorTracker = new ErrorTrackingService(sentry, { dsn: sentryDsn })
 
     if (process.env['USE_FIREBASE_EMULATOR']) {
-        console.log('DEBUG: attempting connect to Firebase emulator')
-        const emulatorAddress =
-            Platform.OS === 'android' ? '10.0.2.2' : 'localhost'
-        const getEmulatorAddress = (args: {
-            port: number
-            noProtocol?: boolean
-        }) =>
-            args.noProtocol
-                ? `${emulatorAddress}:${args.port}`
-                : `http://${emulatorAddress}:${args.port}`
-
-        await firebase.firestore().settings({
-            host: getEmulatorAddress({ port: 8080, noProtocol: true }),
-            ssl: false,
-            ignoreUndefinedProperties: true,
-        })
-        firebase.database().useEmulator(emulatorAddress, 9000)
-        firebase.auth().useEmulator(getEmulatorAddress({ port: 9099 }))
-        firebase
-            .functions()
-            .useFunctionsEmulator(getEmulatorAddress({ port: 5001 }))
+        await connectToEmulator()
     }
+    const firebase = getFirebase()
 
     const authService = new MemexGoAuthService(firebase as any)
-    const serverStorage = await createServerStorage()
+    const serverStorage = await createServerStorage(firebase)
     const storage = await createStorage({
         authService,
         typeORMConnectionOpts: {

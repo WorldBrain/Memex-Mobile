@@ -2,6 +2,7 @@ import { ConnectionOptions } from 'typeorm'
 import StorageManager from '@worldbrain/storex'
 import { updateOrCreate } from '@worldbrain/storex/lib/utils'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
+import type { ReactNativeFirebase } from '@react-native-firebase/app'
 import {
     registerModuleMapCollections,
     _defaultOperationExecutor,
@@ -181,8 +182,10 @@ export async function setStorageMiddleware(options: {
     ])
 }
 
-export async function createServerStorage() {
-    const manager = createServerStorageManager()
+export async function createServerStorage(
+    firebase: ReactNativeFirebase.Module,
+) {
+    const manager = createServerStorageManager(firebase)
     const operationExecuter = (storageModuleName: string) =>
         _defaultOperationExecutor(manager)
     const sharedSyncLog = createSharedSyncLog(manager)
