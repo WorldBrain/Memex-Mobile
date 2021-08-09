@@ -8,12 +8,8 @@ import {
     createShareNavigator,
     NavigationContainerFactory,
 } from './navigation'
-import { UIDependencies } from './types'
+import { UIDependencies, CoreUIState } from './types'
 import LoadingScreen from './components/loading-screen'
-
-interface State {
-    dependencies?: UIDependencies
-}
 
 export class UI {
     private setupResolve!: (dependencies: UIDependencies) => void
@@ -28,19 +24,23 @@ export class UI {
             $rem: entireScreenWidth / 30,
         })
 
-        const setupPromise = new Promise<UIDependencies>(resolve => {
+        const setupPromise = new Promise<UIDependencies>((resolve) => {
             this.setupResolve = resolve
         })
 
         const setupContainerComponent = (
             containerCreator: NavigationContainerFactory,
         ) => () =>
-            class extends Component<{}, State> {
-                state: State = {}
+            class extends Component<{}, CoreUIState> {
+                state: CoreUIState = {
+                    dependencies: {} as any,
+                    isLoggedIn: false,
+                }
 
                 async componentDidMount() {
                     const dependencies = await setupPromise
-                    this.setState({ dependencies })
+                    const user = await dependencies.services.auth.getCurrentUser()
+                    this.setState({ dependencies, isLoggedIn: user != null })
                 }
 
                 render() {
@@ -48,7 +48,7 @@ export class UI {
                         return <LoadingScreen />
                     }
 
-                    return containerCreator(this.state.dependencies)
+                    return containerCreator(this.state)
                 }
             }
 

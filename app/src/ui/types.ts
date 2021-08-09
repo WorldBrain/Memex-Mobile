@@ -22,6 +22,11 @@ export interface UIStorageModules<Required extends keyof Storage['modules']> {
     modules: Pick<Storage['modules'], Required>
 }
 
+export interface CoreUIState {
+    dependencies: UIDependencies
+    isLoggedIn: boolean
+}
+
 export interface UIDependencies {
     storage: Storage
     services: Services
