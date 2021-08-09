@@ -38,6 +38,7 @@ export function createSelfTests(options: {
     }
 
     return {
+        ensureTestUser,
         cloudSend: async () => {
             await clearDb(options.storageManager)
             console.log('Cleared local DB')

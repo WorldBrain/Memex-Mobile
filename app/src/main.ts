@@ -115,6 +115,7 @@ export async function main() {
                                 : PersonalDeviceOs.IOS,
                         type: PersonalDeviceType.Mobile,
                         product: PersonalDeviceProduct.MobileApp,
+                        browser: 'NULL', // TODO: Remove this once staging is updated
                     },
                     userId,
                 },
@@ -167,8 +168,9 @@ export async function main() {
         services,
         getServerStorageManager: async () => serverStorage.manager,
     })
-    await selfTests.cloudReceive()
-    await authService.signOut()
+
+    // await selfTests.ensureTestUser()
+    // await authService.signOut()
     Object.assign(globalThis, {
         ...dependencies,
         selfTests,
