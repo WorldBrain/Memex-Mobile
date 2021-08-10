@@ -7,10 +7,10 @@ export type MainNavigatorRoutes = keyof MainNavigatorParamList
 export type MainNavigatorParamList = {
     DebugConsole: undefined
     SettingsMenu: undefined
-    Onboarding: undefined
     Pairing: undefined
     Sync: undefined
     CloudSync: undefined
+    Onboarding: { redoOnboarding?: boolean } | undefined
     Login:
         | {
               nextRoute?: keyof MainNavigatorParamList

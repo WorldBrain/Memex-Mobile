@@ -2,7 +2,7 @@ import React from 'react'
 import { Image } from 'react-native'
 
 import { MainNavProps, UIServices, StatefulUIElement } from 'src/ui/types'
-import OnboardingScreenLogic, { State, Event } from './logic'
+import OnboardingScreenLogic, { Dependencies, State, Event } from './logic'
 import OnboardingLayout, {
     Props as OnboardingLayoutProps,
 } from 'src/ui/layouts/onboarding'
@@ -14,16 +14,12 @@ import styles from './styles'
 
 const pairImg = require('../../assets/device-pair.png')
 
-interface Props extends MainNavProps<'Onboarding'> {
-    services: UIServices<'localStorage' | 'syncStorage'>
-}
-
 export default class OnboardingScreen extends StatefulUIElement<
-    Props,
+    Dependencies,
     State,
     Event
 > {
-    constructor(props: Props) {
+    constructor(props: Dependencies) {
         super(props, new OnboardingScreenLogic(props))
     }
 

@@ -3,7 +3,7 @@ import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
 import { storageKeys } from '../../../../../../app.json'
 import { OnboardingStage } from 'src/features/onboarding/types'
 import { UIServices, MainNavProps } from 'src/ui/types'
-import { isSyncEnabled } from 'src/features/sync/utils'
+import { MainNavigatorRoutes } from 'src/ui/navigation/types'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,
@@ -23,14 +23,15 @@ export type Event = UIEvent<{
     finishOnboarding: null
 }>
 
+export type Dependencies = MainNavProps<'Onboarding'> & {
+    services: UIServices<'syncStorage' | 'localStorage' | 'auth'>
+}
+
 export default class OnboardingScreenLogic extends UILogic<State, Event> {
     static MAX_ONBOARDING_STAGE: OnboardingStage = 2
+    private nextRoute: MainNavigatorRoutes = 'CloudSync'
 
-    constructor(
-        private options: MainNavProps<'Onboarding'> & {
-            services: UIServices<'syncStorage' | 'localStorage'>
-        },
-    ) {
+    constructor(private options: Dependencies) {
         super()
     }
 
@@ -39,18 +40,47 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
     }
 
     async init() {
-        if (await isSyncEnabled(this.options.services)) {
+        const { route, services, navigation } = this.options
+
+        const isSyncEnabled = await services.localStorage.get(
+            storageKeys.syncKey,
+        )
+        const isFirstTimeOnboarding = await services.localStorage.get(
+            storageKeys.showOnboarding,
+        )
+
+        if (isSyncEnabled) {
             this.emitMutation({ isExistingUser: { $set: true } })
+
+            // This case happens when the user gets logged out for whatever reason
+            //  then they start the app, which leads them to "this" (Onboarding) route
+            if (!isFirstTimeOnboarding && !route.params?.redoOnboarding) {
+                navigation.navigate('Login', { nextRoute: 'Dashboard' })
+            }
         }
     }
 
     finishOnboarding: EventHandler<'finishOnboarding'> = async () => {
-        await this.options.services.localStorage.set(
+        const { services, navigation } = this.options
+
+        const isFirstTimeOnboarding = await services.localStorage.get(
             storageKeys.showOnboarding,
-            false,
         )
 
-        this.options.navigation.navigate('CloudSync')
+        await services.localStorage.set(storageKeys.showOnboarding, false)
+
+        // This needs to happen as an iOS, as login session is handled in the keychain,
+        //  it gets persisted between installs. So rather than rely on local storage flags,
+        //  which don't get persisted, we need to check the auth service directly...
+        const isLoggedIn = await services.auth.getCurrentUser()
+
+        if (!isLoggedIn) {
+            navigation.navigate('Login', { nextRoute: 'CloudSync' })
+        } else if (isFirstTimeOnboarding) {
+            navigation.navigate('CloudSync')
+        } else {
+            navigation.navigate('Dashboard')
+        }
     }
 
     goToLastStage: EventHandler<'goToLastStage'> = () => {
@@ -68,10 +98,7 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
         const nextStage = (previousState.onboardingStage + 1) as OnboardingStage
 
         if (nextStage > maxStage) {
-            this.processUIEvent('finishOnboarding', {
-                previousState,
-                event: null,
-            })
+            this.finishOnboarding({ event: null, previousState })
         } else {
             this.emitMutation({ onboardingStage: { $set: nextStage } })
         }

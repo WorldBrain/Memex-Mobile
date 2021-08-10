@@ -27,19 +27,14 @@ export default class SettingsMenuScreen extends StatefulUIElement<
         }
     }
 
-    private navigateTo = (
-        route: 'Pairing' | 'Dashboard' | 'Onboarding',
-    ) => () => {
-        this.props.navigation.navigate(route)
-    }
-
     render() {
+        const { navigation } = this.props
         return (
             <SettingsMenu
                 isPaired={this.state.isSynced}
                 versionCode={version}
-                onDevicePairedPress={this.navigateTo('Pairing')}
-                onExitMenuPress={this.navigateTo('Dashboard')}
+                onDevicePairedPress={() => navigation.navigate('Pairing')}
+                onExitMenuPress={() => navigation.navigate('Dashboard')}
                 onSyncPress={this.handleSyncPress}
                 isSyncing={this.state.syncState === 'running'}
                 syncErrorMessage={this.state.syncErrorMessage}
@@ -48,7 +43,13 @@ export default class SettingsMenuScreen extends StatefulUIElement<
                 }
                 hasSuccessfullySynced={this.state.syncState === 'done'}
             >
-                <SettingsLink onPress={this.navigateTo('Onboarding')}>
+                <SettingsLink
+                    onPress={() =>
+                        navigation.navigate('Onboarding', {
+                            redoOnboarding: true,
+                        })
+                    }
+                >
                     Tutorial
                 </SettingsLink>
                 <OutLink

@@ -180,7 +180,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                                 this.props.navigation.navigate('CloudSync')
                             }
                             goToTutorial={() =>
-                                this.props.navigation.navigate('Onboarding')
+                                this.props.navigation.navigate('Onboarding', {
+                                    redoOnboarding: true,
+                                })
                             }
                         />
                     }

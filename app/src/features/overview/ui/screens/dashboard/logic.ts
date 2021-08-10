@@ -93,19 +93,7 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    private async navToOnboardingIfNeeded() {
-        const showOnboarding = await this.props.services.localStorage.get<
-            boolean
-        >(storageKeys.showOnboarding)
-
-        if (showOnboarding || showOnboarding === null) {
-            this.props.navigation.navigate('Onboarding')
-        }
-    }
-
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
-        await this.navToOnboardingIfNeeded()
-
         const handleAppStatusChange = (nextState: AppStateStatus) => {
             switch (nextState) {
                 case 'active':
