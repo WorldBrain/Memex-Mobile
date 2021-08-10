@@ -43,15 +43,14 @@ export const createMainNavigator: NavigationContainerFactory = ({
     ]
 
     const protectedRoutes = [
-        ...freeRoutes,
+        <MainStack.Screen name="Dashboard">
+            {(props) => <Dashboard {...props} {...deps} />}
+        </MainStack.Screen>,
         <MainStack.Screen name="PageEditor">
             {(props) => <PageEditor {...props} {...deps} />}
         </MainStack.Screen>,
         <MainStack.Screen name="NoteEditor">
             {(props) => <NoteEditor {...props} {...deps} />}
-        </MainStack.Screen>,
-        <MainStack.Screen name="Dashboard">
-            {(props) => <Dashboard {...props} {...deps} />}
         </MainStack.Screen>,
         <MainStack.Screen name="ListsFilter">
             {(props) => <ListsFilter {...props} {...deps} />}
@@ -80,11 +79,12 @@ export const createMainNavigator: NavigationContainerFactory = ({
                 />
             )}
         </MainStack.Screen>,
+        ...freeRoutes,
     ]
 
     return (
         <NavigationContainer theme={lightTheme}>
-            <MainStack.Navigator initialRouteName="Dashboard" headerMode="none">
+            <MainStack.Navigator headerMode="none">
                 {isLoggedIn ? protectedRoutes : publicRoutes}
             </MainStack.Navigator>
         </NavigationContainer>
@@ -97,10 +97,7 @@ export const createShareNavigator: NavigationContainerFactory = ({
 }) => {
     return (
         <NavigationContainer theme={lightTheme}>
-            <ShareStack.Navigator
-                initialRouteName="ShareModal"
-                headerMode="none"
-            >
+            <ShareStack.Navigator headerMode="none">
                 {isLoggedIn ? (
                     <ShareStack.Screen name="ShareModal">
                         {(props) => <ShareModal {...props} {...deps} />}

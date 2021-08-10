@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { AppRegistry, Dimensions } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
 
 import { name as appName, shareExtName } from '../../app.json'
 import {
@@ -8,7 +9,8 @@ import {
     createShareNavigator,
     NavigationContainerFactory,
 } from './navigation'
-import { UIDependencies, CoreUIState } from './types'
+import type { UIDependencies, CoreUIState } from './types'
+import type { Services } from 'src/services/types'
 import LoadingScreen from './components/loading-screen'
 
 export class UI {
@@ -33,14 +35,21 @@ export class UI {
         ) => () =>
             class extends Component<{}, CoreUIState> {
                 state: CoreUIState = {
-                    dependencies: {} as any,
+                    dependencies: null!,
                     isLoggedIn: false,
                 }
 
                 async componentDidMount() {
                     const dependencies = await setupPromise
                     const user = await dependencies.services.auth.getCurrentUser()
+                    this.observeAuthChanges(dependencies.services)
                     this.setState({ dependencies, isLoggedIn: user != null })
+                }
+
+                private async observeAuthChanges({ auth }: Services) {
+                    for await (const user of authChanges(auth)) {
+                        this.setState({ isLoggedIn: user != null })
+                    }
                 }
 
                 render() {
