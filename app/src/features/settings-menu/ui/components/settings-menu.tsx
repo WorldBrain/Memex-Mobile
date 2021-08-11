@@ -82,12 +82,12 @@ class SettingsMenu extends React.PureComponent<Props> {
                     </View>
                 </View>
                 <View style={styles.footerContainer}>
-                    {this.props.isPaired && (
+                    {/* {this.props.isPaired && (
                         <Button
                             title="Device paired"
                             onPress={this.props.onDevicePairedPress}
                         />
-                    )}
+                    )} */}
                 </View>
             </>
         )
