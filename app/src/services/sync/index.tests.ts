@@ -11,17 +11,16 @@ export async function doInitialSync(params: {
     source: TestDevice
     target: TestDevice
 }) {
-    // const {
-    //     initialMessage,
-    // } = await params.source.services.sync.initialSync.requestInitialSync()
-    // await params.target.services.sync.initialSync.answerInitialSync({
-    //     initialMessage,
-    // })
-    // await Promise.all(
-    //     [params.source, params.target].map((device) =>
-    //         device.services.sync.initialSync.waitForInitialSync(),
-    //     ),
-    // )
+    await params.source.services.cloudSync.runInitialSync()
+    await params.target.services.cloudSync.runInitialSync()
+}
+
+export async function doIncrementalSync(params: {
+    source: TestDevice
+    target: TestDevice
+}) {
+    await params.source.services.cloudSync.runContinuousSync()
+    await params.target.services.cloudSync.runContinuousSync()
 }
 
 export function registerSingleDeviceSyncTests(
@@ -136,15 +135,16 @@ async function incrementalSyncAndCheck(devices: [TestDevice, TestDevice]) {
     const firstDeviceStorageContents = await getStorageContents(
         devices[0].storage.manager,
         {
-            exclude: new Set(['clientSyncLogEntry', 'syncDeviceInfo']),
+            exclude: new Set(['localSettings']),
         },
     )
-    // await devices[0].services.sync.continuousSync.forceIncrementalSync()
-    // await devices[1].services.sync.continuousSync.forceIncrementalSync()
+
+    await doIncrementalSync({ source: devices[0], target: devices[1] })
+
     const secondDeviceStorageContents = await getStorageContents(
         devices[1].storage.manager,
         {
-            exclude: new Set(['clientSyncLogEntry', 'syncDeviceInfo']),
+            exclude: new Set(['localSettings']),
         },
     )
 

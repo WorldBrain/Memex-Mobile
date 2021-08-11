@@ -22,7 +22,10 @@ import defaultConnectionOpts from './default-connection-opts'
 import { Storage } from './types'
 import { SettingsStorage } from 'src/features/settings/storage'
 import { ReaderStorage } from 'src/features/reader/storage'
-import { createServerStorageManager } from './server'
+import {
+    createServerStorageManager,
+    createMemoryServerStorageManager,
+} from './server'
 import { createSharedSyncLog } from 'src/services/sync/shared-sync-log'
 import {
     MemexClientSyncLogStorage,
@@ -49,7 +52,7 @@ export interface CreateStorageOptions {
     createDeviceId: (userId: string | number) => Promise<string | number>
     createPersonalCloudBackend: (
         storageManager: StorageManager,
-        modules: Pick<Storage['modules'], 'localSettings'>,
+        modules: Pick<Storage['modules'], 'localSettings' | 'personalCloud'>,
         getDeviceId: () => Promise<PersonalCloudDeviceId>,
     ) => PersonalCloudBackend
 }
@@ -183,9 +186,12 @@ export async function setStorageMiddleware(options: {
 }
 
 export async function createServerStorage(
-    firebase: ReactNativeFirebase.Module,
+    firebase?: ReactNativeFirebase.Module,
 ) {
-    const manager = createServerStorageManager(firebase)
+    const manager = firebase
+        ? createServerStorageManager(firebase)
+        : createMemoryServerStorageManager()
+
     const operationExecuter = (storageModuleName: string) =>
         _defaultOperationExecutor(manager)
     const sharedSyncLog = createSharedSyncLog(manager)

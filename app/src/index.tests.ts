@@ -7,25 +7,31 @@ import { normalizeUrl } from '@worldbrain/memex-url-utils'
 import inMemory from '@worldbrain/storex-backend-dexie/lib/in-memory'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
 import { MemorySignalTransportManager } from 'simple-signalling/lib/memory'
-import { createStorage, setStorageMiddleware } from 'src/storage'
+import {
+    createStorage,
+    setStorageMiddleware,
+    createServerStorage,
+} from 'src/storage'
 import { Storage } from 'src/storage/types'
 import { createServices } from './services'
 import { Services } from './services/types'
-import { StorageService } from './services/settings-storage'
 import { MockSentry } from './services/error-tracking/index.tests'
 import { ErrorTrackingService } from './services/error-tracking'
 import { FakeNavigation, FakeRoute } from './tests/navigation'
-import { MockSettingsStorage } from './features/settings/storage/mock-storage'
 import { MockKeychainPackage } from './services/keychain/mock-keychain-package'
 import { registerSingleDeviceSyncTests } from './services/sync/index.tests'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 import { RouteProp } from '@react-navigation/native'
 import { ConnectionOptions } from 'typeorm'
-import { NullPersonalCloudBackend } from '@worldbrain/memex-common/lib/personal-cloud/backend/null'
+import {
+    PersonalCloudHub,
+    StorexPersonalCloudBackend,
+} from '@worldbrain/memex-common/lib/personal-cloud/backend/storex'
+import { getCurrentSchemaVersion } from '@worldbrain/memex-common/lib/storage/utils'
 
 export interface TestDevice {
     storage: Storage
-    services: Omit<Services, 'sync'>
+    services: Services
     auth: MemoryAuthService
     navigation: FakeNavigation
     route: RouteProp<any, any>
@@ -90,23 +96,42 @@ export function makeStorageTestFactory() {
                     options?.mark,
                 ),
                 async function (this: any) {
-                    const signalTransportFactory = lazyMemorySignalTransportFactory()
-                    const sharedSyncLog = await createMemorySharedSyncLog()
-
                     const route = new FakeRoute()
                     const navigation = new FakeNavigation()
                     const authService = new MemoryAuthService()
+                    const cloudHub = new PersonalCloudHub()
 
+                    let now = 555
+                    const getNow = () => now++
+                    const getUserId = async () => {
+                        const user = await authService.getCurrentUser()
+                        return user?.id ?? null
+                    }
                     const errorTracker = new ErrorTrackingService(
                         new MockSentry() as any,
                         { dsn: 'test.com' },
                     )
+
+                    await authService.loginWithEmailAndPassword(
+                        'test@test.com',
+                        'password',
+                    )
+
+                    const serverStorage = await createServerStorage()
                     const storage = await createStorage({
                         authService,
-                        createPersonalCloudBackend: (
-                            storageManager,
-                            storageModules,
-                        ) => new NullPersonalCloudBackend(),
+                        createPersonalCloudBackend: () =>
+                            new StorexPersonalCloudBackend({
+                                storageManager: serverStorage.manager,
+                                clientSchemaVersion: getCurrentSchemaVersion(
+                                    serverStorage.manager,
+                                ),
+                                getDeviceId: () => 'test-device-1',
+                                view: cloudHub.getView(),
+                                getUserId,
+                                getNow,
+                                useDownloadTranslationLayer: true,
+                            }),
                         createDeviceId: async (userId) => 'test-device-1',
                         typeORMConnectionOpts: {
                             type: 'sqlite',
@@ -126,9 +151,6 @@ export function makeStorageTestFactory() {
                     })
 
                     await setStorageMiddleware({ storage })
-
-                    // TODO: figure out what to do with sync
-                    // services.sync.initialSync.wrtc = wrtc
 
                     try {
                         await test.call(this, {
@@ -161,12 +183,10 @@ export function makeMultiDeviceTestFactory() {
         }
 
         it(description, async function (this: any) {
-            const signalTransportFactory = lazyMemorySignalTransportFactory()
             const createdDevices: Array<{
                 storage: Storage
                 services: Omit<Services, 'sync'>
             }> = []
-            const sharedSyncLog = await createMemorySharedSyncLog()
 
             const createDevice: TestDeviceFactory = async (options) => {
                 const typeORMConnectionOpts: ConnectionOptions | undefined =
@@ -179,14 +199,36 @@ export function makeMultiDeviceTestFactory() {
                               logging: !!(options && options.debugSql),
                           }
                 const authService = new MemoryAuthService()
+                const cloudHub = new PersonalCloudHub()
 
+                let now = 555
+                const getNow = () => now++
+                const getUserId = async () => {
+                    const user = await authService.getCurrentUser()
+                    return user?.id ?? null
+                }
+
+                await authService.loginWithEmailAndPassword(
+                    'test@test.com',
+                    'password',
+                )
+
+                const serverStorage = await createServerStorage()
                 const storage = await createStorage({
                     typeORMConnectionOpts,
                     authService,
-                    createPersonalCloudBackend: (
-                        storageManager,
-                        storageModules,
-                    ) => new NullPersonalCloudBackend(),
+                    createPersonalCloudBackend: () =>
+                        new StorexPersonalCloudBackend({
+                            storageManager: serverStorage.manager,
+                            clientSchemaVersion: getCurrentSchemaVersion(
+                                serverStorage.manager,
+                            ),
+                            getDeviceId: () => 'test-device-1',
+                            view: cloudHub.getView(),
+                            getUserId,
+                            getNow,
+                            useDownloadTranslationLayer: true,
+                        }),
                     createDeviceId: async (userId) => 'test-device-1',
                 })
 
@@ -210,9 +252,6 @@ export function makeMultiDeviceTestFactory() {
                     extraPostChangeWatcher: options?.extraPostChangeWatcher,
                 })
 
-                // TODO: Figure out what to do with sync
-                // services.sync.initialSync.wrtc = wrtc
-
                 const device = {
                     storage,
                     services,
@@ -232,35 +271,6 @@ export function makeMultiDeviceTestFactory() {
     }
 
     return factory
-}
-
-export function lazyMemorySignalTransportFactory() {
-    let manager: MemorySignalTransportManager
-    return () => {
-        if (!manager) {
-            manager = new MemorySignalTransportManager()
-        }
-
-        return manager.createTransport()
-    }
-}
-
-export async function createMemorySharedSyncLog() {
-    const sharedStorageManager = new StorageManager({
-        backend: new DexieStorageBackend({
-            dbName: 'shared',
-            idbImplementation: inMemory(),
-        }),
-    })
-    const sharedSyncLog = new SharedSyncLogStorage({
-        storageManager: sharedStorageManager,
-        autoPkType: 'int',
-    })
-    registerModuleMapCollections(sharedStorageManager.registry, {
-        sharedSyncLog,
-    })
-    await sharedStorageManager.finishInitialization()
-    return sharedSyncLog
 }
 
 export function maybeMarkTestDescription(

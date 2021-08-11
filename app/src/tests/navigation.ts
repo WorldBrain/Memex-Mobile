@@ -17,6 +17,10 @@ export class FakeNavigation {
         this.requests.push({ type: 'navigate', target, params })
     }
 
+    addListener = (name: string, cb: (e: any) => void) => {}
+
+    removeListener = (name: string, cb: (e: any) => void) => {}
+
     goBack = (): void => {
         this.requests.push({ type: 'goBack' })
     }
