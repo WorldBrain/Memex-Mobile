@@ -3,7 +3,6 @@ import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
 import { storageKeys } from '../../../../../../app.json'
 import { OnboardingStage } from 'src/features/onboarding/types'
 import { UIServices, MainNavProps } from 'src/ui/types'
-import { MainNavigatorRoutes } from 'src/ui/navigation/types'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,
@@ -24,12 +23,11 @@ export type Event = UIEvent<{
 }>
 
 export type Dependencies = MainNavProps<'Onboarding'> & {
-    services: UIServices<'syncStorage' | 'localStorage' | 'auth'>
+    services: UIServices<'localStorage' | 'auth'>
 }
 
 export default class OnboardingScreenLogic extends UILogic<State, Event> {
     static MAX_ONBOARDING_STAGE: OnboardingStage = 2
-    private nextRoute: MainNavigatorRoutes = 'CloudSync'
 
     constructor(private options: Dependencies) {
         super()
@@ -58,7 +56,18 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
                 navigation.navigate('Login', { nextRoute: 'Dashboard' })
             }
         }
+
+        navigation.addListener('focus', this.onScreenFocus)
     }
+
+    cleanup() {
+        this.options.navigation.removeListener('focus', this.onScreenFocus)
+    }
+
+    private onScreenFocus = () =>
+        this.emitMutation({
+            onboardingStage: { $set: 0 },
+        })
 
     finishOnboarding: EventHandler<'finishOnboarding'> = async () => {
         const { services, navigation } = this.options

@@ -20,7 +20,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends MainNavProps<'CloudSync'> {
-    services: UIServices<'errorTracker' | 'localStorage' | 'auth' | 'cloudSync'>
+    services: UIServices<'errorTracker' | 'localStorage' | 'cloudSync'>
 }
 
 export default class SyncScreenLogic extends UILogic<State, Event> {
@@ -36,13 +36,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
     }
 
     async init() {
-        const { services, navigation } = this.props
-        if (!(await services.auth.getCurrentUser())) {
-            // Navs user back here after logging in
-            navigation.replace('Login', { nextRoute: 'CloudSync' })
-        } else {
-            await this.doSync()
-        }
+        await this.doSync()
     }
 
     private handleSyncSuccess = async () => {
