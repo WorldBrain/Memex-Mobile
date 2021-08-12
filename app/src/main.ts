@@ -1,10 +1,7 @@
-globalThis.process.version = '1.1.1'
-
 import 'react-native-gesture-handler'
 import { Platform } from 'react-native'
 import * as Sentry from '@sentry/react-native'
 import { normalizeUrl } from '@worldbrain/memex-url-utils'
-import { MemexSyncDevicePlatform } from '@worldbrain/memex-common/lib/sync/types'
 import FirestorePersonalCloudBackend from '@worldbrain/memex-common/lib/personal-cloud/backend/firestore'
 import type { PersonalCloudService } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
@@ -25,15 +22,9 @@ import {
     createServerStorage,
 } from './storage'
 import { createServices } from './services'
-import {
-    setupBackgroundSync,
-    setupFirebaseAuth,
-    setupContinuousSync,
-} from './services/setup'
+import { setupBackgroundSync, setupFirebaseAuth } from './services/setup'
 import { UI } from './ui'
-import { createFirebaseSignalTransport } from './services/sync/signalling'
 import { ErrorTrackingService } from './services/error-tracking'
-import SyncService from './services/sync'
 import { MemexGoAuthService } from './services/auth'
 import { MockSentry } from './services/error-tracking/index.tests'
 import { KeychainPackage } from './services/keychain/keychain'
@@ -124,7 +115,7 @@ export async function main() {
         },
     })
 
-    const coreServices = await createServices({
+    const services = await createServices({
         keychain: new KeychainPackage({ server: 'worldbrain.io' }),
         storageModules: storage.modules,
         auth: authService,
@@ -133,44 +124,22 @@ export async function main() {
         firebase,
     })
 
-    const syncService = new SyncService({
-        devicePlatform: Platform.OS as MemexSyncDevicePlatform,
-        signalTransportFactory: createFirebaseSignalTransport,
-        storageManager: storage.manager,
-        clientSyncLog: storage.modules.clientSyncLog,
-        syncInfoStorage: storage.modules.syncInfo,
-        getSharedSyncLog: async () => serverStorage.modules.sharedSyncLog,
-        errorTracker,
-        localStorage: coreServices.localStorage,
-        auth: coreServices.auth,
-    })
-
-    const services = {
-        ...coreServices,
-        sync: syncService,
-    }
-
     const dependencies = { storage, services }
 
+    await storage.modules.personalCloud.setup()
     await setStorageMiddleware(dependencies)
     await setupBackgroundSync(dependencies)
     await setupFirebaseAuth(dependencies)
-    await setupContinuousSync(dependencies)
-
-    await storage.modules.personalCloud.setup()
-
     await migrateSettings(services)
 
     ui.initialize({ dependencies })
     const selfTests = createSelfTests({
+        services,
         storageManager: storage.manager,
         storageModules: storage.modules,
-        services,
         getServerStorageManager: async () => serverStorage.manager,
     })
 
-    // await selfTests.ensureTestUser()
-    // await authService.signOut()
     Object.assign(globalThis, {
         ...dependencies,
         selfTests,

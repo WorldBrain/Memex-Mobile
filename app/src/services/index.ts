@@ -30,7 +30,7 @@ export interface CreateServicesOptions {
 
 export async function createServices(
     options: CreateServicesOptions,
-): Promise<Omit<Services, 'sync'>> {
+): Promise<Services> {
     const auth =
         (options.auth as MemexGoAuthService) ??
         new MemexGoAuthService(options.firebase)

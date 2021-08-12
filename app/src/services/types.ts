@@ -1,4 +1,3 @@
-import SyncService from './sync'
 import type { CloudSyncAPI } from './cloud-sync/types'
 import { MemexGoAuthService } from './auth'
 import { KeychainService } from './keychain'
@@ -12,7 +11,6 @@ import { PageFetcherService } from './page-fetcher'
 
 export interface Services {
     auth: MemexGoAuthService
-    sync: SyncService
     cloudSync: CloudSyncAPI
     shareExt: ShareExtService
     keychain: KeychainService
@@ -25,4 +23,6 @@ export interface Services {
     backgroundProcess: BackgroundProcessService
 }
 
-export type ServiceStarter = (args: { services: Services }) => Promise<void>
+export type ServiceStarter<ServiceNames extends keyof Services> = (args: {
+    services: Pick<Services, ServiceNames>
+}) => Promise<void>
