@@ -22,12 +22,13 @@ import {
     UpdateIntegrationResult,
 } from './types'
 import { PERSONAL_CLOUD_ACTION_RETRY_INTERVAL } from './constants'
+import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
 
 export interface Dependencies {
     backend: PersonalCloudBackend
     storageManager: StorageManager
     getUserId(): Promise<string | number | null>
-    userIdChanges(): AsyncIterableIterator<void>
+    userIdChanges(): AsyncIterableIterator<AuthenticatedUser | null>
     createDeviceId(userId: number | string): Promise<string | number>
     getDeviceId(): Promise<string | number>
     setDeviceId(deviceId: string | number): Promise<void>

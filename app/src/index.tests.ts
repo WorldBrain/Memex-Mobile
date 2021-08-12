@@ -1,5 +1,6 @@
 import { normalizeUrl } from '@worldbrain/memex-url-utils'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
+import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 import {
     createStorage,
     setStorageMiddleware,
@@ -12,7 +13,7 @@ import { MockSentry } from './services/error-tracking/index.tests'
 import { ErrorTrackingService } from './services/error-tracking'
 import { FakeNavigation, FakeRoute } from './tests/navigation'
 import { MockKeychainPackage } from './services/keychain/mock-keychain-package'
-import { registerSingleDeviceSyncTests } from './services/sync/index.tests'
+import { registerSingleDeviceSyncTests } from './services/cloud-sync/index.tests'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 import { RouteProp } from '@react-navigation/native'
 import { ConnectionOptions } from 'typeorm'
@@ -21,6 +22,11 @@ import {
     StorexPersonalCloudBackend,
 } from '@worldbrain/memex-common/lib/personal-cloud/backend/storex'
 import { getCurrentSchemaVersion } from '@worldbrain/memex-common/lib/storage/utils'
+import {
+    PersonalDeviceType,
+    PersonalDeviceOs,
+    PersonalDeviceProduct,
+} from '@worldbrain/memex-common/lib/personal-cloud/storage/types'
 
 export interface TestDevice {
     storage: Storage
@@ -105,27 +111,41 @@ export function makeStorageTestFactory() {
                         { dsn: 'test.com' },
                     )
 
-                    await authService.loginWithEmailAndPassword(
-                        'test@test.com',
-                        'password',
-                    )
+                    await authService.setUser(TEST_USER)
 
                     const serverStorage = await createServerStorage()
                     const storage = await createStorage({
                         authService,
-                        createPersonalCloudBackend: () =>
+                        createPersonalCloudBackend: (
+                            storageManager,
+                            modules,
+                            getDeviceId,
+                        ) =>
                             new StorexPersonalCloudBackend({
                                 storageManager: serverStorage.manager,
                                 clientSchemaVersion: getCurrentSchemaVersion(
                                     serverStorage.manager,
                                 ),
-                                getDeviceId: () => 'test-device-1',
                                 view: cloudHub.getView(),
+                                getDeviceId,
                                 getUserId,
                                 getNow,
                                 useDownloadTranslationLayer: true,
                             }),
-                        createDeviceId: async (userId) => 'test-device-1',
+                        createDeviceId: async (userId) => {
+                            const device = await serverStorage.modules.personalCloud.createDeviceInfo(
+                                {
+                                    userId,
+                                    device: {
+                                        type: PersonalDeviceType.Mobile,
+                                        os: PersonalDeviceOs.IOS,
+                                        product:
+                                            PersonalDeviceProduct.MobileApp,
+                                    },
+                                },
+                            )
+                            return device.id
+                        },
                         typeORMConnectionOpts: {
                             type: 'sqlite',
                             database: ':memory:',
@@ -174,6 +194,9 @@ export function makeMultiDeviceTestFactory() {
             ;(it as any).todo(description)
             return
         }
+        const serverStorageP = (async () => {
+            return createServerStorage()
+        })()
 
         it(description, async function (this: any) {
             const createdDevices: Array<{
@@ -181,6 +204,7 @@ export function makeMultiDeviceTestFactory() {
                 services: Services
             }> = []
 
+            const serverStorage = await serverStorageP
             const createDevice: TestDeviceFactory = async (options) => {
                 const typeORMConnectionOpts: ConnectionOptions | undefined =
                     options?.backend === 'dexie'
@@ -201,28 +225,40 @@ export function makeMultiDeviceTestFactory() {
                     return user?.id ?? null
                 }
 
-                await authService.loginWithEmailAndPassword(
-                    'test@test.com',
-                    'password',
-                )
+                await authService.setUser(TEST_USER)
 
-                const serverStorage = await createServerStorage()
                 const storage = await createStorage({
                     typeORMConnectionOpts,
                     authService,
-                    createPersonalCloudBackend: () =>
+                    createPersonalCloudBackend: (
+                        storageManager,
+                        modules,
+                        getDeviceId,
+                    ) =>
                         new StorexPersonalCloudBackend({
                             storageManager: serverStorage.manager,
                             clientSchemaVersion: getCurrentSchemaVersion(
                                 serverStorage.manager,
                             ),
-                            getDeviceId: () => 'test-device-1',
                             view: cloudHub.getView(),
+                            getDeviceId,
                             getUserId,
                             getNow,
                             useDownloadTranslationLayer: true,
                         }),
-                    createDeviceId: async (userId) => 'test-device-1',
+                    createDeviceId: async (userId) => {
+                        const device = await serverStorage.modules.personalCloud.createDeviceInfo(
+                            {
+                                userId,
+                                device: {
+                                    type: PersonalDeviceType.Mobile,
+                                    os: PersonalDeviceOs.IOS,
+                                    product: PersonalDeviceProduct.MobileApp,
+                                },
+                            },
+                        )
+                        return device.id
+                    },
                 })
 
                 const route = new FakeRoute()

@@ -52,7 +52,7 @@ export interface CreateStorageOptions {
     createDeviceId: (userId: string | number) => Promise<string | number>
     createPersonalCloudBackend: (
         storageManager: StorageManager,
-        modules: Pick<Storage['modules'], 'localSettings' | 'personalCloud'>,
+        storageModules: Pick<Storage['modules'], 'localSettings'>,
         getDeviceId: () => Promise<PersonalCloudDeviceId>,
     ) => PersonalCloudBackend
 }

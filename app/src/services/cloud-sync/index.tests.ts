@@ -7,20 +7,14 @@ import {
     maybeMarkTestDescription,
 } from '../../index.tests'
 
-export async function doInitialSync(params: {
-    source: TestDevice
-    target: TestDevice
-}) {
-    await params.source.services.cloudSync.runInitialSync()
-    await params.target.services.cloudSync.runInitialSync()
+const doInitialSync = async (source: TestDevice, target: TestDevice) => {
+    await source.services.cloudSync.runInitialSync()
+    await target.services.cloudSync.runInitialSync()
 }
 
-export async function doIncrementalSync(params: {
-    source: TestDevice
-    target: TestDevice
-}) {
-    await params.source.services.cloudSync.runContinuousSync()
-    await params.target.services.cloudSync.runContinuousSync()
+const doIncrementalSync = async (source: TestDevice, target: TestDevice) => {
+    await source.services.cloudSync.runContinuousSync()
+    await target.services.cloudSync.runContinuousSync()
 }
 
 export function registerSingleDeviceSyncTests(
@@ -40,15 +34,12 @@ export function registerSingleDeviceSyncTests(
                     createDevice(),
                     createDevice(),
                 ])
-                devices[0].auth.setUser(TEST_USER)
+                await devices[0].auth.setUser(TEST_USER)
 
-                await doInitialSync({
-                    source: devices[0],
-                    target: devices[1],
-                })
+                await doInitialSync(devices[0], devices[1])
 
                 await test(devices[0])
-                await incrementalSyncAndCheck(devices)
+                await syncAndCheck(devices, doIncrementalSync)
             },
         )
 
@@ -61,17 +52,14 @@ export function registerSingleDeviceSyncTests(
                 const devices = await Promise.all([
                     createDevice({
                         extraPostChangeWatcher: async () => {
-                            await incrementalSyncAndCheck(devices)
+                            await syncAndCheck(devices, doIncrementalSync)
                         },
                     }),
                     createDevice(),
                 ])
-                devices[0].auth.setUser(TEST_USER)
+                await devices[0].auth.setUser(TEST_USER)
 
-                await doInitialSync({
-                    source: devices[0],
-                    target: devices[1],
-                })
+                await doInitialSync(devices[0], devices[1])
 
                 await test(devices[0])
             },
@@ -87,33 +75,11 @@ export function registerSingleDeviceSyncTests(
                     createDevice(),
                     createDevice(),
                 ])
-                devices[0].auth.setUser(TEST_USER)
+                await devices[0].auth.setUser(TEST_USER)
+                await devices[1].auth.setUser(TEST_USER)
 
                 await test(devices[0])
-                const firstDeviceStorageContents = await getStorageContents(
-                    devices[0].storage.manager,
-                    {
-                        exclude: new Set(['syncDeviceInfo']),
-                    },
-                )
-
-                await doInitialSync({
-                    source: devices[0],
-                    target: devices[1],
-                })
-
-                const secondDeviceStorageContents = await getStorageContents(
-                    devices[1].storage.manager,
-                    {
-                        exclude: new Set(['syncDeviceInfo']),
-                    },
-                )
-                for (const page of firstDeviceStorageContents['pages'] || []) {
-                    delete page.text
-                }
-                expect(firstDeviceStorageContents).toEqual(
-                    secondDeviceStorageContents,
-                )
+                await syncAndCheck(devices, doInitialSync)
             },
         )
     })
@@ -131,20 +97,23 @@ const delTextFields = ({
     customLists: customLists.map(({ searchableName, ...list }) => list),
 })
 
-async function incrementalSyncAndCheck(devices: [TestDevice, TestDevice]) {
+async function syncAndCheck(
+    devices: [TestDevice, TestDevice],
+    runSync: (source: TestDevice, target: TestDevice) => Promise<void>,
+) {
     const firstDeviceStorageContents = await getStorageContents(
         devices[0].storage.manager,
         {
-            exclude: new Set(['localSettings']),
+            exclude: new Set(['localSettings', 'personalCloudAction']),
         },
     )
 
-    await doIncrementalSync({ source: devices[0], target: devices[1] })
+    await runSync(devices[0], devices[1])
 
     const secondDeviceStorageContents = await getStorageContents(
         devices[1].storage.manager,
         {
-            exclude: new Set(['localSettings']),
+            exclude: new Set(['localSettings', 'personalCloudAction']),
         },
     )
 
