@@ -2,12 +2,13 @@
 import { appGroup, appIdPrefix } from '../../app.json'
 import { ServiceStarter } from './types'
 
-export const setupBackgroundSync: ServiceStarter = async ({ services }) => {
+export const setupBackgroundSync: ServiceStarter<
+    'cloudSync' | 'backgroundProcess'
+> = async ({ services }) => {
     services.backgroundProcess.scheduleProcess(async () => {
-        await services.sync.continuousSync.maybeDoIncrementalSync()
+        const { totalChanges } = await services.cloudSync.runContinuousSync()
 
-        // TODO: figure out whether the DB was written to (still don't understand how important this is)
-        return { newData: true }
+        return { newData: totalChanges > 0 }
     })
 }
 
