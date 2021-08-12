@@ -6,6 +6,7 @@ import {
     ActionExecutor,
     ActionPreprocessor,
 } from '@worldbrain/memex-common/lib/action-queue/types'
+import { preprocessPulledObject } from '@worldbrain/memex-common/lib/personal-cloud/utils'
 import { AsyncMutex } from '@worldbrain/memex-common/lib/utils/async-mutex'
 import { STORAGE_VERSIONS } from '@worldbrain/memex-common/lib/browser-extension/storage/versions'
 import {
@@ -113,6 +114,11 @@ export class PersonalCloudStorage {
         for (const update of updates) {
             if (update.type === PersonalCloudUpdateType.Overwrite) {
                 const object = update.object
+                preprocessPulledObject({
+                    storageRegistry: storageManager.registry,
+                    collection: update.collection,
+                    object,
+                })
                 if (update.media) {
                     await Promise.all(
                         Object.entries(update.media).map(
