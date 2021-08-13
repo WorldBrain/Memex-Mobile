@@ -88,18 +88,11 @@ export class PersonalCloudStorage {
         }
     }
 
-    async integrateContinuously(): Promise<UpdateIntegrationResult> {
-        let updatesIntegratedCount = 0
-
-        for await (const updates of this.dependencies.backend.streamUpdates()) {
-            const { updatesIntegrated } = await this.integrateUpdates(updates)
-            updatesIntegratedCount += updatesIntegrated
-        }
-
-        return { updatesIntegrated: updatesIntegratedCount }
+    async pushAllQueuedUpdates(): Promise<void> {
+        await this.actionQueue.executePendingActions()
     }
 
-    async integrateAllUpdates(): Promise<UpdateIntegrationResult> {
+    async pullAllUpdates(): Promise<UpdateIntegrationResult> {
         const updateBatch = await this.dependencies.backend.bulkDownloadUpdates()
         return this.integrateUpdates(updateBatch)
     }
