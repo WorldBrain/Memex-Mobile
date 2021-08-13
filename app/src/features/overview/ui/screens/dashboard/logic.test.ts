@@ -26,19 +26,19 @@ const UI_PAGE_1: UIPage = {
     lists: [],
 }
 const UI_PAGE_2: UIPage = {
-    fullUrl: 'https://www.test.com.me',
-    url: 'test.com.me',
-    pageUrl: 'test.com.me',
+    fullUrl: 'https://www.test.com/1',
+    url: 'test.com/1',
+    pageUrl: 'test.com/1',
     notes: [],
-    domain: 'test.com.me',
-    titleText: 'This is a test page bla',
+    domain: 'test.com',
+    titleText: 'This is another test page',
     date: 'a few seconds ago',
     isStarred: false,
     tags: [],
     lists: [],
 }
 
-describe.skip('dashboard screen UI logic tests', () => {
+describe('dashboard screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     async function setup(
@@ -60,17 +60,17 @@ describe.skip('dashboard screen UI logic tests', () => {
         dependencies: { storage: Storage },
     ) {
         await dependencies.storage.modules.overview.createPage(page)
-        await addToMobileList(page.url, dependencies)
+        await addToMobileList(page.fullUrl, dependencies)
     }
 
     async function addToMobileList(
-        pageUrl: string,
+        fullPageUrl: string,
         dependencies: { storage: Storage },
     ) {
         const mobileListId = await dependencies.storage.modules.metaPicker.createMobileListIfAbsent()
         await dependencies.storage.modules.metaPicker.createPageListEntry({
             listId: mobileListId,
-            fullPageUrl: pageUrl,
+            fullPageUrl,
         })
     }
 
@@ -98,7 +98,10 @@ describe.skip('dashboard screen UI logic tests', () => {
         const { element } = await setup(dependencies)
 
         await insertIntegrationTestData(dependencies)
-        await addToMobileList(INTEGRATION_TEST_DATA.pages[0].url, dependencies)
+        await addToMobileList(
+            INTEGRATION_TEST_DATA.pages[0].fullUrl,
+            dependencies,
+        )
 
         await element.init()
         expect(element.state).toEqual(
@@ -134,22 +137,17 @@ describe.skip('dashboard screen UI logic tests', () => {
         await storage.modules.overview.createPage(
             INTEGRATION_TEST_DATA.pages[0],
         )
-        await storage.modules.overview.createPage({
-            url: INTEGRATION_TEST_DATA.pages[0].url + '.me',
-            fullUrl: 'https://www.test.com.me',
-            fullTitle: 'This is a test page bla',
-            text:
-                'Hey there this is some test text with lots of test terms included bla.',
-        })
-
+        await storage.modules.overview.createPage(
+            INTEGRATION_TEST_DATA.pages[1],
+        )
         const mobileListId = await storage.modules.metaPicker.createMobileListIfAbsent()
         await storage.modules.metaPicker.createPageListEntry({
             listId: mobileListId,
-            fullPageUrl: INTEGRATION_TEST_DATA.pages[0].url,
+            fullPageUrl: INTEGRATION_TEST_DATA.pages[0].fullUrl,
         })
         await storage.modules.metaPicker.createPageListEntry({
             listId: mobileListId,
-            fullPageUrl: INTEGRATION_TEST_DATA.pages[0].url + '.me',
+            fullPageUrl: INTEGRATION_TEST_DATA.pages[1].fullUrl,
         })
 
         await element.init()
@@ -163,7 +161,7 @@ describe.skip('dashboard screen UI logic tests', () => {
                 couldHaveMore: true,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
-                pages: new Map([['test.com.me', UI_PAGE_2]]),
+                pages: new Map([[UI_PAGE_2.url, UI_PAGE_2]]),
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
             }),
         )
@@ -181,8 +179,8 @@ describe.skip('dashboard screen UI logic tests', () => {
                 actionFinishedAt: 0,
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([
-                    ['test.com.me', UI_PAGE_2],
-                    ['test.com', UI_PAGE_1],
+                    [UI_PAGE_2.url, UI_PAGE_2],
+                    [UI_PAGE_1.url, UI_PAGE_1],
                 ]),
             }),
         )
@@ -200,8 +198,8 @@ describe.skip('dashboard screen UI logic tests', () => {
                 actionFinishedAt: 0,
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([
-                    ['test.com.me', UI_PAGE_2],
-                    ['test.com', UI_PAGE_1],
+                    [UI_PAGE_2.url, UI_PAGE_2],
+                    [UI_PAGE_1.url, UI_PAGE_1],
                 ]),
             }),
         )
@@ -218,7 +216,7 @@ describe.skip('dashboard screen UI logic tests', () => {
                 actionState: 'pristine',
                 actionFinishedAt: 0,
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
-                pages: new Map([['test.com.me', UI_PAGE_2]]),
+                pages: new Map([[UI_PAGE_2.url, UI_PAGE_2]]),
             }),
         )
     })
@@ -317,8 +315,14 @@ describe.skip('dashboard screen UI logic tests', () => {
             await overview.createPage(page)
         }
 
-        await addToMobileList(INTEGRATION_TEST_DATA.pages[0].url, dependencies)
-        await addToMobileList(INTEGRATION_TEST_DATA.pages[3].url, dependencies)
+        await addToMobileList(
+            INTEGRATION_TEST_DATA.pages[0].fullUrl,
+            dependencies,
+        )
+        await addToMobileList(
+            INTEGRATION_TEST_DATA.pages[3].fullUrl,
+            dependencies,
+        )
 
         await overview.starPage({ url: INTEGRATION_TEST_DATA.pages[1].url })
         await overview.visitPage({ url: INTEGRATION_TEST_DATA.pages[1].url })
@@ -363,22 +367,18 @@ describe.skip('dashboard screen UI logic tests', () => {
         await storage.modules.overview.createPage(
             INTEGRATION_TEST_DATA.pages[0],
         )
-        await storage.modules.overview.createPage({
-            url: INTEGRATION_TEST_DATA.pages[0].url + '.me',
-            fullUrl: 'https://www.test.com.me',
-            fullTitle: 'This is a test page bla',
-            text:
-                'Hey there this is some test text with lots of test terms included bla.',
-        })
+        await storage.modules.overview.createPage(
+            INTEGRATION_TEST_DATA.pages[1],
+        )
 
         const mobileListId = await storage.modules.metaPicker.createMobileListIfAbsent()
         await storage.modules.metaPicker.createPageListEntry({
             listId: mobileListId,
-            fullPageUrl: INTEGRATION_TEST_DATA.pages[0].url,
+            fullPageUrl: INTEGRATION_TEST_DATA.pages[0].fullUrl,
         })
         await storage.modules.metaPicker.createPageListEntry({
             listId: mobileListId,
-            fullPageUrl: INTEGRATION_TEST_DATA.pages[0].url + '.me',
+            fullPageUrl: INTEGRATION_TEST_DATA.pages[1].fullUrl,
         })
 
         await element.init()

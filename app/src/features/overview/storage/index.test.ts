@@ -3,7 +3,7 @@ import { extractUrlParts } from '@worldbrain/memex-url-utils'
 
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
-import { Page } from '../types'
+import type { Page } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/types'
 
 const it = makeStorageTestFactory()
 
@@ -21,7 +21,7 @@ function testPageEquality(
     expect(dbPage.hostname).toBe(urlParts.hostname)
 }
 
-describe.skip('overview StorageModule', () => {
+describe('overview StorageModule', () => {
     it('should be able to create new pages', async ({
         storage: {
             modules: { overview },

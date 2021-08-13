@@ -225,13 +225,13 @@ export default class Logic extends UILogic<State, Event> {
         event: { name },
         previousState,
     }: IncomingUIEvent<State, Event, 'createEntry'>) {
-        const url = previousState.page.url
+        const { page } = previousState
 
         switch (previousState.mode) {
             case 'tags':
-                return this.createTagEntry(url, name)
+                return this.createTagEntry(page.url, name)
             default:
-                return this.createListEntry(url, name)
+                return this.createListEntry(page.fullUrl, name)
         }
     }
 
