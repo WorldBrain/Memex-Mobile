@@ -71,7 +71,7 @@ describe.skip('meta picker StorageModule', () => {
 
             for (const listId of listIds) {
                 await metaPicker.createPageListEntry({
-                    fullPageUrl: page.url,
+                    fullPageUrl: page.fullUrl,
                     listId,
                 })
             }
@@ -114,7 +114,7 @@ describe.skip('meta picker StorageModule', () => {
 
             for (const listId of listIds) {
                 await metaPicker.createPageListEntry({
-                    fullPageUrl: page.url,
+                    fullPageUrl: page.fullUrl,
                     listId,
                 })
             }
@@ -158,7 +158,7 @@ describe.skip('meta picker StorageModule', () => {
 
             for (const listId of listIds) {
                 await metaPicker.createPageListEntry({
-                    fullPageUrl: page.url,
+                    fullPageUrl: page.fullUrl,
                     listId,
                 })
             }
@@ -262,7 +262,7 @@ describe.skip('meta picker StorageModule', () => {
 
         for (const idx of [2, 0, 1]) {
             await metaPicker.createPageListEntry({
-                fullPageUrl: pageData.pages[idx].url,
+                fullPageUrl: pageData.pages[idx].fullUrl,
                 listId: listIds[0],
             })
         }
@@ -308,19 +308,19 @@ describe.skip('meta picker StorageModule', () => {
         expect(listIds.length).toBe(data.lists.length)
 
         await metaPicker.createPageListEntry({
-            fullPageUrl: pageData.pages[0].url,
+            fullPageUrl: pageData.pages[0].fullUrl,
             listId: listIds[0],
         })
         await metaPicker.createPageListEntry({
-            fullPageUrl: pageData.pages[0].url,
+            fullPageUrl: pageData.pages[0].fullUrl,
             listId: listIds[1],
         })
         await metaPicker.createPageListEntry({
-            fullPageUrl: pageData.pages[1].url,
+            fullPageUrl: pageData.pages[1].fullUrl,
             listId: listIds[2],
         })
         await metaPicker.createPageListEntry({
-            fullPageUrl: pageData.pages[1].url,
+            fullPageUrl: pageData.pages[1].fullUrl,
             listId: listIds[3],
         })
 
@@ -396,11 +396,11 @@ describe.skip('meta picker StorageModule', () => {
         expect(listIds.length).toBe(data.lists.length)
 
         await metaPicker.createPageListEntry({
-            fullPageUrl: pageData.pages[0].url,
+            fullPageUrl: pageData.pages[0].fullUrl,
             listId: listIds[0],
         })
         await metaPicker.createPageListEntry({
-            fullPageUrl: pageData.pages[0].url,
+            fullPageUrl: pageData.pages[0].fullUrl,
             listId: listIds[1],
         })
 
@@ -413,7 +413,7 @@ describe.skip('meta picker StorageModule', () => {
 
         await metaPicker.setPageLists({
             lists: [data.lists[1], data.lists[2]],
-            url: pageData.pages[0].url,
+            fullPageUrl: pageData.pages[0].fullUrl,
         })
 
         const pageEntriesAfter = await metaPicker.findPageListEntriesByPage({

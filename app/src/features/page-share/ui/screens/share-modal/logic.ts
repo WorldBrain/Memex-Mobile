@@ -423,7 +423,7 @@ export default class Logic extends UILogic<State, Event> {
         })
 
         await metaPicker.setPageLists({
-            url: state.pageUrl,
+            fullPageUrl: state.pageUrl,
             lists: [...state.collectionsToAdd, SPECIAL_LIST_NAMES.MOBILE],
         })
         await metaPicker.setPageTags({
