@@ -30,6 +30,10 @@ async function runTests(settings: SettingsStorage) {
     await settings.setSetting({ key: 'foo', value: 'eggs' })
     expect(await settings.getSetting({ key: 'foo' })).toEqual('eggs')
 
+    await settings.setSetting({ key: 'foo-2', value: 'spam-2' })
+    expect(await settings.getSetting({ key: 'foo' })).toEqual('eggs')
+    expect(await settings.getSetting({ key: 'foo-2' })).toEqual('spam-2')
+
     await settings.clearSetting({ key: 'foo' })
     expect(await settings.getSetting({ key: 'foo' })).toEqual(null)
 }
