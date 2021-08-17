@@ -281,7 +281,11 @@ async function syncAndCheck(devices: [TestDevice, TestDevice]) {
     const firstDeviceStorageContents = await getStorageContents(
         devices[0].storage.manager,
         {
-            exclude: new Set(['localSettings', 'personalCloudAction']),
+            exclude: new Set([
+                'localSettings',
+                'personalCloudAction',
+                'readablePageArchives',
+            ]),
         },
     )
 
@@ -291,7 +295,11 @@ async function syncAndCheck(devices: [TestDevice, TestDevice]) {
     const secondDeviceStorageContents = await getStorageContents(
         devices[1].storage.manager,
         {
-            exclude: new Set(['localSettings', 'personalCloudAction']),
+            exclude: new Set([
+                'localSettings',
+                'personalCloudAction',
+                'readablePageArchives',
+            ]),
         },
     )
 
