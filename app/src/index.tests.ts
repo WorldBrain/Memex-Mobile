@@ -111,8 +111,6 @@ export function makeStorageTestFactory() {
                         { dsn: 'test.com' },
                     )
 
-                    await authService.setUser(TEST_USER)
-
                     const serverStorage = await createServerStorage()
                     const storage = await createStorage({
                         authService,
@@ -163,6 +161,8 @@ export function makeStorageTestFactory() {
                         auth: authService,
                     })
 
+                    await authService.setUser(TEST_USER)
+                    await storage.modules.personalCloud.setup()
                     await setStorageMiddleware({ storage })
 
                     try {
@@ -225,8 +225,6 @@ export function makeMultiDeviceTestFactory() {
                     return user?.id ?? null
                 }
 
-                await authService.setUser(TEST_USER)
-
                 const storage = await createStorage({
                     typeORMConnectionOpts,
                     authService,
@@ -276,6 +274,8 @@ export function makeMultiDeviceTestFactory() {
                     storageModules: storage.modules,
                 })
 
+                await authService.setUser(TEST_USER)
+                await storage.modules.personalCloud.setup()
                 await setStorageMiddleware({
                     storage,
                     extraPostChangeWatcher: options?.extraPostChangeWatcher,
