@@ -19,14 +19,13 @@ import PersonalCloudServerStorage from '@worldbrain/memex-common/lib/personal-cl
 import { storageKeys } from '../../app.json'
 
 import defaultConnectionOpts from './default-connection-opts'
-import { Storage } from './types'
+import type { Storage, ServerStorage } from './types'
 import { SettingsStorage } from 'src/features/settings/storage'
 import { ReaderStorage } from 'src/features/reader/storage'
 import {
     createServerStorageManager,
     createMemoryServerStorageManager,
 } from './server'
-import { createSharedSyncLog } from 'src/services/sync/shared-sync-log'
 import {
     MemexClientSyncLogStorage,
     MemexSyncInfoStorage,
@@ -187,14 +186,13 @@ export async function setStorageMiddleware(options: {
 
 export async function createServerStorage(
     firebase?: ReactNativeFirebase.Module,
-) {
+): Promise<ServerStorage> {
     const manager = firebase
         ? createServerStorageManager(firebase)
         : createMemoryServerStorageManager()
 
     const operationExecuter = (storageModuleName: string) =>
         _defaultOperationExecutor(manager)
-    const sharedSyncLog = createSharedSyncLog(manager)
     const userManagement = new UserStorage({
         storageManager: manager,
         operationExecuter: operationExecuter('users'),
@@ -204,16 +202,13 @@ export async function createServerStorage(
         autoPkType: 'string',
     })
     registerModuleMapCollections(manager.registry, {
-        sharedSyncLog,
         personalCloud,
         userManagement,
     })
     await manager.finishInitialization()
     return {
         manager,
-        backend: manager.backend as FirestoreStorageBackend,
         modules: {
-            sharedSyncLog,
             userManagement,
             personalCloud,
         },

@@ -1,17 +1,19 @@
-import StorageManager from '@worldbrain/storex'
+import StorageManager, { StorageBackend } from '@worldbrain/storex'
 
-import { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
-import { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
-import { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
-import { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
-import {
+import type UserStorage from '@worldbrain/memex-common/lib/user-management/storage'
+import type PersonalCloudServerStorage from '@worldbrain/memex-common/lib/personal-cloud/storage'
+import type { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
+import type { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
+import type { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
+import type { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
+import type {
     MemexClientSyncLogStorage,
     MemexSyncInfoStorage,
 } from 'src/features/sync/storage'
-import { SettingsStorage } from 'src/features/settings/storage'
-import { ReaderStorage } from 'src/features/reader/storage'
-import { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
-import { CopyPasterStorage } from 'src/features/copy-paster/storage'
+import type { SettingsStorage } from 'src/features/settings/storage'
+import type { ReaderStorage } from 'src/features/reader/storage'
+import type { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
+import type { CopyPasterStorage } from 'src/features/copy-paster/storage'
 
 export interface Storage {
     manager: StorageManager
@@ -30,4 +32,14 @@ export interface StorageModules {
     syncSettings: SettingsStorage
     localSettings: SettingsStorage
     reader: ReaderStorage
+}
+
+export interface ServerStorage {
+    manager: StorageManager
+    modules: ServerStorageModules
+}
+
+export interface ServerStorageModules {
+    userManagement: UserStorage
+    personalCloud: PersonalCloudServerStorage
 }
