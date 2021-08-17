@@ -231,7 +231,7 @@ export default class Logic extends UILogic<State, Event> {
             case 'tags':
                 return this.createTagEntry(page.url, name)
             default:
-                return this.createListEntry(page.fullUrl, name)
+                return this.createListEntry(page.url, name)
         }
     }
 

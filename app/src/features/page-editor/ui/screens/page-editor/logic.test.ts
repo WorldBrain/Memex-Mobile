@@ -18,7 +18,7 @@ const testPage = {
     lists: [],
 }
 
-describe.skip('page editor UI logic tests', () => {
+describe('page editor UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     function setup({
