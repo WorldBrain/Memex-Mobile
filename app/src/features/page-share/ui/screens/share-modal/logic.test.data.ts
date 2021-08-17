@@ -5,6 +5,7 @@ export class TestData {
         private props: {
             url: string
             normalizedUrl: string
+            title: string
             hostname?: string
             domain?: string
             noteText?: string
@@ -16,8 +17,9 @@ export class TestData {
             hostname: this.props.hostname ?? this.props.normalizedUrl,
             domain: this.props.domain ?? this.props.normalizedUrl,
             url: this.props.normalizedUrl,
+            canonicalUrl: this.props.url,
             fullUrl: this.props.url,
-            fullTitle: '',
+            fullTitle: this.props.title,
             text: '',
         }
     }
@@ -31,7 +33,7 @@ export class TestData {
             comment: this.props.noteText,
             createdWhen: expect.any(Date),
             lastEdited: expect.any(Date),
-            pageTitle: '',
+            pageTitle: this.props.title,
             pageUrl: this.props.normalizedUrl,
             url: `${this.props.normalizedUrl}/#${NOTE_TIMESTAMP}`,
         }
@@ -40,8 +42,10 @@ export class TestData {
 
 export const PAGE_URL_1 = 'http://bla.com'
 export const PAGE_URL_1_NORM = 'bla.com'
+export const PAGE_TITLE_1 = 'test 1'
 export const PAGE_URL_2 = 'http://bla.com/test#hash'
 export const PAGE_URL_2_NORM = 'bla.com/test'
+export const PAGE_TITLE_2 = 'test 2'
 
 export const NOTE_TIMESTAMP = 123
 

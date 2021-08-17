@@ -14,7 +14,7 @@ import {
     SPECIAL_LIST_IDS,
 } from '@worldbrain/memex-storage/lib/lists/constants'
 
-describe.skip('share modal UI logic tests', () => {
+describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     async function setup(
@@ -49,7 +49,13 @@ describe.skip('share modal UI logic tests', () => {
                     },
                 } as any,
                 cloudSync: {
-                    sync: async () => ({ totalChanges: 0 }),
+                    sync: async () => {
+                        const errMsg = options.syncError?.()
+                        if (errMsg) {
+                            throw new Error(errMsg)
+                        }
+                        return { totalChanges: 0 }
+                    },
                 },
             },
             storage: options.storage,
@@ -130,7 +136,6 @@ describe.skip('share modal UI logic tests', () => {
             expect.objectContaining({
                 url: normalizedPageUrl,
                 fullUrl: fullPageUrl,
-                fullTitle: '',
                 text: '',
             }),
         )
@@ -173,7 +178,6 @@ describe.skip('share modal UI logic tests', () => {
             expect.objectContaining({
                 url: normalizedPageUrl,
                 fullUrl: fullPageUrl,
-                fullTitle: '',
                 text: '',
             }),
         )
@@ -185,7 +189,6 @@ describe.skip('share modal UI logic tests', () => {
             expect.objectContaining({
                 url: normalizedPageUrl,
                 fullUrl: fullPageUrl,
-                fullTitle: '',
                 text: '',
             }),
         )
@@ -275,7 +278,7 @@ describe.skip('share modal UI logic tests', () => {
         expect(element.state.errorMessage).toBeUndefined()
     })
 
-    it('should update error message state if retry sync is unssuccesfull', async (context) => {
+    it('should update error message state if retry sync is unsuccesfull', async (context) => {
         let errMsg = 'this is a test'
         const pageUrl = DATA.PAGE_URL_1
 
@@ -664,6 +667,7 @@ describe.skip('share modal UI logic tests', () => {
         const { logic, initialState: state } = await setup(context)
         const TEST_DATA = new DATA.TestData({
             url: DATA.PAGE_URL_1,
+            title: DATA.PAGE_TITLE_1,
             normalizedUrl: DATA.PAGE_URL_1_NORM,
         })
 
@@ -673,7 +677,11 @@ describe.skip('share modal UI logic tests', () => {
                 .findObjects({}),
         ).toEqual([])
 
-        await logic['storePage']({ ...state, pageUrl: DATA.PAGE_URL_1 })
+        await logic['storePage']({
+            ...state,
+            pageUrl: DATA.PAGE_URL_1,
+            pageTitle: DATA.PAGE_TITLE_1,
+        })
 
         expect(
             await context.storage.manager.collection('pages').findObjects({}),
@@ -696,14 +704,19 @@ describe.skip('share modal UI logic tests', () => {
             }),
         ])
         expect(
-            await context.storage.modules.metaPicker.findPageListEntriesByList({
-                listId: lists[0].id,
-            }),
+            await context.storage.manager
+                .collection('pageListEntries')
+                .findObjects({}),
         ).toEqual([
             expect.objectContaining({
                 fullUrl: DATA.PAGE_URL_1,
                 pageUrl: DATA.PAGE_URL_1_NORM,
                 listId: SPECIAL_LIST_IDS.INBOX,
+            }),
+            expect.objectContaining({
+                fullUrl: DATA.PAGE_URL_1,
+                pageUrl: DATA.PAGE_URL_1_NORM,
+                listId: lists[1].id,
             }),
         ])
     })
@@ -712,6 +725,7 @@ describe.skip('share modal UI logic tests', () => {
         const { logic, initialState: state } = await setup(context)
         const TEST_DATA = new DATA.TestData({
             url: DATA.PAGE_URL_1,
+            title: DATA.PAGE_TITLE_1,
             normalizedUrl: DATA.PAGE_URL_1_NORM,
             noteText: DATA.NOTE_1_TEXT,
         })
@@ -719,6 +733,7 @@ describe.skip('share modal UI logic tests', () => {
         await logic['storePage'](
             {
                 ...state,
+                pageTitle: DATA.PAGE_TITLE_1,
                 pageUrl: DATA.PAGE_URL_1,
                 noteText: DATA.NOTE_1_TEXT,
             },
@@ -740,6 +755,7 @@ describe.skip('share modal UI logic tests', () => {
         const { logic, initialState: state } = await setup(context)
         const TEST_DATA = new DATA.TestData({
             url: DATA.PAGE_URL_2,
+            title: DATA.PAGE_TITLE_1,
             domain: DATA.PAGE_URL_1_NORM,
             hostname: DATA.PAGE_URL_1_NORM,
             normalizedUrl: DATA.PAGE_URL_2_NORM,
@@ -749,6 +765,7 @@ describe.skip('share modal UI logic tests', () => {
         await logic['storePage'](
             {
                 ...state,
+                pageTitle: DATA.PAGE_TITLE_1,
                 pageUrl: DATA.PAGE_URL_2,
                 noteText: DATA.NOTE_1_TEXT,
             },

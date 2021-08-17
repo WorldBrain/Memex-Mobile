@@ -10,7 +10,10 @@ import {
     ShareNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
+import {
+    SPECIAL_LIST_NAMES,
+    SPECIAL_LIST_IDS,
+} from '@worldbrain/memex-storage/lib/lists/constants'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 
@@ -22,6 +25,7 @@ export interface State {
     collectionsState: UITaskState
 
     pageUrl: string
+    pageTitle: string
     statusText: string
     noteText: string
     tagsToAdd: string[]
@@ -91,6 +95,7 @@ export default class Logic extends UILogic<State, Event> {
             tagsState: 'pristine',
             collectionsState: 'pristine',
             pageUrl: '',
+            pageTitle: '',
             showSavingPage: false,
             isModalShown: true,
             noteText: '',
@@ -404,8 +409,8 @@ export default class Logic extends UILogic<State, Event> {
         await overview.createPage({
             url: state.pageUrl,
             fullUrl: state.pageUrl,
+            fullTitle: state.pageTitle,
             text: '',
-            fullTitle: '',
         })
 
         await overview.visitPage({ url: state.pageUrl })
@@ -424,7 +429,11 @@ export default class Logic extends UILogic<State, Event> {
 
         await metaPicker.setPageLists({
             fullPageUrl: state.pageUrl,
-            lists: [...state.collectionsToAdd, SPECIAL_LIST_NAMES.MOBILE],
+            lists: [
+                ...state.collectionsToAdd,
+                SPECIAL_LIST_NAMES.MOBILE,
+                SPECIAL_LIST_NAMES.INBOX,
+            ],
         })
         await metaPicker.setPageTags({
             url: state.pageUrl,
@@ -436,7 +445,7 @@ export default class Logic extends UILogic<State, Event> {
                 {
                     comment: state.noteText.trim(),
                     pageUrl: state.pageUrl,
-                    pageTitle: '',
+                    pageTitle: state.pageTitle,
                 },
                 customTimestamp,
             )
