@@ -159,7 +159,7 @@ export default class Logic extends UILogic<State, Event> {
 
         await executeUITask<State, 'syncState'>(this, 'syncState', async () => {
             try {
-                const { totalChanges } = await cloudSync.runContinuousSync()
+                const { totalChanges } = await cloudSync.sync()
                 if (totalChanges > 0) {
                     this.emitMutation({
                         shouldShowSyncRibbon: { $set: true },

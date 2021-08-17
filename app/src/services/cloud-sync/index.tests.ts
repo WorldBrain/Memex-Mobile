@@ -1,21 +1,10 @@
 import { getStorageContents } from '@worldbrain/memex-common/lib/storage/utils'
-import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 import {
     SingleDeviceTestFunction,
     TestDevice,
     makeMultiDeviceTestFactory,
     maybeMarkTestDescription,
 } from '../../index.tests'
-
-const doInitialSync = async (source: TestDevice, target: TestDevice) => {
-    await source.services.cloudSync.runInitialSync()
-    await target.services.cloudSync.runInitialSync()
-}
-
-const doIncrementalSync = async (source: TestDevice, target: TestDevice) => {
-    await source.services.cloudSync.runContinuousSync()
-    await target.services.cloudSync.runContinuousSync()
-}
 
 export function registerSingleDeviceSyncTests(
     test: SingleDeviceTestFunction,
@@ -26,7 +15,7 @@ export function registerSingleDeviceSyncTests(
     describe('Sync tests', () => {
         it(
             maybeMarkTestDescription(
-                'should result in the same end storage state after a incremental sync',
+                'should result in the same end storage state after a sync',
                 options.mark,
             ),
             async ({ createDevice }) => {
@@ -34,52 +23,28 @@ export function registerSingleDeviceSyncTests(
                     createDevice(),
                     createDevice(),
                 ])
-                await devices[0].auth.setUser(TEST_USER)
-
-                await doInitialSync(devices[0], devices[1])
 
                 await test(devices[0])
-                await syncAndCheck(devices, doIncrementalSync)
+                await syncAndCheck(devices)
             },
         )
 
         it(
             maybeMarkTestDescription(
-                'should result in the same storage state after an incremental sync at every change',
+                'should result in the same storage state after a sync at every change',
                 options.mark,
             ),
             async ({ createDevice }) => {
                 const devices = await Promise.all([
                     createDevice({
                         extraPostChangeWatcher: async () => {
-                            await syncAndCheck(devices, doIncrementalSync)
+                            await syncAndCheck(devices)
                         },
                     }),
                     createDevice(),
                 ])
-                await devices[0].auth.setUser(TEST_USER)
-
-                await doInitialSync(devices[0], devices[1])
 
                 await test(devices[0])
-            },
-        )
-
-        it(
-            maybeMarkTestDescription(
-                'should result in the same end storage state after an initial sync',
-                options.mark,
-            ),
-            async ({ createDevice }) => {
-                const devices = await Promise.all([
-                    createDevice(),
-                    createDevice(),
-                ])
-                await devices[0].auth.setUser(TEST_USER)
-                await devices[1].auth.setUser(TEST_USER)
-
-                await test(devices[0])
-                await syncAndCheck(devices, doInitialSync)
             },
         )
     })
@@ -97,10 +62,7 @@ const delTextFields = ({
     customLists: customLists.map(({ searchableName, ...list }) => list),
 })
 
-async function syncAndCheck(
-    devices: [TestDevice, TestDevice],
-    runSync: (source: TestDevice, target: TestDevice) => Promise<void>,
-) {
+async function syncAndCheck(devices: [TestDevice, TestDevice]) {
     const firstDeviceStorageContents = await getStorageContents(
         devices[0].storage.manager,
         {
@@ -108,7 +70,8 @@ async function syncAndCheck(
         },
     )
 
-    await runSync(devices[0], devices[1])
+    await devices[0].services.cloudSync.sync()
+    await devices[1].services.cloudSync.sync()
 
     const secondDeviceStorageContents = await getStorageContents(
         devices[1].storage.manager,

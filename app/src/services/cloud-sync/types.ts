@@ -1,8 +1,3 @@
 export interface CloudSyncAPI {
-    runInitialSync: () => Promise<void>
-    runContinuousSync: () => Promise<ContinuousSyncResult>
-}
-
-export interface ContinuousSyncResult {
-    totalChanges: number
+    sync: () => Promise<{ totalChanges: number }>
 }

@@ -117,7 +117,7 @@ export default class Logic extends UILogic<State, Event> {
         const { cloudSync } = this.props.services
 
         try {
-            await cloudSync.runContinuousSync()
+            await cloudSync.sync()
             this.clearSyncError()
         } catch (err) {
             this.handleSyncError(err)

@@ -49,8 +49,7 @@ describe.skip('share modal UI logic tests', () => {
                     },
                 } as any,
                 cloudSync: {
-                    runContinuousSync: async () => ({ totalChanges: 0 }),
-                    runInitialSync: async () => {},
+                    sync: async () => ({ totalChanges: 0 }),
                 },
             },
             storage: options.storage,

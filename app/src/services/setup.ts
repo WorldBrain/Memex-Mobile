@@ -6,7 +6,7 @@ export const setupBackgroundSync: ServiceStarter<
     'cloudSync' | 'backgroundProcess'
 > = async ({ services }) => {
     services.backgroundProcess.scheduleProcess(async () => {
-        const { totalChanges } = await services.cloudSync.runContinuousSync()
+        const { totalChanges } = await services.cloudSync.sync()
 
         return { newData: totalChanges > 0 }
     })

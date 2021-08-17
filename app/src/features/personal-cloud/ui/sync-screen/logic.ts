@@ -53,7 +53,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
 
         await executeUITask<State, 'syncState'>(this, 'syncState', async () => {
             try {
-                await cloudSync.runInitialSync()
+                await cloudSync.sync()
                 this.handleSyncSuccess()
             } catch (err) {
                 this.handleSyncError(err)

@@ -28,14 +28,13 @@ describe('settings menu UI logic tests', () => {
                     }),
                 errorTracker: { track: () => undefined } as any,
                 cloudSync: {
-                    runContinuousSync: async () => {
+                    sync: async () => {
                         const syncError = options.syncError?.()
                         if (syncError != null) {
                             throw new Error(syncError)
                         }
                         return { totalChanges: 0 }
                     },
-                    runInitialSync: async () => {},
                 },
             },
             navigation: new FakeNavigation() as any,

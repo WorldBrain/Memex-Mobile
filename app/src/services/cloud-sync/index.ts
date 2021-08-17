@@ -8,19 +8,10 @@ export interface Props {
 export class CloudSyncService implements CloudSyncAPI {
     constructor(private props: Props) {}
 
-    runInitialSync: CloudSyncAPI['runInitialSync'] = async () => {
+    sync: CloudSyncAPI['sync'] = async () => {
         const { storage } = this.props
 
         await storage.loadDeviceId()
-        await storage.pullAllUpdates()
-    }
-
-    runContinuousSync: CloudSyncAPI['runContinuousSync'] = async () => {
-        const { storage } = this.props
-        if (storage.deviceId == null) {
-            await storage.loadDeviceId()
-        }
-
         await storage.pushAllQueuedUpdates()
         const { updatesIntegrated } = await storage.pullAllUpdates()
         return { totalChanges: updatesIntegrated }
