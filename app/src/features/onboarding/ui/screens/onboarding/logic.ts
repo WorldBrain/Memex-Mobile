@@ -100,14 +100,16 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
         })
     }
 
-    goToNextStage: EventHandler<'goToNextStage'> = ({ previousState }) => {
+    goToNextStage: EventHandler<'goToNextStage'> = async ({
+        previousState,
+    }) => {
         const maxStage =
             OnboardingScreenLogic.MAX_ONBOARDING_STAGE -
             (previousState.isExistingUser ? 1 : 0)
         const nextStage = (previousState.onboardingStage + 1) as OnboardingStage
 
         if (nextStage > maxStage) {
-            this.finishOnboarding({ event: null, previousState })
+            await this.finishOnboarding({ event: null, previousState })
         } else {
             this.emitMutation({ onboardingStage: { $set: nextStage } })
         }

@@ -1,86 +1,102 @@
 import { storageKeys } from '../../../../../../app.json'
-import { StorageService } from 'src/services/settings-storage'
 import OnboardingScreenLogic, { Event, State } from './logic'
+import { makeStorageTestFactory } from 'src/index.tests'
+import type { TestDevice } from 'src/types.tests'
 import { TestLogicContainer } from 'src/tests/ui-logic'
-import { FakeNavigation } from 'src/tests/navigation'
-import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
+
+const it = makeStorageTestFactory()
 
 describe('onboarding UI logic tests', () => {
-    function setup() {
-        const navigation = new FakeNavigation()
-        const localStorage = new StorageService({
-            settingsStorage: new MockSettingsStorage(),
-        })
+    function setup(context: TestDevice) {
         const logic = new OnboardingScreenLogic({
-            navigation: navigation as any,
-            services: {
-                localStorage,
-            },
-            route: {} as any,
+            ...context,
+            navigation: context.navigation as any,
         })
         const logicContainer = new TestLogicContainer<State, Event>(logic)
 
-        return { logicContainer, localStorage, navigation }
+        return { logicContainer }
     }
 
-    it('should do the whole onboarding flow correctly for a new user', async () => {
-        const { logicContainer, localStorage, navigation } = setup()
+    it(
+        'should do the whole onboarding flow correctly for a new user',
+        { skipSyncTests: true },
+        async (context) => {
+            const { logicContainer } = setup(context)
+            const {
+                navigation,
+                services: { localStorage },
+            } = context
 
-        await logicContainer.processEvent('init', undefined)
-        expect(await localStorage.get(storageKeys.syncKey)).toBeFalsy()
+            await localStorage.set(storageKeys.showOnboarding, true)
 
-        expect(logicContainer.state).toEqual({
-            isExistingUser: false,
-            onboardingStage: 0,
-        })
+            await logicContainer.processEvent('init', undefined)
+            expect(await localStorage.get(storageKeys.syncKey)).toBeFalsy()
 
-        await logicContainer.processEvent('goToNextStage', null)
-        expect(logicContainer.state).toEqual({
-            isExistingUser: false,
-            onboardingStage: 1,
-        })
-        await logicContainer.processEvent('goToNextStage', null)
-        expect(logicContainer.state).toEqual({
-            isExistingUser: false,
-            onboardingStage: 2,
-        })
+            expect(logicContainer.state).toEqual({
+                isExistingUser: false,
+                onboardingStage: 0,
+            })
 
-        expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(null)
-        await logicContainer.processEvent('goToNextStage', null)
-        expect(navigation.popRequests()).toEqual([
-            { type: 'navigate', target: 'CloudSync' },
-        ])
-        expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(
-            false,
-        )
-    })
+            await logicContainer.processEvent('goToNextStage', null)
+            expect(logicContainer.state).toEqual({
+                isExistingUser: false,
+                onboardingStage: 1,
+            })
+            await logicContainer.processEvent('goToNextStage', null)
+            expect(logicContainer.state).toEqual({
+                isExistingUser: false,
+                onboardingStage: 2,
+            })
 
-    it('should do the whole onboarding flow correctly for an existing user', async () => {
-        const { logicContainer, localStorage, navigation } = setup()
+            expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(
+                true,
+            )
+            await logicContainer.processEvent('goToNextStage', null)
+            expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(
+                false,
+            )
+            expect(navigation.popRequests()).toEqual([
+                { type: 'navigate', target: 'CloudSync' },
+            ])
+        },
+    )
 
-        // Set the sync key so that onboarding detects an existing user
-        await localStorage.set(storageKeys.syncKey, true)
-        await logicContainer.processEvent('init', undefined)
-        expect(await localStorage.get(storageKeys.syncKey)).toBe(true)
+    it(
+        'should do the whole onboarding flow correctly for an existing user',
+        { skipSyncTests: true },
+        async (context) => {
+            const { logicContainer } = setup(context)
+            const {
+                navigation,
+                services: { localStorage },
+            } = context
 
-        expect(logicContainer.state).toEqual({
-            isExistingUser: true,
-            onboardingStage: 0,
-        })
+            // Set the sync key so that onboarding detects an existing user
+            await localStorage.set(storageKeys.syncKey, true)
+            await logicContainer.processEvent('init', undefined)
+            expect(await localStorage.get(storageKeys.syncKey)).toBe(true)
 
-        await logicContainer.processEvent('goToNextStage', null)
-        expect(logicContainer.state).toEqual({
-            isExistingUser: true,
-            onboardingStage: 1,
-        })
+            expect(logicContainer.state).toEqual({
+                isExistingUser: true,
+                onboardingStage: 0,
+            })
 
-        expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(null)
-        await logicContainer.processEvent('goToNextStage', null)
-        expect(navigation.popRequests()).toEqual([
-            { type: 'navigate', target: 'CloudSync' },
-        ])
-        expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(
-            false,
-        )
-    })
+            await logicContainer.processEvent('goToNextStage', null)
+            expect(logicContainer.state).toEqual({
+                isExistingUser: true,
+                onboardingStage: 1,
+            })
+
+            expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(
+                null,
+            )
+            await logicContainer.processEvent('goToNextStage', null)
+            expect(navigation.popRequests()).toEqual([
+                { type: 'navigate', target: 'CloudSync' },
+            ])
+            expect(await localStorage.get(storageKeys.showOnboarding)).toEqual(
+                false,
+            )
+        },
+    )
 })
