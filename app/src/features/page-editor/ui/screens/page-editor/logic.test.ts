@@ -10,8 +10,8 @@ import { StorageService } from 'src/services/settings-storage'
 const testText = 'this is a test'
 const testPage = {
     date: '5 mins ago',
-    pageUrl: 'https://test.com',
-    url: 'https://test.com',
+    pageUrl: DATA.PAGE_1.fullUrl,
+    url: DATA.PAGE_1.fullUrl,
     titleText: 'This is a test page',
     notes: [],
     tags: [],
@@ -248,12 +248,17 @@ describe('page editor UI logic tests', () => {
             updatedPage = page
         }
 
-        const { logicContainer } = setup({
+        const { logicContainer, logic } = setup({
             ...context,
             route: new FakeRoute({
                 fullPageUrl: DATA.PAGE_1.url,
                 updatePage: mockUpdatePage,
             }) as any,
+        })
+
+        await logic['props'].storage.modules.overview.createPage({
+            ...DATA.PAGE_1,
+            text: '',
         })
 
         const TEST_NOTE_TEXT_1 = 'test 1'
