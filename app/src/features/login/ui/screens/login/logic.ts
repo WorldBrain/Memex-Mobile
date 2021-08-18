@@ -82,8 +82,9 @@ export default class Logic extends UILogic<State, Event> {
                 if (route.params?.nextRoute) {
                     // This timeout needs to be here for android, which doesn't update the routes
                     //  in time for this nav event
+                    await new Promise((resolve) => setTimeout(resolve, 0))
                     const nextRoute = route.params.nextRoute
-                    setTimeout(() => navigation.navigate(nextRoute), 0)
+                    navigation.navigate(nextRoute)
                 } else {
                     navigation.goBack()
                 }
