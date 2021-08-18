@@ -21,7 +21,7 @@ function testNoteEquality(a: Note, b: Note) {
     }
 }
 
-describe.skip('page editor StorageModule', () => {
+describe('page editor StorageModule', () => {
     it('should be able to derive annotation URLs from page URLs', async ({
         storage: {
             modules: { pageEditor },
@@ -46,9 +46,13 @@ describe.skip('page editor StorageModule', () => {
 
     it('should be able to create new notes', async ({
         storage: {
-            modules: { pageEditor },
+            modules: { pageEditor, overview },
         },
     }) => {
+        for (const page of data.pages) {
+            await overview.createPage(page)
+        }
+
         for (const note of data.notes) {
             if (!note.comment?.length) {
                 continue
@@ -65,9 +69,13 @@ describe.skip('page editor StorageModule', () => {
 
     it('should be able to create new annotations', async ({
         storage: {
-            modules: { pageEditor },
+            modules: { pageEditor, overview },
         },
     }) => {
+        for (const page of data.pages) {
+            await overview.createPage(page)
+        }
+
         for (const note of data.notes) {
             if (!note.body?.length) {
                 continue
@@ -84,9 +92,13 @@ describe.skip('page editor StorageModule', () => {
 
     it('should be able to find only annotations (with bodies)', async ({
         storage: {
-            modules: { pageEditor },
+            modules: { pageEditor, overview },
         },
     }) => {
+        for (const page of data.pages) {
+            await overview.createPage(page)
+        }
+
         for (const note of data.notes) {
             await pageEditor.createAnnotation(note as any)
         }
@@ -103,9 +115,13 @@ describe.skip('page editor StorageModule', () => {
 
     it('should be able to delete all notes for a page', async ({
         storage: {
-            modules: { pageEditor },
+            modules: { pageEditor, overview },
         },
     }) => {
+        for (const page of data.pages) {
+            await overview.createPage(page)
+        }
+
         for (const note of data.notes) {
             await pageEditor.createAnnotation(note as any)
         }
@@ -125,9 +141,13 @@ describe.skip('page editor StorageModule', () => {
 
     it('should be able to star notes', async ({
         storage: {
-            modules: { pageEditor },
+            modules: { pageEditor, overview },
         },
     }) => {
+        for (const page of data.pages) {
+            await overview.createPage(page)
+        }
+
         for (const note of data.notes) {
             // Timestamp gets appended to URL ID; here we just grab it from test datum's URL
             const urlTimestamp = +note.url.split('#')[1]

@@ -1,9 +1,11 @@
-import Logic, { State, Event, Props } from './logic'
+import Logic, { State, Event } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
-import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
+import { makeStorageTestFactory } from 'src/index.tests'
+import type { TestDevice } from 'src/types.tests'
 import { FakeRoute } from 'src/tests/navigation'
 import { Anchor, Highlight } from 'src/content-script/types'
 
+const TEST_FULL_URL_1 = 'https://getmemex.com'
 const TEST_URL_1 = 'getmemex.com'
 const TEST_TITLE_1 = 'test'
 const TEST_ANCHOR_1: Anchor = {
@@ -11,10 +13,10 @@ const TEST_ANCHOR_1: Anchor = {
     descriptor: { content: 'test', strategy: 'test' },
 }
 
-describe.skip('reader screen UI logic tests', () => {
+describe('reader screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
-    function setup(options: TestDevice) {
+    async function setup(options: TestDevice) {
         const logic = new Logic({
             ...options,
             loadContentScript: async () => '',
@@ -26,11 +28,19 @@ describe.skip('reader screen UI logic tests', () => {
         })
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
+        // Ensure a page exists in the DB already for this fake route
+        await options.storage.modules.overview.createPage({
+            fullUrl: TEST_FULL_URL_1,
+            url: TEST_URL_1,
+            fullTitle: TEST_TITLE_1,
+            text: '',
+        })
+
         return { element, logic, ...options }
     }
 
     it('should be able to change text selection state', async (dependencies) => {
-        const { element } = setup(dependencies)
+        const { element } = await setup(dependencies)
 
         const testTextA = 'some text'
         const testTextB = 'some more text'
@@ -45,7 +55,7 @@ describe.skip('reader screen UI logic tests', () => {
     })
 
     it('should be able to toggle bookmark state', async (dependencies) => {
-        const { element } = setup(dependencies)
+        const { element } = await setup(dependencies)
         const { overview } = dependencies.storage.modules
 
         expect(element.state.isBookmarked).toBe(false)
@@ -61,7 +71,7 @@ describe.skip('reader screen UI logic tests', () => {
     })
 
     it('should be able to set reader error', async (dependencies) => {
-        const { element } = setup(dependencies)
+        const { element } = await setup(dependencies)
 
         const TEST_MSG_1 = 'This is a test error'
         const dummyError = new Error(TEST_MSG_1)
@@ -78,7 +88,7 @@ describe.skip('reader screen UI logic tests', () => {
         const {
             element,
             services: { errorTracker },
-        } = setup(dependencies)
+        } = await setup(dependencies)
 
         const TEST_MSG_1 = 'This is a test error'
         const dummyError = new Error(TEST_MSG_1)
@@ -93,7 +103,7 @@ describe.skip('reader screen UI logic tests', () => {
     })
 
     it('should be able to create a highlight from a text selection', async (dependencies) => {
-        const { element } = setup(dependencies)
+        const { element } = await setup(dependencies)
         const { pageEditor } = dependencies.storage.modules
 
         let renderedHighlight: Highlight | null = null
@@ -132,7 +142,7 @@ describe.skip('reader screen UI logic tests', () => {
     })
 
     it('should be able to create an annotation from a text selection', async (dependencies) => {
-        const { element, navigation } = setup(dependencies)
+        const { element, navigation } = await setup(dependencies)
         const { pageEditor } = dependencies.storage.modules
 
         let renderedHighlight: Highlight | null = null
@@ -179,8 +189,8 @@ describe.skip('reader screen UI logic tests', () => {
     })
 
     it('should be able to click-to-edit highlights', async (dependencies) => {
-        const { element, navigation } = setup(dependencies)
-        const { pageEditor } = dependencies.storage.modules
+        const { element, navigation } = await setup(dependencies)
+        const { pageEditor, overview } = dependencies.storage.modules
 
         const testNote = {
             pageTitle: 'test title',
@@ -190,7 +200,14 @@ describe.skip('reader screen UI logic tests', () => {
             selector: {},
         }
 
-        const { object } = await pageEditor.createNote(testNote)
+        await overview.createPage({
+            url: testNote.pageUrl,
+            fullUrl: 'https://' + testNote.pageUrl,
+            fullTitle: testNote.pageTitle,
+            text: '',
+        })
+
+        const { object } = await pageEditor.createAnnotation(testNote)
 
         await element.processEvent('editHighlight', {
             highlightUrl: object.url,
@@ -214,7 +231,7 @@ describe.skip('reader screen UI logic tests', () => {
     })
 
     it('should be able to nav back to overview', async (dependencies) => {
-        const { element, navigation } = setup(dependencies)
+        const { element, navigation } = await setup(dependencies)
 
         expect(navigation.popRequests()).toEqual([])
         element.processEvent('goBack', null)
