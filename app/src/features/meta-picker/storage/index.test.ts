@@ -100,7 +100,6 @@ describe('meta picker StorageModule', () => {
         },
     }) => {
         const listIds: number[] = []
-
         for (const name of data.lists) {
             const { object } = await metaPicker.createList({ name })
             listIds.push(object.id)
@@ -121,7 +120,7 @@ describe('meta picker StorageModule', () => {
         }
 
         for (const listId of listIds) {
-            await metaPicker.deleteList({ listId })
+            await metaPicker.deletePageListEntriesByList({ listId })
             expect(
                 await metaPicker.findPageListEntriesByList({
                     listId,
