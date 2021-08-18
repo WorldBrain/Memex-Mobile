@@ -14,11 +14,15 @@ describe('SyncSettingsStorage', () => {
 })
 
 describe('LocalSettingsStorage', () => {
-    it('should work', async ({
-        storage: {
-            modules: { localSettings },
-        },
-    }) => runTests(localSettings))
+    it(
+        'should work',
+        { skipSyncTests: true },
+        async ({
+            storage: {
+                modules: { localSettings },
+            },
+        }) => runTests(localSettings),
+    )
 })
 
 async function runTests(settings: SettingsStorage) {
