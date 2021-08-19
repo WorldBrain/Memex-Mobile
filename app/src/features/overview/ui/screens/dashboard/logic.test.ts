@@ -74,6 +74,25 @@ describe('dashboard screen UI logic tests', () => {
         })
     }
 
+    it(
+        'should nav away to onboarding if local storage key set',
+        { skipSyncTests: true },
+        async (dependencies) => {
+            const { element, logic } = await setup(dependencies)
+            await dependencies.services.localStorage.set(
+                storageKeys.showOnboarding,
+                true,
+            )
+
+            await element.init()
+            expect(element.state).toEqual(logic.getInitialState())
+
+            expect(dependencies.navigation.popRequests()).toEqual([
+                { type: 'navigate', target: 'Onboarding' },
+            ])
+        },
+    )
+
     it('should load correctly without any saved pages', async (dependencies) => {
         const { element } = await setup(dependencies)
 

@@ -94,6 +94,20 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+        const {
+            navigation,
+            services: { localStorage },
+        } = this.props
+
+        // Nav to onboarding early if local storage flag is set
+        const showOnboarding = await localStorage.get(
+            storageKeys.showOnboarding,
+        )
+        if (showOnboarding) {
+            navigation.navigate('Onboarding')
+            return
+        }
+
         const handleAppStatusChange = (nextState: AppStateStatus) => {
             switch (nextState) {
                 case 'active':
