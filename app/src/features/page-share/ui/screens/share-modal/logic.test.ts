@@ -2,13 +2,13 @@ import expect from 'expect'
 
 import { storageKeys } from '../../../../../../app.json'
 import Logic, { State, Event } from './logic'
-import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
-import { Storage } from 'src/storage/types'
+import { makeStorageTestFactory } from 'src/index.tests'
+import type { TestDevice } from 'src/types.tests'
+import type { Storage } from 'src/storage/types'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 
 import * as DATA from './logic.test.data'
-import { List } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
-import { FakeNavigation } from 'src/tests/navigation'
+import type { List } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
 import {
     SPECIAL_LIST_NAMES,
     SPECIAL_LIST_IDS,
@@ -32,6 +32,9 @@ describe('share modal UI logic tests', () => {
         const trackedErrors: Error[] = []
 
         const logic = new Logic({
+            ...options,
+            navigation: options.navigation as any,
+            route: options.route as any,
             services: {
                 ...options.services,
                 shareExt: ({
@@ -58,9 +61,6 @@ describe('share modal UI logic tests', () => {
                     },
                 },
             },
-            storage: options.storage,
-            navigation: new FakeNavigation() as any,
-            route: options.route as any,
         })
         const initialState = logic.getInitialState()
         const element = new FakeStatefulUIElement<State, Event>(logic)
