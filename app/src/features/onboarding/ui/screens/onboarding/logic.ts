@@ -43,17 +43,19 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
         const isSyncEnabled = await services.localStorage.get(
             storageKeys.syncKey,
         )
-        const isFirstTimeOnboarding = await services.localStorage.get(
-            storageKeys.showOnboarding,
-        )
 
         if (isSyncEnabled) {
             this.emitMutation({ isExistingUser: { $set: true } })
+
+            const isFirstTimeOnboarding = await services.localStorage.get(
+                storageKeys.showOnboarding,
+            )
 
             // This case happens when the user gets logged out for whatever reason
             //  then they start the app, which leads them to "this" (Onboarding) route
             if (!isFirstTimeOnboarding && !route.params?.redoOnboarding) {
                 navigation.navigate('Login', { nextRoute: 'Dashboard' })
+                return
             }
         }
 
