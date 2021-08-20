@@ -244,11 +244,11 @@ const initCreateTestDevice = ({
     })
 
     const services = await createServices({
+        keychain: new MockKeychainPackage(),
         auth: authService,
         normalizeUrl,
         errorTracker,
-        keychain: new MockKeychainPackage(),
-        storageModules: storage.modules,
+        storage,
     })
 
     await authService.setUser(TEST_USER)

@@ -117,11 +117,11 @@ export async function main() {
 
     const services = await createServices({
         keychain: new KeychainPackage({ server: 'worldbrain.io' }),
-        storageModules: storage.modules,
         auth: authService,
         normalizeUrl,
         errorTracker,
         firebase,
+        storage,
     })
 
     const dependencies = { storage, services }

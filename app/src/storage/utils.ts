@@ -1,16 +1,16 @@
+import StorageManager from '@worldbrain/storex'
 import { COLLECTION_NAMES as PAGES_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/pages/constants'
 import { COLLECTION_NAMES as TAGS_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/tags/constants'
 import { COLLECTION_NAMES as LISTS_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
 import { COLLECTION_NAMES as ANNOTATIONS_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/annotations/constants'
 import { COLLECTION_NAMES as TEMPLATE_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/copy-paster/constants'
+import { COLLECTION_NAMES as READER_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/reader/constants'
 import { SettingsStorage } from 'src/features/settings/storage'
 
-export const PERSONAL_CLOUD_ACTION_RETRY_INTERVAL = 1000 * 60 * 5
-
-export const CLOUD_SYNCED_COLLECTIONS: string[] = [
+export const USER_DATA_COLLECTIONS: string[] = [
+    PAGES_COLLECTION_NAMES.page,
     PAGES_COLLECTION_NAMES.bookmark,
     PAGES_COLLECTION_NAMES.visit,
-    PAGES_COLLECTION_NAMES.page,
     TAGS_COLLECTION_NAMES.tag,
     LISTS_COLLECTION_NAMES.list,
     LISTS_COLLECTION_NAMES.listEntry,
@@ -18,6 +18,17 @@ export const CLOUD_SYNCED_COLLECTIONS: string[] = [
     TEMPLATE_COLLECTION_NAMES.templates,
     ANNOTATIONS_COLLECTION_NAMES.annotation,
     ANNOTATIONS_COLLECTION_NAMES.annotationPrivacy,
-    'sharedListMetadata',
+    READER_COLLECTION_NAMES.readablePage,
     'sharedAnnotationMetadata',
+    'personalCloudAction',
+    'sharedListMetadata',
 ]
+
+export async function dangerousPleaseBeSureDeleteAndRecreateDatabase(
+    storageManager: StorageManager,
+    collectionsToDelete = USER_DATA_COLLECTIONS,
+) {
+    for (const collection of collectionsToDelete) {
+        await storageManager.operation('deleteObjects', collection, {})
+    }
+}

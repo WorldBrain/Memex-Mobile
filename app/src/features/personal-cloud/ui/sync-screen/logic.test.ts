@@ -6,6 +6,9 @@ import { makeStorageTestFactory } from 'src/index.tests'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import type { TestDevice } from 'src/types.tests'
 import { FakeRoute } from 'src/tests/navigation'
+import * as DATA from './logic.test.data'
+import { USER_DATA_COLLECTIONS } from 'src/storage/utils'
+import StorageManager from '@worldbrain/storex'
 
 describe('cloud sync UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -75,16 +78,14 @@ describe('cloud sync UI logic tests', () => {
         'should wipe DB first if route param flag set',
         { skipSyncTests: true },
         async (context) => {
-            let isDBWiped = false
-            context.services.cloudSync.____wipeDBForSync = async () => {
-                isDBWiped = true
-            }
             context.route = new FakeRoute({ shouldWipeDBFirst: true }) as any
             const { element } = setup(context)
+            await insertTestData(context.storage.manager)
+            await assertTestData(context.storage.manager, { exists: true })
 
-            expect(isDBWiped).toBe(false)
             await element.init()
-            expect(isDBWiped).toBe(true)
+
+            await assertTestData(context.storage.manager, { exists: false })
         },
     )
 
@@ -97,10 +98,55 @@ describe('cloud sync UI logic tests', () => {
                 isDBWiped = true
             }
             const { element } = setup(context)
+            await insertTestData(context.storage.manager)
+            await assertTestData(context.storage.manager, { exists: true })
 
             expect(isDBWiped).toBe(false)
             await element.init()
             expect(isDBWiped).toBe(false)
+
+            await assertTestData(context.storage.manager, { exists: true })
         },
     )
 })
+
+async function insertTestData(storageManager: StorageManager) {
+    await storageManager.collection('pages').createObject(DATA.PAGE_1)
+
+    await storageManager
+        .collection('annotations')
+        .createObject(DATA.ANNOTATION_1)
+
+    for (const name of DATA.TAGS_1) {
+        await storageManager
+            .collection('tags')
+            .createObject({ url: DATA.PAGE_1.url, name })
+        await storageManager
+            .collection('tags')
+            .createObject({ url: DATA.ANNOTATION_1.url, name })
+    }
+}
+
+async function assertTestData(
+    storageManager: StorageManager,
+    { exists }: { exists: boolean },
+) {
+    expect(await storageManager.collection('pages').findAllObjects({})).toEqual(
+        !exists ? [] : [DATA.PAGE_1],
+    )
+
+    expect(
+        await storageManager.collection('annotations').findAllObjects({}),
+    ).toEqual(!exists ? [] : [DATA.ANNOTATION_1])
+
+    expect(await storageManager.collection('tags').findAllObjects({})).toEqual(
+        !exists
+            ? []
+            : expect.arrayContaining(
+                  DATA.TAGS_1.flatMap((name) => [
+                      { name, url: DATA.PAGE_1.url },
+                      { name, url: DATA.ANNOTATION_1.url },
+                  ]),
+              ),
+    )
+}

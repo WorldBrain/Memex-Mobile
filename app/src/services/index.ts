@@ -1,3 +1,4 @@
+import StorageManager from '@worldbrain/storex'
 import { URLNormalizer } from '@worldbrain/memex-url-utils'
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 
@@ -14,18 +15,15 @@ import { ResourceLoaderService } from './resource-loader'
 import { PageFetcherService } from './page-fetcher'
 import { StorageService } from './settings-storage'
 import { CloudSyncService } from './cloud-sync'
-import { StorageModules } from 'src/storage/types'
+import { Storage } from 'src/storage/types'
 
 export interface CreateServicesOptions {
     auth?: AuthService
     firebase?: any
+    storage: Storage
     keychain: KeychainAPI
     errorTracker: ErrorTrackingService
     normalizeUrl: URLNormalizer
-    storageModules: Pick<
-        StorageModules,
-        'localSettings' | 'syncSettings' | 'personalCloud'
-    >
 }
 
 export async function createServices(
@@ -40,13 +38,14 @@ export async function createServices(
         auth,
         pageFetcher,
         cloudSync: new CloudSyncService({
-            storage: options.storageModules.personalCloud,
+            storageManager: options.storage.manager,
+            storage: options.storage.modules.personalCloud,
         }),
         localStorage: new StorageService({
-            settingsStorage: options.storageModules.localSettings,
+            settingsStorage: options.storage.modules.localSettings,
         }),
         syncStorage: new StorageService({
-            settingsStorage: options.storageModules.syncSettings,
+            settingsStorage: options.storage.modules.syncSettings,
         }),
         shareExt: new ShareExtService({ normalizeUrl: options.normalizeUrl }),
         backgroundProcess: new BackgroundProcessService({}),
