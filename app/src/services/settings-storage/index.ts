@@ -1,4 +1,4 @@
-import { StorageAPI } from './types'
+import type { StorageAPI } from './types'
 import { SettableSettings } from 'src/features/settings/types'
 
 export interface Props {

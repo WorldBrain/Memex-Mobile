@@ -8,6 +8,8 @@ export interface Props {
 export class CloudSyncService implements CloudSyncAPI {
     constructor(private props: Props) {}
 
+    ____wipeDBForSync: CloudSyncAPI['____wipeDBForSync'] = async () => {}
+
     sync: CloudSyncAPI['sync'] = async () => {
         const { storage } = this.props
 

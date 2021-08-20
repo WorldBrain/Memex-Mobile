@@ -49,17 +49,23 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
     }
 
     private doSync = async () => {
-        const { cloudSync } = this.props.services
+        await executeUITask<State, 'syncState'>(this, 'syncState', this._doSync)
+    }
 
-        await executeUITask<State, 'syncState'>(this, 'syncState', async () => {
-            try {
-                await cloudSync.sync()
-                this.handleSyncSuccess()
-            } catch (err) {
-                this.handleSyncError(err)
-                throw err
-            }
-        })
+    private _doSync = async () => {
+        const { route, services } = this.props
+
+        if (route.params?.shouldWipeDBFirst) {
+            await services.cloudSync.____wipeDBForSync()
+        }
+
+        try {
+            await services.cloudSync.sync()
+            await this.handleSyncSuccess()
+        } catch (err) {
+            this.handleSyncError(err)
+            throw err
+        }
     }
 
     goToDashboard: EventHandler<'goToDashboard'> = () => {
