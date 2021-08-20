@@ -185,7 +185,6 @@ dependencies {
     implementation project(':react-native-local-resource')
     implementation project(':@sentry_react-native')
     implementation project(':react-native-securerandom')
-    implementation project(':react-native-webrtc')
     implementation project(':@react-native-firebase_firestore')
     implementation project(':@react-native-firebase_database')
     implementation project(':@react-native-firebase_auth')

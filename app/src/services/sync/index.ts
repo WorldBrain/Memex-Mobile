@@ -14,8 +14,8 @@ import {
 import { TweetNaclSyncEncryption } from '@worldbrain/memex-common/lib/sync/secrets/tweetnacl'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 import { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
-const WebRTC = require('react-native-webrtc')
-const Peer = require('simple-peer')
+// const WebRTC = require('react-native-webrtc')
+// const Peer = require('simple-peer')
 
 import { StorageService } from '../settings-storage'
 import {
@@ -57,28 +57,28 @@ export default class AppSyncService extends SyncService {
                   }),
         })
 
-        this.initialSync.wrtc = WebRTC
+        // this.initialSync.wrtc = WebRTC
         this.initialSync.processCreationConstraintError = (error) => {
             options.errorTracker.track(error)
         }
-        this.initialSync.getPeer = async ({ initiator }) => {
-            const params =
-                options.devicePlatform !== 'integration-tests'
-                    ? {
-                          id: (await generateSecureRandom(8)).toString(),
-                          channelName: (
-                              await generateSecureRandom(40)
-                          ).toString(),
-                      }
-                    : {}
+        // this.initialSync.getPeer = async ({ initiator }) => {
+        //     const params =
+        //         options.devicePlatform !== 'integration-tests'
+        //             ? {
+        //                   id: (await generateSecureRandom(8)).toString(),
+        //                   channelName: (
+        //                       await generateSecureRandom(40)
+        //                   ).toString(),
+        //               }
+        //             : {}
 
-            return new Peer({
-                initiator,
-                wrtc: this.initialSync.wrtc,
-                reconnectTimer: 1000,
-                ...params,
-            })
-        }
+        //     return new Peer({
+        //         initiator,
+        //         wrtc: this.initialSync.wrtc,
+        //         reconnectTimer: 1000,
+        //         ...params,
+        //     })
+        // }
 
         this.executeReconciliationOperation = async (
             name: string,

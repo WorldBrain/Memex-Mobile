@@ -15,7 +15,6 @@ import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.igorbelyayev.rnlocalresource.RNLocalResourcePackage;
 import io.sentry.RNSentryPackage;
 import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
-import com.oney.WebRTCModule.WebRTCModulePackage;
 import io.invertase.firebase.firestore.ReactNativeFirebaseFirestorePackage;
 import io.invertase.firebase.database.ReactNativeFirebaseDatabasePackage;
 import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
@@ -49,12 +48,11 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
         new SQLitePluginPackage(),   // register SQLite Plugin here
         new MainReactPackage(),
-            new SafeAreaContextPackage(),
-            new RNCWebViewPackage(),
-            new RNLocalResourcePackage(),
-            new RNSentryPackage(),
+        new SafeAreaContextPackage(),
+        new RNCWebViewPackage(),
+        new RNLocalResourcePackage(),
+        new RNSentryPackage(),
         new RNSecureRandomPackage(),
-        new WebRTCModulePackage(),
         new ReactNativeFirebaseAppPackage(),
         new ReactNativeFirebaseAuthPackage(),
         new ReactNativeFirebaseDatabasePackage(),

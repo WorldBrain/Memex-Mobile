@@ -43,7 +43,6 @@ target 'app' do
   pod 'Firebase/Functions'
 
   pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
-  pod 'react-native-webrtc', :path => '../node_modules/react-native-webrtc'
 
   use_native_modules!
   use_unimodules!
