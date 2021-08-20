@@ -1,6 +1,5 @@
 import { ConnectionOptions } from 'typeorm'
 import StorageManager from '@worldbrain/storex'
-import { updateOrCreate } from '@worldbrain/storex/lib/utils'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
 import type { ReactNativeFirebase } from '@react-native-firebase/app'
 import {
@@ -38,7 +37,6 @@ import { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import { CopyPasterStorage } from 'src/features/copy-paster/storage'
 import { CLOUD_SYNCED_COLLECTIONS } from 'src/features/personal-cloud/storage/constants'
 import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
-import { FirestoreStorageBackend } from '@worldbrain/storex-backend-firestore'
 import type {
     PersonalCloudBackend,
     PersonalCloudDeviceId,
@@ -124,15 +122,6 @@ export async function createStorage({
             getUserId: async () =>
                 (await authService.getCurrentUser())?.id ?? null,
             userIdChanges: () => authChanges(authService),
-            writeIncomingData: async (params) => {
-                // WARNING: Keep in mind this skips all storage middleware
-                await updateOrCreate({
-                    ...params,
-                    storageManager,
-                    executeOperation: (...args) =>
-                        storageManager.backend.operation(...args),
-                })
-            },
         }),
     }
 

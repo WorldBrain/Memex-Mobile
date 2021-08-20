@@ -1,11 +1,12 @@
 import StorageManager from '@worldbrain/storex'
-import { getObjectWhereByPk, getObjectByPk } from '@worldbrain/storex/lib/utils'
+import {
+    getObjectWhereByPk,
+    getObjectByPk,
+    updateOrCreate,
+} from '@worldbrain/storex/lib/utils'
 import ActionQueue from '@worldbrain/memex-common/lib/action-queue'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
-import {
-    ActionExecutor,
-    ActionPreprocessor,
-} from '@worldbrain/memex-common/lib/action-queue/types'
+import { ActionExecutor } from '@worldbrain/memex-common/lib/action-queue/types'
 import { preprocessPulledObject } from '@worldbrain/memex-common/lib/personal-cloud/utils'
 import { AsyncMutex } from '@worldbrain/memex-common/lib/utils/async-mutex'
 import { STORAGE_VERSIONS } from '@worldbrain/memex-common/lib/browser-extension/storage/versions'
@@ -33,20 +34,14 @@ export interface Dependencies {
     createDeviceId(userId: number | string): Promise<string | number>
     getDeviceId(): Promise<string | number>
     setDeviceId(deviceId: string | number): Promise<void>
-    writeIncomingData(params: {
-        storageType: PersonalCloudClientStorageType
-        collection: string
-        where?: { [key: string]: any }
-        updates: { [key: string]: any }
-    }): Promise<void>
 }
 
 export class PersonalCloudStorage {
-    currentSchemaVersion?: Date
     actionQueue: ActionQueue<PersonalCloudAction>
-    pushMutex = new AsyncMutex()
-    pullMutex = new AsyncMutex()
-    deviceId?: string | number
+    private currentSchemaVersion?: Date
+    private pushMutex = new AsyncMutex()
+    private pullMutex = new AsyncMutex()
+    private deviceId?: string | number
 
     constructor(private dependencies: Dependencies) {
         this.actionQueue = new ActionQueue({
@@ -55,7 +50,6 @@ export class PersonalCloudStorage {
             versions: { initial: STORAGE_VERSIONS[25].version },
             retryIntervalInMs: PERSONAL_CLOUD_ACTION_RETRY_INTERVAL,
             executeAction: this.executeAction,
-            preprocessAction: this.preprocessAction,
         })
     }
 
@@ -65,12 +59,6 @@ export class PersonalCloudStorage {
         )
         await this.actionQueue.setup({ paused: true })
         await this.loadDeviceId()
-    }
-
-    async observeAuthChanges() {
-        for await (const _ of this.dependencies.userIdChanges()) {
-            await this.loadDeviceId()
-        }
     }
 
     async loadDeviceId() {
@@ -126,13 +114,16 @@ export class PersonalCloudStorage {
                     )
                 }
 
-                await this.dependencies.writeIncomingData({
-                    storageType:
-                        update.storage ?? PersonalCloudClientStorageType.Normal,
+                // WARNING: Keep in mind this skips all storage middleware
+                await updateOrCreate({
+                    storageManager,
                     collection: update.collection,
                     updates: update.object,
                     where: update.where,
+                    executeOperation: (...args) =>
+                        storageManager.backend.operation(...args),
                 })
+
                 updatesIntegrated++
             } else if (update.type === PersonalCloudUpdateType.Delete) {
                 await storageManager.backend.operation(
@@ -148,7 +139,9 @@ export class PersonalCloudStorage {
         return { updatesIntegrated }
     }
 
-    executeAction: ActionExecutor<PersonalCloudAction> = async ({ action }) => {
+    private executeAction: ActionExecutor<PersonalCloudAction> = async ({
+        action,
+    }) => {
         if (!this.deviceId) {
             return { pauseAndRetry: true }
         }
@@ -160,18 +153,6 @@ export class PersonalCloudStorage {
                     deviceId: update.deviceId ?? this.deviceId,
                 })),
             )
-            // Currently unsupported:
-            // await this.actionQueue.scheduleAction(
-            //     {
-            //         type: PersonalCloudActionType.ExecuteClientInstructions,
-            //         clientInstructions,
-            //     },
-            //     { queueInteraction: 'queue-and-return' },
-            // )
-        } else if (
-            action.type === PersonalCloudActionType.ExecuteClientInstructions
-        ) {
-            // Currently unsupported
         }
     }
 
@@ -261,9 +242,5 @@ export class PersonalCloudStorage {
         }
 
         releaseMutex()
-    }
-
-    preprocessAction: ActionPreprocessor<PersonalCloudAction> = () => {
-        return { valid: true }
     }
 }
