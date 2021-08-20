@@ -4,6 +4,7 @@ import { storageKeys } from '../../../../../../app.json'
 import { UITaskState, UIServices, MainNavProps } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
 import type { LoginMode } from '../../types'
+import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,
@@ -26,7 +27,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends MainNavProps<'Login'> {
-    services: UIServices<'auth'>
+    services: UIServices<'auth' | 'localStorage'>
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -56,39 +57,65 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ passwordInputValue: { $set: event.value } })
     }
 
-    submitLogin: EventHandler<'submitLogin'> = async ({
-        previousState: {
-            mode,
-            emailInputValue: email,
-            passwordInputValue: password,
-        },
-    }) => {
+    submitLogin: EventHandler<'submitLogin'> = async ({ previousState }) => {
+        await executeUITask<State, 'loginState', void>(
+            this,
+            'loginState',
+            this.performAuth(previousState),
+        )
+    }
+
+    private performAuth = ({
+        mode,
+        emailInputValue: email,
+        passwordInputValue: password,
+    }: State) => async () => {
         const {
             services: { auth },
             navigation,
             route,
         } = this.props
 
-        await executeUITask<State, 'loginState', void>(
-            this,
-            'loginState',
-            async () => {
-                if (mode === 'login') {
-                    await auth.loginWithEmailAndPassword(email, password)
-                } else {
-                    await auth.signupWithEmailAndPassword(email, password)
-                }
+        if (mode === 'login') {
+            await auth.loginWithEmailAndPassword(email, password)
+        } else {
+            await auth.signupWithEmailAndPassword(email, password)
+        }
 
-                if (route.params?.nextRoute) {
-                    // This timeout needs to be here for android, which doesn't update the routes
-                    //  in time for this nav event
-                    await new Promise((resolve) => setTimeout(resolve, 0))
-                    const nextRoute = route.params.nextRoute
-                    navigation.navigate(nextRoute)
-                } else {
-                    navigation.goBack()
-                }
-            },
+        const { userHasChanged } = await this.rememberUserDetails()
+
+        // If the user who just logged-in is different from the previous, we need to re-sync
+        if (userHasChanged) {
+            navigation.navigate('CloudSync', { shouldWipeDBFirst: true })
+            return
+        }
+
+        const nextRoute = route.params?.nextRoute
+        if (nextRoute) {
+            // This timeout needs to be here for android, which doesn't update the routes
+            //  in time for this nav event
+            await new Promise((resolve) => setTimeout(resolve, 0))
+            navigation.navigate(nextRoute)
+        } else {
+            navigation.goBack()
+        }
+    }
+
+    private async rememberUserDetails() {
+        const { auth, localStorage } = this.props.services
+
+        const previousUser = await localStorage.get<AuthenticatedUser | null>(
+            storageKeys.mostRecentUser,
         )
+        const nextUser = await auth.getCurrentUser()
+        if (!nextUser) {
+            return { userHasChanged: false }
+        }
+
+        await localStorage.set(storageKeys.mostRecentUser, nextUser)
+        return {
+            userHasChanged:
+                previousUser != null && previousUser.email !== nextUser.email,
+        }
     }
 }
