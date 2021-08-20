@@ -28,15 +28,9 @@
 [submodule "app/external/@worldbrain/storex-backend-dexie"]
 	path = app/external/@worldbrain/storex-backend-dexie
 	url = https://github.com/WorldBrain/storex-backend-dexie.git
-[submodule "app/external/simple-signalling"]
-	path = app/external/simple-signalling
-	url = https://github.com/WorldBrain/simple-signalling.git
 [submodule "app/external/@worldbrain/memex-common"]
 	path = app/external/@worldbrain/memex-common
 	url = https://github.com/WorldBrain/memex-common.git
-[submodule "app/external/simple-peer"]
-	path = app/external/simple-peer
-	url = https://github.com/WorldBrain/simple-peer.git
 [submodule "app/external/@worldbrain/storex-middleware-change-watcher"]
 	path = app/external/@worldbrain/storex-middleware-change-watcher
 	url = https://github.com/WorldBrain/storex-middleware-change-watcher.git
