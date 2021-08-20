@@ -1,9 +1,9 @@
 import React from 'react'
 import { Alert } from 'react-native'
 
-import SyncSuccess from 'src/features/sync/ui/components/sync-success-stage'
-import { storageKeys } from '../../../../../../app.json'
+import SyncSuccess from '../../components/sync-success-stage'
 import { MainNavProps, UIServices } from 'src/ui/types'
+import { storageKeys } from '../../../../../../app.json'
 
 interface Props extends MainNavProps<'Pairing'> {
     services: UIServices<'localStorage'>

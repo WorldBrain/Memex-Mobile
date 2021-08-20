@@ -8,7 +8,6 @@ import {
 } from 'react-native'
 
 import Button from 'src/ui/components/memex-btn'
-import E2EEMessage from './e2ee-msg'
 import styles from './sync-success-stage.styles'
 
 export interface Props {
@@ -17,7 +16,7 @@ export interface Props {
     allowRePairing?: boolean
 }
 
-const SyncSuccessStage: React.StatelessComponent<Props> = props => (
+const SyncSuccessStage: React.StatelessComponent<Props> = (props) => (
     <View style={styles.container}>
         {props.onBackBtnPress && (
             <TouchableOpacity style={styles.backBtn}>
@@ -34,7 +33,6 @@ const SyncSuccessStage: React.StatelessComponent<Props> = props => (
             <Text style={styles.text}>
                 Pairing successful. {'\n'}You're ready to go!
             </Text>
-            <E2EEMessage />
         </View>
         {props.allowRePairing ? (
             <Button
