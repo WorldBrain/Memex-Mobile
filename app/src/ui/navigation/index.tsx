@@ -61,9 +61,6 @@ export const createMainNavigator: NavigationContainerFactory = ({
         <MainStack.Screen name="SettingsMenu">
             {(props) => <SettingsMenu {...props} {...deps} />}
         </MainStack.Screen>,
-        <MainStack.Screen name="Sync">
-            {(props) => <Sync {...props} {...deps} />}
-        </MainStack.Screen>,
         <MainStack.Screen name="CloudSync">
             {(props) => <CloudSync {...props} {...deps} />}
         </MainStack.Screen>,

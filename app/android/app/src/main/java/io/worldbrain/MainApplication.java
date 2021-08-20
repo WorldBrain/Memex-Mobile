@@ -21,14 +21,11 @@ import io.invertase.firebase.database.ReactNativeFirebaseDatabasePackage;
 import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;
-import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
-import org.reactnative.camera.RNCameraPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
 import com.transistorsoft.rnbackgroundfetch.RNBackgroundFetchPackage;
 
 import org.pgsqlite.SQLitePluginPackage;
@@ -63,10 +60,7 @@ public class MainApplication extends Application implements ReactApplication {
         new ReactNativeFirebaseDatabasePackage(),
         new ReactNativeFirebaseFirestorePackage(),
         new ReactNativeFirebaseFunctionsPackage(),
-        new AsyncStoragePackage(),
-        new RNCameraPackage(),
         new KeychainPackage(),
-        new RNPermissionsPackage(),
         new RNGestureHandlerPackage(),
         new RNBackgroundFetchPackage(),
         new SharePackage(),  // register `react-native-share-extension` plugin here

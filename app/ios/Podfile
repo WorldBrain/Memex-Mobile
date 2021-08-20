@@ -36,23 +36,14 @@ target 'app' do
 
   pod 'ReactNativeShareExtension', :podspec => '../node_modules/react-native-share-extension/ReactNativeShareExtension.podspec'
 
-  permissions_path = '../node_modules/react-native-permissions/ios'
-  pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
-
-
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
   pod 'Firebase/Database', '~> 8.4.0'
   pod 'Firebase/Functions'
 
-
-  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
-
   pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
   pod 'react-native-webrtc', :path => '../node_modules/react-native-webrtc'
-
-  pod 'react-native-camera', path: '../node_modules/react-native-camera'
 
   use_native_modules!
   use_unimodules!

@@ -8,7 +8,6 @@ export type MainNavigatorParamList = {
     DebugConsole: undefined
     SettingsMenu: undefined
     Pairing: undefined
-    Sync: undefined
     CloudSync: undefined
     Onboarding: { redoOnboarding?: boolean } | undefined
     Login:
