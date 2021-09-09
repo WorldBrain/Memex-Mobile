@@ -9,7 +9,7 @@ export default EStyleSheet.create({
         width: 120,
     },
     mockupImg: {
-        width: '70%',
+        width: '75%',
         height: '85%',
         position: 'absolute',
         display: 'flex',

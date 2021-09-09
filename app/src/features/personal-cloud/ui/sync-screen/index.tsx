@@ -37,7 +37,13 @@ export default class CloudSyncScreen extends StatefulUIElement<
 
     private renderSyncingScreen() {
         return (
-            <EmptyLayout>
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
                 <Image
                     resizeMode="contain"
                     style={styles.logoIcon}
@@ -53,13 +59,19 @@ export default class CloudSyncScreen extends StatefulUIElement<
                         your device on charge.
                     </Text>
                 </View>
-            </EmptyLayout>
+            </View>
         )
     }
 
     private renderSyncingError() {
         return (
-            <EmptyLayout>
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
                 <Image
                     resizeMode="contain"
                     style={styles.logoIcon}
@@ -84,13 +96,19 @@ export default class CloudSyncScreen extends StatefulUIElement<
                         contact support
                     </Text>
                 </View>
-            </EmptyLayout>
+            </View>
         )
     }
 
     private renderSyncingComplete() {
         return (
-            <EmptyLayout>
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
                 <Image
                     resizeMode="contain"
                     style={styles.logoIcon}
@@ -109,8 +127,9 @@ export default class CloudSyncScreen extends StatefulUIElement<
                 <Button
                     title="Go to Dashboard"
                     onPress={() => this.processEvent('goToDashboard', null)}
+                    style={{ marginVertical: 20 }}
                 />
-            </EmptyLayout>
+            </View>
         )
     }
 

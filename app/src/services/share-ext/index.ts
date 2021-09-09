@@ -1,5 +1,7 @@
 import { Platform, Linking } from 'react-native'
+// import ShareExtension from 'react-native-share-extension'
 import ShareExtension from 'react-native-share-extension'
+
 import { URLNormalizer } from '@worldbrain/memex-url-utils'
 
 import { ShareAPI } from './types'

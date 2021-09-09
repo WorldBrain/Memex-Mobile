@@ -1,13 +1,25 @@
 import EStyleSheet from 'react-native-extended-stylesheet'
 
 export default EStyleSheet.create({
-    mainImg: {
-        width: '90%',
-        height: '80%',
-        marginRight: '8rem',
-        marginLeft: '8rem',
-        marginTop: '5rem',
+    logoIcon: {
+        width: '12%',
+        height: '15%',
+        marginBottom: 10,
         display: 'flex',
         justifyContent: 'center',
+    },
+    header: {
+        marginTop: 10,
+    },
+    headerText: {
+        fontSize: '1.5rem',
+    },
+    body: {
+        width: '70%',
+        marginVertical: 20,
+    },
+    bodyText: {
+        fontSize: '1rem',
+        textAlign: 'center',
     },
 })

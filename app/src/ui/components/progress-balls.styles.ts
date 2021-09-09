@@ -6,7 +6,7 @@ export default EStyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        width: '8rem',
+        width: '3rem',
     },
     ballSelected: {
         backgroundColor: '#36362f',
@@ -14,7 +14,7 @@ export default EStyleSheet.create({
     ball: {
         backgroundColor: '#c4c4c4',
         borderRadius: 25,
-        width: '1rem',
-        height: '1rem',
+        width: '0.5rem',
+        height: '0.5rem',
     },
 })

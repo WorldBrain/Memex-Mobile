@@ -5,16 +5,16 @@ export default EStyleSheet.create({
         backgroundColor: '#667BCC',
         width: '100%',
         flex: 1,
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
         paddingLeft: '1.3rem',
         paddingRight: '1.1rem',
         paddingVertical: '0.5rem',
         flexDirection: 'row',
     },
-    containerNoLeftSection: {
-        justifyContent: 'flex-end',
-    },
+    // containerNoLeftSection: {
+    //     justifyContent: 'flex-end',
+    // },
     actionBarItems: {
         display: 'flex',
         flexDirection: 'row',

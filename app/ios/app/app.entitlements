@@ -8,7 +8,7 @@
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)group.io.worldbrain.memex</string>
+		<string>5YUPQC9D96.group.io.worldbrain.memex</string>
 	</array>
 </dict>
 </plist>
