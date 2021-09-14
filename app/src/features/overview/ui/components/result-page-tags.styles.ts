@@ -1,5 +1,6 @@
 import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 const { height, width } = Dimensions.get('window')
 const aspectRatio = height / width
@@ -21,12 +22,27 @@ export default EStyleSheet.create({
         backgroundColor: '#67B3E3',
         color: '#3A2F45',
         borderRadius: 4,
-        paddingVertical: height > 1000 ? 3 : 2,
-        paddingHorizontal: height > 1000 ? 10 : 10,
+        paddingVertical:
+            conditionalStyles() === 'tabletLandscape'
+                ? 6
+                : conditionalStyles() === 'tabletPortrait'
+                ? 3
+                : 2,
+        paddingHorizontal:
+            conditionalStyles() === 'tabletLandscape'
+                ? 10
+                : conditionalStyles() === 'tabletPortrait'
+                ? 10
+                : 10,
     },
     tagPillText: {
         textAlign: 'center',
         lineHeight: 22,
-        fontSize: height > 1000 ? '0.7rem' : '1rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.7rem'
+                : '1.2rem',
     },
 })

@@ -1,5 +1,6 @@
 import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 const { height, width } = Dimensions.get('window')
 const aspectRatio = height / width
@@ -13,10 +14,17 @@ export default EStyleSheet.create({
     loadingBalls: {
         bottom: 20,
     },
-    searchContainer: {},
+    searchContainer: {
+        width: '100%',
+    },
     listContainer: {
-        height: '85%',
-        marginTop: '0.3rem',
+        height: '100%',
+        marginTop:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.1rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.1rem'
+                : '0.3rem',
     },
     resultContainer: {
         display: 'flex',

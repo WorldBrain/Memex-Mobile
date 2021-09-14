@@ -1,5 +1,6 @@
 import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 const { height, width } = Dimensions.get('window')
 const aspectRatio = height / width
@@ -10,10 +11,25 @@ export default EStyleSheet.create({
         fontFamily: 'Poppins',
         top: Platform.OS === 'ios' && height < 1000 ? 20 : 0,
         width: '100%',
-        height: height > 1000 ? '1rem' : '0.7rem',
-        paddingVertical: height > 1000 ? '0.5rem' : '1rem',
+        height:
+            conditionalStyles() === 'tabletLandscape'
+                ? '1rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '1rem'
+                : '0.7rem',
+        paddingVertical:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.3rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.5rem'
+                : '1rem',
         marginTop: height > 1000 ? '0.5rem' : '0.8rem',
-        maxHeight: height > 1000 ? '2.5rem' : '4rem',
+        maxHeight:
+            conditionalStyles() === 'tabletLandscape'
+                ? '1.8rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '2.2rem'
+                : '4rem',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
@@ -22,16 +38,26 @@ export default EStyleSheet.create({
         borderBottomWidth: 1,
     },
     rightBtnContainer: {
-        height: height > 1000 ? '3.5rem' : '4rem',
+        height:
+            conditionalStyles() === 'tabletLandscape'
+                ? '3.2rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '3.5rem'
+                : '4rem',
         width: '15%',
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
     },
     leftBtnContainer: {
-        height: height > 1000 ? '3.5rem' : '4rem',
+        height:
+            conditionalStyles() === 'tabletLandscape'
+                ? '3.2rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '3.5rem'
+                : '4rem',
         width: '15%',
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
     },
     textContainer: {
         display: 'flex',
@@ -45,7 +71,12 @@ export default EStyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         color: '$textColor',
-        fontSize: height > 1000 ? '0.8rem' : '1.3rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.6rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
     },
     btnContainer: {
         padding: '1.2rem',

@@ -1,5 +1,6 @@
 import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 const { height, width } = Dimensions.get('window')
 const aspectRatio = height / width
@@ -39,6 +40,11 @@ export default EStyleSheet.create({
         fontWeight: '700',
         marginRight: 5,
         color: '$textColor',
-        fontSize: height > 1000 ? '0.8rem' : '1.3rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.6rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
     },
 })

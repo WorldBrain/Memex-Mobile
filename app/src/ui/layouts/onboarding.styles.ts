@@ -12,8 +12,9 @@ export default EStyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width:
-            Platform.OS === 'ios' ? (aspectRatio > 1.6 ? null : '85%') : null,
+        marginTop: 30,
+        alignItems: 'center',
+        display: 'flex',
     },
     mainContainer: {
         flex: 1,
@@ -22,6 +23,5 @@ export default EStyleSheet.create({
         alignItems: 'center',
         position: 'absolute',
         bottom: '5%',
-        height: Platform.OS === 'ios' ? (aspectRatio > 1.6 ? 100 : 100) : 100,
     },
 })

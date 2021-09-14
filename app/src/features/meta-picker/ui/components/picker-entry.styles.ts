@@ -1,5 +1,6 @@
 import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 const { height, width } = Dimensions.get('window')
 const aspectRatio = height / width
@@ -10,8 +11,19 @@ export default EStyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '1rem',
-        paddingHorizontal: '1.5rem',
+        paddingHorizontal:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
+        paddingVertical:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.4rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
+        height: '100%',
     },
     containerBorder: {
         borderBottomWidth: 1,
@@ -25,7 +37,12 @@ export default EStyleSheet.create({
     },
     entry: {
         paddingHorizontal: '0.5rem',
-        paddingVertical: height > 1000 ? '0.1rem' : '0.3rem',
+        paddingVertical:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.1rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.1rem'
+                : '0.3rem',
         borderRadius: 5,
         textAlign: 'left',
     },
@@ -33,7 +50,12 @@ export default EStyleSheet.create({
         backgroundColor: '#83c9f4',
     },
     entryText: {
-        fontSize: height > 1000 ? '0.8rem' : '1.2rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
         color: '$textColor',
         fontWeight: '400',
         display: 'flex',
@@ -55,13 +77,18 @@ export default EStyleSheet.create({
         marginLeft: 10,
     },
     addText: {
-        fontSize: height > 1000 ? '0.8rem' : '1.2rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.6rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
         fontWeight: 'bold',
     },
     checkMarkContainer: {
         width: '2.2rem',
         height: 'auto',
-        padding: '0.3rem',
+        padding: '0.2rem',
     },
     checkmark: {
         width: '100%',

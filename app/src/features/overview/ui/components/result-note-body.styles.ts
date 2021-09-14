@@ -1,4 +1,5 @@
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 export default EStyleSheet.create({
     container: {
@@ -7,7 +8,12 @@ export default EStyleSheet.create({
     },
     noteText: {
         marginBottom: 5,
-        fontSize: 14,
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.6rem'
+                : '1.1rem',
         overflow: 'hidden',
         color: '#3A2F45',
         lineHeight: 20,
@@ -19,7 +25,12 @@ export default EStyleSheet.create({
     commentText: {
         marginBottom: 10,
         color: '#3A2F45',
-        fontSize: 14,
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.6rem'
+                : '1.1rem',
     },
     dateContainer: {
         display: 'flex',
@@ -27,11 +38,21 @@ export default EStyleSheet.create({
         alignItems: 'center',
     },
     date: {
-        fontSize: 12,
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.6rem'
+                : '1.1rem',
         color: '#3A2F45',
     },
     lastEdited: {
-        fontSize: 10,
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.6rem'
+                : '1.1rem',
         color: 'black',
         marginRight: 5,
     },

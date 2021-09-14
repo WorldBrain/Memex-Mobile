@@ -7,16 +7,11 @@ import styles from './save-websites.styles'
 
 export interface Props {}
 
-const SaveWebsite: React.StatelessComponent<Props> = props => (
+const SaveWebsite: React.StatelessComponent<Props> = (props) => (
     <OnboardingFeature
         headingText="Save websites on the go"
-        secondaryText="Quickly save websites & tweets via the share feature on your device"
+        secondaryText="Quickly save websites via the share feature of your phone"
     >
-        <Image
-            resizeMode="contain"
-            style={styles.shareImg}
-            source={require('../assets/share-button.png')}
-        />
         <Image
             resizeMode="contain"
             style={styles.mockupImg}

@@ -1,5 +1,6 @@
 import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 const { height, width } = Dimensions.get('window')
 const aspectRatio = height / width
@@ -13,12 +14,8 @@ export default EStyleSheet.create({
         borderRadius: 25,
         width:
             Platform.OS === 'ios' ? (aspectRatio > 1.6 ? '85%' : '50%') : '85%',
-        maxHeight:
-            Platform.OS === 'ios'
-                ? aspectRatio > 1.6
-                    ? '3.5rem'
-                    : '1.5rem'
-                : '3.5rem',
+        maxHeight: 60,
+        height: 50,
         paddingHorizontal:
             Platform.OS === 'ios' ? (aspectRatio > 1.6 ? 20 : 0) : 20,
     },
@@ -56,18 +53,13 @@ export default EStyleSheet.create({
     text: {
         color: 'white',
         textAlign: 'center',
-        fontWeight:
-            Platform.OS === 'ios'
-                ? aspectRatio > 1.6
-                    ? 'bold'
-                    : null
-                : 'bold',
         fontSize:
-            Platform.OS === 'ios'
-                ? aspectRatio > 1.6
-                    ? '1.3rem'
-                    : '0.65rem'
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
                 : '1.3rem',
+        fontWeight: 'bold',
     },
     textWarn: {
         color: 'white',

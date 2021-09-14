@@ -1,4 +1,5 @@
 import { Dimensions, Platform } from 'react-native'
+import conditionalStyles from 'src/utils/device-size-helper'
 import EStyleSheet from 'react-native-extended-stylesheet'
 
 const { height, width } = Dimensions.get('window')
@@ -10,7 +11,12 @@ export default EStyleSheet.create({
     },
     icon: {
         opacity: 0.8,
-        height: height > 1000 ? '0.8rem' : '1.3rem',
+        height:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
     },
     iconDisabled: {
         opacity: 0.1,
@@ -20,13 +26,17 @@ export default EStyleSheet.create({
     },
     commentIcon: {
         opacity: 1,
-        height: height > 1000 ? '1rem' : '1rem',
     },
     marginBottom10: {
         height: 10,
     },
     subText: {
-        fontSize: height > 1000 ? '0.6rem' : '0.85rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.6rem'
+                : '0.9rem',
         color: 'white',
         fontWeight: '500',
         width: '100%',

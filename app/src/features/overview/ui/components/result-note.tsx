@@ -23,8 +23,9 @@ export interface InteractionProps {
     hideFooter?: boolean
 }
 
-const ResultNote: React.StatelessComponent<Props &
-    InteractionProps> = props => (
+const ResultNote: React.StatelessComponent<Props & InteractionProps> = (
+    props,
+) => (
     <>
         <Container isNote={!props.clearBackground}>
             <TouchableWithoutFeedback onPress={props.onNotePress}>
@@ -36,8 +37,14 @@ const ResultNote: React.StatelessComponent<Props &
         </Container>
         {props.isNotePressed && (
             <ActionBar>
-                <EditNoteActionBarBtn onPress={props.onEditPress} />
-                <DeleteActionBarBtn onPress={props.onDeletePress} />
+                <EditNoteActionBarBtn
+                    onPress={props.onEditPress}
+                    ButtonLabel={'Edit'}
+                />
+                <DeleteActionBarBtn
+                    onPress={props.onDeletePress}
+                    ButtonLabel={'Delete'}
+                />
             </ActionBar>
         )}
     </>

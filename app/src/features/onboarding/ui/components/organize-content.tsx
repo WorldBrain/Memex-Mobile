@@ -6,10 +6,10 @@ import styles from './organize-content.styles'
 
 export interface Props {}
 
-const OrganizeContent: React.StatelessComponent<Props> = props => (
+const OrganizeContent: React.StatelessComponent<Props> = (props) => (
     <OnboardingFeature
         headingText="Tags, Lists & Notes"
-        secondaryText="Flexible organise what you save"
+        secondaryText="Flexibly organise websites you find"
     >
         <Image
             resizeMode="contain"

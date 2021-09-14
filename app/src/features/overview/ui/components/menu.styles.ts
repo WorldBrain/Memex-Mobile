@@ -1,8 +1,6 @@
 import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-
-const { height, width } = Dimensions.get('screen')
-const aspectRatio = height / width
+import conditionalStyles from 'src/utils/device-size-helper'
 
 export default EStyleSheet.create({
     mainContainer: {

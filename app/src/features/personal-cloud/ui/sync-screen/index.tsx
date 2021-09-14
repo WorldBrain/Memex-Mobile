@@ -42,13 +42,9 @@ export default class CloudSyncScreen extends StatefulUIElement<
                     flex: 1,
                     justifyContent: 'center',
                     alignItems: 'center',
+                    display: 'flex',
                 }}
             >
-                <Image
-                    resizeMode="contain"
-                    style={styles.logoIcon}
-                    source={require('../../../../ui/assets/MemexIcon.png')}
-                />
                 <LoadingBalls />
                 <View style={styles.header}>
                     <Text style={styles.headerText}>Syncing your data</Text>
@@ -68,33 +64,38 @@ export default class CloudSyncScreen extends StatefulUIElement<
             <View
                 style={{
                     flex: 1,
-                    justifyContent: 'center',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
+                    display: 'flex',
                 }}
             >
-                <Image
-                    resizeMode="contain"
-                    style={styles.logoIcon}
-                    source={require('../../../../ui/assets/MemexIcon.png')}
-                />
-                <View style={styles.header}>
-                    <Text style={styles.headerText}>Error syncing data</Text>
-                </View>
-                <View style={styles.body}>
-                    <Text style={styles.bodyText}>
-                        Restart the app and try again.
-                    </Text>
-                </View>
-                <View style={styles.body}>
-                    <Text style={styles.bodyText}>
-                        If sync continues to fail,{' '}
-                    </Text>
-                    <Text
-                        style={[styles.bodyText, styles.supportLink]}
-                        onPress={this.handleSyncErrorReport}
-                    >
-                        contact support
-                    </Text>
+                <View style={styles.contentBox}>
+                    <Image
+                        resizeMode="contain"
+                        style={styles.logoIcon}
+                        source={require('../../../../ui/assets/MemexIcon.png')}
+                    />
+                    <View style={styles.header}>
+                        <Text style={styles.headerText}>
+                            Error syncing data
+                        </Text>
+                    </View>
+                    <View style={styles.body}>
+                        <Text style={styles.bodyText}>
+                            Restart the app and try again.
+                        </Text>
+                    </View>
+                    <View style={styles.body}>
+                        <Text style={styles.bodyText}>
+                            If sync continues to fail,{' '}
+                        </Text>
+                        <Text
+                            style={[styles.bodyText, styles.supportLink]}
+                            onPress={this.handleSyncErrorReport}
+                        >
+                            contact support
+                        </Text>
+                    </View>
                 </View>
             </View>
         )
@@ -105,24 +106,27 @@ export default class CloudSyncScreen extends StatefulUIElement<
             <View
                 style={{
                     flex: 1,
-                    justifyContent: 'center',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
+                    display: 'flex',
                 }}
             >
-                <Image
-                    resizeMode="contain"
-                    style={styles.logoIcon}
-                    source={require('../assets/successIcon.png')}
-                />
-                <View style={styles.header}>
-                    <Text style={styles.headerText}>Sync successful</Text>
-                </View>
-                <View style={styles.body}>
-                    <Text style={styles.bodyText}>
-                        If you see no data in the dashboard, make sure you
-                        synced on at least one of your other devices first then
-                        restart the app.
-                    </Text>
+                <View style={styles.contentBox}>
+                    <Image
+                        resizeMode="contain"
+                        style={styles.logoIcon}
+                        source={require('../assets/successIcon.png')}
+                    />
+                    <View style={styles.header}>
+                        <Text style={styles.headerText}>Sync successful</Text>
+                    </View>
+                    <View style={styles.body}>
+                        <Text style={styles.bodyText}>
+                            If you see no data in the dashboard, make sure you
+                            synced on at least one of your other devices first
+                            then restart the app.
+                        </Text>
+                    </View>
                 </View>
                 <Button
                     title="Go to Dashboard"
