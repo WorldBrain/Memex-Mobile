@@ -29,7 +29,7 @@ export default EStyleSheet.create({
         height: 10,
     },
     subText: {
-        fontSize: aspectRatio > 1.6 ? '0.7rem' : '0.6rem',
+        fontSize: height > 1000 ? '0.7rem' : '0.7rem',
         color: 'white',
         fontWeight: '500',
         width: '100%',

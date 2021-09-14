@@ -1,9 +1,13 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     favIcon: {},
     contentBox: {
-        minHeight: '5rem',
+        minHeight: height > 1000 ? '3rem' : '5.5rem',
         display: 'flex',
         justifyContent: 'space-between',
     },
@@ -14,7 +18,7 @@ export default EStyleSheet.create({
     },
     titleText: {
         fontWeight: '700',
-        fontSize: '1.1rem',
+        fontSize: height > 1000 ? '0.7rem' : '1.2rem',
         letterSpacing: 0.6,
         flexWrap: 'wrap',
         overflow: 'hidden',
@@ -24,11 +28,11 @@ export default EStyleSheet.create({
     linkText: {
         color: '#3A2F45',
         letterSpacing: 0.6,
-        fontSize: '1.1rem',
-        marginBottom: '0.3rem',
+        fontSize: height > 1000 ? '0.7rem' : '1.2rem',
     },
     date: {
         color: '#3A2F45',
-        fontSize: '0.9rem',
+        opacity: 0.7,
+        fontSize: height > 1000 ? '0.6rem' : '1.1rem',
     },
 })
