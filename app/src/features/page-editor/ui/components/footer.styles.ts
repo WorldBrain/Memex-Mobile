@@ -6,8 +6,6 @@ export default EStyleSheet.create({
         bottom: 0,
         borderTopWidth: 1,
         borderTopColor: '#dadada',
-        height: 90,
-        width: '100%',
     },
     mainText: {
         padding: 5,

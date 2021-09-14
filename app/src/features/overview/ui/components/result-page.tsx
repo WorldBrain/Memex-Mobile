@@ -15,6 +15,8 @@ import {
     DeleteActionBarBtn,
     TagBtnFull,
     TagBtn,
+    TagBtnFullWhite,
+    TagBtnWhite,
     CommentBtn,
     FullCommentBtn,
     StarBtn,
@@ -22,6 +24,7 @@ import {
     AddListActionBarWhiteBtn,
     StarBtnFull,
     ReaderActionBarBtn,
+    VisitActionBarBtn,
 } from './action-btns'
 import ActionBar from './result-page-action-bar'
 import { TouchEventHandler, UIPage } from 'src/ui/types'
@@ -45,12 +48,11 @@ const aspectRatio = height / width
 const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
     props,
 ) => {
-    return Platform.OS === 'ios' ? (
+    return (
         <View
             style={{
-                // width:'90%',
                 flex: 1,
-                // justifyContent:'center',
+                justifyContent: 'center',
                 backgroundColor: 'white',
             }}
         >
@@ -65,144 +67,62 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                             <Tags tags={props.tags} />
                         </View>
                     </TouchableWithoutFeedback>
-                    {/* <View style={styles.actionContainer}>
-                    <Footer {...props}>
-                        {props.isStarred ? (
-                            <StarBtnFull onPress={props.onStarPress} />
-                        ) : (
-                            <StarBtn onPress={props.onStarPress} />
-                        )}
+                    <View style={styles.actionContainer}>
                         {props.notes.length > 0 ? (
-                            <FullCommentBtn onPress={props.onCommentPress} />
+                            <FullCommentBtn
+                                onPress={props.onCommentPress}
+                                commentIcon={1}
+                            />
                         ) : (
                             <CommentBtn onPress={props.onCommentPress} />
                         )}
-                        {props.tags.length > 0 ? (
-                            <TagBtnFull onPress={props.onTagPress} />
-                        ) : (
-                            <TagBtn onPress={props.onTagPress} />
-                        )}
-                    </Footer>
-                </View> */}
+                    </View>
                 </View>
             </Container>
             {props.isResultPressed && (
                 <ActionBar
-                // renderLeftSection={style => (
-                // <Text onPress={props.onVisitPress} style={style}>
-                //     Visit
-                // </Text>
-                // )}
-                >
-                    {props.notes.length > 0 ? (
-                        <FullCommentBtn onPress={props.onCommentPress} />
-                    ) : (
-                        <CommentBtn onPress={props.onCommentPress} />
+                    renderLeftSection={(style) => (
+                        <Text onPress={props.onVisitPress} style={style}>
+                            Visit
+                        </Text>
                     )}
+                >
                     {props.onReaderPress && (
-                        <ReaderActionBarBtn onPress={props.onReaderPress} />
+                        <ReaderActionBarBtn
+                            onPress={props.onReaderPress}
+                            ButtonLabel={'Annotate'}
+                        />
                     )}
                     {props.tags.length > 0 ? (
-                        <TagBtnFull onPress={props.onTagPress} />
+                        <TagBtnFullWhite
+                            onPress={props.onTagPress}
+                            ButtonLabel={'Tags'}
+                        />
                     ) : (
-                        <TagBtn onPress={props.onTagPress} />
+                        <TagBtnWhite
+                            onPress={props.onTagPress}
+                            ButtonLabel={'Tags'}
+                        />
                     )}
                     {props.lists.length > 0 ? (
                         <FullListActionBarWhiteBtn
                             onPress={props.onListsPress}
+                            ButtonLabel={'Collections'}
                         />
                     ) : (
                         <AddListActionBarWhiteBtn
                             onPress={props.onListsPress}
+                            ButtonLabel={'Collections'}
                         />
                     )}
-                    <DeleteActionBarBtn onPress={props.onDeletePress} />
-
-                    {props.tags.length > 0 ? (
-                        <TagBtnFull onPress={props.onVisitPress} />
-                    ) : (
-                        <TagBtn onPress={props.onVisitPress} />
-                    )}
-                    {/* <Text onPress={props.onVisitPress} >
-                        Visit
-                     </Text> */}
-                </ActionBar>
-            )}
-        </View>
-    ) : (
-        <View>
-            <Container>
-                <View style={styles.resultContainer}>
-                    <TouchableWithoutFeedback
-                        style={styles.touchContainer}
-                        onPress={props.onResultPress}
-                    >
-                        <View style={styles.contentContainer}>
-                            <Body {...props} />
-                            <Tags tags={props.tags} />
-                        </View>
-                    </TouchableWithoutFeedback>
-                    {/* <View style={styles.actionContainer}>
-                    <Footer {...props}>
-                        {props.isStarred ? (
-                            <StarBtnFull onPress={props.onStarPress} />
-                        ) : (
-                            <StarBtn onPress={props.onStarPress} />
-                        )}
-                        {props.notes.length > 0 ? (
-                            <FullCommentBtn onPress={props.onCommentPress} />
-                        ) : (
-                            <CommentBtn onPress={props.onCommentPress} />
-                        )}
-                        {props.tags.length > 0 ? (
-                            <TagBtnFull onPress={props.onTagPress} />
-                        ) : (
-                            <TagBtn onPress={props.onTagPress} />
-                        )}
-                    </Footer>
-                </View> */}
-                </View>
-            </Container>
-            {props.isResultPressed && (
-                <ActionBar
-                // renderLeftSection={style => (
-                // <Text onPress={props.onVisitPress} style={style}>
-                //     Visit
-                // </Text>
-                // )}
-                >
-                    {props.notes.length > 0 ? (
-                        <FullCommentBtn onPress={props.onCommentPress} />
-                    ) : (
-                        <CommentBtn onPress={props.onCommentPress} />
-                    )}
-                    {props.onReaderPress && (
-                        <ReaderActionBarBtn onPress={props.onReaderPress} />
-                    )}
-                    {props.tags.length > 0 ? (
-                        <TagBtnFull onPress={props.onTagPress} />
-                    ) : (
-                        <TagBtn onPress={props.onTagPress} />
-                    )}
-                    {props.lists.length > 0 ? (
-                        <FullListActionBarWhiteBtn
-                            onPress={props.onListsPress}
-                        />
-                    ) : (
-                        <AddListActionBarWhiteBtn
-                            onPress={props.onListsPress}
-                        />
-                    )}
-                    <DeleteActionBarBtn onPress={props.onDeletePress} />
-
-                    {props.tags.length > 0 ? (
-                        <TagBtnFull onPress={props.onVisitPress} />
-                    ) : (
-                        <TagBtn onPress={props.onVisitPress} />
-                    )}
-                    {/* <Text onPress={props.onVisitPress} >
-                        Visit
-                     </Text> */}
+                    <DeleteActionBarBtn
+                        onPress={props.onDeletePress}
+                        ButtonLabel={'Delete'}
+                    />
+                    <VisitActionBarBtn
+                        onPress={props.onVisitPress}
+                        ButtonLabel={'Visit'}
+                    />
                 </ActionBar>
             )}
         </View>

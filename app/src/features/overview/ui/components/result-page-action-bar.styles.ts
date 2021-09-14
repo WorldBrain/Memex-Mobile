@@ -9,7 +9,7 @@ export default EStyleSheet.create({
         alignItems: 'center',
         paddingLeft: '1.3rem',
         paddingRight: '1.1rem',
-        paddingVertical: '0.5rem',
+        paddingVertical: '1rem',
         flexDirection: 'row',
     },
     // containerNoLeftSection: {

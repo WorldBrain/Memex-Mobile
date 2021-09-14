@@ -18,9 +18,25 @@ export default EStyleSheet.create({
         justifyContent: 'space-between',
     },
     actionContainer: {
-        height: '100%',
+        height: '2rem',
+        display: 'flex',
+        marginTop: '1.5rem',
     },
     tagContainer: {
         marginTop: '0.6rem',
+    },
+    ActionButtonContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    VisitButton: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        color: 'white',
+        height: '100%',
+        justifyContent: 'center',
     },
 })
