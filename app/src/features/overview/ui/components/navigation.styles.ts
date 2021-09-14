@@ -1,16 +1,19 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-import { Platform } from 'react-native'
+
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     container: {
         flex: 1,
         fontFamily: 'Poppins',
-        top: Platform.OS === 'ios' ? 20 : 0,
+        top: Platform.OS === 'ios' && height < 1000 ? 20 : 0,
         width: '100%',
-        height: '100%',
-        paddingVertical: '1rem',
-        marginTop: '1rem',
-        maxHeight: '4rem',
+        height: height > 1000 ? '1rem' : '0.7rem',
+        paddingVertical: height > 1000 ? '0.5rem' : '1rem',
+        marginTop: height > 1000 ? '0.5rem' : '0.8rem',
+        maxHeight: height > 1000 ? '2.5rem' : '4rem',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
@@ -19,13 +22,13 @@ export default EStyleSheet.create({
         borderBottomWidth: 1,
     },
     rightBtnContainer: {
-        height: '4rem',
+        height: height > 1000 ? '3.5rem' : '4rem',
         width: '15%',
         display: 'flex',
         justifyContent: 'center',
     },
     leftBtnContainer: {
-        height: '4rem',
+        height: height > 1000 ? '3.5rem' : '4rem',
         width: '15%',
         display: 'flex',
         justifyContent: 'center',
@@ -42,7 +45,7 @@ export default EStyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         color: '$textColor',
-        fontSize: '1.2rem',
+        fontSize: height > 1000 ? '0.8rem' : '1.3rem',
     },
     btnContainer: {
         padding: '1.2rem',

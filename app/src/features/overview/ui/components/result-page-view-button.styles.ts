@@ -1,4 +1,8 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     favIcon: {},
@@ -7,9 +11,9 @@ export default EStyleSheet.create({
     },
     contentContainer: {
         flexDirection: 'column',
-        paddingTop: '1.6rem',
+        paddingTop: height > 1000 ? '0.8rem' : '1rem',
         flex: 1,
-        paddingBottom: '1.3rem',
+        paddingBottom: height > 1000 ? '0.8rem' : '1rem',
         paddingLeft: '1.3rem',
     },
     resultContainer: {
@@ -18,9 +22,12 @@ export default EStyleSheet.create({
         justifyContent: 'space-between',
     },
     actionContainer: {
-        height: '2rem',
+        height: '100%',
         display: 'flex',
-        marginTop: '1.5rem',
+        alignItems: 'flex-start',
+        paddingTop: height > 1000 ? '0.5rem' : '0.6rem',
+        paddingRight: height > 1000 ? '0.2rem' : '0.5rem',
+        flexDirection: 'row',
     },
     tagContainer: {
         marginTop: '0.6rem',

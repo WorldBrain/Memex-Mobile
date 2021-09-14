@@ -1,4 +1,8 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     container: {
@@ -8,7 +12,7 @@ export default EStyleSheet.create({
     },
     textInput: {
         padding: '1rem',
-        fontSize: '1.2rem',
+        fontSize: height > 1000 ? '0.8rem' : '1.2rem',
         color: '#000000',
         fontWeight: '500',
     },

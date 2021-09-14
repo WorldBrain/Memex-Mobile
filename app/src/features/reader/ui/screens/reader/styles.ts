@@ -1,5 +1,8 @@
-import { Dimensions } from 'react-native'
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
 
 import { actionBarHeight } from '../../components/action-bar.styles'
 
@@ -8,6 +11,7 @@ export default EStyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
+        backgroundColor: 'black',
     },
     actionBar: {},
     webViewLoader: {
@@ -16,6 +20,6 @@ export default EStyleSheet.create({
     },
     webView: {
         height: Dimensions.get('window').height - actionBarHeight,
-        paddingTop: 40,
+        paddingTop: height > 1000 ? 20 : 40,
     },
 })

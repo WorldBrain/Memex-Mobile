@@ -7,9 +7,8 @@ const aspectRatio = height / width
 export default EStyleSheet.create({
     favIcon: {},
     contentBox: {
-        minHeight: height > 1000 ? '3rem' : '5.5rem',
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
     },
     title: {
         flexDirection: 'row',
@@ -24,6 +23,7 @@ export default EStyleSheet.create({
         overflow: 'hidden',
         color: '#3A2F45',
         fontFamily: 'Poppins',
+        marginBottom: 5,
     },
     linkText: {
         color: '#3A2F45',
@@ -33,6 +33,12 @@ export default EStyleSheet.create({
     date: {
         color: '#3A2F45',
         opacity: 0.7,
-        fontSize: height > 1000 ? '0.6rem' : '1.1rem',
+        fontSize: height > 1000 ? '0.7rem' : '1.2rem',
+        marginLeft: 10,
+    },
+    bottomBarBox: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 })

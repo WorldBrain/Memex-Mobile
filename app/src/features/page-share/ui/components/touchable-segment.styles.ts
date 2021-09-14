@@ -1,4 +1,8 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+const { height, width } = Dimensions.get('screen')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     container: {
@@ -15,15 +19,11 @@ export default EStyleSheet.create({
     mainText: {
         color: '#3a2f45',
         fontWeight: '600',
-        fontSize: '1.2rem',
+        fontSize: height > 1000 ? '0.8rem' : '1.2rem',
         fontFamily: 'Poppins',
     },
     border: {
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
-    },
-    starIcon: {
-        width: '1.3rem',
-        height: '1.3rem',
     },
 })

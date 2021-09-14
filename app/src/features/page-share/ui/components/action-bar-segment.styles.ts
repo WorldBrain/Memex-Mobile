@@ -1,4 +1,8 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+const { height, width } = Dimensions.get('screen')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     placeholderBtn: {
@@ -12,12 +16,12 @@ export default EStyleSheet.create({
         paddingHorizontal: '1.5rem',
         borderBottomWidth: 1,
         borderBottomColor: '#eaeae9',
-        height: '4rem',
+        height: height > 1000 ? '2rem' : '4rem',
         width: '100%',
         marginBottom: '0.5rem',
     },
     buttonText: {
-        fontSize: '1.3rem',
+        fontSize: height > 1000 ? '0.8rem' : '1.2rem',
         color: '#007AFF',
     },
     buttonContainerRight: {
@@ -51,7 +55,7 @@ export default EStyleSheet.create({
         padding: 10,
     },
     bannerSegmentText: {
-        fontSize: '1.1rem',
+        fontSize: height > 1000 ? '0.8rem' : '1.2rem',
     },
     bannerSegmentTextBold: {
         fontWeight: 'bold',

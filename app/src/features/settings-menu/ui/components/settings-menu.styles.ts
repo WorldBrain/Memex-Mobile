@@ -5,6 +5,8 @@ export default EStyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     mainContainer: {
         flex: 10,
@@ -12,6 +14,8 @@ export default EStyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
     },
     footerContainer: {
         flex: 3,
@@ -21,6 +25,7 @@ export default EStyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         marginTop: 20,
+        alignItems: 'center',
     },
     versionText: {
         position: 'absolute',

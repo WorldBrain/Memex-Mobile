@@ -1,4 +1,8 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     container: {
@@ -20,8 +24,8 @@ export default EStyleSheet.create({
         alignItems: 'center',
     },
     entry: {
-        paddingHorizontal: '1rem',
-        paddingVertical: '0.3rem',
+        paddingHorizontal: '0.5rem',
+        paddingVertical: height > 1000 ? '0.1rem' : '0.3rem',
         borderRadius: 5,
         textAlign: 'left',
     },
@@ -29,7 +33,7 @@ export default EStyleSheet.create({
         backgroundColor: '#83c9f4',
     },
     entryText: {
-        fontSize: '1.4rem',
+        fontSize: height > 1000 ? '0.8rem' : '1.2rem',
         color: '$textColor',
         fontWeight: '400',
         display: 'flex',
@@ -51,7 +55,7 @@ export default EStyleSheet.create({
         marginLeft: 10,
     },
     addText: {
-        fontSize: '1.2rem',
+        fontSize: height > 1000 ? '0.8rem' : '1.2rem',
         fontWeight: 'bold',
     },
     checkMarkContainer: {
