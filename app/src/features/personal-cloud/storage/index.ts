@@ -14,7 +14,6 @@ import {
     PersonalCloudBackend,
     PersonalCloudUpdateType,
     PersonalCloudUpdateBatch,
-    PersonalCloudClientStorageType,
 } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import { getCurrentSchemaVersion } from '@worldbrain/memex-common/lib/storage/utils'
 

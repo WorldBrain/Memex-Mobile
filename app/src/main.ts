@@ -73,6 +73,7 @@ export async function main() {
                         return result.data
                     },
                 ),
+                getServerStorageManager: async () => serverStorage.manager,
                 getCurrentSchemaVersion: () =>
                     getCurrentSchemaVersion(storageManager),
                 userChanges: () => authChanges(authService),

@@ -36,6 +36,7 @@ import type {
     TestDevice,
 } from './types.tests'
 import type { RouteProp } from '@react-navigation/native'
+import { createServerServices } from './services/server'
 
 /*
  * Multiple tests throw errors running on the same TypeORM connection. So give each test a different
@@ -219,12 +220,18 @@ const initCreateTestDevice = ({
         return user?.id ?? null
     }
 
+    const serverServices = await createServerServices({
+        getServerStorage: async () => serverStorage,
+    })
+
     const storage = await createStorage({
         typeORMConnectionOpts,
         authService,
         createPersonalCloudBackend: (storageManager, modules, getDeviceId) =>
             new StorexPersonalCloudBackend({
                 storageManager: serverStorage.manager,
+                storageModules: serverStorage.modules,
+                services: serverServices,
                 clientSchemaVersion: getCurrentSchemaVersion(storageManager),
                 view: cloudHub.getView(),
                 getDeviceId,

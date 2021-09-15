@@ -42,6 +42,8 @@ import type {
     PersonalCloudDeviceId,
 } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import type { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
+import ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
+import ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
 
 export interface CreateStorageOptions {
     authService: AuthService
@@ -190,16 +192,30 @@ export async function createServerStorage(
         storageManager: manager,
         autoPkType: 'string',
     })
-    registerModuleMapCollections(manager.registry, {
-        personalCloud,
-        userManagement,
+    const contentSharing = new ContentSharingStorage({
+        operationExecuter: operationExecuter('contentSharing'),
+        storageManager: manager,
+        autoPkType: 'string',
     })
-    await manager.finishInitialization()
-    return {
+    const contentConversations = new ContentConversationStorage({
+        operationExecuter: operationExecuter('contentConversations'),
+        storageManager: manager,
+        autoPkType: 'string',
+        contentSharing,
+    })
+
+    const serverStorage = {
         manager,
         modules: {
             userManagement,
             personalCloud,
+            contentSharing,
+            contentConversations,
         },
     }
+
+    registerModuleMapCollections(manager.registry, serverStorage.modules)
+    await manager.finishInitialization()
+
+    return serverStorage
 }

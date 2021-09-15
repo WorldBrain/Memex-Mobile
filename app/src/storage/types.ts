@@ -1,4 +1,4 @@
-import StorageManager, { StorageBackend } from '@worldbrain/storex'
+import type StorageManager from '@worldbrain/storex'
 
 import type UserStorage from '@worldbrain/memex-common/lib/user-management/storage'
 import type PersonalCloudServerStorage from '@worldbrain/memex-common/lib/personal-cloud/storage'
@@ -14,6 +14,8 @@ import type { SettingsStorage } from 'src/features/settings/storage'
 import type { ReaderStorage } from 'src/features/reader/storage'
 import type { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import type { CopyPasterStorage } from 'src/features/copy-paster/storage'
+import type ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
+import type ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
 
 export interface Storage {
     manager: StorageManager
@@ -40,6 +42,8 @@ export interface ServerStorage {
 }
 
 export interface ServerStorageModules {
-    userManagement: UserStorage
+    contentConversations: ContentConversationStorage
     personalCloud: PersonalCloudServerStorage
+    contentSharing: ContentSharingStorage
+    userManagement: UserStorage
 }
