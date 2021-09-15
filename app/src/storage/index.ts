@@ -44,6 +44,7 @@ import type {
 import type { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
 import ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
+import { getFirebase, connectToEmulator } from 'src/firebase'
 
 export interface CreateStorageOptions {
     authService: AuthService
@@ -176,11 +177,21 @@ export async function setStorageMiddleware(options: {
 }
 
 export async function createServerStorage(
-    firebase?: ReactNativeFirebase.Module,
+    backendType: 'memory' | 'firebase' | 'firebase-emulator',
 ): Promise<ServerStorage> {
-    const manager = firebase
-        ? createServerStorageManager(firebase)
-        : createMemoryServerStorageManager()
+    let manager: StorageManager
+
+    if (backendType === 'firebase') {
+        console.log('firebase specified')
+        manager = createServerStorageManager(getFirebase())
+    } else if (backendType === 'firebase-emulator') {
+        console.log('firebase EMU specified')
+        await connectToEmulator()
+        manager = createServerStorageManager(getFirebase())
+    } else {
+        console.log('memory specified')
+        manager = createMemoryServerStorageManager()
+    }
 
     const operationExecuter = (storageModuleName: string) =>
         _defaultOperationExecutor(manager)
