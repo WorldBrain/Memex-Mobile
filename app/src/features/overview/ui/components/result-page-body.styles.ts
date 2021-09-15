@@ -23,7 +23,7 @@ export default EStyleSheet.create({
                 ? '0.5rem'
                 : conditionalStyles() === 'tabletPortrait'
                 ? '0.7rem'
-                : '1.2rem',
+                : '1.1rem',
         letterSpacing: 0.6,
         flexWrap: 'wrap',
         overflow: 'hidden',
@@ -39,7 +39,7 @@ export default EStyleSheet.create({
                 ? '0.5rem'
                 : conditionalStyles() === 'tabletPortrait'
                 ? '0.7rem'
-                : '1.2rem',
+                : '1rem',
     },
     date: {
         color: '#3A2F45',
@@ -49,7 +49,7 @@ export default EStyleSheet.create({
                 ? '0.5rem'
                 : conditionalStyles() === 'tabletPortrait'
                 ? '0.7rem'
-                : '1.2rem',
+                : '1rem',
         marginLeft: 10,
     },
     bottomBarBox: {

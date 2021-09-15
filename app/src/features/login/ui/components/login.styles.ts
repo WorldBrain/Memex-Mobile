@@ -33,6 +33,7 @@ export default EStyleSheet.create({
         minWidth: '90%',
         backgroundColor: '#d3d3d3',
         borderRadius: 5,
+        color: '#545454',
     },
     actionBtnsContainer: {
         display: 'flex',

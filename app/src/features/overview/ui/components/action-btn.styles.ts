@@ -37,7 +37,7 @@ export default EStyleSheet.create({
                 ? '0.5rem'
                 : conditionalStyles() === 'tabletPortrait'
                 ? '0.6rem'
-                : '0.9rem',
+                : '0.65rem',
         color: 'white',
         fontWeight: '500',
         width: '100%',

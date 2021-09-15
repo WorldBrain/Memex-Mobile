@@ -25,15 +25,7 @@ const ResultPageBody: React.StatelessComponent<Props> = (props) => (
         <TouchableWithoutFeedback onPress={props.onResultPress}>
             <View style={styles.contentBox}>
                 <View style={styles.title}>
-                    {props.favIcon && (
-                        <Image
-                            style={styles.favIcon}
-                            source={{ uri: props.favIcon }}
-                        />
-                    )}
-                    <Text numberOfLines={1} style={styles.titleText}>
-                        {props.titleText}
-                    </Text>
+                    <Text style={styles.titleText}>{props.titleText}</Text>
                 </View>
                 <View style={styles.bottomBarBox}>
                     <Text numberOfLines={1} style={styles.linkText}>
