@@ -65,13 +65,15 @@ export default class SettingsMenuScreen extends StatefulUIElement<
                 >
                     Report Bugs
                 </OutLink>
-                <View style={styles.logoutButton}>
-                    <Button
-                        title="Log out"
-                        disabled={!this.state.isLoggedIn}
-                        onPress={() => this.processEvent('logout', null)}
-                    />
-                </View>
+                {this.state.isLoggedIn && (
+                    <View style={styles.logoutButton}>
+                        <Button
+                            title="Log out"
+                            disabled={!this.state.isLoggedIn}
+                            onPress={() => this.processEvent('logout', null)}
+                        />
+                    </View>
+                )}
             </SettingsMenu>
         )
     }

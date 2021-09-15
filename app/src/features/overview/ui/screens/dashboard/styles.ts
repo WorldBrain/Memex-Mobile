@@ -1,9 +1,13 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-import { Platform } from 'react-native'
+import conditionalStyles from 'src/utils/device-size-helper'
+
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     container: {
-        marginTop: Platform.OS === 'ios' ? 19 : 0,
+        marginTop: Platform.OS === 'ios' && height < 1000 ? 20 : 0,
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'flex-start',
@@ -36,6 +40,11 @@ export default EStyleSheet.create({
         fontWeight: '700',
         marginRight: 5,
         color: '$textColor',
-        fontSize: '1.2rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.6rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
     },
 })

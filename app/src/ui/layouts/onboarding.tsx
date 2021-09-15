@@ -25,14 +25,13 @@ const OnboardingLayout: React.StatelessComponent<Props> = (props) => (
             {props.screenIndex === 2 ? (
                 <View style={styles.btnContainer}>
                     <Button
-                        title="◂"
+                        title="Back"
                         onPress={props.onBackPress}
                         hidden={!props.showBackBtn}
-                        bigText
                         empty
                     />
                     <Button
-                        title="Setup Sync"
+                        title="Finish Onboarding"
                         onPress={props.onNextPress}
                         smallWidth
                     />
@@ -41,10 +40,9 @@ const OnboardingLayout: React.StatelessComponent<Props> = (props) => (
             ) : (
                 <View style={styles.btnContainer}>
                     <Button
-                        title="◂"
+                        title="Back"
                         onPress={props.onBackPress}
                         hidden={!props.showBackBtn}
-                        bigText
                         empty
                     />
                     <Button

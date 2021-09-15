@@ -1,10 +1,10 @@
+import { withEmulatedFirestoreBackend } from '@worldbrain/storex-backend-firestore/lib/index.tests'
 import EStyleSheet from 'react-native-extended-stylesheet'
 
 export default EStyleSheet.create({
     mainContainer: {
         flex: 1,
         flexDirection: 'column',
-        marginTop: '10%',
         justifyContent: 'center',
     },
     checkList: {
@@ -22,9 +22,8 @@ export default EStyleSheet.create({
         marginBottom: 20,
     },
     mainImg: {
-        height: '60%',
+        height: '70%',
+        width: '100%',
         position: 'absolute',
-        top: '15%',
-        // position: 'absolute',
     },
 })

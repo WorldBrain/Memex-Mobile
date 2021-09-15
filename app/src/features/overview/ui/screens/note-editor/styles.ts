@@ -1,9 +1,15 @@
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 export default EStyleSheet.create({
     container: {
         position: 'relative',
-        top: '1.5rem',
+        top:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.1rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
         flex: 1,
         width: '100%',
         height: '100%',

@@ -1,45 +1,63 @@
 import React from 'react'
-import { ImageSourcePropType } from 'react-native'
+import { ImageSourcePropType, Text } from 'react-native'
 
 import { ActionBtn, Props } from './action-btn'
 import styles from './action-btn.styles'
 
 export type ActionBtnComponent = React.StatelessComponent<Props>
 
-const createBtn = (icon: ImageSourcePropType): ActionBtnComponent => props => (
-    <ActionBtn iconSource={icon} {...props} />
+const createActionBarBtn = (icon: ImageSourcePropType): ActionBtnComponent => (
+    props,
+) => (
+    <>
+        <ActionBtn
+            {...props}
+            iconSource={icon}
+            className={styles.actionBarBtn}
+            imgClassName={styles.iconBarButton}
+        />
+    </>
 )
 
-const createActionBarBtn = (
-    icon: ImageSourcePropType,
-): ActionBtnComponent => props => (
-    <ActionBtn
-        {...props}
-        iconSource={icon}
-        className={styles.actionBarBtn}
-        imgClassName={styles.iconBarButton}
-    />
+export const BackBtn = createActionBarBtn(require('src/ui/img/arrow-back.png'))
+export const StarBtn = createActionBarBtn(require('../img/heart_empty.png'))
+export const StarBtnFull = createActionBarBtn(require('../img/heart_full.png'))
+export const CommentBtn = createActionBarBtn(require('../img/comment.png'))
+export const FullCommentBtn = createActionBarBtn(
+    require('../img/comment-full.png'),
 )
-
-export const BackBtn = createBtn(require('src/ui/img/arrow-back.png'))
-export const StarBtn = createBtn(require('../img/heart_empty.png'))
-export const StarBtnFull = createBtn(require('../img/heart_full.png'))
-export const CommentBtn = createBtn(require('../img/comment.png'))
-export const FullCommentBtn = createBtn(require('../img/comment-full.png'))
-export const HighlightBtn = createBtn(require('src/ui/img/highlight.png'))
-export const EditBtn = createBtn(require('../img/edit_white.png'))
-export const AnnotateBtn = createBtn(require('src/ui/img/add_comment.png'))
-export const AnnotateBtnFull = createBtn(require('src/ui/img/comment_full.png'))
-export const AddListBtn = createBtn(require('src/ui/img/add_list.png'))
-export const AddListBtnFull = createBtn(
+export const HighlightBtn = createActionBarBtn(
+    require('src/ui/img/highlight.png'),
+)
+export const EditBtn = createActionBarBtn(require('../img/edit_white.png'))
+export const AnnotateBtn = createActionBarBtn(
+    require('src/ui/img/add_comment.png'),
+)
+export const AnnotateBtnFull = createActionBarBtn(
+    require('src/ui/img/comment_full.png'),
+)
+export const AddListBtn = createActionBarBtn(require('src/ui/img/add_list.png'))
+export const AddListBtnFull = createActionBarBtn(
     require('src/ui/img/collection_full.png'),
 )
 
-export const EyeBtn = createBtn(require('src/ui/img/eye.png'))
-export const EyeWhiteBtn = createBtn(require('src/ui/img/eye_white.png'))
+export const VisitActionBarBtn = createActionBarBtn(
+    require('src/ui/img/openWhite.png'),
+)
 
-export const TagBtn = createBtn(require('src/ui/img/tag_empty.png'))
-export const TagBtnFull = createBtn(require('src/ui/img/tag_full.png'))
+export const EyeBtn = createActionBarBtn(require('src/ui/img/eye.png'))
+export const EyeWhiteBtn = createActionBarBtn(
+    require('src/ui/img/annotateWhite.png'),
+)
+
+export const TagBtn = createActionBarBtn(require('src/ui/img/tag_empty.png'))
+export const TagBtnFull = createActionBarBtn(require('src/ui/img/tag_full.png'))
+export const TagBtnWhite = createActionBarBtn(
+    require('src/ui/img/tagEmptyWhite.png'),
+)
+export const TagBtnFullWhite = createActionBarBtn(
+    require('src/ui/img/tagFullWhite.png'),
+)
 
 export const DeleteActionBarBtn = createActionBarBtn(
     require('../img/trash.png'),
@@ -54,5 +72,5 @@ export const EditNoteActionBarBtn = createActionBarBtn(
     require('../img/edit_white.png'),
 )
 export const ReaderActionBarBtn = createActionBarBtn(
-    require('src/ui/img/eye_white.png'),
+    require('src/ui/img/annotateWhite.png'),
 )

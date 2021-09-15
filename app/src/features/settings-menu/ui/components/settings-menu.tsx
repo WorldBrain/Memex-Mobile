@@ -70,13 +70,6 @@ class SettingsMenu extends React.PureComponent<Props> {
                     titleText="Menu"
                 />
                 <View style={styles.mainContainer}>
-                    <Button
-                        secondary
-                        title={this.syncButtonText}
-                        style={this.syncButtonStyles}
-                        onPress={this.props.onSyncPress}
-                        isLoading={this.props.isSyncing}
-                    />
                     <View style={styles.linksContainer}>
                         {this.props.children}
                     </View>

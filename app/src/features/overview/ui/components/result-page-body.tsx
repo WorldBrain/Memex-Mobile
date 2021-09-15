@@ -20,7 +20,7 @@ export interface Props {
     date: string
 }
 
-const ResultPageBody: React.StatelessComponent<Props> = props => (
+const ResultPageBody: React.StatelessComponent<Props> = (props) => (
     <>
         <TouchableWithoutFeedback onPress={props.onResultPress}>
             <View style={styles.contentBox}>
@@ -35,10 +35,12 @@ const ResultPageBody: React.StatelessComponent<Props> = props => (
                         {props.titleText}
                     </Text>
                 </View>
-                <Text numberOfLines={1} style={styles.linkText}>
-                    {props.domain}
-                </Text>
-                <Text style={styles.date}>{props.date}</Text>
+                <View style={styles.bottomBarBox}>
+                    <Text numberOfLines={1} style={styles.linkText}>
+                        {props.domain}
+                    </Text>
+                    <Text style={styles.date}>{props.date}</Text>
+                </View>
             </View>
         </TouchableWithoutFeedback>
     </>

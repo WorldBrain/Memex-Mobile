@@ -21,12 +21,6 @@ export interface Props
 }
 
 class ActionBar extends React.PureComponent<Props> {
-    private get BookmarkBtn(): actionBtns.ActionBtnComponent {
-        return this.props.isBookmarked
-            ? actionBtns.StarBtnFull
-            : actionBtns.StarBtn
-    }
-
     private get TagBtn(): actionBtns.ActionBtnComponent {
         return this.props.isTagged ? actionBtns.TagBtnFull : actionBtns.TagBtn
     }
@@ -65,10 +59,6 @@ class ActionBar extends React.PureComponent<Props> {
 
         return (
             <>
-                <this.BookmarkBtn
-                    onPress={this.props.onBookmarkBtnPress}
-                    className={styles.actionBtn}
-                />
                 <this.AnnotateBtn
                     onPress={this.props.onCommentBtnPress}
                     className={styles.actionBtn}

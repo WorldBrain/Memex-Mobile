@@ -1,6 +1,11 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
-export const actionBarHeight = 90
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
+
+export const actionBarHeight = 70
 
 export default EStyleSheet.create({
     container: {
@@ -12,19 +17,27 @@ export default EStyleSheet.create({
         borderTopColor: '#DADADA',
         height: actionBarHeight,
         width: '100%',
-        paddingBottom: 20,
-        paddingHorizontal: 15,
+        paddingVertical:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.6rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
+        paddingHorizontal: height > 1000 ? '1rem' : '1rem',
+        backgroundColor: 'white',
     },
     leftBtns: {
-        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'flex-start',
+        display: 'flex',
     },
     rightBtns: {
+        display: 'flex',
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
-        width: '50%',
+        width: height > 1000 ? '10%' : '50%',
     },
     actionBtn: {
         width: '3rem',

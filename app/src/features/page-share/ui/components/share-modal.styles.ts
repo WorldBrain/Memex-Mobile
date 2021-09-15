@@ -1,4 +1,8 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+const { height, width } = Dimensions.get('screen')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     container: {
@@ -7,12 +11,13 @@ export default EStyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'flex-start',
         position: 'absolute',
-        left: '2%',
-        right: '2%',
+        left: '1%',
+        right: '1%',
         top: 0,
         bottom: 200,
         borderRadius: 10,
         height: '50%',
+        overflow: 'hidden',
     },
     stretched: {
         bottom: 20,

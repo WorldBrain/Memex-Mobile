@@ -37,12 +37,14 @@ export default class CloudSyncScreen extends StatefulUIElement<
 
     private renderSyncingScreen() {
         return (
-            <EmptyLayout>
-                <Image
-                    resizeMode="contain"
-                    style={styles.logoIcon}
-                    source={require('../../../../ui/assets/MemexIcon.png')}
-                />
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    display: 'flex',
+                }}
+            >
                 <LoadingBalls />
                 <View style={styles.header}>
                     <Text style={styles.headerText}>Syncing your data</Text>
@@ -53,64 +55,85 @@ export default class CloudSyncScreen extends StatefulUIElement<
                         your device on charge.
                     </Text>
                 </View>
-            </EmptyLayout>
+            </View>
         )
     }
 
     private renderSyncingError() {
         return (
-            <EmptyLayout>
-                <Image
-                    resizeMode="contain"
-                    style={styles.logoIcon}
-                    source={require('../../../../ui/assets/MemexIcon.png')}
-                />
-                <View style={styles.header}>
-                    <Text style={styles.headerText}>Error syncing data</Text>
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    display: 'flex',
+                }}
+            >
+                <View style={styles.contentBox}>
+                    <Image
+                        resizeMode="contain"
+                        style={styles.logoIcon}
+                        source={require('../../../../ui/assets/MemexIcon.png')}
+                    />
+                    <View style={styles.header}>
+                        <Text style={styles.headerText}>
+                            Error syncing data
+                        </Text>
+                    </View>
+                    <View style={styles.body}>
+                        <Text style={styles.bodyText}>
+                            Restart the app and try again.
+                        </Text>
+                    </View>
+                    <View style={styles.body}>
+                        <Text style={styles.bodyText}>
+                            If sync continues to fail,{' '}
+                        </Text>
+                        <Text
+                            style={[styles.bodyText, styles.supportLink]}
+                            onPress={this.handleSyncErrorReport}
+                        >
+                            contact support
+                        </Text>
+                    </View>
                 </View>
-                <View style={styles.body}>
-                    <Text style={styles.bodyText}>
-                        Restart the app and try again.
-                    </Text>
-                </View>
-                <View style={styles.body}>
-                    <Text style={styles.bodyText}>
-                        If sync continues to fail,{' '}
-                    </Text>
-                    <Text
-                        style={[styles.bodyText, styles.supportLink]}
-                        onPress={this.handleSyncErrorReport}
-                    >
-                        contact support
-                    </Text>
-                </View>
-            </EmptyLayout>
+            </View>
         )
     }
 
     private renderSyncingComplete() {
         return (
-            <EmptyLayout>
-                <Image
-                    resizeMode="contain"
-                    style={styles.logoIcon}
-                    source={require('../assets/successIcon.png')}
-                />
-                <View style={styles.header}>
-                    <Text style={styles.headerText}>Sync successful</Text>
-                </View>
-                <View style={styles.body}>
-                    <Text style={styles.bodyText}>
-                        If you see no data in the dashboard, make sure you
-                        synced on at least one of your other devices first then
-                        restart the app.
-                    </Text>
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    display: 'flex',
+                }}
+            >
+                <View style={styles.contentBox}>
+                    <Image
+                        resizeMode="contain"
+                        style={styles.logoIcon}
+                        source={require('../assets/successIcon.png')}
+                    />
+                    <View style={styles.header}>
+                        <Text style={styles.headerText}>Sync successful</Text>
+                    </View>
+                    <View style={styles.body}>
+                        <Text style={styles.bodyText}>
+                            If you see no data in the dashboard, make sure you
+                            synced on at least one of your other devices first
+                            then restart the app.
+                        </Text>
+                    </View>
                 </View>
                 <Button
                     title="Go to Dashboard"
                     onPress={() => this.processEvent('goToDashboard', null)}
+                    style={{ marginVertical: 20 }}
                 />
-            </EmptyLayout>
+            </View>
         )
     }
 

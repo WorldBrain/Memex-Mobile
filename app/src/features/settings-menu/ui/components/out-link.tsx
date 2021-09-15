@@ -9,8 +9,14 @@ export interface Props {
     url: string
 }
 
-const OutLink: React.StatelessComponent<Props> = props => (
-    <View style={[props.skipBottomBorder ? null : styles.container]}>
+const OutLink: React.StatelessComponent<Props> = (props) => (
+    <View
+        style={[
+            props.skipBottomBorder
+                ? styles.containerNoBorder
+                : styles.container,
+        ]}
+    >
         <Link href={props.url} style={styles.link}>
             {props.children}
         </Link>

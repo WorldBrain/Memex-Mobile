@@ -1,4 +1,8 @@
+import { Platform, Dimensions } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     background: {
@@ -8,6 +12,9 @@ export default EStyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
+        marginTop: 30,
+        alignItems: 'center',
+        display: 'flex',
     },
     mainContainer: {
         flex: 1,
@@ -16,6 +23,5 @@ export default EStyleSheet.create({
         alignItems: 'center',
         position: 'absolute',
         bottom: '5%',
-        height: 100,
     },
 })

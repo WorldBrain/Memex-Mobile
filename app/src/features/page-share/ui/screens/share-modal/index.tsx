@@ -10,7 +10,6 @@ import AddCollection from '../../components/add-collections-segment'
 import ShareModal from '../../components/share-modal'
 import ActionBar from '../../components/action-bar-segment'
 import NoteInput from '../../components/note-input-segment'
-import StarPage from '../../components/star-page-segment'
 import AddTags from '../../components/add-tags-segment'
 import UnsupportedApp from '../../components/unsupported-app'
 import ReloadBtn from '../../components/reload-btn'
@@ -186,11 +185,6 @@ export default class ShareModalScreen extends StatefulUIElement<
                 <NoteInput
                     onChange={this.handleNoteTextChange}
                     value={this.state.noteText}
-                />
-                <StarPage
-                    isStarred={this.state.isStarred}
-                    onPress={this.handleStarPress}
-                    loading={this.state.bookmarkState === 'running'}
                 />
                 <AddCollection
                     onPress={this.handleMetaViewTypeSwitch('collections')}

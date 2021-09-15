@@ -35,6 +35,8 @@ if (!process.nextTick) {
     process.nextTick = setImmediate
 }
 
+console.disableYellowBox = true
+
 export async function main() {
     const ui = new UI()
 

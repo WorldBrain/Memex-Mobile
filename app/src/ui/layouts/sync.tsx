@@ -27,11 +27,12 @@ const SyncLayout: React.StatelessComponent<Props> = ({
     ...props
 }) => (
     <EmptyLayout>
+        <View style={styles.children}>{props.children}</View>
         <Text style={styles.titleText}>{props.titleText}</Text>
         {props.subtitleText && (
             <Text style={styles.subtitleText}>{props.subtitleText}</Text>
         )}
-        <View style={styles.children}>{props.children}</View>
+
         <View style={styles.buttonContainer}>
             <Button
                 title={props.btnText}

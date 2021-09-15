@@ -1,4 +1,8 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     mainImg: {
@@ -6,8 +10,6 @@ export default EStyleSheet.create({
         height: '80%',
         marginRight: '8rem',
         marginLeft: '8rem',
-        marginTop: '5rem',
-        display: 'flex',
-        justifyContent: 'center',
+        marginTop: height > 1000 ? '0rem' : '1.2rem',
     },
 })

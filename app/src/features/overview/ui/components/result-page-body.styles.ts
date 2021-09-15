@@ -1,11 +1,15 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
+
+const { height, width } = Dimensions.get('window')
+const aspectRatio = height / width
 
 export default EStyleSheet.create({
     favIcon: {},
     contentBox: {
-        minHeight: '5rem',
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
     },
     title: {
         flexDirection: 'row',
@@ -14,21 +18,43 @@ export default EStyleSheet.create({
     },
     titleText: {
         fontWeight: '700',
-        fontSize: '1.1rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.7rem'
+                : '1.2rem',
         letterSpacing: 0.6,
         flexWrap: 'wrap',
         overflow: 'hidden',
         color: '#3A2F45',
         fontFamily: 'Poppins',
+        marginBottom: 5,
     },
     linkText: {
         color: '#3A2F45',
         letterSpacing: 0.6,
-        fontSize: '1.1rem',
-        marginBottom: '0.3rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.7rem'
+                : '1.2rem',
     },
     date: {
         color: '#3A2F45',
-        fontSize: '0.9rem',
+        opacity: 0.7,
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.7rem'
+                : '1.2rem',
+        marginLeft: 10,
+    },
+    bottomBarBox: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 })

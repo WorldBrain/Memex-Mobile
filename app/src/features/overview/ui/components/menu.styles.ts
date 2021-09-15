@@ -1,4 +1,6 @@
+import { Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 export default EStyleSheet.create({
     mainContainer: {

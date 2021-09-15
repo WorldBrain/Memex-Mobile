@@ -1,4 +1,5 @@
 import EStyleSheet from 'react-native-extended-stylesheet'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 export default EStyleSheet.create({
     notesDropdown: {},
@@ -9,17 +10,27 @@ export default EStyleSheet.create({
         display: 'flex',
     },
     noResultsTitle: {
-        fontSize: '1.5rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.7rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '1rem'
+                : '1.5rem',
         fontFamily: 'Poppins',
         marginBottom: '0.5rem',
-        marginTop: '15%',
+        marginTop: '5%',
         fontWeight: '700',
         color: '$textColor',
     },
     noResultsSubTitle: {
-        fontSize: '1.2rem',
+        fontSize:
+            conditionalStyles() === 'tabletLandscape'
+                ? '0.5rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.8rem'
+                : '1.3rem',
         fontWeight: '500',
-        color: '$purpleColor',
+        color: '#a2a2a2',
         textAlign: 'center',
     },
     list: {
