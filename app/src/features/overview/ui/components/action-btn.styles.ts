@@ -11,6 +11,7 @@ export default EStyleSheet.create({
     },
     icon: {
         opacity: 0.8,
+        maxWidth: '5rem',
         height:
             conditionalStyles() === 'tabletLandscape'
                 ? '0.5rem'
@@ -24,7 +25,7 @@ export default EStyleSheet.create({
     actionBarBtn: {
         width: '4.5rem',
     },
-    commentIcon: {
+    fullyOpaque: {
         opacity: 1,
     },
     marginBottom10: {
@@ -48,6 +49,5 @@ export default EStyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
-        width: '5rem',
     },
 })

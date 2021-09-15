@@ -11,8 +11,10 @@ import {
 import styles from './action-btn.styles'
 
 export interface Props extends Pick<ButtonProps, 'onPress' | 'disabled'> {
+    label?: string
     className?: string
     imgClassName?: string
+    fullyOpaque?: boolean
 }
 
 interface OwnProps {
@@ -34,13 +36,17 @@ export const ActionBtn: React.StatelessComponent<Props & OwnProps> = (
                 style={[
                     styles.icon,
                     props.disabled ? styles.iconDisabled : null,
-                    props.commentIcon && styles.commentIcon,
+                    props.fullyOpaque && styles.fullyOpaque,
                 ]}
             />
-            <View style={styles.marginBottom10} />
-            <Text style={styles.subText} numberOfLines={1}>
-                {props.ButtonLabel}
-            </Text>
+            {props.label && (
+                <>
+                    <View style={styles.marginBottom10} />
+                    <Text style={styles.subText} numberOfLines={1}>
+                        {props.label}
+                    </Text>
+                </>
+            )}
         </View>
     </TouchableOpacity>
 )

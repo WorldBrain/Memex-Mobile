@@ -77,7 +77,7 @@ class ActionBar extends React.PureComponent<Props> {
 
     render() {
         return (
-            <View style={[styles.container, this.props.className]}>
+            <View style={[styles.container]}>
                 <View style={styles.leftBtns}>
                     <actionBtns.BackBtn
                         onPress={this.props.onBackBtnPress}

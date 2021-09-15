@@ -1,34 +1,25 @@
 import React from 'react'
-import {
-    View,
-    TouchableWithoutFeedback,
-    Text,
-    Dimensions,
-    Platform,
-} from 'react-native'
+import { View, TouchableWithoutFeedback, Text } from 'react-native'
 
 import Container from './result-container'
 import Body, { Props as BodyProps } from './result-page-body'
-import Footer, { Props as FooterProps } from './result-footer'
+import type { Props as FooterProps } from './result-footer'
 import Tags from './result-page-tags'
 import {
     DeleteActionBarBtn,
-    TagBtnFull,
-    TagBtn,
     TagBtnFullWhite,
     TagBtnWhite,
     CommentBtn,
     FullCommentBtn,
-    StarBtn,
     FullListActionBarWhiteBtn,
     AddListActionBarWhiteBtn,
-    StarBtnFull,
     ReaderActionBarBtn,
     VisitActionBarBtn,
 } from './action-btns'
 import ActionBar from './result-page-action-bar'
-import { TouchEventHandler, UIPage } from 'src/ui/types'
+import type { TouchEventHandler } from 'src/ui/types'
 import styles from './result-page-view-button.styles'
+import type { UIPage } from '../../types'
 
 export interface Props extends FooterProps, BodyProps, UIPage {}
 
@@ -42,8 +33,6 @@ export interface InteractionProps {
     onReaderPress?: TouchEventHandler
     onCommentPress: TouchEventHandler
 }
-const { height, width } = Dimensions.get('window')
-const aspectRatio = height / width
 
 const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
     props,
@@ -71,7 +60,7 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                         {props.notes.length > 0 ? (
                             <FullCommentBtn
                                 onPress={props.onCommentPress}
-                                commentIcon={1}
+                                fullyOpaque
                             />
                         ) : (
                             <CommentBtn onPress={props.onCommentPress} />
@@ -90,38 +79,38 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                     {props.onReaderPress && (
                         <ReaderActionBarBtn
                             onPress={props.onReaderPress}
-                            ButtonLabel={'Annotate'}
+                            label={'Annotate'}
                         />
                     )}
                     {props.tags.length > 0 ? (
                         <TagBtnFullWhite
                             onPress={props.onTagPress}
-                            ButtonLabel={'Tags'}
+                            label={'Tags'}
                         />
                     ) : (
                         <TagBtnWhite
                             onPress={props.onTagPress}
-                            ButtonLabel={'Tags'}
+                            label={'Tags'}
                         />
                     )}
                     {props.lists.length > 0 ? (
                         <FullListActionBarWhiteBtn
                             onPress={props.onListsPress}
-                            ButtonLabel={'Collections'}
+                            label={'Collections'}
                         />
                     ) : (
                         <AddListActionBarWhiteBtn
                             onPress={props.onListsPress}
-                            ButtonLabel={'Collections'}
+                            label={'Collections'}
                         />
                     )}
                     <DeleteActionBarBtn
                         onPress={props.onDeletePress}
-                        ButtonLabel={'Delete'}
+                        label={'Delete'}
                     />
                     <VisitActionBarBtn
                         onPress={props.onVisitPress}
-                        ButtonLabel={'Visit'}
+                        label={'Visit'}
                     />
                 </ActionBar>
             )}

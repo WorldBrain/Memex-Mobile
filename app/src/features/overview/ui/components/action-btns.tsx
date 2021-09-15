@@ -9,14 +9,12 @@ export type ActionBtnComponent = React.StatelessComponent<Props>
 const createActionBarBtn = (icon: ImageSourcePropType): ActionBtnComponent => (
     props,
 ) => (
-    <>
-        <ActionBtn
-            {...props}
-            iconSource={icon}
-            className={styles.actionBarBtn}
-            imgClassName={styles.iconBarButton}
-        />
-    </>
+    <ActionBtn
+        {...props}
+        iconSource={icon}
+        className={styles.actionBarBtn}
+        imgClassName={styles.iconBarButton}
+    />
 )
 
 export const BackBtn = createActionBarBtn(require('src/ui/img/arrow-back.png'))

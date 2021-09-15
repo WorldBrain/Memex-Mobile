@@ -39,11 +39,11 @@ const ResultNote: React.StatelessComponent<Props & InteractionProps> = (
             <ActionBar>
                 <EditNoteActionBarBtn
                     onPress={props.onEditPress}
-                    ButtonLabel={'Edit'}
+                    label={'Edit'}
                 />
                 <DeleteActionBarBtn
                     onPress={props.onDeletePress}
-                    ButtonLabel={'Delete'}
+                    label={'Delete'}
                 />
             </ActionBar>
         )}
