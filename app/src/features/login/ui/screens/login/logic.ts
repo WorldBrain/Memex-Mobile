@@ -67,7 +67,7 @@ export default class Logic extends UILogic<State, Event> {
 
     private performAuth = ({
         mode,
-        emailInputValue: email,
+        emailInputValue,
         passwordInputValue: password,
     }: State) => async () => {
         const {
@@ -76,6 +76,7 @@ export default class Logic extends UILogic<State, Event> {
             route,
         } = this.props
 
+        const email = emailInputValue.trim()
         if (mode === 'login') {
             await auth.loginWithEmailAndPassword(email, password)
         } else {
