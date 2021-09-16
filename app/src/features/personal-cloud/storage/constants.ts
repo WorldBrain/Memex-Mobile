@@ -15,9 +15,5 @@ export const CLOUD_SYNCED_COLLECTIONS: string[] = [
     LISTS_COLLECTION_NAMES.list,
     LISTS_COLLECTION_NAMES.listEntry,
     SettingsStorage.SYNC_SETTINGS_COLL_NAME,
-    TEMPLATE_COLLECTION_NAMES.templates,
     ANNOTATIONS_COLLECTION_NAMES.annotation,
-    ANNOTATIONS_COLLECTION_NAMES.annotationPrivacy,
-    'sharedListMetadata',
-    'sharedAnnotationMetadata',
 ]

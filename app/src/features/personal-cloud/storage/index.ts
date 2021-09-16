@@ -22,7 +22,10 @@ import {
     PersonalCloudActionType,
     UpdateIntegrationResult,
 } from './types'
-import { PERSONAL_CLOUD_ACTION_RETRY_INTERVAL } from './constants'
+import {
+    PERSONAL_CLOUD_ACTION_RETRY_INTERVAL,
+    CLOUD_SYNCED_COLLECTIONS,
+} from './constants'
 import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
 
 export interface Dependencies {
@@ -80,7 +83,10 @@ export class PersonalCloudStorage {
     }
 
     async pullAllUpdates(): Promise<UpdateIntegrationResult> {
-        const updateBatch = await this.dependencies.backend.bulkDownloadUpdates()
+        let updateBatch = await this.dependencies.backend.bulkDownloadUpdates()
+        updateBatch = updateBatch.filter((update) =>
+            CLOUD_SYNCED_COLLECTIONS.includes(update.collection),
+        )
         return this.integrateUpdates(updateBatch)
     }
 
@@ -99,19 +105,21 @@ export class PersonalCloudStorage {
                     collection: update.collection,
                     object,
                 })
-                if (update.media) {
-                    await Promise.all(
-                        Object.entries(update.media).map(
-                            async ([key, path]) => {
-                                object[
-                                    key
-                                ] = await this.dependencies.backend.downloadFromMedia(
-                                    { path: path.path },
-                                )
-                            },
-                        ),
-                    )
-                }
+
+                // TODO: maybe add mobile app support for media fields
+                // if (update.media) {
+                //     await Promise.all(
+                //         Object.entries(update.media).map(
+                //             async ([key, path]) => {
+                //                 object[
+                //                     key
+                //                 ] = await this.dependencies.backend.downloadFromMedia(
+                //                     { path: path.path },
+                //                 )
+                //             },
+                //         ),
+                //     )
+                // }
 
                 // WARNING: Keep in mind this skips all storage middleware
                 await updateOrCreate({
