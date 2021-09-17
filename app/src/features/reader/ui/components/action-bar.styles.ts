@@ -5,7 +5,7 @@ import conditionalStyles from 'src/utils/device-size-helper'
 const { height, width } = Dimensions.get('window')
 const aspectRatio = height / width
 
-export const actionBarHeight = 70
+export const actionBarHeight = 80
 
 export default EStyleSheet.create({
     container: {
@@ -15,15 +15,31 @@ export default EStyleSheet.create({
         justifyContent: 'space-between',
         borderTopWidth: 1,
         borderTopColor: '#DADADA',
-        height: actionBarHeight,
+        height:
+            conditionalStyles() === 'tabletLandscape'
+                ? 50
+                : conditionalStyles() === 'tabletPortrait'
+                ? 80
+                : 70,
         width: '100%',
-        paddingVertical:
+        paddingBottom:
             conditionalStyles() === 'tabletLandscape'
                 ? '0.6rem'
                 : conditionalStyles() === 'tabletPortrait'
+                ? '1rem'
+                : '1rem',
+        paddingTop:
+            conditionalStyles() === 'tabletLandscape'
                 ? '0.8rem'
-                : '1.3rem',
-        paddingHorizontal: height > 1000 ? '1rem' : '1rem',
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.7rem'
+                : '0rem',
+        paddingHorizontal:
+            conditionalStyles() === 'tabletLandscape'
+                ? '1.8rem'
+                : conditionalStyles() === 'tabletPortrait'
+                ? '0.7rem'
+                : '1rem',
         backgroundColor: 'white',
     },
     leftBtns: {
