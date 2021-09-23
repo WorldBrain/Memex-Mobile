@@ -6,9 +6,11 @@ import inMemory from '@worldbrain/storex-backend-dexie/lib/in-memory'
 
 export function createServerStorageManager(
     firebase: ReactNativeFirebase.Module,
+    firebaseModule?: ReactNativeFirebase.Module,
 ) {
     const backend = new FirestoreStorageBackend({
         firebase: firebase as any,
+        firebaseModule: firebaseModule as any,
         firestore: firebase.firestore() as any,
     })
     return new StorageManager({ backend })

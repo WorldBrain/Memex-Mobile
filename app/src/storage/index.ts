@@ -1,7 +1,6 @@
 import { ConnectionOptions } from 'typeorm'
 import StorageManager from '@worldbrain/storex'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
-import type { ReactNativeFirebase } from '@react-native-firebase/app'
 import {
     registerModuleMapCollections,
     _defaultOperationExecutor,
@@ -44,7 +43,6 @@ import type {
 import type { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
 import ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
-import { getFirebase, connectToEmulator } from 'src/firebase'
 
 export interface CreateStorageOptions {
     authService: AuthService
@@ -182,14 +180,30 @@ export async function createServerStorage(
     let manager: StorageManager
 
     if (backendType === 'firebase') {
-        console.log('firebase specified')
+        const { getFirebase } = require('../firebase')
         manager = createServerStorageManager(getFirebase())
     } else if (backendType === 'firebase-emulator') {
-        console.log('firebase EMU specified')
-        await connectToEmulator()
-        manager = createServerStorageManager(getFirebase())
+        const firebaseTesting = require('@firebase/testing')
+        const projectId = Date.now().toString()
+        const firebaseApp = firebaseTesting.initializeTestApp({ projectId })
+
+        if (process.env.DISABLE_FIRESTORE_RULES === 'true') {
+            await firebaseTesting.loadFirestoreRules({
+                projectId,
+                rules: `
+                service cloud.firestore {
+                    match /databases/{database}/documents {
+                        match /{document=**} {
+                            allow read, write: if true;
+                        }
+                    }
+                }
+                `,
+            })
+        }
+
+        manager = createServerStorageManager(firebaseApp, firebaseTesting)
     } else {
-        console.log('memory specified')
         manager = createMemoryServerStorageManager()
     }
 
