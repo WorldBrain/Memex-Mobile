@@ -182,27 +182,27 @@ export async function createServerStorage(
     if (backendType === 'firebase') {
         const { getFirebase } = require('../firebase')
         manager = createServerStorageManager(getFirebase())
-    } else if (backendType === 'firebase-emulator') {
-        const firebaseTesting = require('@firebase/testing')
-        const projectId = Date.now().toString()
-        const firebaseApp = firebaseTesting.initializeTestApp({ projectId })
+        // } else if (backendType === 'firebase-emulator') {
+        //     const firebaseTesting = require('@firebase/testing')
+        //     const projectId = Date.now().toString()
+        //     const firebaseApp = firebaseTesting.initializeTestApp({ projectId })
 
-        if (process.env['DISABLE_FIRESTORE_RULES'] === 'true') {
-            await firebaseTesting.loadFirestoreRules({
-                projectId,
-                rules: `
-                service cloud.firestore {
-                    match /databases/{database}/documents {
-                        match /{document=**} {
-                            allow read, write: if true;
-                        }
-                    }
-                }
-                `,
-            })
-        }
+        //     if (process.env['DISABLE_FIRESTORE_RULES'] === 'true') {
+        //         await firebaseTesting.loadFirestoreRules({
+        //             projectId,
+        //             rules: `
+        //             service cloud.firestore {
+        //                 match /databases/{database}/documents {
+        //                     match /{document=**} {
+        //                         allow read, write: if true;
+        //                     }
+        //                 }
+        //             }
+        //             `,
+        //         })
+        //     }
 
-        manager = createServerStorageManager(firebaseApp, firebaseTesting)
+        //     manager = createServerStorageManager(firebaseApp, firebaseTesting)
     } else {
         manager = createMemoryServerStorageManager()
     }
