@@ -104,7 +104,9 @@ export function makeMultiDeviceTestFactory() {
             return
         }
         const serverStorageP = createServerStorage(
-            process.env.USE_FIREBASE_EMULATOR ? 'firebase-emulator' : 'memory',
+            process.env['USE_FIREBASE_EMULATOR']
+                ? 'firebase-emulator'
+                : 'memory',
         )
 
         it(description, async function (this: any) {
@@ -194,7 +196,9 @@ export function registerSingleDeviceSyncTests(
 const initCreateTestDevice = ({
     getServerStorage = () =>
         createServerStorage(
-            process.env.USE_FIREBASE_EMULATOR ? 'firebase-emulator' : 'memory',
+            process.env['USE_FIREBASE_EMULATOR']
+                ? 'firebase-emulator'
+                : 'memory',
         ),
 }: {
     getServerStorage?: () => Promise<ServerStorage>

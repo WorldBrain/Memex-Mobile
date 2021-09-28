@@ -187,7 +187,7 @@ export async function createServerStorage(
         const projectId = Date.now().toString()
         const firebaseApp = firebaseTesting.initializeTestApp({ projectId })
 
-        if (process.env.DISABLE_FIRESTORE_RULES === 'true') {
+        if (process.env['DISABLE_FIRESTORE_RULES'] === 'true') {
             await firebaseTesting.loadFirestoreRules({
                 projectId,
                 rules: `
