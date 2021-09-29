@@ -78,7 +78,7 @@ export default class ShareModalScreen extends StatefulUIElement<
         await this.processEvent('savePageTitle', null)
 
         if (this.isInputDirty) {
-            this.processEvent('save', null)
+            await this.processEvent('save', null)
         } else {
             this.handleModalClose()
         }

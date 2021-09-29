@@ -339,7 +339,7 @@ export default class Logic extends UILogic<State, Event> {
     async savePageTitle({
         previousState,
     }: IncomingUIEvent<State, Event, 'savePageTitle'>) {
-        // Init logic somehow was not run due to page title already being indexed
+        // Init logic was not run due to page title already being indexed
         if (!this.pageTitleFetchRunning) {
             return
         }
@@ -349,10 +349,12 @@ export default class Logic extends UILogic<State, Event> {
 
         try {
             const pageTitle = await this.pageTitleFetchRunning
-            await overview.updatePageTitle({
-                url: previousState.pageUrl,
-                title: pageTitle,
-            })
+            if (pageTitle?.length > 0) {
+                await overview.updatePageTitle({
+                    url: previousState.pageUrl,
+                    title: pageTitle,
+                })
+            }
         } catch (err) {
             errorTracker.track(err)
         }
