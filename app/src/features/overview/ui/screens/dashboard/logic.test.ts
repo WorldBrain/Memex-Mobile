@@ -60,17 +60,8 @@ describe('dashboard screen UI logic tests', () => {
         dependencies: { storage: Storage },
     ) {
         await dependencies.storage.modules.overview.createPage(page)
-        await addToMobileList(page.fullUrl, dependencies)
-    }
-
-    async function addToMobileList(
-        fullPageUrl: string,
-        dependencies: { storage: Storage },
-    ) {
-        const mobileListId = await dependencies.storage.modules.metaPicker.createMobileListIfAbsent()
-        await dependencies.storage.modules.metaPicker.createPageListEntry({
-            listId: mobileListId,
-            fullPageUrl,
+        await dependencies.storage.modules.metaPicker.createMobileListEntry({
+            fullPageUrl: page.fullUrl,
         })
     }
 
@@ -117,10 +108,9 @@ describe('dashboard screen UI logic tests', () => {
         const { element } = await setup(dependencies)
 
         await insertIntegrationTestData(dependencies)
-        await addToMobileList(
-            INTEGRATION_TEST_DATA.pages[0].fullUrl,
-            dependencies,
-        )
+        await dependencies.storage.modules.metaPicker.createMobileListEntry({
+            fullPageUrl: INTEGRATION_TEST_DATA.pages[0].fullUrl,
+        })
 
         await element.init()
         expect(element.state).toEqual(
@@ -159,13 +149,10 @@ describe('dashboard screen UI logic tests', () => {
         await storage.modules.overview.createPage(
             INTEGRATION_TEST_DATA.pages[1],
         )
-        const mobileListId = await storage.modules.metaPicker.createMobileListIfAbsent()
-        await storage.modules.metaPicker.createPageListEntry({
-            listId: mobileListId,
+        await storage.modules.metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[0].fullUrl,
         })
-        await storage.modules.metaPicker.createPageListEntry({
-            listId: mobileListId,
+        await storage.modules.metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[1].fullUrl,
         })
 
@@ -334,14 +321,12 @@ describe('dashboard screen UI logic tests', () => {
             await overview.createPage(page)
         }
 
-        await addToMobileList(
-            INTEGRATION_TEST_DATA.pages[0].fullUrl,
-            dependencies,
-        )
-        await addToMobileList(
-            INTEGRATION_TEST_DATA.pages[3].fullUrl,
-            dependencies,
-        )
+        await dependencies.storage.modules.metaPicker.createMobileListEntry({
+            fullPageUrl: INTEGRATION_TEST_DATA.pages[0].fullUrl,
+        })
+        await dependencies.storage.modules.metaPicker.createMobileListEntry({
+            fullPageUrl: INTEGRATION_TEST_DATA.pages[3].fullUrl,
+        })
 
         await overview.starPage({ url: INTEGRATION_TEST_DATA.pages[1].url })
         await overview.visitPage({ url: INTEGRATION_TEST_DATA.pages[1].url })
@@ -390,13 +375,10 @@ describe('dashboard screen UI logic tests', () => {
             INTEGRATION_TEST_DATA.pages[1],
         )
 
-        const mobileListId = await storage.modules.metaPicker.createMobileListIfAbsent()
-        await storage.modules.metaPicker.createPageListEntry({
-            listId: mobileListId,
+        await storage.modules.metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[0].fullUrl,
         })
-        await storage.modules.metaPicker.createPageListEntry({
-            listId: mobileListId,
+        await storage.modules.metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[1].fullUrl,
         })
 

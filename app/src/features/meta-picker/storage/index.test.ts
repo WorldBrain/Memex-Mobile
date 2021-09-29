@@ -554,4 +554,114 @@ describe('meta picker StorageModule', () => {
             }),
         ])
     })
+
+    it('should migrate dynamic mobile list to static list upon first discovery on adding a new page entry', async ({
+        storage: {
+            manager,
+            modules: { metaPicker, overview },
+        },
+    }) => {
+        await overview.createPage(pageData.pages[0])
+        await overview.createPage(pageData.pages[1])
+        await overview.createPage(pageData.pages[2])
+
+        const dynamicId = 1234
+        await metaPicker.operation('createList', {
+            id: dynamicId,
+            name: SPECIAL_LIST_NAMES.MOBILE,
+            searchableName: SPECIAL_LIST_NAMES.MOBILE,
+            isDeletable: false,
+            isNestable: false,
+            createdAt: new Date(),
+        })
+
+        for (const page of [pageData.pages[0], pageData.pages[1]]) {
+            await metaPicker.operation('createListEntry', {
+                listId: dynamicId,
+                createdAt: new Date(),
+                pageUrl: page.url,
+                fullUrl: page.fullUrl,
+            })
+        }
+
+        expect(
+            await manager.collection('customLists').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                id: dynamicId,
+                name: SPECIAL_LIST_NAMES.MOBILE,
+            }),
+        ])
+        expect(
+            await manager.collection('pageListEntries').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                listId: dynamicId,
+                pageUrl: pageData.pages[0].url,
+            }),
+            expect.objectContaining({
+                listId: dynamicId,
+                pageUrl: pageData.pages[1].url,
+            }),
+        ])
+
+        await metaPicker.createMobileListEntry({
+            fullPageUrl: pageData.pages[2].fullUrl,
+        })
+
+        expect(
+            await manager.collection('customLists').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                id: SPECIAL_LIST_IDS.MOBILE,
+                name: SPECIAL_LIST_NAMES.MOBILE,
+            }),
+        ])
+        expect(
+            await manager.collection('pageListEntries').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                listId: SPECIAL_LIST_IDS.MOBILE,
+                pageUrl: pageData.pages[0].url,
+            }),
+            expect.objectContaining({
+                listId: SPECIAL_LIST_IDS.MOBILE,
+                pageUrl: pageData.pages[1].url,
+            }),
+            expect.objectContaining({
+                listId: SPECIAL_LIST_IDS.MOBILE,
+                pageUrl: pageData.pages[2].url,
+            }),
+        ])
+
+        await metaPicker.createMobileListEntry({
+            fullPageUrl: pageData.pages[2].fullUrl,
+        })
+
+        // These are the same checks as above
+        expect(
+            await manager.collection('customLists').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                id: SPECIAL_LIST_IDS.MOBILE,
+                name: SPECIAL_LIST_NAMES.MOBILE,
+            }),
+        ])
+        expect(
+            await manager.collection('pageListEntries').findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                listId: SPECIAL_LIST_IDS.MOBILE,
+                pageUrl: pageData.pages[0].url,
+            }),
+            expect.objectContaining({
+                listId: SPECIAL_LIST_IDS.MOBILE,
+                pageUrl: pageData.pages[1].url,
+            }),
+            expect.objectContaining({
+                listId: SPECIAL_LIST_IDS.MOBILE,
+                pageUrl: pageData.pages[2].url,
+            }),
+        ])
+    })
 })
