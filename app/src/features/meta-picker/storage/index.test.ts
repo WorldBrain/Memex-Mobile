@@ -516,6 +516,7 @@ describe('meta picker StorageModule', () => {
             await manager.collection('customLists').findAllObjects({}),
         ).toEqual([
             expect.objectContaining({
+                id: SPECIAL_LIST_IDS.MOBILE,
                 name: SPECIAL_LIST_NAMES.MOBILE,
             }),
         ])
@@ -536,6 +537,7 @@ describe('meta picker StorageModule', () => {
             await manager.collection('customLists').findAllObjects({}),
         ).toEqual([
             expect.objectContaining({
+                id: SPECIAL_LIST_IDS.MOBILE,
                 name: SPECIAL_LIST_NAMES.MOBILE,
             }),
         ])

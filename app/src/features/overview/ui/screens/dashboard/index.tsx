@@ -131,15 +131,15 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     }
 
     private handleLogoPress = () => {
-        if (this.state.selectedListName === SPECIAL_LIST_NAMES.MOBILE) {
-            return
+        if (this.state.selectedListName !== SPECIAL_LIST_NAMES.MOBILE) {
+            this.props.navigation.setParams({
+                selectedList: SPECIAL_LIST_NAMES.MOBILE,
+            })
+            this.processEvent('setFilteredListName', {
+                name: SPECIAL_LIST_NAMES.MOBILE,
+            })
         }
-        this.props.navigation.setParams({
-            selectedList: SPECIAL_LIST_NAMES.MOBILE,
-        })
-        this.processEvent('setFilteredListName', {
-            name: SPECIAL_LIST_NAMES.MOBILE,
-        })
+
         this.processEvent('reload', { initList: SPECIAL_LIST_NAMES.MOBILE })
     }
 

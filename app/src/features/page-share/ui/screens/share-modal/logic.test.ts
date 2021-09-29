@@ -698,6 +698,7 @@ describe('share modal UI logic tests', () => {
                 isNestable: false,
             }),
             expect.objectContaining({
+                id: SPECIAL_LIST_IDS.MOBILE,
                 name: SPECIAL_LIST_NAMES.MOBILE,
                 isDeletable: false,
                 isNestable: false,
