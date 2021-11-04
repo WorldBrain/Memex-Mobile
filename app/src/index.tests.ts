@@ -298,6 +298,7 @@ async function syncAndCheck(devices: [TestDevice, TestDevice]) {
         devices[0].storage.manager,
         {
             exclude: new Set([
+                'locators', // TODO: Remove this when fully supported
                 'localSettings',
                 'personalCloudAction',
                 'readablePageArchives',
@@ -312,6 +313,7 @@ async function syncAndCheck(devices: [TestDevice, TestDevice]) {
         devices[1].storage.manager,
         {
             exclude: new Set([
+                'locators', // TODO: Remove this when fully supported
                 'localSettings',
                 'personalCloudAction',
                 'readablePageArchives',

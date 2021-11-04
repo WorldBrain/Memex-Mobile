@@ -1,4 +1,9 @@
 import { Page } from '../types'
+import {
+    ContentLocatorType,
+    LocationSchemeType,
+    ContentLocatorFormat,
+} from '@worldbrain/memex-common/lib/personal-cloud/storage/types'
 
 export const pages: Omit<Page, 'domain' | 'hostname' | 'pageUrl'>[] = [
     {
@@ -21,6 +26,45 @@ export const pages: Omit<Page, 'domain' | 'hostname' | 'pageUrl'>[] = [
         fullTitle: 'This is another test page but on a different subdomain',
         text:
             'Hey there this is some more test text from this page on a different subdomain.',
+    },
+]
+
+export const locators = [
+    {
+        location: pages[0].url,
+        locationType: ContentLocatorType.Remote,
+        locationScheme: LocationSchemeType.NormalizedUrlV1,
+        normalizedUrl: pages[0].url,
+        originalLocation: pages[0].url,
+        format: ContentLocatorFormat.HTML,
+        lastVisited: 1635927733923,
+        primary: true,
+        valid: true,
+        version: 0,
+    },
+    {
+        location: pages[1].url,
+        locationType: ContentLocatorType.Remote,
+        locationScheme: LocationSchemeType.NormalizedUrlV1,
+        normalizedUrl: pages[1].url,
+        originalLocation: pages[1].url,
+        format: ContentLocatorFormat.HTML,
+        lastVisited: 1635927733925,
+        primary: true,
+        valid: true,
+        version: 0,
+    },
+    {
+        location: pages[2].url,
+        locationType: ContentLocatorType.Remote,
+        locationScheme: LocationSchemeType.NormalizedUrlV1,
+        normalizedUrl: pages[2].url,
+        originalLocation: pages[2].url,
+        format: ContentLocatorFormat.HTML,
+        lastVisited: 1635927733928,
+        primary: true,
+        valid: true,
+        version: 0,
     },
 ]
 

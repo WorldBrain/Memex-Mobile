@@ -135,11 +135,14 @@ describe('overview StorageModule', () => {
 
     it('should be able to delete pages + associated data', async ({
         storage: {
+            manager,
             modules: { overview },
         },
     }) => {
-        for (const page of data.pages) {
+        for (let i = 0; i < data.pages.length; i++) {
+            const page = data.pages[i]
             await overview.createPage(page)
+            await manager.collection('locators').createObject(data.locators[i])
             const foundPage = await overview.findPage(page)
             expect(foundPage).not.toBeNull()
             testPageEquality(foundPage!, page)
@@ -155,6 +158,9 @@ describe('overview StorageModule', () => {
             await overview.deletePage(page)
             expect(await overview.findPage(page)).toBeNull()
             expect(await overview.findPageVisits(page)).toEqual([])
+            expect(
+                await manager.collection('locators').findAllObjects({}),
+            ).toEqual([])
         }
     })
 
