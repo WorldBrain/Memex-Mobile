@@ -80,6 +80,7 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                         <ReaderActionBarBtn
                             onPress={props.onReaderPress}
                             label={'Annotate'}
+                            disabled={props.type !== 'page'}
                         />
                     )}
                     {props.tags.length > 0 ? (
@@ -111,6 +112,7 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                     <VisitActionBarBtn
                         onPress={props.onVisitPress}
                         label={'Visit'}
+                        disabled={props.type === 'pdf-local'}
                     />
                 </ActionBar>
             )}

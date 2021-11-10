@@ -57,4 +57,13 @@ export default EStyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
+    pdfIcon: {
+        fontSize: '0.8rem',
+        fontWeight: '500',
+        borderColor: 'black',
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 7,
+        marginRight: 10,
+    },
 })
