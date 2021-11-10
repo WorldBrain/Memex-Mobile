@@ -353,6 +353,7 @@ export default class Logic extends UILogic<State, Event> {
 
         return {
             url,
+            type: page.type,
             domain: page.domain,
             fullUrl: page.fullUrl,
             pageUrl: page.url,

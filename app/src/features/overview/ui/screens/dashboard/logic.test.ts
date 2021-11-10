@@ -24,6 +24,7 @@ const UI_PAGE_1: UIPage = {
     isStarred: false,
     tags: [],
     lists: [],
+    type: 'page',
 }
 const UI_PAGE_2: UIPage = {
     fullUrl: 'https://www.test.com/1',
@@ -36,6 +37,7 @@ const UI_PAGE_2: UIPage = {
     isStarred: false,
     tags: [],
     lists: [],
+    type: 'page',
 }
 
 describe('dashboard screen UI logic tests', () => {

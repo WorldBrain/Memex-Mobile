@@ -4,12 +4,18 @@ import { extractUrlParts } from '@worldbrain/memex-url-utils'
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
 import type { Page } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/types'
+import {
+    FingerprintSchemeType,
+    ContentLocatorType,
+    LocationSchemeType,
+    ContentLocatorFormat,
+} from '@worldbrain/memex-common/lib/personal-cloud/storage/types'
 
 const it = makeStorageTestFactory()
 
 function testPageEquality(
     dbPage: Page,
-    testPage: Omit<Page, 'domain' | 'hostname'>,
+    testPage: Omit<Page, 'domain' | 'hostname' | 'type'>,
 ) {
     expect(dbPage.url).toBe(testPage.url)
     expect(dbPage.text).toBe(testPage.text)
@@ -33,6 +39,68 @@ describe('overview StorageModule', () => {
             expect(foundPage).not.toBeNull()
             testPageEquality(foundPage!, page)
         }
+    })
+
+    it('should be able to distinguish between local+remote PDFs and normal pages', async ({
+        storage: {
+            manager,
+            modules: { overview },
+        },
+    }) => {
+        const testPage = data.pages[0]
+        const testRemotePdf = data.pages[3]
+        const testLocalPdf = data.pages[4]
+
+        await overview.createPage(testRemotePdf)
+        await overview.createPage(testLocalPdf)
+        await overview.createPage(testPage)
+        await manager.collection('locators').createObject({
+            fingerprint: 'test-fingerprint',
+            fingerprintScheme: FingerprintSchemeType.PdfV1,
+            location: testRemotePdf.fullUrl,
+            locationType: ContentLocatorType.Remote,
+            locationScheme: LocationSchemeType.NormalizedUrlV1,
+            normalizedUrl: testRemotePdf.url,
+            originalLocation: testRemotePdf.fullUrl,
+            format: ContentLocatorFormat.PDF,
+            lastVisited: 1635927733923,
+            primary: true,
+            valid: true,
+            version: 0,
+        })
+        await manager.collection('locators').createObject({
+            fingerprint: 'test-fingerprint',
+            fingerprintScheme: FingerprintSchemeType.PdfV1,
+            location: testLocalPdf.fullUrl,
+            locationType: ContentLocatorType.Local,
+            locationScheme: LocationSchemeType.NormalizedUrlV1,
+            normalizedUrl: testLocalPdf.url,
+            originalLocation: testLocalPdf.fullUrl,
+            format: ContentLocatorFormat.PDF,
+            lastVisited: 1635927733923,
+            primary: true,
+            valid: true,
+            version: 0,
+        })
+
+        expect(await overview.findPage(testRemotePdf)).toEqual(
+            expect.objectContaining({
+                url: testRemotePdf.url,
+                type: 'pdf-remote',
+            }),
+        )
+        expect(await overview.findPage(testLocalPdf)).toEqual(
+            expect.objectContaining({
+                url: testLocalPdf.url,
+                type: 'pdf-local',
+            }),
+        )
+        expect(await overview.findPage(testPage)).toEqual(
+            expect.objectContaining({
+                url: testPage.url,
+                type: 'page',
+            }),
+        )
     })
 
     it('should be able to star pages', async ({

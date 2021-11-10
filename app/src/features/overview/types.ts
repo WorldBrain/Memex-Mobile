@@ -25,6 +25,7 @@ export interface UIPage extends UIResult {
     isResultPressed?: boolean
     tags: string[]
     lists: string[]
+    type: 'pdf-local' | 'pdf-remote' | 'page'
 }
 
 export interface UIPageWithNotes extends UIPage {

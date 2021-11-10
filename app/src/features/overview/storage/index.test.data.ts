@@ -27,6 +27,20 @@ export const pages: Omit<Page, 'domain' | 'hostname' | 'pageUrl'>[] = [
         text:
             'Hey there this is some more test text from this page on a different subdomain.',
     },
+    {
+        url: 'memex.cloud/ct/test1.pdf',
+        fullUrl: 'https://memex.cloud/ct/test1.pdf',
+        fullTitle: 'This is a test PDF page',
+        text:
+            'Hey there this is some more test text with some new and different test terms included.',
+    },
+    {
+        url: 'memex.cloud/ct/test2.pdf',
+        fullUrl: 'https://memex.cloud/ct/test2.pdf',
+        fullTitle: 'This is another test PDF page',
+        text:
+            'Hey there this is some more test text with some new and different test terms included.',
+    },
 ]
 
 export const locators = [
