@@ -3,6 +3,7 @@ import _firebase from '@react-native-firebase/app'
 import '@react-native-firebase/firestore'
 import '@react-native-firebase/functions'
 import '@react-native-firebase/auth'
+import '@react-native-firebase/database'
 
 export const getFirebase = () => _firebase
 
