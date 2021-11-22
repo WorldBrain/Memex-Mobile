@@ -29,7 +29,12 @@ export async function dangerousPleaseBeSureDeleteAndRecreateDatabase(
     storageManager: StorageManager,
     collectionsToDelete = USER_DATA_COLLECTIONS,
 ) {
-    for (const collection of collectionsToDelete) {
-        await storageManager.operation('deleteObjects', collection, {})
-    }
+    await storageManager.backend.operation(
+        'executeBatch',
+        collectionsToDelete.map((collection) => ({
+            operation: 'deleteObjects',
+            collection,
+            where: {},
+        })),
+    )
 }
