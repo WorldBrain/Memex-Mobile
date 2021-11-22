@@ -5,6 +5,7 @@ import { COLLECTION_NAMES as LISTS_COLLECTION_NAMES } from '@worldbrain/memex-st
 import { COLLECTION_NAMES as ANNOTATIONS_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/annotations/constants'
 import { COLLECTION_NAMES as TEMPLATE_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/copy-paster/constants'
 import { COLLECTION_NAMES as READER_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/reader/constants'
+import { COLLECTION_NAMES as SHARING_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import { SettingsStorage } from 'src/features/settings/storage'
 
 export const USER_DATA_COLLECTIONS: string[] = [
@@ -17,11 +18,11 @@ export const USER_DATA_COLLECTIONS: string[] = [
     SettingsStorage.SYNC_SETTINGS_COLL_NAME,
     TEMPLATE_COLLECTION_NAMES.templates,
     ANNOTATIONS_COLLECTION_NAMES.annotation,
-    ANNOTATIONS_COLLECTION_NAMES.annotationPrivacy,
     READER_COLLECTION_NAMES.readablePage,
-    'sharedAnnotationMetadata',
+    SHARING_COLLECTION_NAMES.annotationPrivacy,
+    SHARING_COLLECTION_NAMES.annotationMetadata,
+    SHARING_COLLECTION_NAMES.listMetadata,
     'personalCloudAction',
-    'sharedListMetadata',
 ]
 
 export async function dangerousPleaseBeSureDeleteAndRecreateDatabase(
