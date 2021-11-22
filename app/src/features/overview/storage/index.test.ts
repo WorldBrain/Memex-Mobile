@@ -210,7 +210,24 @@ describe('overview StorageModule', () => {
         for (let i = 0; i < data.pages.length; i++) {
             const page = data.pages[i]
             await overview.createPage(page)
-            await manager.collection('locators').createObject(data.locators[i])
+
+            if (i >= 3) {
+                await manager.collection('locators').createObject({
+                    fingerprint: 'test-fingerprint',
+                    fingerprintScheme: FingerprintSchemeType.PdfV1,
+                    location: data.pages[i].fullUrl,
+                    locationType: ContentLocatorType.Remote,
+                    locationScheme: LocationSchemeType.NormalizedUrlV1,
+                    normalizedUrl: data.pages[i].url,
+                    originalLocation: data.pages[i].fullUrl,
+                    format: ContentLocatorFormat.PDF,
+                    lastVisited: 1635927733923,
+                    primary: true,
+                    valid: true,
+                    version: 0,
+                })
+            }
+
             const foundPage = await overview.findPage(page)
             expect(foundPage).not.toBeNull()
             testPageEquality(foundPage!, page)

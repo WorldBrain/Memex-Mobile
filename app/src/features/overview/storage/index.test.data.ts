@@ -43,43 +43,4 @@ export const pages: Omit<Page, 'domain' | 'hostname' | 'pageUrl'>[] = [
     },
 ]
 
-export const locators = [
-    {
-        location: pages[0].url,
-        locationType: ContentLocatorType.Remote,
-        locationScheme: LocationSchemeType.NormalizedUrlV1,
-        normalizedUrl: pages[0].url,
-        originalLocation: pages[0].url,
-        format: ContentLocatorFormat.HTML,
-        lastVisited: 1635927733923,
-        primary: true,
-        valid: true,
-        version: 0,
-    },
-    {
-        location: pages[1].url,
-        locationType: ContentLocatorType.Remote,
-        locationScheme: LocationSchemeType.NormalizedUrlV1,
-        normalizedUrl: pages[1].url,
-        originalLocation: pages[1].url,
-        format: ContentLocatorFormat.HTML,
-        lastVisited: 1635927733925,
-        primary: true,
-        valid: true,
-        version: 0,
-    },
-    {
-        location: pages[2].url,
-        locationType: ContentLocatorType.Remote,
-        locationScheme: LocationSchemeType.NormalizedUrlV1,
-        normalizedUrl: pages[2].url,
-        originalLocation: pages[2].url,
-        format: ContentLocatorFormat.HTML,
-        lastVisited: 1635927733928,
-        primary: true,
-        valid: true,
-        version: 0,
-    },
-]
-
 export const visitTimestamps = [1563255000000, 1563255000005, 1563255000015]
