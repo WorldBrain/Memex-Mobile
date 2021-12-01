@@ -8,7 +8,7 @@ import Footer from '../../components/footer'
 import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaType } from 'src/features/meta-picker/types'
-import { MetaTypeShape } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/types'
+import { MetaTypeShape } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './styles'
 
@@ -58,9 +58,9 @@ export default class PageEditorScreen extends StatefulUIElement<
     private renderNotes() {
         return (
             <NotesList
-                initNoteDelete={n => () =>
+                initNoteDelete={(n) => () =>
                     this.processEvent('confirmNoteDelete', { url: n.url })}
-                initNoteEdit={note => () =>
+                initNoteEdit={(note) => () =>
                     this.props.navigation.navigate('NoteEditor', {
                         pageUrl: this.state.page.fullUrl,
                         highlightText: note.noteText,
@@ -68,7 +68,7 @@ export default class PageEditorScreen extends StatefulUIElement<
                         noteUrl: note.url,
                         mode: 'update',
                     })}
-                initNotePress={n => () =>
+                initNotePress={(n) => () =>
                     this.processEvent('toggleNotePress', { url: n.url })}
                 notes={this.state.page.notes}
                 clearBackground

@@ -3,7 +3,7 @@ import { extractUrlParts } from '@worldbrain/memex-url-utils'
 
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
-import type { Page } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/types'
+import type { Page } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/overview/types'
 import {
     FingerprintSchemeType,
     ContentLocatorType,

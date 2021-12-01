@@ -3,9 +3,9 @@ import type StorageManager from '@worldbrain/storex'
 import type UserStorage from '@worldbrain/memex-common/lib/user-management/storage'
 import type PersonalCloudServerStorage from '@worldbrain/memex-common/lib/personal-cloud/storage'
 import type { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
-import type { OverviewStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/storage'
-import type { MetaPickerStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/meta-picker/storage'
-import type { PageEditorStorage } from '@worldbrain/memex-storage/lib/mobile-app/features/page-editor/storage'
+import type { OverviewStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/overview/storage'
+import type { MetaPickerStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/storage'
+import type { PageEditorStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/page-editor/storage'
 import type {
     MemexClientSyncLogStorage,
     MemexSyncInfoStorage,

@@ -7,7 +7,7 @@ import Navigation from '../../components/navigation'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaTypeShape } from 'src/features/meta-picker/types'
 import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
+import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import styles from './styles'
 
 export default class ListsFilter extends StatefulUIElement<

@@ -6,7 +6,7 @@ import * as pageData from 'src/features/overview/storage/index.test.data'
 import {
     SPECIAL_LIST_NAMES,
     SPECIAL_LIST_IDS,
-} from '@worldbrain/memex-storage/lib/lists/constants'
+} from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 
 const it = makeStorageTestFactory()
 

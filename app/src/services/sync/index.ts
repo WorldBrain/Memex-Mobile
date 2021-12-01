@@ -1,5 +1,5 @@
 import { generateSecureRandom } from 'react-native-securerandom'
-import { COLLECTION_NAMES as PAGES_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/pages/constants'
+import { COLLECTION_NAMES as PAGES_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/storage/modules/pages/constants'
 import StorageManager from '@worldbrain/storex'
 import some from 'lodash/some'
 import { SharedSyncLog } from '@worldbrain/storex-sync/lib/shared-sync-log'

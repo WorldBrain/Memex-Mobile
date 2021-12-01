@@ -1,7 +1,7 @@
 import StorageManager from '@worldbrain/storex'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
 
-import { SuggestPlugin } from '@worldbrain/memex-storage/lib/mobile-app/plugins/suggest'
+import { SuggestPlugin } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/plugins/suggest'
 
 let storageBackendsCreated = 0
 
@@ -63,12 +63,12 @@ describe('suggest plugin tests', () => {
             query: { name: 'Jo' },
         })
 
-        expect(resultsA.map(result => result.name)).toEqual([
+        expect(resultsA.map((result) => result.name)).toEqual([
             'Vincent',
             'Via',
             'Van',
         ])
-        expect(resultsB.map(result => result.name)).toEqual(['Van'])
-        expect(resultsC.map(result => result.name)).toEqual(['Jon', 'Jocko'])
+        expect(resultsB.map((result) => result.name)).toEqual(['Van'])
+        expect(resultsC.map((result) => result.name)).toEqual(['Jon', 'Jocko'])
     })
 })

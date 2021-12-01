@@ -24,7 +24,7 @@ import EmptyResults from '../../components/empty-results'
 import DashboardNav from '../../components/dashboard-navigation'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
+import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import SyncRibbon from '../../components/sync-ribbon'
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200

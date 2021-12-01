@@ -1,5 +1,5 @@
-import { COLLECTION_NAMES as READER_COLL_NAMES } from '@worldbrain/memex-storage/lib/reader/constants'
-import { COLLECTION_NAMES as ANNOTATION_COLLECTION_NAMES } from '@worldbrain/memex-storage/lib/annotations/constants'
+import { COLLECTION_NAMES as READER_COLL_NAMES } from '@worldbrain/memex-common/lib/storage/modules/reader/constants'
+import { COLLECTION_NAMES as ANNOTATION_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/storage/modules/annotations/constants'
 
 export const SYNC_STORAGE_AREA_KEYS = {
     continuousSyncEnabled: 'enable-continuous-sync',

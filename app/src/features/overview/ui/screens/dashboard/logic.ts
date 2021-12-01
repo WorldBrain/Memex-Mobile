@@ -10,7 +10,7 @@ import {
     MainNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
+import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { TAGS_PER_RESULT_LIMIT } from './constants'

@@ -9,8 +9,8 @@ import {
     INTEGRATION_TEST_DATA,
 } from 'src/tests/shared-fixtures/integration'
 import { UIPage } from 'src/features/overview/types'
-import { Page } from '@worldbrain/memex-storage/lib/mobile-app/features/overview/types'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-storage/lib/lists/constants'
+import { Page } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/overview/types'
+import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import ListsFilter from '../lists-filter'
 
 const UI_PAGE_1: UIPage = {
