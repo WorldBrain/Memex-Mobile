@@ -6,7 +6,7 @@
     "appGroup": "group.io.worldbrain.memex",
     "supportEmail": "support@worldbrain.io",
     "appIdPrefix": "5YUPQC9D96",
-    "sentryDsn": "https://efff674e8a664772b5c1b8689522e475@sentry.io/4461865",
+    "sentryDsn": "https://efff674e8a664772b5c1b8689522e475@o138129.ingest.sentry.io/4461865",
     "storageKeys": {
         "mostRecentUser": "@MemexApp_most-recent-user",
         "syncKey": "@MemexApp_sync-key",
