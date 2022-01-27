@@ -174,7 +174,7 @@ describe('page editor UI logic tests', () => {
         }
 
         expect(logicContainer.state.page.tags.length).toBe(testTags.length)
-        expect(logicContainer.state.page.tags).toEqual(testTags)
+        expect(logicContainer.state.page.tags).toEqual(testTags.reverse())
 
         for (const name of testTags) {
             await logicContainer.processEvent('removeEntry', { name })
@@ -233,7 +233,7 @@ describe('page editor UI logic tests', () => {
         }
 
         expect(logicContainer.state.page.lists.length).toBe(testLists.length)
-        expect(logicContainer.state.page.lists).toEqual(testLists)
+        expect(logicContainer.state.page.lists).toEqual(testLists.reverse())
 
         for (const name of testLists) {
             await logicContainer.processEvent('removeEntry', { name })

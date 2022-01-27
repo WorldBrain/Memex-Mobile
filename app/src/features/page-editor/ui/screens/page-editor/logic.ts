@@ -190,7 +190,7 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             page: (state) => ({
                 ...state,
-                tags: [...state.tags, name],
+                tags: [name, ...state.tags],
             }),
         })
 
@@ -204,7 +204,7 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             page: (state) => ({
                 ...state,
-                lists: [...state.lists, name],
+                lists: [name, ...state.lists],
             }),
         })
         const lists = await metaPicker.findListsByNames({ names: [name] })

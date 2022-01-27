@@ -109,12 +109,14 @@ export default class Logic extends UILogic<State, Event> {
         })
 
         const loadedSuggestions = await this.loadSuggestions()
-        loadedSuggestions.forEach((res) => {
-            entries.set(res.name, res)
-        })
 
         selected.forEach((name) => {
             entries.set(name, { name, isChecked: true })
+        })
+
+        loadedSuggestions.forEach((res) => {
+            const existing = entries.get(res.name) ?? {}
+            entries.set(res.name, { ...res, ...existing })
         })
 
         this.emitMutation({

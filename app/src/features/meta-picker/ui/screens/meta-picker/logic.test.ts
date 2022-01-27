@@ -62,7 +62,7 @@ describe('meta picker UI logic tests', () => {
         expect([...element.state.entries.values()]).toEqual(testEntries)
     })
 
-    it('should be able to add new checked entries', async () => {
+    it('should be able to add new checked entries, adding them in order of latest first', async () => {
         const { element } = setup({
             ...DEFAULT_DEPS,
             type: 'collections',
@@ -73,15 +73,36 @@ describe('meta picker UI logic tests', () => {
             },
         })
 
-        const testEntry = { name: 'testZ', isChecked: true }
+        const testEntryA = { name: 'testA', isChecked: true }
+        const testEntryB = { name: 'testB', isChecked: true }
+        const testEntryC = { name: 'testC', isChecked: true }
 
-        expect(element.state.entries.size).toBe(0)
+        expect([...element.state.entries.values()]).toEqual([])
+
         await element.processEvent('addEntry', {
-            entry: testEntry,
+            entry: testEntryA,
             selected: [],
         })
-        expect(element.state.entries.size).toBe(1)
-        expect([...element.state.entries.values()]).toEqual([testEntry])
+        expect([...element.state.entries.values()]).toEqual([testEntryA])
+
+        await element.processEvent('addEntry', {
+            entry: testEntryB,
+            selected: [testEntryA.name],
+        })
+        expect([...element.state.entries.values()]).toEqual([
+            testEntryB,
+            testEntryA,
+        ])
+
+        await element.processEvent('addEntry', {
+            entry: testEntryC,
+            selected: [testEntryB.name, testEntryA.name],
+        })
+        expect([...element.state.entries.values()]).toEqual([
+            testEntryC,
+            testEntryB,
+            testEntryA,
+        ])
     })
 
     it('should be able to toggle checked entries', async () => {
