@@ -1,5 +1,6 @@
 import { JSDOMParser } from 'readability-node'
 import { XMLSerializer, DOMParser } from 'xmldom-silent'
+import { getLinkPreview } from 'link-preview-js'
 
 import { PageFetcherAPI, PageDocument } from './types'
 
@@ -58,5 +59,10 @@ export class PageFetcherService implements PageFetcherAPI {
         const html = await this.fetchPageHTML(url)
         const xhtml = this.convertHtmlToXhtml(html)
         return this.constructDocumentFromHtml(xhtml)
+    }
+
+    fetchPageTitle: PageFetcherAPI['fetchPageTitle'] = async (url) => {
+        const preview = await getLinkPreview(url, { timeout: 3000 })
+        return 'title' in preview ? preview.title : null
     }
 }

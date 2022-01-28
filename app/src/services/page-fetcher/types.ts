@@ -5,4 +5,5 @@ export interface PageDocument extends Document {
 export interface PageFetcherAPI {
     fetchPageHTML(url: string): Promise<string>
     fetchPageDOM(url: string): Promise<PageDocument>
+    fetchPageTitle(fulPageUrl: string): Promise<string | null>
 }

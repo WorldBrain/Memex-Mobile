@@ -19,7 +19,7 @@ describe('share modal UI logic tests', () => {
 
     async function setup(
         options: TestDevice & {
-            getPageTitle?: () => Promise<{ title: string }>
+            getPageTitle?: () => Promise<string>
             getSharedText?: () => string
             getSharedUrl?: () => string
             syncError?: () => string | undefined
@@ -27,7 +27,7 @@ describe('share modal UI logic tests', () => {
     ) {
         await options.services.localStorage.set(storageKeys.syncKey, true)
         const pageFetcher = options.getPageTitle
-            ? ({ fetchPageDOM: options.getPageTitle } as any)
+            ? ({ fetchPageTitle: options.getPageTitle } as any)
             : options.services.pageFetcher
         const trackedErrors: Error[] = []
 
@@ -59,6 +59,7 @@ describe('share modal UI logic tests', () => {
                         }
                         return { totalChanges: 0 }
                     },
+                    ____wipeDBForSync: async () => undefined,
                 },
             },
         })
@@ -121,7 +122,7 @@ describe('share modal UI logic tests', () => {
         const { element, logic, trackedErrors } = await setup({
             ...context,
             getSharedUrl: () => fullPageUrl,
-            getPageTitle: async () => ({ title: testTitle }),
+            getPageTitle: async () => testTitle,
         })
 
         const lookupPage = () =>
@@ -202,7 +203,7 @@ describe('share modal UI logic tests', () => {
         const { element, logic, trackedErrors } = await setup({
             ...context,
             getSharedUrl: () => fullPageUrl,
-            getPageTitle: async () => ({ title: testTitle }),
+            getPageTitle: async () => testTitle,
         })
 
         await context.storage.modules.overview.createPage({

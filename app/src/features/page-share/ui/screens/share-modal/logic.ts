@@ -75,7 +75,7 @@ export default class Logic extends UILogic<State, Event> {
     /** If this instance is working with a page that's already indexed, this will be set to the visit time (created in `init`). */
     private existingPageVisitTime: number | null = null
     syncRunning: Promise<void> | null = null
-    pageTitleFetchRunning: Promise<string> | null = null
+    pageTitleFetchRunning: Promise<string | null> | null = null
     initValues: Pick<State, 'isStarred' | 'tagsToAdd' | 'collectionsToAdd'> = {
         isStarred: false,
         tagsToAdd: [],
@@ -139,20 +139,14 @@ export default class Logic extends UILogic<State, Event> {
         this.syncRunning = null
     }
 
-    private async fetchPageTitle(url: string): Promise<string> {
-        const { pageFetcher } = this.props.services
-
-        const doc = await pageFetcher.fetchPageDOM(url)
-        return doc.title
-    }
-
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         this.doSync()
 
+        const { services, storage } = this.props
         let url: string
 
         try {
-            url = await this.props.services.shareExt.getSharedUrl()
+            url = await services.shareExt.getSharedUrl()
         } catch (err) {
             this.emitMutation({ isUnsupportedApplication: { $set: true } })
             return
@@ -160,12 +154,12 @@ export default class Logic extends UILogic<State, Event> {
 
         this.emitMutation({ pageUrl: { $set: url } })
 
-        const { overview, metaPicker } = this.props.storage.modules
-
-        const existingPage = await overview.findPage({ url })
+        const existingPage = await storage.modules.overview.findPage({ url })
 
         if (!existingPage?.fullTitle?.length) {
-            this.pageTitleFetchRunning = this.fetchPageTitle(url)
+            this.pageTitleFetchRunning = services.pageFetcher.fetchPageTitle(
+                url,
+            )
         }
 
         // No need to do state hydration from DB if this is new page, just index it
@@ -177,13 +171,18 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         this.existingPageVisitTime = Date.now()
-        await overview.visitPage({ url, time: this.existingPageVisitTime })
+        await storage.modules.overview.visitPage({
+            url,
+            time: this.existingPageVisitTime,
+        })
 
         const bookmarkP = executeUITask<State, 'bookmarkState', void>(
             this,
             'bookmarkState',
             async () => {
-                const isStarred = await overview.isPageStarred({ url })
+                const isStarred = await storage.modules.overview.isPageStarred({
+                    url,
+                })
 
                 this.emitMutation({ isStarred: { $set: isStarred } })
                 this.initValues.isStarred = isStarred
@@ -194,7 +193,9 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'tagsState',
             async () => {
-                const tags = await metaPicker.findTagsByPage({ url })
+                const tags = await storage.modules.metaPicker.findTagsByPage({
+                    url,
+                })
                 const tagsToAdd = tags.map((tag) => tag.name)
 
                 this.emitMutation({ tagsToAdd: { $set: tagsToAdd } })
@@ -206,9 +207,11 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'collectionsState',
             async () => {
-                const collections = await metaPicker.findListsByPage({
-                    url,
-                })
+                const collections = await storage.modules.metaPicker.findListsByPage(
+                    {
+                        url,
+                    },
+                )
                 const collectionsToAdd = collections.map((c) => c.name)
 
                 this.emitMutation({
@@ -349,7 +352,7 @@ export default class Logic extends UILogic<State, Event> {
 
         try {
             const pageTitle = await this.pageTitleFetchRunning
-            if (pageTitle?.length > 0) {
+            if (pageTitle?.length) {
                 await overview.updatePageTitle({
                     url: previousState.pageUrl,
                     title: pageTitle,
