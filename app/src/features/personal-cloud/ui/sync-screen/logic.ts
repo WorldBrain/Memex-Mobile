@@ -20,7 +20,9 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends MainNavProps<'CloudSync'> {
-    services: UIServices<'errorTracker' | 'localStorage' | 'cloudSync'>
+    services: UIServices<
+        'errorTracker' | 'localStorage' | 'cloudSync' | 'keepAwake'
+    >
 }
 
 export default class SyncScreenLogic extends UILogic<State, Event> {
@@ -54,6 +56,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
 
     private _doSync = async () => {
         const { route, services } = this.props
+        services.keepAwake.activate()
 
         if (route.params?.shouldWipeDBFirst) {
             await services.cloudSync.____wipeDBForSync()
@@ -65,6 +68,8 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
         } catch (err) {
             this.handleSyncError(err)
             throw err
+        } finally {
+            services.keepAwake.deactivate()
         }
     }
 

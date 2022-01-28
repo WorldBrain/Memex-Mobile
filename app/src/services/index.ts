@@ -15,6 +15,7 @@ import { ResourceLoaderService } from './resource-loader'
 import { PageFetcherService } from './page-fetcher'
 import { StorageService } from './settings-storage'
 import { CloudSyncService } from './cloud-sync'
+import { KeepAwakeService, KeepAwakeAPI } from './keep-awake'
 import { Storage } from 'src/storage/types'
 
 export interface CreateServicesOptions {
@@ -22,6 +23,7 @@ export interface CreateServicesOptions {
     firebase?: any
     storage: Storage
     keychain: KeychainAPI
+    keepAwakeLib?: KeepAwakeAPI
     errorTracker: ErrorTrackingService
     normalizeUrl: URLNormalizer
 }
@@ -37,6 +39,7 @@ export async function createServices(
     return {
         auth,
         pageFetcher,
+        keepAwake: new KeepAwakeService({ keepAwakeLib: options.keepAwakeLib }),
         cloudSync: new CloudSyncService({
             storageManager: options.storage.manager,
             storage: options.storage.modules.personalCloud,

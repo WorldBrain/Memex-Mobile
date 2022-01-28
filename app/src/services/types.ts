@@ -8,12 +8,14 @@ import { ErrorTrackingService } from './error-tracking'
 import { BackgroundProcessService } from './background-processing'
 import { ResourceLoaderService } from './resource-loader'
 import { PageFetcherService } from './page-fetcher'
+import type { KeepAwakeService } from './keep-awake'
 
 export interface Services {
     auth: MemexGoAuthService
     cloudSync: CloudSyncAPI
     shareExt: ShareExtService
     keychain: KeychainService
+    keepAwake: KeepAwakeService
     readability: ReadabilityService
     pageFetcher: PageFetcherService
     syncStorage: StorageService

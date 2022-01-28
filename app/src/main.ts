@@ -30,6 +30,7 @@ import { MockSentry } from './services/error-tracking/index.tests'
 import { KeychainPackage } from './services/keychain/keychain'
 import { migrateSettings } from 'src/utils/migrate-settings-for-cloud'
 import { createSelfTests } from 'src/tests/self-tests'
+import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -120,6 +121,10 @@ export async function main() {
 
     const services = await createServices({
         keychain: new KeychainPackage({ server: 'worldbrain.io' }),
+        keepAwakeLib: {
+            activate: activateKeepAwake,
+            deactivate: deactivateKeepAwake,
+        },
         auth: authService,
         normalizeUrl,
         errorTracker,

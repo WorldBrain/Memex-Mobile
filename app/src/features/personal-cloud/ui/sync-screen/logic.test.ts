@@ -33,17 +33,20 @@ describe('cloud sync UI logic tests', () => {
                 return { totalChanges: 1 }
             }
             const { element } = setup(context)
-            const { localStorage } = context.services
+            const { localStorage, keepAwake } = context.services
 
             expect(await localStorage.get(storageKeys.syncKey)).toEqual(null)
             expect(isSynced).toBe(false)
 
+            expect(keepAwake.isActive).toBe(false)
             expect(element.state.syncState).toEqual('pristine')
             const syncP = element.init()
+            expect(keepAwake.isActive).toBe(true)
             expect(element.state.syncState).toEqual('running')
 
             await syncP
 
+            expect(keepAwake.isActive).toBe(false)
             expect(element.state.syncState).toEqual('done')
             expect(isSynced).toBe(true)
 
@@ -60,15 +63,19 @@ describe('cloud sync UI logic tests', () => {
                 throw new Error(errMsg)
             }
             const { element } = setup(context)
+            const { keepAwake } = context.services
 
+            expect(keepAwake.isActive).toBe(false)
             expect(element.state.errorMessage).toEqual(null)
             expect(element.state.syncState).toEqual('pristine')
 
             const syncP = element.init()
 
+            expect(keepAwake.isActive).toBe(true)
             expect(element.state.syncState).toEqual('running')
             await syncP
 
+            expect(keepAwake.isActive).toBe(false)
             expect(element.state.errorMessage).toEqual(errMsg)
             expect(element.state.syncState).toEqual('error')
         },
