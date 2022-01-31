@@ -114,7 +114,7 @@ describe('share modal UI logic tests', () => {
         }
     })
 
-    it('should start page title fetch on init, then write fetched title on save', async (context) => {
+    it('should start page title fetch+write on init, then wait for it on save', async (context) => {
         const fullPageUrl = DATA.PAGE_URL_1
         const normalizedPageUrl = DATA.PAGE_URL_1_NORM
         const testTitle = 'test title'
@@ -142,7 +142,7 @@ describe('share modal UI logic tests', () => {
         )
         expect(logic.pageTitleFetchRunning).not.toBe(null)
 
-        await element.processEvent('savePageTitle', null)
+        await element.processEvent('save', { isInputDirty: false })
         expect(trackedErrors).toEqual([])
         expect(await lookupPage()).toEqual(
             expect.objectContaining({
@@ -154,7 +154,7 @@ describe('share modal UI logic tests', () => {
         )
     })
 
-    it('should start page title fetch on init, then write no title on save due to fetch error', async (context) => {
+    it('should start page title fetch+write on init, but write no title due to fetch error', async (context) => {
         const fullPageUrl = DATA.PAGE_URL_1
         const normalizedPageUrl = DATA.PAGE_URL_1_NORM
         const dummyError = new Error('test')
@@ -184,7 +184,7 @@ describe('share modal UI logic tests', () => {
         )
         expect(logic.pageTitleFetchRunning).not.toBe(null)
 
-        await element.processEvent('savePageTitle', null)
+        await element.processEvent('save', { isInputDirty: false })
         expect(trackedErrors).toEqual([dummyError])
         expect(await lookupPage()).toEqual(
             expect.objectContaining({
@@ -195,7 +195,7 @@ describe('share modal UI logic tests', () => {
         )
     })
 
-    it('should not start page title fetch on init if title is already indexed', async (context) => {
+    it('should not start page title fetch+write on init if title is already indexed', async (context) => {
         const fullPageUrl = DATA.PAGE_URL_1
         const normalizedPageUrl = DATA.PAGE_URL_1_NORM
         const testTitle = 'test title'
@@ -231,7 +231,7 @@ describe('share modal UI logic tests', () => {
         await element.init()
         expect(logic.pageTitleFetchRunning).toBe(null)
 
-        await element.processEvent('savePageTitle', null)
+        await element.processEvent('save', { isInputDirty: false })
         expect(logic.pageTitleFetchRunning).toBe(null)
         expect(trackedErrors).toEqual([])
         expect(await lookupPage()).toEqual(
@@ -495,9 +495,7 @@ describe('share modal UI logic tests', () => {
         )
     })
 
-    it('should be able to set page url', async (context: {
-        storage: Storage
-    }) => {
+    it('should be able to set page url', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const testUrl = DATA.PAGE_URL_1
 
@@ -513,9 +511,7 @@ describe('share modal UI logic tests', () => {
         expect(newState.pageUrl).toEqual(testUrl)
     })
 
-    it('should be able to set note text', async (context: {
-        storage: Storage
-    }) => {
+    it('should be able to set note text', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const testText = 'test'
         expect(state.noteText).not.toEqual(testText)
@@ -530,9 +526,7 @@ describe('share modal UI logic tests', () => {
         expect(newState.noteText).toEqual(testText)
     })
 
-    it('should be able to show modal', async (context: {
-        storage: Storage
-    }) => {
+    it('should be able to show modal', async (context) => {
         const { logic, initialState: state } = await setup(context)
 
         const newStateA = logic.withMutation(
@@ -554,9 +548,7 @@ describe('share modal UI logic tests', () => {
         expect(newStateB.isModalShown).toBe(false)
     })
 
-    it('should be able to set meta view type', async (context: {
-        storage: Storage
-    }) => {
+    it('should be able to set meta view type', async (context) => {
         const { element } = await setup(context)
 
         expect(element.state.metaViewShown).toBeUndefined()
@@ -575,9 +567,7 @@ describe('share modal UI logic tests', () => {
         expect(element.state.statusText).toEqual('')
     })
 
-    it('should be able to star pages', async (context: {
-        storage: Storage
-    }) => {
+    it('should be able to star pages', async (context) => {
         const { logic, initialState: state } = await setup(context)
 
         expect(state.isStarred).toBe(false)
@@ -592,9 +582,7 @@ describe('share modal UI logic tests', () => {
         expect(newState.isStarred).toBe(true)
     })
 
-    it('should be able to set lists to add', async (context: {
-        storage: Storage
-    }) => {
+    it('should be able to set lists to add', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const testLists = ['a', 'b', 'c']
 
@@ -611,9 +599,7 @@ describe('share modal UI logic tests', () => {
         expect(nextStateA.collectionsToAdd).toEqual(testLists)
     })
 
-    it('should be able to toggle tags to add/remove', async (context: {
-        storage: Storage
-    }) => {
+    it('should be able to toggle tags to add/remove', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const testTag = 'test tag'
 
@@ -636,9 +622,7 @@ describe('share modal UI logic tests', () => {
         expect(nextStateB.tagsToAdd.length).toBe(0)
     })
 
-    it('should be able to toggle collections to add/remove', async (context: {
-        storage: Storage
-    }) => {
+    it('should be able to toggle collections to add/remove', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const testCollection = 'test coll'
 

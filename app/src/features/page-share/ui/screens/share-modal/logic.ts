@@ -39,8 +39,7 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    save: null
-    savePageTitle: null
+    save: { isInputDirty?: boolean }
     retrySync: null
 
     undoPageSave: null
@@ -75,7 +74,7 @@ export default class Logic extends UILogic<State, Event> {
     /** If this instance is working with a page that's already indexed, this will be set to the visit time (created in `init`). */
     private existingPageVisitTime: number | null = null
     syncRunning: Promise<void> | null = null
-    pageTitleFetchRunning: Promise<string | null> | null = null
+    pageTitleFetchRunning: Promise<void> | null = null
     initValues: Pick<State, 'isStarred' | 'tagsToAdd' | 'collectionsToAdd'> = {
         isStarred: false,
         tagsToAdd: [],
@@ -139,6 +138,27 @@ export default class Logic extends UILogic<State, Event> {
         this.syncRunning = null
     }
 
+    private async fetchAndWritePageTitle(url: string): Promise<void> {
+        const {
+            services: { errorTracker, pageFetcher },
+            storage: {
+                modules: { overview },
+            },
+        } = this.props
+
+        try {
+            const pageTitle = await pageFetcher.fetchPageTitle(url)
+            if (pageTitle?.length) {
+                await overview.updatePageTitle({
+                    url,
+                    title: pageTitle,
+                })
+            }
+        } catch (err) {
+            errorTracker.track(err)
+        }
+    }
+
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         this.doSync()
 
@@ -156,18 +176,17 @@ export default class Logic extends UILogic<State, Event> {
 
         const existingPage = await storage.modules.overview.findPage({ url })
 
-        if (!existingPage?.fullTitle?.length) {
-            this.pageTitleFetchRunning = services.pageFetcher.fetchPageTitle(
-                url,
-            )
-        }
-
         // No need to do state hydration from DB if this is new page, just index it
         if (existingPage == null) {
             await loadInitial<State>(this, async () => {
                 await this.storePageInit({ pageUrl: url } as State)
             })
+            this.pageTitleFetchRunning = this.fetchAndWritePageTitle(url)
             return
+        }
+
+        if (!existingPage?.fullTitle?.length) {
+            this.pageTitleFetchRunning = this.fetchAndWritePageTitle(url)
         }
 
         this.existingPageVisitTime = Date.now()
@@ -320,6 +339,7 @@ export default class Logic extends UILogic<State, Event> {
         const { overview } = this.props.storage.modules
 
         this.emitMutation({ showSavingPage: { $set: true } })
+        await this.pageTitleFetchRunning
 
         try {
             // Only delete the visit if this page was indexed prior, else delete the page if newly indexed
@@ -339,36 +359,19 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async savePageTitle({
+    async save({
         previousState,
-    }: IncomingUIEvent<State, Event, 'savePageTitle'>) {
-        // Init logic was not run due to page title already being indexed
-        if (!this.pageTitleFetchRunning) {
-            return
-        }
+        event,
+    }: IncomingUIEvent<State, Event, 'save'>) {
+        await this.pageTitleFetchRunning
 
-        const { overview } = this.props.storage.modules
-        const { errorTracker } = this.props.services
+        if (event.isInputDirty) {
+            this.emitMutation({ showSavingPage: { $set: true } })
+            await this.storePageFinal(previousState)
 
-        try {
-            const pageTitle = await this.pageTitleFetchRunning
-            if (pageTitle?.length) {
-                await overview.updatePageTitle({
-                    url: previousState.pageUrl,
-                    title: pageTitle,
-                })
+            if (await isSyncEnabled(this.props.services)) {
+                await this.doSync()
             }
-        } catch (err) {
-            errorTracker.track(err)
-        }
-    }
-
-    async save({ previousState }: IncomingUIEvent<State, Event, 'save'>) {
-        this.emitMutation({ showSavingPage: { $set: true } })
-        await this.storePageFinal(previousState)
-
-        if (await isSyncEnabled(this.props.services)) {
-            await this.doSync()
         }
 
         this.emitMutation({ isModalShown: { $set: false } })

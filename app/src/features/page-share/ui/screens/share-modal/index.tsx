@@ -75,13 +75,7 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     private handleSave = async () => {
-        await this.processEvent('savePageTitle', null)
-
-        if (this.isInputDirty) {
-            await this.processEvent('save', null)
-        } else {
-            this.handleModalClose()
-        }
+        await this.processEvent('save', { isInputDirty: this.isInputDirty })
         // For whatever reason, calling this seems to result in a crash. Though it still closes as expected without calling it...
         // this.props.services.shareExt.close()
     }
