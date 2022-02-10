@@ -28,7 +28,7 @@ export default EStyleSheet.create({
         flexWrap: 'wrap',
         overflow: 'hidden',
         color: '#3A2F45',
-        fontFamily: 'Poppins',
+        fontFamily: 'Inter',
         marginBottom: 5,
     },
     linkText: {

@@ -268,9 +268,12 @@ export default class Logic extends UILogic<State, Event> {
     private choosePageEntryLoader({
         selectedListName,
     }: State): PageLookupEntryLoader {
+        console.log('test')
         if (selectedListName === ListsFilter.MAGIC_BMS_FILTER) {
+            console.log('test1')
             return this.loadEntriesForBookmarks
         } else if (selectedListName === ListsFilter.MAGIC_VISITS_FILTER) {
+            console.log('test2')
             return this.loadEntriesForVisits
         }
 
@@ -299,6 +302,8 @@ export default class Logic extends UILogic<State, Event> {
         )
 
         listEntries = listEntries.filter((entry) => !!entry.pageUrl)
+
+        console.log(listEntries)
 
         return listEntries.map((entry) => ({
             url: entry.pageUrl,

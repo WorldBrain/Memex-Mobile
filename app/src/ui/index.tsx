@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { AppRegistry, Dimensions } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
+import { theme } from 'src/ui/components/theme/theme'
+import { ThemeProvider } from 'styled-components'
 
 import { name as appName, shareExtName } from '../../app.json'
 import {
@@ -57,7 +59,11 @@ export class UI {
                         return <LoadingScreen />
                     }
 
-                    return containerCreator(this.state)
+                    return (
+                        <ThemeProvider theme={theme}>
+                            {containerCreator(this.state)}
+                        </ThemeProvider>
+                    )
                 }
             }
 

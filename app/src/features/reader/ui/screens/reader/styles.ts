@@ -3,6 +3,7 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 
 const { height, width } = Dimensions.get('window')
 const aspectRatio = height / width
+import { theme } from 'src/ui/components/theme/theme'
 
 import { actionBarHeight } from '../../components/action-bar.styles'
 
@@ -11,7 +12,7 @@ export default EStyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        backgroundColor: 'black',
+        backgroundColor: theme.colors.backgroundColor,
     },
     actionBar: {},
     webViewLoader: {

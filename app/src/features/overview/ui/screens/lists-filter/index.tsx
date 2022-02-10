@@ -9,6 +9,8 @@ import { MetaTypeShape } from 'src/features/meta-picker/types'
 import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
 import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import styles from './styles'
+import * as icons from 'src/ui/components/icons/icons-list'
+import styled from 'styled-components/native'
 
 export default class ListsFilter extends StatefulUIElement<
     Props,
@@ -40,28 +42,19 @@ export default class ListsFilter extends StatefulUIElement<
 
     render() {
         return (
-            <>
+            <Container>
                 <Navigation
-                    titleText="Collections"
-                    renderLeftIcon={() => (
-                        <TouchableOpacity
-                            onPress={this.props.navigation.goBack}
-                            style={navigationStyles.btnContainer}
-                        >
-                            <Image
-                                style={navigationStyles.backIcon}
-                                resizeMode="contain"
-                                source={require('src/ui/img/arrow-back.png')}
-                            />
-                        </TouchableOpacity>
-                    )}
+                    titleText="Select a Space"
+                    leftIcon={icons.BackArrow}
+                    leftBtnPress={this.props.navigation.goBack}
+                    leftIconSize={'30px'}
+                    leftIconStrokeWidth={'5px'}
                 />
                 <MetaPicker
                     {...this.props}
                     extraEntries={this.magicFilters}
                     onEntryPress={this.handleEntryPress}
-                    suggestInputPlaceholder="Search Collections"
-                    className={styles.filterContainer}
+                    suggestInputPlaceholder="Search Spaces"
                     singleSelect
                     type="collections"
                     initSelectedEntry={
@@ -70,7 +63,9 @@ export default class ListsFilter extends StatefulUIElement<
                             : this.selectedEntryName
                     }
                 />
-            </>
+            </Container>
         )
     }
 }
+
+const Container = styled.SafeAreaView``

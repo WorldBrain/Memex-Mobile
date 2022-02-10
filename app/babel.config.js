@@ -66,5 +66,6 @@ module.exports = {
             },
         ],
         '@babel/plugin-proposal-async-generator-functions',
+        'babel-plugin-styled-components',
     ],
 }

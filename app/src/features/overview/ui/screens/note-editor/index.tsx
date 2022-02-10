@@ -15,12 +15,10 @@ import NoteInput from 'src/features/page-share/ui/components/note-input-segment'
 import styles from './styles'
 import * as selectors from './selectors'
 import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
+import * as icons from 'src/ui/components/icons/icons-list'
+import styled from 'styled-components/native'
 
-export default class NoteEditorScreen extends StatefulUIElement<
-    Props,
-    State,
-    Event
-> {
+export default class extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
         super(props, new Logic(props))
     }
@@ -95,9 +93,8 @@ export default class NoteEditorScreen extends StatefulUIElement<
         }
 
         return (
-            <View style={styles.highlightTextContainer}>
-                <Text
-                    style={styles.highlightText}
+            <AnnotationContainer>
+                <AnnotationHighlight
                     onLayout={this.handleHighlightTextLayoutChange}
                     numberOfLines={
                         this.state.showAllText
@@ -106,59 +103,89 @@ export default class NoteEditorScreen extends StatefulUIElement<
                     }
                 >
                     {this.state.highlightText}
-                </Text>
+                </AnnotationHighlight>
                 {this.renderShowMore()}
-            </View>
+            </AnnotationContainer>
         )
     }
 
     render() {
         return (
-            <>
+            <Container>
                 <Navigation
+                    leftIcon={icons.BackArrow}
+                    leftBtnPress={this.handleBackBtnPress}
+                    leftIconSize={'30px'}
+                    leftIconStrokeWidth={'8px'}
+                    rightIcon={
+                        this.state.noteText.length > 0 && icons.CheckMark
+                    }
+                    rightBtnPress={
+                        this.state.noteText.length > 0 &&
+                        this.handleSaveBtnPress
+                    }
+                    rightIconColor={'purple'}
+                    rightIconSize={'24px'}
+                    rightIconStrokeWidth={'3px'}
                     titleText={this.titleText}
-                    renderLeftIcon={() => (
-                        <TouchableOpacity
-                            onPress={this.handleBackBtnPress}
-                            disabled={this.disableInputs}
-                            style={navigationStyles.btnContainer}
-                        >
-                            <Image
-                                resizeMode="contain"
-                                style={navigationStyles.backIcon}
-                                source={require('src/ui/img/arrow-back.png')}
-                            />
-                        </TouchableOpacity>
-                    )}
-                    renderRightIcon={() => (
-                        <TouchableOpacity
-                            onPress={this.handleSaveBtnPress}
-                            style={navigationStyles.btnContainer}
-                            disabled={this.disableSaveBtn}
-                        >
-                            <Image
-                                resizeMode="contain"
-                                style={
-                                    this.disableSaveBtn
-                                        ? navigationStyles.disabled
-                                        : navigationStyles.checkIcon
-                                }
-                                source={require('src/ui/img/tick.png')}
-                            />
-                        </TouchableOpacity>
-                    )}
+                    // renderRightIcon={() => (
+                    //     <TouchableOpacity
+                    //         onPress={this.handleSaveBtnPress}
+                    //         style={navigationStyles.btnContainer}
+                    //         disabled={this.disableSaveBtn}
+                    //     >
+                    //         <Image
+                    //             resizeMode="contain"
+                    //             style={
+                    //                 this.disableSaveBtn
+                    //                     ? navigationStyles.disabled
+                    //                     : navigationStyles.checkIcon
+                    //             }
+                    //             source={require('src/ui/img/tick.png')}
+                    //         />
+                    //     </TouchableOpacity>
+                    // )}
                 />
-                <ScrollView style={styles.container}>
+                <ScrollContainer highlightText={this.state.highlightText}>
                     {this.renderHighlightText()}
-                    <NoteInput
-                        containerClassName={styles.noteInputContainer}
+                    <NoteInputEditor
                         onChange={this.handleInputChange}
                         disabled={this.disableInputs}
                         className={styles.noteInput}
                         value={this.state.noteText}
                     />
-                </ScrollView>
-            </>
+                </ScrollContainer>
+            </Container>
         )
     }
 }
+
+const Container = styled.SafeAreaView`
+    background: ${(props) => props.theme.colors.backgroundColor};
+`
+
+const NoteInputEditor = styled(NoteInput)`
+    background: white;
+    margin: 20px;
+`
+
+const ScrollContainer = styled.ScrollView<{ highlightText: string }>`
+    height: 100%;
+    display: flex;
+    padding-top: ${(props) => (props.highlightText ? '0px' : '10px')};
+`
+
+const AnnotationContainer = styled.View`
+    padding-left: 10px;
+    border-left-color: ${(props) => props.theme.colors.purple + '80'};
+    border-left-width: 5px;
+    border-style: solid;
+    margin: 20px 0px 20px 20px;
+    padding: 5px 5px 5px 10px;
+`
+
+const AnnotationHighlight = styled.Text`
+    color: ${(props) => props.theme.colors.darkerText};
+    font-size: 14px;
+    line-height: 18px;
+`

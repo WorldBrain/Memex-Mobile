@@ -1,5 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
+import styled from 'styled-components/native'
+import { ProgressPlugin } from 'webpack'
 
 import styles from './progress-balls.styles'
 
@@ -14,15 +16,27 @@ const ProgressBalls: React.StatelessComponent<Props> = ({
 }) => (
     <View style={styles.container}>
         {[...Array(count)].map((_, i) => (
-            <View
-                key={i}
-                style={[
-                    styles.ball,
-                    selectedIndex === i ? styles.ballSelected : null,
-                ]}
-            />
+            <>
+                <Ball
+                    key={i}
+                    selectedIndex={selectedIndex}
+                    isSelected={i === selectedIndex}
+                />
+            </>
         ))}
     </View>
 )
+
+const Ball = styled.View<{
+    isSelected: boolean
+}>`
+    height: 20px;
+    width: 20px;
+    border-radius: 30px;
+    background: ${(props) =>
+        props.isSelected
+            ? props.theme.colors.purple + '70'
+            : props.theme.colors.backgroundColorDarker}};   
+`
 
 export default ProgressBalls

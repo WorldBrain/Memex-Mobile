@@ -11,6 +11,7 @@ import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './styles'
+import styled from 'styled-components/native'
 
 export default class PageEditorScreen extends StatefulUIElement<
     Props,
@@ -71,6 +72,7 @@ export default class PageEditorScreen extends StatefulUIElement<
                 initNotePress={(n) => () =>
                     this.processEvent('toggleNotePress', { url: n.url })}
                 notes={this.state.page.notes}
+                pageData={this.state.page}
                 clearBackground
             />
         )
@@ -113,13 +115,31 @@ export default class PageEditorScreen extends StatefulUIElement<
         }
     }
 
+    private TitleText() {
+        if (this.state.loadState !== 'done') {
+            return ' '
+        }
+
+        switch (this.state.mode) {
+            case 'notes':
+                return 'Annotations'
+            case 'tags':
+                return 'Add Tags'
+            case 'collections':
+                return 'Add to Spaces'
+            default:
+                return this.renderMetaPicker(this.state.mode)
+        }
+    }
+
     render() {
+        console.log(this.state.mode)
         return (
             <MainLayout
                 {...this.state.page}
-                onBackPress={() => this.processEvent('goBack', null)}
-                onAddPress={this.initHandleAddNotePress()}
-                titleText={this.state.page.pageUrl}
+                onLeftPress={() => this.processEvent('goBack', null)}
+                onRightPress={this.initHandleAddNotePress()}
+                titleText={this.TitleText().toString()}
             >
                 {this.renderEditor()}
             </MainLayout>

@@ -36,7 +36,7 @@ export default EStyleSheet.create({
         fontWeight: '700',
     },
     collectionTitle: {
-        fontFamily: 'Poppins',
+        fontFamily: 'Inter',
         fontWeight: '700',
         marginRight: 5,
         color: '$textColor',

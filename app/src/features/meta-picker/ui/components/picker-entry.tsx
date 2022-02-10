@@ -7,6 +7,10 @@ import {
     GestureResponderEvent,
 } from 'react-native'
 
+import * as icons from 'src/ui/components/icons/icons-list'
+import styled from 'styled-components/native'
+import { Icon } from 'src/ui/components/icons/icon-mobile'
+
 import styles from './picker-entry.styles'
 
 export interface Props {
@@ -18,40 +22,57 @@ export interface Props {
     onPress: (e: GestureResponderEvent) => void
 }
 
-const MetaPickerEntry: React.StatelessComponent<Props> = props => (
+const MetaPickerEntry: React.StatelessComponent<Props> = (props) => (
     <TouchableOpacity onPress={props.onPress}>
-        <View
-            style={[
-                styles.container,
-                props.skipBottomBorder ? null : styles.containerBorder,
-            ]}
-        >
-            <View style={styles.textContainer}>
+        <Container>
+            <TextContainer>
                 {props.canAdd && <Text style={styles.addText}>Add new:</Text>}
-                <View
-                    style={[
-                        styles.entry,
-                        props.showTextBackground
-                            ? styles.entryBackground
-                            : null,
-                        props.canAdd && styles.canAdd,
-                    ]}
-                >
-                    <Text style={styles.entryText}>{props.text}</Text>
-                </View>
-            </View>
-            <View style={styles.checkMarkContainer}>
-                <Image
-                    resizeMode="contain"
-                    style={[
-                        styles.checkmark,
-                        props.isChecked ? null : styles.checkmarkHidden,
-                    ]}
-                    source={require('src/ui/img/tick.png')}
-                />
-            </View>
-        </View>
+                <EntryTextBox>
+                    <EntryText>{props.text}</EntryText>
+                </EntryTextBox>
+            </TextContainer>
+            <CheckMarkContainer>
+                {props.isChecked ? (
+                    <Icon icon={icons.CheckedRound} color={'blue'} />
+                ) : (
+                    <EmptyCircle />
+                )}
+            </CheckMarkContainer>
+        </Container>
     </TouchableOpacity>
 )
 
 export default MetaPickerEntry
+
+const EntryText = styled.Text`
+    color: ${(props) => props.theme.colors.darkerText};
+    font-size: 16px;
+    font-weight: 400;
+`
+
+const EntryTextBox = styled.View``
+
+const TextContainer = styled.View``
+
+const CheckMarkContainer = styled.View``
+
+const Container = styled.View`
+    height: 50px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: ${(props) => props.theme.colors.lightgrey};
+`
+
+const EmptyCircle = styled.View`
+    height: 20px;
+    width: 20px;
+    border-radius: 50px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: ${(props) => props.theme.colors.lightgrey};
+`

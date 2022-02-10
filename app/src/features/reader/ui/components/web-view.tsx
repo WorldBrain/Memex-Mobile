@@ -1,6 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 import { WebView, WebViewProps } from 'react-native-webview'
+import styled from 'styled-components/native'
 
 import styles from './web-view.styles'
 
@@ -15,7 +16,7 @@ export interface Props extends Omit<WebViewProps, 'onMessage'> {
 class ReaderWebView extends React.PureComponent<Props> {
     render() {
         return (
-            <View style={[styles.container, this.props.className]}>
+            <Container style={[styles.container, this.props.className]}>
                 <WebView
                     style={styles.webView}
                     source={{
@@ -23,15 +24,18 @@ class ReaderWebView extends React.PureComponent<Props> {
                         // html: this.props.htmlSource,
                         // baseUrl: this.props.url,
                     }}
+                    mediaPlaybackRequiresUserAction={true}
                     {...this.props}
                     ref={this.props.setRef}
                     onMessage={({ nativeEvent }) =>
                         this.props.onMessage(nativeEvent.data)
                     }
                 />
-            </View>
+            </Container>
         )
     }
 }
 
 export default ReaderWebView
+
+const Container = styled.SafeAreaView``

@@ -19,7 +19,7 @@ export default EStyleSheet.create({
         overflow: 'hidden',
         color: '#3A2F45',
         marginBottom: '0.1rem',
-        fontFamily: 'Poppins',
+        fontFamily: 'Inter',
     },
     linkText: {
         color: '#3A2F45',

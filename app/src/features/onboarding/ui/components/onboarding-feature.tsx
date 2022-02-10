@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, Image, Dimensions, Platform } from 'react-native'
 import { useDeviceOrientation } from '@react-native-community/hooks'
+import styled from 'styled-components/native'
+import conditionalStyles from 'src/utils/device-size-helper'
 
 import styles from './onboarding-feature.styles'
-import { or } from 'react-native-reanimated'
-
 export interface Props {
     optional?: string
     headingText: string
@@ -26,14 +26,57 @@ const OnboardingFeature = (props) => {
     // })
 
     return (
-        <View style={styles.mainContainer}>
-            <View style={styles.imgContainer}>{props.children}</View>
-            <View style={styles.textContainer}>
-                <Text style={styles.headingText}>{props.headingText}</Text>
-                <Text style={styles.secondaryText}>{props.secondaryText}</Text>
-            </View>
-        </View>
+        <MainContainer>
+            <ImgContainer>{props.children}</ImgContainer>
+            <TitleContainer>
+                <HeadingText>{props.headingText}</HeadingText>
+                <SecondaryText>{props.secondaryText}</SecondaryText>
+            </TitleContainer>
+        </MainContainer>
     )
 }
+
+const MainContainer = styled.View`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    //padding-top: ${conditionalStyles() === 'tabletLandscape'
+        ? '0rem'
+        : conditionalStyles() === 'tabletPortrait'
+        ? '2rem'
+        : '5rem'}
+`
+
+const ImgContainer = styled.View`
+    flex: 3;
+    flex-direction: column;
+    position: relative;
+    alignitems: center;
+    justify-content: flex-start;
+    width: 100%;
+    max-height: 45%;
+`
+
+const TitleContainer = styled.View``
+
+const HeadingText = styled.Text`
+    color: ${(props) => props.theme.colors.darkerText};
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 10px;
+`
+
+const SecondaryText = styled.Text`
+    color: ${(props) => props.theme.colors.lighterText};
+    font-size: 20px;
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 0 20px;
+`
 
 export default OnboardingFeature

@@ -5,7 +5,7 @@ import ProgressBalls from 'src/ui/components/progress-balls'
 import Button from 'src/ui/components/memex-btn'
 import EmptyLayout from './empty'
 import styles from './onboarding.styles'
-
+import { PrimaryAction } from '../utils/ActionButtons'
 export interface Props {
     onBackPress: () => void
     onNextPress: () => void
@@ -30,10 +30,10 @@ const OnboardingLayout: React.StatelessComponent<Props> = (props) => (
                         hidden={!props.showBackBtn}
                         empty
                     />
-                    <Button
-                        title="Finish Onboarding"
+                    <PrimaryAction
+                        label="Finish Onboarding"
                         onPress={props.onNextPress}
-                        smallWidth
+                        width="170px"
                     />
                     <Button title="Skip" onPress={props.onSkipPress} empty />
                 </View>
@@ -45,10 +45,10 @@ const OnboardingLayout: React.StatelessComponent<Props> = (props) => (
                         hidden={!props.showBackBtn}
                         empty
                     />
-                    <Button
-                        title="Next"
+                    <PrimaryAction
+                        label="Next"
                         onPress={props.onNextPress}
-                        smallWidth
+                        width="170px"
                     />
                     <Button title="Skip" onPress={props.onSkipPress} empty />
                 </View>

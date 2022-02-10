@@ -31,7 +31,7 @@ export default EStyleSheet.create({
         flexDirection: 'column',
     },
     loadingText: {
-        fontFamily: 'Poppins',
+        fontFamily: 'Inter',
         fontWeight: '700',
         color: '$textColor',
         fontSize: '1.3rem',

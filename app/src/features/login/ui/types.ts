@@ -1,1 +1,1 @@
-export type LoginMode = 'login' | 'signup'
+export type LoginMode = 'login' | 'signup' | 'requestReset' | 'confirmReset'

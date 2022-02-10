@@ -10,7 +10,7 @@ export default EStyleSheet.create({
     },
     text: {
         fontSize: 18,
-        fontFamily: 'Poppins',
+        fontFamily: 'Inter',
         textAlign: 'center',
         fontWeight: '700',
         marginBottom: 10,

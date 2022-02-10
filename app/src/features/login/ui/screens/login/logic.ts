@@ -5,6 +5,7 @@ import { UITaskState, UIServices, MainNavProps } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
 import type { LoginMode } from '../../types'
 import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
+import { auth } from 'firebase-admin'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,
@@ -16,14 +17,19 @@ export interface State {
     loginState: UITaskState
     emailInputValue: string
     passwordInputValue: string
+    passwordConfirmInputValue: string
     mode: LoginMode
+    passwordForgotScreen: boolean
 }
 
 export type Event = UIEvent<{
     changePasswordInput: { value: string }
+    changePasswordConfirmInput: { value: string }
     changeEmailInput: { value: string }
     submitLogin: null
     toggleMode: null
+    confirmPasswordReset: { email: string }
+    requestPasswordReset: null
 }>
 
 export interface Props extends MainNavProps<'Login'> {
@@ -41,28 +47,66 @@ export default class Logic extends UILogic<State, Event> {
             emailInputValue: '',
             passwordInputValue: '',
             loginState: 'pristine',
+            passwordConfirmInputValue: '',
+            passwordForgotScreen: false,
         }
     }
 
     toggleMode: EventHandler<'toggleMode'> = ({ previousState }) => {
-        const nextMode = previousState.mode === 'login' ? 'signup' : 'login'
-        this.emitMutation({ mode: { $set: nextMode } })
+        if (previousState.mode === 'confirmReset') {
+            this.emitMutation({ mode: { $set: 'login' } })
+        } else {
+            const nextMode = previousState.mode === 'login' ? 'signup' : 'login'
+            this.emitMutation({ mode: { $set: nextMode } })
+        }
     }
 
     changeEmailInput: EventHandler<'changeEmailInput'> = ({ event }) => {
-        this.emitMutation({ emailInputValue: { $set: event.value } })
+        this.emitMutation({
+            emailInputValue: { $set: event.value },
+            loginState: { $set: 'pristine' },
+        })
     }
 
     changePasswordInput: EventHandler<'changePasswordInput'> = ({ event }) => {
-        this.emitMutation({ passwordInputValue: { $set: event.value } })
+        this.emitMutation({
+            passwordInputValue: { $set: event.value },
+            loginState: { $set: 'pristine' },
+        })
+    }
+
+    requestPasswordReset: EventHandler<'requestPasswordReset'> = () => {
+        this.emitMutation({ mode: { $set: 'requestReset' } })
+    }
+
+    confirmPasswordReset: EventHandler<'confirmPasswordReset'> = async ({
+        event,
+    }) => {
+        const {
+            services: { auth },
+        } = this.props
+
+        this.emitMutation({ mode: { $set: 'confirmReset' } })
+
+        await auth.resetPassword(event.email)
+    }
+
+    changePasswordConfirmInput: EventHandler<'changePasswordConfirmInput'> = ({
+        event,
+    }) => {
+        this.emitMutation({ passwordConfirmInputValue: { $set: event.value } })
     }
 
     submitLogin: EventHandler<'submitLogin'> = async ({ previousState }) => {
-        await executeUITask<State, 'loginState', void>(
-            this,
-            'loginState',
-            this.performAuth(previousState),
-        )
+        try {
+            await executeUITask<State, 'loginState', void>(
+                this,
+                'loginState',
+                this.performAuth(previousState),
+            )
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     private performAuth = ({

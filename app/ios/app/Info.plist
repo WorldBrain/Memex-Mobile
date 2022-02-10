@@ -50,42 +50,24 @@
 	</dict>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Poppins-Black.ttf</string>
-		<string>Poppins-Black.woff</string>
-		<string>Poppins-BlackItalic.ttf</string>
-		<string>Poppins-BlackItalic.woff</string>
-		<string>Poppins-Bold.ttf</string>
-		<string>Poppins-Bold.woff</string>
-		<string>Poppins-BoldItalic.ttf</string>
-		<string>Poppins-BoldItalic.woff</string>
-		<string>Poppins-ExtraBold.ttf</string>
-		<string>Poppins-ExtraBold.woff</string>
-		<string>Poppins-ExtraBoldItalic.ttf</string>
-		<string>Poppins-ExtraBoldItalic.woff</string>
-		<string>Poppins-ExtraLight.ttf</string>
-		<string>Poppins-ExtraLight.woff</string>
-		<string>Poppins-ExtraLightItalic.ttf</string>
-		<string>Poppins-ExtraLightItalic.woff</string>
-		<string>Poppins-Italic.ttf</string>
-		<string>Poppins-Italic.woff</string>
-		<string>Poppins-Light.ttf</string>
-		<string>Poppins-Light.woff</string>
-		<string>Poppins-LightItalic.ttf</string>
-		<string>Poppins-LightItalic.woff</string>
-		<string>Poppins-Medium.ttf</string>
-		<string>Poppins-Medium.woff</string>
-		<string>Poppins-MediumItalic.ttf</string>
-		<string>Poppins-MediumItalic.woff</string>
-		<string>Poppins-Regular.ttf</string>
-		<string>Poppins-Regular.woff</string>
-		<string>Poppins-SemiBold.ttf</string>
-		<string>Poppins-SemiBold.woff</string>
-		<string>Poppins-SemiBoldItalic.ttf</string>
-		<string>Poppins-SemiBoldItalic.woff</string>
-		<string>Poppins-Thin.ttf</string>
-		<string>Poppins-Thin.woff</string>
-		<string>Poppins-ThinItalic.ttf</string>
-		<string>Poppins-ThinItalic.woff</string>
+		<string>Inter-Black.woff</string>
+		<string>Inter-BlackItalic.woff</string>
+		<string>Inter-Bold.woff</string>
+		<string>Inter-BoldItalic.woff</string>
+		<string>Inter-ExtraBold.woff</string>
+		<string>Inter-ExtraBoldItalic.woff</string>
+		<string>Inter-ExtraLight-BETA.woff</string>
+		<string>Inter-ExtraLightItalic-BETA.woff</string>
+		<string>Inter-Italic.woff</string>
+		<string>Inter-Light-BETA.woff</string>
+		<string>Inter-LightItalic-BETA.woff</string>
+		<string>Inter-Medium.woff</string>
+		<string>Inter-MediumItalic.woff</string>
+		<string>Inter-Regular.woff</string>
+		<string>Inter-SemiBold.woff</string>
+		<string>Inter-SemiBoldItalic.woff</string>
+		<string>Inter-Thin-BETA.woff</string>
+		<string>Inter-ThinItalic-BETA.woff</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
@@ -104,6 +86,8 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

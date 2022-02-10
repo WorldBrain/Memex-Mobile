@@ -12,6 +12,7 @@ import { MetaTypeShape } from 'src/features/meta-picker/types'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './styles'
+import styled from 'styled-components/native'
 
 export interface MetaPickerScreenProps extends Props {
     ref?: (metaPicker: MetaPickerScreen) => void
@@ -93,21 +94,22 @@ export default class MetaPickerScreen extends StatefulUIElement<
     }
 
     render() {
+        console.log(this.props.children)
         return (
             <MetaPicker className={this.props.className}>
                 {this.state.loadState === 'running' ? (
-                    <View style={styles.loadingBallContainer}>
-                        <LoadingBalls style={styles.loadingBalls} />
-                    </View>
+                    <LoadingBallsContainer>
+                        <LoadingBalls />
+                    </LoadingBallsContainer>
                 ) : (
-                    <View style={styles.resultContainer}>
-                        <View style={styles.searchContainer}>
-                            <SuggestInput
+                    <ResultsContainer>
+                        <SearchContainer>
+                            <SearchInputContainer
                                 onChange={this.handleInputText}
                                 value={selectors.inputText(this.state)}
                                 placeholder={this.suggestInputPlaceholder}
                             />
-                        </View>
+                        </SearchContainer>
                         <View style={styles.listContainer}>
                             <FlatList
                                 keyboardShouldPersistTaps="always"
@@ -127,9 +129,31 @@ export default class MetaPickerScreen extends StatefulUIElement<
                                 }
                             />
                         </View>
-                    </View>
+                    </ResultsContainer>
                 )}
             </MetaPicker>
         )
     }
 }
+
+const SearchInputContainer = styled(SuggestInput)`
+    background: ${(props) => props.theme.colors.backgroundColorDarker};
+    width: 100%;
+`
+
+const SearchContainer = styled.View`
+    width: 100%;
+    height: 50px;
+`
+
+const ResultsContainer = styled.View`
+    height: 100%;
+`
+
+const LoadingBallsContainer = styled.View`
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`

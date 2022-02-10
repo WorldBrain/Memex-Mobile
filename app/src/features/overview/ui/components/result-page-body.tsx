@@ -10,7 +10,7 @@ export interface Props extends UIPage {
 }
 
 const ResultPageBody: React.StatelessComponent<Props> = (props) => (
-    <TouchableWithoutFeedback onPress={props.onResultPress}>
+    <View>
         <View style={styles.contentBox}>
             <View style={styles.title}>
                 <Text style={styles.titleText}>{props.titleText}</Text>
@@ -25,7 +25,7 @@ const ResultPageBody: React.StatelessComponent<Props> = (props) => (
                 <Text style={styles.date}>{props.date}</Text>
             </View>
         </View>
-    </TouchableWithoutFeedback>
+    </View>
 )
 
 export default ResultPageBody

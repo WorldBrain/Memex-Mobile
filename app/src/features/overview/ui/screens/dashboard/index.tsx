@@ -26,6 +26,9 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import SyncRibbon from '../../components/sync-ribbon'
+import Navigation from '../../components/navigation'
+import * as icons from 'src/ui/components/icons/icons-list'
+import styled from 'styled-components/native'
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
     private unsubNavFocus!: () => void
@@ -168,8 +171,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                 {this.state.reloadState === 'running' && (
                     <LoadingBalls style={styles.reloadSpinner} />
                 )}
-                <FlatList
-                    style={styles.pageList}
+                <ResultsList
                     renderItem={this.renderPage}
                     data={selectors.results(this.state)}
                     showsVerticalScrollIndicator={false}
@@ -207,33 +209,37 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
     render() {
         return (
-            <>
-                {this.state.shouldShowSyncRibbon && (
+            <Container>
+                {/* {this.state.shouldShowSyncRibbon && (
                     <SyncRibbon onPress={this.resetDashboard} />
-                )}
-                <DashboardNav
-                    icon="settings"
-                    onLeftIconPress={this.handleLogoPress}
-                    onRightIconPress={() =>
+                )} */}
+                <Navigation
+                    leftIcon={icons.Burger}
+                    leftBtnPress={this.handleListsFilterPress}
+                    leftIconSize={'26px'}
+                    rightIcon={icons.Settings}
+                    rightBtnPress={() =>
                         this.props.navigation.navigate('SettingsMenu')
                     }
-                >
-                    <TouchableOpacity
-                        style={styles.collectionTitleContainer}
-                        onPress={this.handleListsFilterPress}
-                    >
-                        <Text style={styles.collectionTitle}>
-                            {this.renderNavTitle()}
-                        </Text>
-                        <Image
-                            style={styles.dropdownArrow}
-                            source={require('src/ui/img/dropdown.png')}
-                        />
-                    </TouchableOpacity>
-                </DashboardNav>
-
-                <View style={styles.container}>{this.renderList()}</View>
-            </>
+                    titleText={this.renderNavTitle()}
+                />
+                <ResultsContainer>{this.renderList()}</ResultsContainer>
+            </Container>
         )
     }
 }
+
+const Container = styled.SafeAreaView`
+    height: 100%;
+    flex: 1;
+    background: ${(props) => props.theme.colors.backgroundColor};
+`
+
+const ResultsContainer = styled.View`
+    flex: 1;
+`
+
+const ResultsList = styled(FlatList)`
+    background: ${(props) => props.theme.colors.backgroundColor};
+    padding-top: 5px;
+`

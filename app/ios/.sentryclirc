@@ -1,0 +1,6 @@
+[auth]
+token=b9fe3e8e27374b119ca1735fa150c103e7e056abf0004e89b6cb96c02cc8bcba
+
+[defaults]
+org = worldbrain-ug
+project = memex-go

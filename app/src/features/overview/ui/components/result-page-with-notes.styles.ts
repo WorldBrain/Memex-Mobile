@@ -1,5 +1,6 @@
 import EStyleSheet from 'react-native-extended-stylesheet'
 import conditionalStyles from 'src/utils/device-size-helper'
+import { Column } from 'typeorm'
 
 export default EStyleSheet.create({
     notesDropdown: {},
@@ -16,7 +17,7 @@ export default EStyleSheet.create({
                 : conditionalStyles() === 'tabletPortrait'
                 ? '1rem'
                 : '1.5rem',
-        fontFamily: 'Poppins',
+        fontFamily: 'Inter',
         marginBottom: '0.5rem',
         marginTop: '5%',
         fontWeight: '700',
@@ -34,8 +35,12 @@ export default EStyleSheet.create({
         textAlign: 'center',
     },
     list: {
-        minWidth: '100%',
-        height: '100%',
+        width: '96%',
+        flexDirection: 'column',
+        flexGrow: 1,
+        flex: 1,
+        alignContent: 'stretch',
+        height: '80%',
     },
     link: {
         textDecorationLine: 'underline',

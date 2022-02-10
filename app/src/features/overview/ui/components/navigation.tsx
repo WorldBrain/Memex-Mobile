@@ -1,31 +1,100 @@
+import { ColorThemeKeys } from '@worldbrain/memex-common/lib/common-ui/styles/types'
 import React from 'react'
-import { View, Text } from 'react-native'
-
-import styles from './navigation.styles'
+import { SvgProps } from 'react-native-svg'
+import { Icon } from 'src/ui/components/icons/icon-mobile'
+import styled from 'styled-components/native'
 
 export interface Props {
     titleText?: string
     renderLeftIcon?: () => JSX.Element
     renderRightIcon?: () => JSX.Element
+    leftBtnPress?: () => void
+    leftIcon?: React.FC<SvgProps>
+    leftIconSize?: string
+    leftIconStrokeWidth?: string
+    rightBtnPress?: () => void | undefined
+    rightIcon?: React.FC<SvgProps> | undefined
+    rightIconColor?: ColorThemeKeys
+    rightIconSize?: string
+    rightIconStrokeWidth?: string
 }
 
-const Navigation: React.StatelessComponent<Props> = props => (
-    <View style={styles.container}>
-        <View style={styles.leftBtnContainer}>
-            {props.renderLeftIcon && props.renderLeftIcon()}
-        </View>
-        <View style={styles.textContainer}>
+const Navigation: React.StatelessComponent<Props> = (props) => (
+    <Container>
+        <ContainerBox>
+            <LeftBtnContainer onPress={props.leftBtnPress}>
+                {props.leftIcon && (
+                    <Icon
+                        heightAndWidth={props.leftIconSize}
+                        strokeWidth={props.leftIconStrokeWidth}
+                        icon={props.leftIcon}
+                    />
+                )}
+            </LeftBtnContainer>
             {props.titleText && (
-                <Text numberOfLines={1} style={styles.text}>
-                    {props.titleText}
-                </Text>
+                <TextArea numberOfLines={1}>{props.titleText}</TextArea>
             )}
-            {props.children}
-        </View>
-        <View style={styles.rightBtnContainer}>
-            {props.renderRightIcon && props.renderRightIcon()}
-        </View>
-    </View>
+            <RightBtnContainer onPress={props.rightBtnPress}>
+                {props.rightIcon && (
+                    <Icon
+                        heightAndWidth={props.rightIconSize}
+                        color={props.rightIconColor}
+                        strokeWidth={props.rightIconStrokeWidth}
+                        icon={props.rightIcon}
+                    />
+                )}
+            </RightBtnContainer>
+        </ContainerBox>
+    </Container>
 )
+
+const Container = styled.View`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    height: 100px;
+    border-bottom-color: ${(props) => props.theme.colors.lightgrey};
+    border-bottom-width: 1px;
+    background: ${(props) => props.theme.colors.white};
+    margin-top: -50px;
+`
+
+const ContainerBox = styled.View`
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    padding: 0 24px 10px;
+    margin-bottom: -50px;
+`
+
+const LeftBtnContainer = styled.TouchableOpacity`
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+const RightBtnContainer = styled.TouchableOpacity`
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+const TextArea = styled.Text`
+    font-size: 16px;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    font-weight: 800;
+    text-align-vertical: bottom;
+    color: ${(props) => props.theme.colors.darkerText};
+`
 
 export default Navigation

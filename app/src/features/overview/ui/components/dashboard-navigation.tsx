@@ -2,11 +2,8 @@ import React from 'react'
 import { Image, TouchableOpacity } from 'react-native'
 
 import Navigation, { Props as NavProps } from './navigation'
-import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
-
-const ExitIcon = require('../img/closeIcon.png')
-const SettingsIcon = require('../img/menuIcon.png')
-const MemexIcon = require('../../../../ui/assets/MemexIcon.png')
+import * as icons from 'src/ui/components/icons/icons-list'
+import styled from 'styled-components/native'
 
 export interface Props extends NavProps {
     icon: 'exit' | 'settings'
@@ -15,33 +12,18 @@ export interface Props extends NavProps {
 }
 
 const DashboardNavigation: React.StatelessComponent<Props> = (props) => (
-    <Navigation
-        {...props}
-        renderLeftIcon={() => (
-            <TouchableOpacity
-                style={navigationStyles.btnContainer}
-                onPress={props.onLeftIconPress}
-            >
-                <Image
-                    resizeMode="contain"
-                    source={MemexIcon}
-                    style={navigationStyles.logoIcon}
-                />
-            </TouchableOpacity>
-        )}
-        renderRightIcon={() => (
-            <TouchableOpacity
-                onPress={props.onRightIconPress}
-                style={navigationStyles.btnContainer}
-            >
-                <Image
-                    resizeMode="contain"
-                    source={props.icon === 'exit' ? ExitIcon : SettingsIcon}
-                    style={navigationStyles.settingsIcon}
-                />
-            </TouchableOpacity>
-        )}
-    />
+    <Container>
+        <Navigation
+            {...props}
+            leftIcon={icons.Burger}
+            leftBtnPress={props.onLeftIconPress}
+            leftIconSize={'26px'}
+            rightIcon={icons.Settings}
+            rightBtnPress={props.onRightIconPress}
+        />
+    </Container>
 )
+
+const Container = styled.SafeAreaView``
 
 export default DashboardNavigation

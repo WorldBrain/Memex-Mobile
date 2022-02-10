@@ -1,9 +1,14 @@
 import React from 'react'
+import Navigation, {
+    Props as NavProps,
+} from 'src/features/overview/ui/components/navigation'
 import { View, Text } from 'react-native'
 
 import styles from './settings-menu.styles'
 import DashboardNav from 'src/features/overview/ui/components/dashboard-navigation'
 import Button from 'src/ui/components/memex-btn'
+import * as icons from 'src/ui/components/icons/icons-list'
+import styled from 'styled-components/native'
 
 export interface Props {
     isPaired: boolean
@@ -35,10 +40,10 @@ class SettingsMenu extends React.PureComponent<Props> {
     renderSyncError() {
         return (
             <>
-                <DashboardNav
-                    onRightIconPress={this.props.onExitErrorPress}
+                <Navigation
+                    leftIcon={icons.BackArrow}
+                    leftBtnPress={this.props.onExitErrorPress}
                     titleText="Sync Error"
-                    icon="exit"
                 />
                 <View style={styles.mainContainer}>
                     <Text style={styles.mainText}>
@@ -64,10 +69,11 @@ class SettingsMenu extends React.PureComponent<Props> {
     renderMenu() {
         return (
             <>
-                <DashboardNav
-                    onRightIconPress={this.props.onExitMenuPress}
-                    icon="exit"
-                    titleText="Menu"
+                <Navigation
+                    leftIcon={icons.BackArrow}
+                    leftIconSize={'30px'}
+                    leftBtnPress={this.props.onExitMenuPress}
+                    titleText={'Menu'}
                 />
                 <View style={styles.mainContainer}>
                     <View style={styles.linksContainer}>
@@ -88,13 +94,15 @@ class SettingsMenu extends React.PureComponent<Props> {
 
     render() {
         return (
-            <View style={styles.container}>
+            <Container>
                 {this.props.syncErrorMessage
                     ? this.renderSyncError()
                     : this.renderMenu()}
-            </View>
+            </Container>
         )
     }
 }
+
+const Container = styled.SafeAreaView``
 
 export default SettingsMenu
