@@ -9,7 +9,7 @@ const contentScript = new WebViewContentScript({ postMessageToRN })
 //  i.e., when we move to full reader mode, we don't need this anymore (it's part of the HTML we give to the WebView)
 contentScript.addStyleElementToHead(`
     .${HIGHLIGHT_CLASS} {
-        background: #e6f1ff;
+        background: #ffff3c66;
     }
 `)
 

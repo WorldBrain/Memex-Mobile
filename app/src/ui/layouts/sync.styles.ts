@@ -5,9 +5,6 @@ import conditionalStyles from 'src/utils/device-size-helper'
 const { height, width } = Dimensions.get('window')
 const aspectRatio = height / width
 
-console.log(Dimensions.get('window'))
-console.log(aspectRatio)
-
 export default EStyleSheet.create({
     titleText: {
         fontSize:

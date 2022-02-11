@@ -110,7 +110,7 @@ const ActionBar = styled.View`
 
 const NoteContainer = styled.View`
     background: white;
-    margin: 5px 0px;
+    margin: 10px 0px 0 0;
     shadow-opacity: 0.5;
     shadow-radius: 5px;
     shadow-color: #e0e0e0;
