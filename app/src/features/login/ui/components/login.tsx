@@ -239,7 +239,11 @@ const Login: React.StatelessComponent<Props> = (props) => {
                             </>
                         )}
                     </ActionButtonContainer>
-                    {props.isLoading && <LoadingBalls />}
+                    {props.isLoading && (
+                        <LoadingBox>
+                            <LoadingBalls />
+                        </LoadingBox>
+                    )}
                     {props.hasError && (
                         <WarningBox>
                             <WarningText
@@ -415,6 +419,10 @@ const ForgotPasswordBox = styled.TouchableOpacity`
 const ForgotPasswordText = styled.Text`
     color: ${(props) => props.theme.colors.purple};
     font-size: 14px;
+`
+
+const LoadingBox = styled.View`
+    margin-top: 20px;
 `
 
 export default Login

@@ -15,6 +15,8 @@ import { PrimaryAction } from 'src/ui/utils/ActionButtons'
 
 interface Props extends LogicProps {}
 
+const MemexLogoFile = require('src/ui/assets/MemexIcon.png')
+
 export default class CloudSyncScreen extends StatefulUIElement<
     Props,
     State,
@@ -41,106 +43,68 @@ export default class CloudSyncScreen extends StatefulUIElement<
 
     private renderSyncingScreen() {
         return (
-            <View
-                style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    display: 'flex',
-                }}
-            >
-                <LoadingBalls />
-                <View style={styles.header}>
-                    <HeadingText style={styles.headerText}>
-                        Syncing your data
-                    </HeadingText>
-                </View>
-                <View style={styles.body}>
-                    <SecondaryText style={styles.bodyText}>
+            <Container>
+                <InnerContainer>
+                    <LoadingBalls size={40} />
+                    <HeadingText>Syncing your data</HeadingText>
+                    <SecondaryText>
                         This can take a while. Please leave your app open and
                         your device on charge.
                     </SecondaryText>
-                </View>
-            </View>
+                </InnerContainer>
+            </Container>
         )
     }
 
     private renderSyncingError() {
         return (
-            <View
-                style={{
-                    flex: 1,
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    display: 'flex',
-                }}
-            >
-                <View style={styles.contentBox}>
-                    <Image
-                        resizeMode="contain"
-                        style={styles.logoIcon}
-                        source={require('../../../../ui/assets/MemexIcon.png')}
-                    />
-                    <View style={styles.header}>
-                        <HeadingText style={styles.headerText}>
-                            Error syncing data
-                        </HeadingText>
-                    </View>
-                    <View style={styles.body}>
-                        <SecondaryText style={styles.bodyText}>
-                            Restart the app and try again.
-                        </SecondaryText>
-                    </View>
-                    <View style={styles.body}>
-                        <SecondaryText style={styles.bodyText}>
-                            If sync continues to fail,{' '}
-                            <TertiaryText
-                                style={[styles.bodyText, styles.supportLink]}
-                                onPress={this.handleSyncErrorReport}
-                            >
-                                contact support
-                            </TertiaryText>
-                        </SecondaryText>
-                    </View>
+            <Container>
+                <MemexLogo resizeMode="contain" source={MemexLogoFile} />
+                <View>
+                    <HeadingText>Error syncing data</HeadingText>
                 </View>
-            </View>
+                <View>
+                    <SecondaryText>
+                        Restart the app and try again.
+                    </SecondaryText>
+                </View>
+                <SecondaryText>Continues to fail?</SecondaryText>
+                <PrimaryAction
+                    label={'Contact Support'}
+                    onPress={() => {
+                        Linking.openURL('mailto:support@memex.garden')
+                    }}
+                />
+            </Container>
         )
     }
 
     private renderSyncingComplete() {
         return (
-            <View
-                style={{
-                    flex: 1,
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    display: 'flex',
-                }}
-            >
-                <View style={styles.contentBox}>
-                    <SectionCircle>
-                        <Icon
-                            icon={icons.Alert}
-                            heightAndWidth={'30px'}
-                            color="purple"
-                        />
-                    </SectionCircle>
-                    <View style={styles.header}>
-                        <HeadingText>Sync successful</HeadingText>
-                    </View>
-                    <View style={styles.body}>
-                        <SecondaryText>
-                            If you see no data in the dashboard, make sure you
-                            synced on at least one of your other devices first
-                            then restart the app.
-                        </SecondaryText>
-                    </View>
+            <Container>
+                <SectionCircle>
+                    <Icon
+                        icon={icons.CheckMark}
+                        heightAndWidth={'30px'}
+                        color="purple"
+                        strokeWidth="2px"
+                    />
+                </SectionCircle>
+                <View>
+                    <HeadingText>Sync successful</HeadingText>
+                </View>
+                <View>
+                    <SecondaryText>
+                        If you see no data in the dashboard, make sure you
+                        synced on at least one of your other devices first then
+                        restart the app.
+                    </SecondaryText>
                 </View>
                 <PrimaryAction
                     label="Go to Dashboard"
                     onPress={() => this.processEvent('goToDashboard', null)}
                 />
-            </View>
+            </Container>
         )
     }
 
@@ -167,7 +131,8 @@ const HeadingText = styled.Text`
     font-size: 24px;
     font-weight: 800;
     text-align: center;
-    margin-bottom: 10px;
+    margin-top: 40px;
+    margin-bottom: 20px;
 `
 
 const SecondaryText = styled.Text`
@@ -177,6 +142,8 @@ const SecondaryText = styled.Text`
     text-align: center;
     margin-bottom: 10px;
     padding: 0 20px;
+    max-width: 600px;
+    margin-bottom: 30px;
 `
 
 const TertiaryText = styled.Text`
@@ -191,4 +158,26 @@ const SectionCircle = styled.View`
     display: flex;
     justify-content: center;
     align-items: center;
+`
+
+const Container = styled.SafeAreaView`
+    display: flex;
+    height: 100%;
+    flex: 1;
+    width: 100%;
+    padding: 100px 30px;
+    justify-content: center;
+    align-items: center;
+`
+
+const InnerContainer = styled.View`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 500px;
+`
+
+const MemexLogo = styled.Image`
+    height: 60px;
+    display: flex;
 `
