@@ -8,7 +8,7 @@ import styled from 'styled-components/native'
 
 export interface Props extends UIPage {
     onResultPress?: TouchEventHandler
-    date: string
+    date: string | undefined
 }
 
 const ResultPageBody: React.StatelessComponent<Props> = (props) => (

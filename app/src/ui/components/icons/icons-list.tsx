@@ -24,6 +24,10 @@ export { default as CheckedRound } from 'src/ui/img/checkedRound.svg'
 export { default as Clock } from 'src/ui/img/clock.svg'
 export { default as SadFace } from 'src/ui/img/sadFace.svg'
 export { default as HelpIcon } from 'src/ui/img/help.svg'
+export { default as HeartIcon } from 'src/ui/img/heart.svg'
+export { default as Reload } from 'src/ui/img/reload.svg'
+export { default as Highlighter } from 'src/ui/img/Highlighter.svg'
+export { default as AddNote } from 'src/ui/img/AddNote.svg'
 
 // export const logoSmall = browser.extension.getURL(
 //     '/img/worldbrain-logo-narrow-bw-48.png',

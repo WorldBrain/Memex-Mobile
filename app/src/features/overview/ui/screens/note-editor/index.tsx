@@ -193,6 +193,7 @@ const ScrollContainer = styled.View<{ highlightText: string }>`
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    margin: 0 10px;
 `
 
 const AnnotationContainer = styled.View`

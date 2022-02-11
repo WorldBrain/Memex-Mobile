@@ -47,8 +47,6 @@ const aspectRatio = height / width
 const Login: React.StatelessComponent<Props> = (props) => {
     const orientation = useDeviceOrientation()
 
-    console.log(props.mode)
-
     return (
         <LoginSignupContainer>
             <LoginSignupScreen>

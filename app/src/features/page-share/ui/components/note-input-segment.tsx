@@ -13,8 +13,6 @@ export interface Props {
 }
 
 const NoteInput: React.StatelessComponent<Props> = (props) => {
-    console.log(props.context)
-
     return (
         <Container>
             <TextBox>

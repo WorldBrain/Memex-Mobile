@@ -163,14 +163,12 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
     private renderList() {
         if (this.state.loadState === 'running') {
-            return <LoadingBalls style={styles.mainLoadSpinner} />
+            return <LoadingBalls />
         }
 
         return (
             <ResultListContainer>
-                {this.state.reloadState === 'running' && (
-                    <LoadingBalls style={styles.reloadSpinner} />
-                )}
+                {this.state.reloadState === 'running' && <LoadingBalls />}
                 <ResultsList
                     renderItem={this.renderPage}
                     data={selectors.results(this.state)}
@@ -193,15 +191,20 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     scrollEventThrottle={16}
                     contentContainerStyle={styles.resultsList}
                 />
-                {this.state.loadMoreState === 'running' && (
-                    <LoadingBalls style={styles.loadMoreSpinner} />
-                )}
+                {this.state.loadMoreState === 'running' && <LoadingBalls />}
             </ResultListContainer>
         )
     }
 
-    private renderNavTitle(): string {
-        if (this.state.selectedListName !== SPECIAL_LIST_NAMES.MOBILE) {
+    private renderNavTitle(): string | JSX.Element {
+        if (this.state.shouldShowSyncRibbon) {
+            return (
+                <SyncRibbon
+                    text={'New Sync Updates'}
+                    onPress={this.resetDashboard}
+                />
+            )
+        } else if (this.state.selectedListName !== SPECIAL_LIST_NAMES.MOBILE) {
             return this.state.selectedListName
         }
 
@@ -211,9 +214,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     render() {
         return (
             <Container>
-                {/* {this.state.shouldShowSyncRibbon && (
-                    <SyncRibbon onPress={this.resetDashboard} />
-                )} */}
                 <Navigation
                     leftIcon={icons.Burger}
                     leftBtnPress={this.handleListsFilterPress}

@@ -20,7 +20,7 @@ export default EStyleSheet.create({
         alignItems: 'center',
     },
     webView: {
-        height: Dimensions.get('window').height - actionBarHeight,
+        height: Dimensions.get('window').height - actionBarHeight - 90,
         paddingTop: height > 1000 ? 20 : 40,
     },
 })

@@ -103,38 +103,47 @@ export default class MetaPickerScreen extends StatefulUIElement<
                     </LoadingBallsContainer>
                 ) : (
                     <ResultsContainer>
-                        <SearchContainer>
-                            <SearchInputContainer
-                                onChange={this.handleInputText}
-                                value={selectors.inputText(this.state)}
-                                placeholder={this.suggestInputPlaceholder}
-                            />
-                        </SearchContainer>
-                        <View style={styles.listContainer}>
-                            <FlatList
-                                keyboardShouldPersistTaps="always"
-                                renderItem={this.renderPickerEntry}
-                                data={selectors.pickerEntries(
-                                    this.state,
-                                    this.props,
-                                )}
-                                keyExtractor={(item, index) => index.toString()}
-                                ListEmptyComponent={
-                                    <MetaPickerEmptyRow
-                                        hasSearchInput={
-                                            this.state.inputText.length > 0
-                                        }
-                                        type={this.props.type}
-                                    />
-                                }
-                            />
-                        </View>
+                        <InnerContainer>
+                            <SearchContainer>
+                                <SearchInputContainer
+                                    onChange={this.handleInputText}
+                                    value={selectors.inputText(this.state)}
+                                    placeholder={this.suggestInputPlaceholder}
+                                />
+                            </SearchContainer>
+                            <View style={styles.listContainer}>
+                                <FlatList
+                                    keyboardShouldPersistTaps="always"
+                                    renderItem={this.renderPickerEntry}
+                                    data={selectors.pickerEntries(
+                                        this.state,
+                                        this.props,
+                                    )}
+                                    keyExtractor={(item, index) =>
+                                        index.toString()
+                                    }
+                                    ListEmptyComponent={
+                                        <MetaPickerEmptyRow
+                                            hasSearchInput={
+                                                this.state.inputText.length > 0
+                                            }
+                                            type={this.props.type}
+                                        />
+                                    }
+                                />
+                            </View>
+                        </InnerContainer>
                     </ResultsContainer>
                 )}
             </MetaPicker>
         )
     }
 }
+
+const InnerContainer = styled.View`
+    width: 600px;
+    max-width: 100%;
+`
 
 const SearchInputContainer = styled(SuggestInput)`
     background: ${(props) => props.theme.colors.backgroundColorDarker};
@@ -151,6 +160,12 @@ const ResultsContainer = styled.View`
     width: 100%;
     display: flex;
     justify-content: flex-start;
+    width: 100%;
+    flex: 1;
+    max-height: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
 `
 
 const LoadingBallsContainer = styled.View`

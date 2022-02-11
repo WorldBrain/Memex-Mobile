@@ -1,5 +1,7 @@
 import { HIGHLIGHT_CLASS } from 'src/content-script/constants'
 
+import { theme } from 'src/ui/components/theme/theme'
+
 export const inPageCSS = `
 body {
     -webkit-touch-callout: none;
@@ -12,6 +14,6 @@ h1 {
 }
 
 .${HIGHLIGHT_CLASS} {
-    background: #00d88b;
+    background: ${theme.colors.backgroundHighlight};
 }
 `

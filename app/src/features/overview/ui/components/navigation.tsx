@@ -5,7 +5,7 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 
 export interface Props {
-    titleText?: string
+    titleText?: string | React.ReactNode
     renderLeftIcon?: () => JSX.Element
     renderRightIcon?: () => JSX.Element
     leftBtnPress?: () => void
@@ -31,8 +31,10 @@ const Navigation: React.StatelessComponent<Props> = (props) => (
                     />
                 )}
             </LeftBtnContainer>
-            {props.titleText && (
+            {typeof props.titleText === 'string' ? (
                 <TextArea numberOfLines={1}>{props.titleText}</TextArea>
+            ) : (
+                <>{props.titleText}</>
             )}
             <RightBtnContainer onPress={props.rightBtnPress}>
                 {props.rightIcon && (

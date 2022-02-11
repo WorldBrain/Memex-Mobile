@@ -41,13 +41,7 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
     props,
 ) => {
     return (
-        <ResultContainer
-        // style={{
-        //     flex: 1,
-        //     justifyContent: 'center',
-        //     backgroundColor: 'white',
-        // }}
-        >
+        <ResultContainer>
             <ResultItem>
                 <TopArea onPress={props.onReaderPress}>
                     <View>
@@ -153,7 +147,7 @@ const MoreButtons = styled.View`
 `
 
 const ResultContainer = styled.View`
-    // margin: 5px 0px;
+    margin: 5px 0px;
     flex: 1;
     display: flex;
     flex-direction: column;

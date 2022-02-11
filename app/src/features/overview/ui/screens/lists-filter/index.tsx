@@ -81,9 +81,9 @@ const Container = styled.SafeAreaView`
 `
 
 const MetaPickerContainer = styled.View`
-    max-width: 500px;
+    width: 300px;
     justify-content: center;
     display: flex;
-    width: 100%;
+    max-width: 100%;
     height: 100%;
 `

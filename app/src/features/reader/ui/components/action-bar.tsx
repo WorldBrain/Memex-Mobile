@@ -56,37 +56,26 @@ class ActionBar extends React.PureComponent<Props> {
         if (this.props.selectedText != null) {
             return (
                 <>
-                    <actionBtns.HighlightBtn
-                        onPress={this.props.onHighlightBtnPress}
-                        className={styles.actionBtn}
-                    />
-                    <actionBtns.AnnotateBtn
-                        onPress={this.props.onAnnotateBtnPress}
-                        className={styles.actionBtn}
-                    />
+                    <IconContainer onPress={this.props.onHighlightBtnPress}>
+                        <Icon
+                            icon={icons.Highlighter}
+                            strokeWidth="3"
+                            heightAndWidth="24px"
+                        />
+                    </IconContainer>
+                    <IconContainer onPress={this.props.onAnnotateBtnPress}>
+                        <Icon
+                            icon={icons.AddNote}
+                            strokeWidth="3"
+                            heightAndWidth="24px"
+                        />
+                    </IconContainer>
                 </>
             )
         }
 
         return (
             <ActionBox>
-                <IconContainer>
-                    {this.props.isTagged ? (
-                        <Icon
-                            icon={icons.TagFull}
-                            strokeWidth="3"
-                            fill
-                            heightAndWidth="30px"
-                        />
-                    ) : (
-                        <Icon
-                            icon={icons.TagEmpty}
-                            strokeWidth="3"
-                            heightAndWidth="30px"
-                        />
-                    )}
-                </IconContainer>
-                <IconSpacer />
                 <IconContainer onPress={this.props.onCommentBtnPress}>
                     {this.props.hasNotes ? (
                         <Icon
@@ -128,12 +117,21 @@ class ActionBar extends React.PureComponent<Props> {
         return (
             <Container>
                 <LeftBtns>
-                    <IconContainer onPress={this.props.onBackBtnPress}>
-                        <Icon
-                            icon={icons.BackArrow}
-                            strokeWidth="7"
-                            heightAndWidth="40px"
-                        />
+                    <IconContainer onPress={this.props.onTagBtnPress}>
+                        {this.props.isTagged ? (
+                            <Icon
+                                icon={icons.TagFull}
+                                strokeWidth="3"
+                                fill
+                                heightAndWidth="24px"
+                            />
+                        ) : (
+                            <Icon
+                                icon={icons.TagFull}
+                                strokeWidth="3"
+                                heightAndWidth="24px"
+                            />
+                        )}
                     </IconContainer>
                 </LeftBtns>
                 <CenterButton>
@@ -162,7 +160,7 @@ class ActionBar extends React.PureComponent<Props> {
                                 )}
                             </>
                         )}
-                        <AddSpacesText>Add Page to Spaces</AddSpacesText>
+                        <AddSpacesText>Add to Spaces</AddSpacesText>
                     </AddSpacesContainer>
                 </CenterButton>
                 <RightBtns>{this.renderRightBtns()}</RightBtns>
@@ -175,19 +173,22 @@ export default ActionBar
 
 const Container = styled.View`
     height: 60px;
-    padding: 0px 60px;
+    padding: 0px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
+    border-style: solid;
+    border-top-width: 1px;
+    border-color: ${(props) => props.theme.colors.lightgrey};
 `
 
 const IconSpacer = styled.View`
-    width: 50px;
+    width: 10%;
 `
 
 const RightBtns = styled.View`
-    width: 250px;
+    width: 10%;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
@@ -195,14 +196,20 @@ const RightBtns = styled.View`
 `
 
 const LeftBtns = styled.View`
-    width: 250px;
+    width: 10%;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
 `
 
-const IconContainer = styled.TouchableOpacity``
+const IconContainer = styled.TouchableOpacity`
+    height: 50px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`
 
 const ActionBox = styled.View`
     height: 50px;
@@ -253,7 +260,7 @@ const AddSpacesText = styled.Text`
     flex-direction: row;
     justify-content: flex-end;
     text-align-vertical: bottom;
-    width: 140px;
+    width: 100px;
     text-align: right;
 `
 

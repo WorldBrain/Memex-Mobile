@@ -17,6 +17,7 @@ export interface Props {
     initNotePress: (note: UINote) => TouchEventHandler
     initNoteEdit: (note: UINote) => TouchEventHandler
     pageData?: UIPage
+    onReaderPress?: TouchEventHandler
 }
 
 class NotesList extends React.PureComponent<Props> {
@@ -35,11 +36,11 @@ class NotesList extends React.PureComponent<Props> {
 
     private renderPageItem() {
         return (
-            <PageResultCard>
+            <PageResultCard onPress={this.props.onReaderPress}>
                 <TopArea>
                     <Body
                         {...this.props.pageData}
-                        date={this.props.pageData.date}
+                        date={this.props.pageData?.date}
                     />
                     <SpacesArea>
                         {this.props.pageData?.lists.map((entry) => (
@@ -158,7 +159,7 @@ const FlatListContainer = styled(FlatList)`
     max-width: 96%;
 `
 
-const PageResultCard = styled.View`
+const PageResultCard = styled.TouchableOpacity`
     display: flex;
     flex-direction column;
     z-index: 1;

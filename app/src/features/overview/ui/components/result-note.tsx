@@ -29,8 +29,6 @@ export interface InteractionProps {
 const ResultNote: React.StatelessComponent<Props & InteractionProps> = (
     props,
 ) => {
-    console.log(props.date)
-
     return (
         <NoteContainer>
             <TopArea>

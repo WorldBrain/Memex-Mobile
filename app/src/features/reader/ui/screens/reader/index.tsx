@@ -11,6 +11,10 @@ import styles from './styles'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
 import { Message as WebViewMessage, Anchor } from 'src/content-script/types'
+import Navigation from 'src/features/overview/ui/components/navigation'
+import * as icons from 'src/ui/components/icons/icons-list'
+import { Icon } from 'src/ui/components/icons/icon-mobile'
+import styled from 'styled-components/native'
 
 export default class Reader extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
@@ -159,7 +163,14 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 
     render() {
         return (
-            <View style={styles.container}>
+            <Container>
+                <Navigation
+                    leftBtnPress={() => this.processEvent('goBack', null)}
+                    leftIcon={icons.BackArrow}
+                    leftIconSize="30px"
+                    leftIconStrokeWidth="5px"
+                    titleText={'Annotate this page'}
+                />
                 {this.renderWebView()}
                 <ActionBar
                     className={styles.actionBar}
@@ -187,7 +198,12 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         this.processEvent('navToPageEditor', { mode: 'tags' })
                     }
                 />
-            </View>
+            </Container>
         )
     }
 }
+
+const Container = styled.SafeAreaView`
+    height: 50%;
+    flex: 1;
+`
