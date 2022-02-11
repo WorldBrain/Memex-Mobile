@@ -56,13 +56,13 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
             case 'highlight':
                 return this.processEvent('createHighlight', {
                     anchor: message.payload,
-                    renderHighlight: h =>
+                    renderHighlight: (h) =>
                         this.runFnInWebView('renderHighlight', h),
                 })
             case 'annotation':
                 return this.processEvent('createAnnotation', {
                     anchor: message.payload,
-                    renderHighlight: h =>
+                    renderHighlight: (h) =>
                         this.runFnInWebView('renderHighlight', h),
                 })
             case 'highlightClicked':
@@ -136,7 +136,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         return (
             <ReaderWebView
                 url={this.state.url}
-                setRef={ref => (this.webView = ref)}
+                setRef={(ref) => (this.webView = ref)}
                 className={styles.webView}
                 onMessage={this.handleWebViewMessageReceived}
                 htmlSource={this.state.htmlSource!}
@@ -147,6 +147,12 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 // This flag needs to be set to afford text selection on iOS.
                 //   https://github.com/react-native-community/react-native-webview/issues/1275
                 allowsLinkPreview
+                onHighlightBtnPress={() =>
+                    this.runFnInWebView('createHighlight')
+                }
+                onAnnotateBtnPress={() =>
+                    this.runFnInWebView('createAnnotation')
+                }
             />
         )
     }

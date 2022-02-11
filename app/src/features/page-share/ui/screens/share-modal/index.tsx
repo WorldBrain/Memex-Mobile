@@ -16,6 +16,11 @@ import ReloadBtn from '../../components/reload-btn'
 import SavingUpdates from '../../components/saving-updates'
 import SyncError from '../../components/sync-error'
 import styles from './styles'
+import * as icons from 'src/ui/components/icons/icons-list'
+import { Icon } from 'src/ui/components/icons/icon-mobile'
+import styled from 'styled-components/native'
+import LoadingIndicator from 'src/ui/components/loading-balls'
+import EStyleSheet from 'react-native-extended-stylesheet'
 
 export default class ShareModalScreen extends StatefulUIElement<
     Props,
@@ -144,14 +149,6 @@ export default class ShareModalScreen extends StatefulUIElement<
     private renderMetaPicker() {
         return (
             <>
-                <ActionBar
-                    leftBtnText="Back"
-                    onLeftBtnPress={this.handleMetaViewTypeSwitch(undefined)}
-                    onRightBtnPress={this.handleSave}
-                    rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
-                >
-                    {this.renderTitle()}
-                </ActionBar>
                 <MetaPicker
                     onEntryPress={this.handleMetaPickerEntryPress}
                     initSelectedEntries={this.calcInitEntries()}
@@ -160,6 +157,35 @@ export default class ShareModalScreen extends StatefulUIElement<
                     ref={this.setMetaPickerRef}
                     {...this.props}
                 />
+                <ActionBar
+                    leftBtnText={
+                        <Icon
+                            icon={icons.BackArrow}
+                            heightAndWidth={'24px'}
+                            strokeWidth={'8px'}
+                        />
+                    }
+                    onLeftBtnPress={this.handleMetaViewTypeSwitch(undefined)}
+                    onRightBtnPress={this.handleSave}
+                    rightBtnText={
+                        this.isInputDirty ? (
+                            <Icon
+                                icon={icons.CheckMark}
+                                heightAndWidth={'28px'}
+                                color={'purple'}
+                                strokeWidth={'3px'}
+                            />
+                        ) : (
+                            <Icon
+                                icon={icons.CheckMark}
+                                heightAndWidth={'24px'}
+                                strokeWidth={'2px'}
+                            />
+                        )
+                    }
+                >
+                    {this.renderTitle()}
+                </ActionBar>
             </>
         )
     }
@@ -167,29 +193,92 @@ export default class ShareModalScreen extends StatefulUIElement<
     private renderInputs() {
         return (
             <>
-                <ActionBar
-                    showBanner
-                    leftBtnText="Undo"
-                    onLeftBtnPress={this.handleUndo}
-                    onRightBtnPress={this.handleSave}
-                    rightBtnText={this.isInputDirty ? 'Save' : 'Close'}
-                >
-                    {this.renderTitle()}
-                </ActionBar>
                 <NoteInput
                     onChange={this.handleNoteTextChange}
                     value={this.state.noteText}
                 />
-                <AddCollection
-                    onPress={this.handleMetaViewTypeSwitch('collections')}
-                    count={this.state.collectionsToAdd.length}
-                    loading={this.state.collectionsState === 'running'}
-                />
-                <AddTags
+                {/* <AddTags
                     onPress={this.handleMetaViewTypeSwitch('tags')}
                     count={this.state.tagsToAdd.length}
                     loading={this.state.tagsState === 'running'}
-                />
+                /> */}
+                {this.state.collectionsState === 'done' &&
+                    this.state.collectionsToAdd.length > 0 && (
+                        <SpaceBar>
+                            <SpacesContainer
+                                horizontal={true}
+                                contentContainerStyle={
+                                    styledScrollView.Container
+                                }
+                            >
+                                {this.state.collectionsToAdd.map((elements) => (
+                                    <SpacePills>
+                                        <SpacePillsText>
+                                            {elements}
+                                        </SpacePillsText>
+                                    </SpacePills>
+                                ))}
+                            </SpacesContainer>
+                        </SpaceBar>
+                    )}
+                <ActionBarContainer
+                    leftBtnText={
+                        <Icon
+                            icon={icons.TagEmpty}
+                            heightAndWidth={'20px'}
+                            strokeWidth={'3px'}
+                        />
+                    }
+                    onLeftBtnPress={this.handleMetaViewTypeSwitch('tags')}
+                    onRightBtnPress={this.handleSave}
+                    rightBtnText={
+                        this.isInputDirty ? (
+                            <Icon
+                                icon={icons.CheckMark}
+                                heightAndWidth={'28px'}
+                                color={'purple'}
+                                strokeWidth={'3px'}
+                            />
+                        ) : (
+                            <Icon
+                                icon={icons.CheckMark}
+                                heightAndWidth={'24px'}
+                                strokeWidth={'2px'}
+                            />
+                        )
+                    }
+                >
+                    <AddSpacesContainer
+                        onPress={this.handleMetaViewTypeSwitch('collections')}
+                    >
+                        {this.state.collectionsState === 'running' &&
+                        !this.state.collectionsToAdd.length ? (
+                            <LoadingIndicatorBox>
+                                <LoadingIndicator size={15} />
+                            </LoadingIndicatorBox>
+                        ) : (
+                            <>
+                                {this.state.collectionsToAdd.length === 0 ? (
+                                    <>
+                                        <Icon
+                                            icon={icons.Plus}
+                                            heightAndWidth={'14px'}
+                                            color={'purple'}
+                                            strokeWidth={'2px'}
+                                        />
+                                    </>
+                                ) : (
+                                    <SpacesCounterPill>
+                                        <SpacesCounterText>
+                                            {this.state.collectionsToAdd.length}
+                                        </SpacesCounterText>
+                                    </SpacesCounterPill>
+                                )}
+                            </>
+                        )}
+                        <AddSpacesText>Add to Spaces</AddSpacesText>
+                    </AddSpacesContainer>
+                </ActionBarContainer>
             </>
         )
     }
@@ -252,3 +341,98 @@ export default class ShareModalScreen extends StatefulUIElement<
         )
     }
 }
+
+const styledScrollView = EStyleSheet.create({
+    Container: {
+        justifyContent: 'flex-start',
+        height: 40,
+        alignItems: 'center',
+    },
+})
+
+const SpaceBar = styled.View`
+    height: 40px;
+`
+
+const SpacesContainer = styled.ScrollView`
+    border-style: solid;
+    border-top-width: 1px;
+    border-color: ${(props) => props.theme.colors.lightgrey};
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    padding: 0 15px;
+`
+
+const SpacePills = styled.View`
+    background: ${(props) => props.theme.colors.purple}
+    padding: 2px 8px;
+    margin-right: 3px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+`
+
+const SpacePillsText = styled.Text`
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+`
+
+const ActionBarContainer = styled(ActionBar)`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: red;
+`
+
+const LoadingIndicatorBox = styled.View`
+    margin-right: 5px;
+`
+
+const SpacesCounterPill = styled.View`
+    padding: 1px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: ${(props) => props.theme.colors.purple}
+    border-radius: 50px;
+    margin-right: 5px;
+`
+
+const SpacesCounterText = styled.Text`
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    font-size: 12px;
+`
+
+const AddSpacesContainer = styled.TouchableOpacity`
+    border-width: 2px;
+    border-style: dotted;
+    border-color: ${(props) => props.theme.colors.lightgrey}
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    text-align-vertical: center;
+    height: 30px;
+    padding: 2px 8px;
+`
+
+const AddSpacesText = styled.Text`
+    color: ${(props) => props.theme.colors.purple};
+    font-size: 12px;
+    display: flex;
+    align-items flex-end;
+    flex-direction: row;
+    justify-content: flex-end;
+    text-align-vertical: bottom;
+    width: 90px;
+    text-align: right;
+`

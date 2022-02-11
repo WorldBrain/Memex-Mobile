@@ -26,7 +26,6 @@ export default EStyleSheet.create({
                 : conditionalStyles() === 'tabletPortrait'
                 ? '0.8rem'
                 : '1.3rem',
-        fontFamily: 'Inter',
     },
     border: {
         borderBottomWidth: 1,

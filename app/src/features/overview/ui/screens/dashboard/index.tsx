@@ -167,7 +167,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         }
 
         return (
-            <>
+            <ResultListContainer>
                 {this.state.reloadState === 'running' && (
                     <LoadingBalls style={styles.reloadSpinner} />
                 )}
@@ -191,11 +191,12 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     onScroll={this.handleScroll}
                     onScrollEndDrag={this.handleScrollToEnd}
                     scrollEventThrottle={16}
+                    contentContainerStyle={styles.resultsList}
                 />
                 {this.state.loadMoreState === 'running' && (
                     <LoadingBalls style={styles.loadMoreSpinner} />
                 )}
-            </>
+            </ResultListContainer>
         )
     }
 
@@ -231,15 +232,26 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
 const Container = styled.SafeAreaView`
     height: 100%;
-    flex: 1;
+    position: absolute;
+    width: 100%;
     background: ${(props) => props.theme.colors.backgroundColor};
+    display: flex;
+    align-items: center;
+    position: absolute;
 `
 
 const ResultsContainer = styled.View`
-    flex: 1;
+    display: flex;
+    margin: 10px;
+`
+
+const ResultListContainer = styled.View`
+    display: flex;
+    align-items: stretch;
 `
 
 const ResultsList = styled(FlatList)`
     background: ${(props) => props.theme.colors.backgroundColor};
     padding-top: 5px;
+    display: flex;
 `

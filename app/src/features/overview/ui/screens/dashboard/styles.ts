@@ -28,6 +28,9 @@ export default EStyleSheet.create({
     reloadSpinner: {
         marginVertical: 50,
     },
+    resultsList: {
+        justifyContent: 'center',
+    },
     collectionTitleContainer: {
         display: 'flex',
         flexDirection: 'row',
@@ -36,7 +39,6 @@ export default EStyleSheet.create({
         fontWeight: '700',
     },
     collectionTitle: {
-        fontFamily: 'Inter',
         fontWeight: '700',
         marginRight: 5,
         color: '$textColor',

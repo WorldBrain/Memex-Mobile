@@ -8,6 +8,8 @@ import {
     TouchableOpacity,
 } from 'react-native'
 
+import styled from 'styled-components/native'
+
 import styles from './action-bar-segment.styles'
 
 export interface Props {
@@ -15,8 +17,8 @@ export interface Props {
     showBanner?: boolean
     onLeftBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
     onRightBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
-    leftBtnText?: string
-    rightBtnText?: string
+    leftBtnText?: React.ReactElement | string
+    rightBtnText?: React.ReactElement | string
 }
 
 const ActionBar: React.StatelessComponent<Props> = ({
@@ -25,7 +27,7 @@ const ActionBar: React.StatelessComponent<Props> = ({
     ...props
 }) => (
     <>
-        {props.showBanner && (
+        {/* {props.showBanner && (
             <View style={[styles.bannerSegmentContainer, styles.bannerSegment]}>
                 <Text
                     style={[
@@ -39,19 +41,19 @@ const ActionBar: React.StatelessComponent<Props> = ({
                     Multi-device sync. Go to the app to set up.
                 </Text>
             </View>
-        )}
-        <View style={styles.container} onTouchStart={() => Keyboard.dismiss()}>
-            <View style={styles.buttonContainerLeft}>
+        )} */}
+        <Container onTouchStart={() => Keyboard.dismiss()}>
+            <ButtonContainer>
                 {props.onLeftBtnPress ? (
-                    <TouchableOpacity onPress={props.onLeftBtnPress}>
-                        <Text style={styles.buttonText}>{leftBtnText}</Text>
-                    </TouchableOpacity>
+                    <ButtonBox onPress={props.onLeftBtnPress}>
+                        {leftBtnText}
+                    </ButtonBox>
                 ) : (
                     <Text style={styles.placeholderBtn}>Back</Text>
                 )}
-            </View>
+            </ButtonContainer>
             <View style={styles.mainContent}>{props.children}</View>
-            <View style={styles.buttonContainerRight}>
+            <ButtonContainer>
                 {props.onRightBtnPress ? (
                     props.isConfirming ? (
                         <TouchableOpacity disabled>
@@ -60,16 +62,42 @@ const ActionBar: React.StatelessComponent<Props> = ({
                             </Text>
                         </TouchableOpacity>
                     ) : (
-                        <TouchableOpacity onPress={props.onRightBtnPress}>
-                            <Text style={styles.buttonText}>
-                                {rightBtnText}
-                            </Text>
-                        </TouchableOpacity>
+                        <ButtonBox onPress={props.onRightBtnPress}>
+                            {rightBtnText}
+                        </ButtonBox>
                     )
                 ) : null}
-            </View>
-        </View>
+            </ButtonContainer>
+        </Container>
     </>
 )
 
 export default ActionBar
+
+const ButtonBox = styled.TouchableOpacity`
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`
+
+const Container = styled.View`
+    display: flex;
+    justify-content: space-between;
+    padding: 0 15px;
+    height: 50px;
+    align-items: center;
+    flex-direction: row;
+    border-style: solid;
+    border-top-width: 1px;
+    border-color: ${(props) => props.theme.colors.lightgrey};
+`
+
+const ButtonContainer = styled.View`
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`

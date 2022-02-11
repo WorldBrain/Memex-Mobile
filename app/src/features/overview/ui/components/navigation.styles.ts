@@ -8,7 +8,6 @@ const aspectRatio = height / width
 export default EStyleSheet.create({
     container: {
         flex: 1,
-        fontFamily: 'Inter',
         top: Platform.OS === 'ios' && height < 1000 ? 20 : 0,
         width: '100%',
         height:
@@ -67,7 +66,6 @@ export default EStyleSheet.create({
         width: '70%',
     },
     text: {
-        fontFamily: 'Inter',
         textAlign: 'center',
         fontWeight: 'bold',
         color: '$textColor',

@@ -26,7 +26,7 @@ const MetaPickerEntry: React.StatelessComponent<Props> = (props) => (
     <TouchableOpacity onPress={props.onPress}>
         <Container>
             <TextContainer>
-                {props.canAdd && <Text style={styles.addText}>Add new:</Text>}
+                {props.canAdd && <NewText>Add new:</NewText>}
                 <EntryTextBox>
                     <EntryText>{props.text}</EntryText>
                 </EntryTextBox>
@@ -50,9 +50,21 @@ const EntryText = styled.Text`
     font-weight: 400;
 `
 
+const NewText = styled.Text`
+    font-size: 16px;
+    color: ${(props) => props.theme.colors.purple};
+    font-weight: 800;
+    margin-right: 15px;
+`
+
 const EntryTextBox = styled.View``
 
-const TextContainer = styled.View``
+const TextContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+`
 
 const CheckMarkContainer = styled.View``
 

@@ -13,13 +13,15 @@ import {
 
 import { theme } from 'src/ui/components/theme/theme'
 
-class Example extends Component {
-    render() {
-        return <MaterialIndicator color={theme.colors.purple} />
-    }
+export type Props = {
+    size?: number
 }
 
-export default Example
+export const LoadingIndicator: React.StatelessComponent<Props> = (props) => {
+    return <MaterialIndicator size={props.size} color={theme.colors.purple} />
+}
+
+export default LoadingIndicator
 
 // import React from 'react'
 // import { View, Animated, StyleProp } from 'react-native'

@@ -50,22 +50,40 @@ export default class ListsFilter extends StatefulUIElement<
                     leftIconSize={'30px'}
                     leftIconStrokeWidth={'5px'}
                 />
-                <MetaPicker
-                    {...this.props}
-                    extraEntries={this.magicFilters}
-                    onEntryPress={this.handleEntryPress}
-                    suggestInputPlaceholder="Search Spaces"
-                    singleSelect
-                    type="collections"
-                    initSelectedEntry={
-                        this.selectedEntryName === SPECIAL_LIST_NAMES.MOBILE
-                            ? undefined
-                            : this.selectedEntryName
-                    }
-                />
+                <MetaPickerContainer>
+                    <MetaPicker
+                        {...this.props}
+                        extraEntries={this.magicFilters}
+                        onEntryPress={this.handleEntryPress}
+                        suggestInputPlaceholder="Search Spaces"
+                        singleSelect
+                        type="collections"
+                        initSelectedEntry={
+                            this.selectedEntryName === SPECIAL_LIST_NAMES.MOBILE
+                                ? undefined
+                                : this.selectedEntryName
+                        }
+                    />
+                </MetaPickerContainer>
             </Container>
         )
     }
 }
 
-const Container = styled.SafeAreaView``
+const Container = styled.SafeAreaView`
+    position: absolute;
+    width: 100%;
+    flex: 1;
+    max-height: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+`
+
+const MetaPickerContainer = styled.View`
+    max-width: 500px;
+    justify-content: center;
+    display: flex;
+    width: 100%;
+    height: 100%;
+`

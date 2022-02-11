@@ -91,7 +91,6 @@ export default class PageEditorScreen extends StatefulUIElement<
                     url={this.state.page.url}
                     onEntryPress={this.handleEntryPress}
                 />
-                <Footer>Every action is auto-saved</Footer>
             </>
         )
     }
@@ -133,7 +132,6 @@ export default class PageEditorScreen extends StatefulUIElement<
     }
 
     render() {
-        console.log(this.state.mode)
         return (
             <MainLayout
                 {...this.state.page}

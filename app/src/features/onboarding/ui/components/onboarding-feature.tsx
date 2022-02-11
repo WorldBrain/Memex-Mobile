@@ -54,7 +54,7 @@ const ImgContainer = styled.View`
     flex: 3;
     flex-direction: column;
     position: relative;
-    alignitems: center;
+    align-items: center;
     justify-content: flex-start;
     width: 100%;
     max-height: 45%;

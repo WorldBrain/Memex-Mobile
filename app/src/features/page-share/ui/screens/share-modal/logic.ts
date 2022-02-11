@@ -92,7 +92,7 @@ export default class Logic extends UILogic<State, Event> {
             syncRetryState: 'pristine',
             bookmarkState: 'pristine',
             tagsState: 'pristine',
-            collectionsState: 'pristine',
+            collectionsState: 'running',
             pageUrl: '',
             pageTitle: '',
             showSavingPage: false,

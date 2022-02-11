@@ -87,7 +87,7 @@
         "react-native-stream": "^0.1.9",
         "react-native-svg": "^9.13.6",
         "react-native-unimodules": "^0.7.0",
-        "react-native-webview": "^10.2.3",
+        "react-native-webview": "^11.17.2",
         "readability-node": "^0.1.0",
         "remove-stopwords": "^1.0.3",
         "serialize-error": "^8.1.0",

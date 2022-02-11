@@ -35,11 +35,28 @@ const MainLayout: React.StatelessComponent<Props> = (props) => (
         {/* <View style={styles.pageContainer}>
             <PageSummary {...props} />
         </View> */}
-        <View style={styles.editorContainer}>{props.children}</View>
+        <MainLayoutContainer>{props.children}</MainLayoutContainer>
     </Container>
 )
 
 const Container = styled.SafeAreaView`
+    height: 100%;
+    background: ${(props) => props.theme.colors.backgroundColor};
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+`
+
+const MainLayoutContainer = styled.View`
+    display: flex;
+    flex-direction column;
+    z-index: 1;
+    width: 620px;
+    max-width: 100%;
+    justify-content: center;
+    align-items: center;
     height: 100%;
 `
 

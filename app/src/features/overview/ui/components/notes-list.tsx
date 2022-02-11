@@ -146,23 +146,24 @@ const ScrollContainer = styled.ScrollView`
 `
 
 const FlatListContainer = styled(FlatList)`
-    height: 100%;
     display: flex;
     flex: 5;
     border-left-width: 4px;
-    border-left-color: #d0d0d0;
+    border-left-color: ${(props) => props.theme.colors.purple + '80'};
     padding-left: 10px;
     margin-left: 20px;
     margin-top: -10px;
     padding-top: 5px;
+    width: 600px;
+    max-width: 96%;
 `
 
 const PageResultCard = styled.View`
     display: flex;
     flex-direction column;
-    flex: 1;
     z-index: 1;
-    width: 100%;
+    width: 620px;
+    max-width: 100%;
 `
 
 const ResultItem = styled.View`

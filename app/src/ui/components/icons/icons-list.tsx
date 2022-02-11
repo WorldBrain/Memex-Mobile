@@ -3,6 +3,7 @@ import { View } from 'react-native'
 
 export { default as Mail } from 'src/ui/img/mail.svg'
 export { default as Login } from 'src/ui/img/login.svg'
+export { default as LogOut } from 'src/ui/img/logout.svg'
 export { default as Lock } from 'src/ui/img/lockFine.svg'
 export { default as CheckMark } from 'src/ui/img/check.svg'
 export { default as Alert } from 'src/ui/img/alert.svg'
@@ -20,6 +21,9 @@ export { default as Globe } from 'src/ui/img/globe.svg'
 export { default as Edit } from 'src/ui/img/edit.svg'
 export { default as Search } from 'src/ui/img/search.svg'
 export { default as CheckedRound } from 'src/ui/img/checkedRound.svg'
+export { default as Clock } from 'src/ui/img/clock.svg'
+export { default as SadFace } from 'src/ui/img/sadFace.svg'
+export { default as HelpIcon } from 'src/ui/img/help.svg'
 
 // export const logoSmall = browser.extension.getURL(
 //     '/img/worldbrain-logo-narrow-bw-48.png',

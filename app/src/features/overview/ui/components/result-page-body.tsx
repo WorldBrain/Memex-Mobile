@@ -4,6 +4,8 @@ import type { TouchEventHandler } from 'src/ui/types'
 import type { UIPage } from '../../types'
 import styles from './result-page-body.styles'
 
+import styled from 'styled-components/native'
+
 export interface Props extends UIPage {
     onResultPress?: TouchEventHandler
     date: string
@@ -11,21 +13,57 @@ export interface Props extends UIPage {
 
 const ResultPageBody: React.StatelessComponent<Props> = (props) => (
     <View>
-        <View style={styles.contentBox}>
-            <View style={styles.title}>
-                <Text style={styles.titleText}>{props.titleText}</Text>
-            </View>
-            <View style={styles.bottomBarBox}>
+        <ContentBox>
+            <Title>
+                <TitleText>{props.titleText}</TitleText>
+            </Title>
+            <BottomBarBox>
                 {props.type !== 'page' && (
                     <Text style={styles.pdfIcon}>PDF</Text>
                 )}
-                <Text numberOfLines={1} style={styles.linkText}>
-                    {props.domain}
-                </Text>
-                <Text style={styles.date}>{props.date}</Text>
-            </View>
-        </View>
+                <DomainText numberOfLines={1}>{props.domain}</DomainText>
+                <DateText>{props.date}</DateText>
+            </BottomBarBox>
+        </ContentBox>
     </View>
 )
 
 export default ResultPageBody
+
+const ContentBox = styled.View`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+`
+
+const Title = styled.View`
+    margin-bottom: 5px;
+`
+
+const TitleText = styled.Text`
+    color: ${(props) => props.theme.colors.darkerText}
+    font-weight: 700;
+    font-size: 16px;
+
+`
+
+const DomainText = styled.Text`
+    color: ${(props) => props.theme.colors.normalText}
+    font-weight: 500;
+    font-size: 14px;
+    margin-right: 10px;
+`
+
+const BottomBarBox = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+`
+
+const DateText = styled.Text`
+    color: ${(props) => props.theme.colors.lighterText}
+    font-weight: 400;
+    font-size: 14px;
+`

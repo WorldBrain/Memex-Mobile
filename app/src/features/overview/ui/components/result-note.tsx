@@ -119,6 +119,7 @@ const NoteContainer = styled.View`
     shadow-offset: 0px 2px;
     border-radius: 8px;
     background: white;
+    width: 100%;
 `
 
 const TopArea = styled.TouchableOpacity``

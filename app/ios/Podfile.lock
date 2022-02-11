@@ -557,8 +557,8 @@ PODS:
     - React-Core
   - react-native-sqlite-storage (4.1.0):
     - React
-  - react-native-webview (10.2.3):
-    - React
+  - react-native-webview (11.17.2):
+    - React-Core
   - React-RCTActionSheet (0.61.0):
     - React-Core/RCTActionSheetHeaders (= 0.61.0)
   - React-RCTAnimation (0.61.0):
@@ -930,7 +930,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 99b82aeb51d67d9025ab4eb8ccb8132f8dcebf69
   react-native-safe-area-context: 79fea126c6830c85f65947c223a5e3058a666937
   react-native-sqlite-storage: f06bfba10f67f989c00b6a699b9c2b80a816edbe
-  react-native-webview: 0bacc79175bc44869e4c1a015b9bc21df8cf4feb
+  react-native-webview: 380c1a03ec94b7ed764dac8db1e7c9952d08c93a
   React-RCTActionSheet: 5f9a1733ec8e380aae8a97877f1166cb058733ae
   React-RCTAnimation: 3e0a55305b70b1eb5a5e34230ed8198d4a782da9
   React-RCTBlob: a6ff2220ed7ef4b06e559ec61a0b0f4e80a3716a

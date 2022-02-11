@@ -148,6 +148,9 @@ const SearchContainer = styled.View`
 
 const ResultsContainer = styled.View`
     height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
 `
 
 const LoadingBallsContainer = styled.View`

@@ -41,7 +41,7 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
     props,
 ) => {
     return (
-        <ResultsContainer
+        <ResultContainer
         // style={{
         //     flex: 1,
         //     justifyContent: 'center',
@@ -141,7 +141,7 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                     </FooterRightSide>
                 </Footer>
             </ResultItem>
-        </ResultsContainer>
+        </ResultContainer>
     )
 }
 
@@ -152,8 +152,8 @@ const MoreButtons = styled.View`
     flex-direction: row;
 `
 
-const ResultsContainer = styled.View`
-    margin: 5px 10px;
+const ResultContainer = styled.View`
+    // margin: 5px 0px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -165,16 +165,13 @@ const ResultsContainer = styled.View`
     shadow-offset: 0px 2px;
     border-radius: 8px;
     background: white;
-
-    // &::first-child {
-    //     margin-top: 20px;
-    // }
+    width: 600px;
+    max-width: 100%;
 `
 
 const ResultItem = styled.View`
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    max-width: 600px;
+    width: 100%;
 `
 
 const TopArea = styled.TouchableOpacity`
@@ -230,7 +227,7 @@ const SpacesArea = styled.View`
 `
 
 const SpacePill = styled.View`
-    padding: 2px 7px;
+    padding: 3px 8px;
     background: ${(props) => props.theme.colors.purple};
     align-items: center;
     display: flex;
@@ -243,6 +240,7 @@ const SpacePillText = styled.Text`
     color: white;
     display: flex;
     text-align-vertical: center;
+    font-size: 12px;
 `
 
 const IconContainer = styled.TouchableOpacity`

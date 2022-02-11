@@ -19,7 +19,6 @@ const SuggestInput: React.StatelessComponent<Props> = (props) => (
             heightAndWidth={'20px'}
         /> */}
         <TextInputContainer
-            style={styles.textInput}
             value={props.value}
             onChangeText={props.onChange}
             placeholder={props.placeholder}
@@ -37,10 +36,14 @@ const Container = styled.View`
     align-items: center;
     flex-direction: row;
     width: 100%;
+    max-width: 500px;
+    height: 50px;
 `
 
 const TextInputContainer = styled.TextInput`
     background: ${(props) => props.theme.colors.backgroundColorDarker};
     border-radius: 8px;
     flex: 1;
+    height: 100%;
+    padding: 0 20px;
 `

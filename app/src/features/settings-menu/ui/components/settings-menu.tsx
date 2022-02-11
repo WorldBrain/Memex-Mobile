@@ -73,7 +73,8 @@ class SettingsMenu extends React.PureComponent<Props> {
                     leftIcon={icons.BackArrow}
                     leftIconSize={'30px'}
                     leftBtnPress={this.props.onExitMenuPress}
-                    titleText={'Menu'}
+                    leftIconStrokeWidth={'5px'}
+                    titleText={'Settings'}
                 />
                 <View style={styles.mainContainer}>
                     <View style={styles.linksContainer}>

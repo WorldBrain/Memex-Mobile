@@ -148,12 +148,14 @@ export default class extends StatefulUIElement<Props, State, Event> {
                 />
                 <ScrollContainer highlightText={this.state.highlightText}>
                     {this.renderHighlightText()}
-                    <NoteInputEditor
-                        onChange={this.handleInputChange}
-                        disabled={this.disableInputs}
-                        className={styles.noteInput}
-                        value={this.state.noteText}
-                    />
+                    <NoteInputEditorBox>
+                        <NoteInputEditor
+                            onChange={this.handleInputChange}
+                            disabled={this.disableInputs}
+                            className={styles.noteInput}
+                            value={this.state.noteText}
+                        />
+                    </NoteInputEditorBox>
                 </ScrollContainer>
             </Container>
         )
@@ -164,15 +166,33 @@ const Container = styled.SafeAreaView`
     background: ${(props) => props.theme.colors.backgroundColor};
 `
 
-const NoteInputEditor = styled(NoteInput)`
-    background: white;
-    margin: 20px;
+const NoteInputEditorBox = styled.View`
+    border-style: solid;
+    border-width: 1px;
+    border-color: ${(props) => props.theme.colors.lightgrey};
+    height: 50%;
+    max-height: 400px;
+    margin: 0 10px;
+    width: 620px;
+    max-width: 100%;
 `
 
-const ScrollContainer = styled.ScrollView<{ highlightText: string }>`
+const NoteInputEditor = styled(NoteInput)`
+    background: red;
+    margin: 20px;
+    flex: 1;
+    height: 100%;
+`
+
+const ScrollContainer = styled.View<{ highlightText: string }>`
     height: 100%;
     display: flex;
     padding-top: ${(props) => (props.highlightText ? '0px' : '10px')};
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 `
 
 const AnnotationContainer = styled.View`
@@ -182,6 +202,8 @@ const AnnotationContainer = styled.View`
     border-style: solid;
     margin: 20px 0px 20px 20px;
     padding: 5px 5px 5px 10px;
+    width: 620px;
+    max-width: 100%;
 `
 
 const AnnotationHighlight = styled.Text`

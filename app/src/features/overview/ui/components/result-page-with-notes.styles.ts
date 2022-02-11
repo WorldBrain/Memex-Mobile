@@ -17,7 +17,6 @@ export default EStyleSheet.create({
                 : conditionalStyles() === 'tabletPortrait'
                 ? '1rem'
                 : '1.5rem',
-        fontFamily: 'Inter',
         marginBottom: '0.5rem',
         marginTop: '5%',
         fontWeight: '700',

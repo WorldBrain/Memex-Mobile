@@ -2,22 +2,17 @@ import React from 'react'
 import { Linking, Text, StyleProp } from 'react-native'
 
 import styles from './link.styles'
+import styled from 'styled-components/native'
 
 export interface Props {
     href: string
     style?: StyleProp<any>
-    onPress?: () => Promise<void>
 }
 
-const Link: React.StatelessComponent<Props> = ({
-    href,
-    children,
-    style,
-    onPress = () => Linking.openURL(href),
-}) => (
-    <Text style={[styles.linkText, style]} onPress={onPress}>
-        {children}
-    </Text>
+const Link: React.StatelessComponent<Props> = ({ href, children, style }) => (
+    <LinkedView onPress={() => Linking.openURL(href)}>{children}</LinkedView>
 )
+
+const LinkedView = styled.TouchableOpacity``
 
 export default Link

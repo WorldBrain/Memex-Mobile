@@ -50,6 +50,9 @@ export const Icon: React.StatelessComponent<IconProps> = (props) => {
 }
 
 const IconContainer = styled.View<{ rotate: string }>`
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transform: rotateZ(
         ${(props) => {
             return props.rotate ? props.rotate : '0deg'

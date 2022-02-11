@@ -33,6 +33,7 @@ export interface State {
     selectedText?: string
     isTagged: boolean
     isBookmarked: boolean
+    spaces: []
     isListed: boolean
     hasNotes: boolean
     htmlSource?: string
@@ -98,6 +99,7 @@ export default class Logic extends UILogic<State, Event> {
             isListed: false,
             hasNotes: false,
             highlights: [],
+            spaces: [],
         }
     }
 
@@ -194,11 +196,16 @@ export default class Logic extends UILogic<State, Event> {
             isTagged: { $set: !!tags.length },
             highlights: {
                 $set: notes
-                    .filter(note => note.body?.length && note.selector != null)
-                    .map(a => ({
+                    .filter(
+                        (note) => note.body?.length && note.selector != null,
+                    )
+                    .map((a) => ({
                         anchor: a.selector,
                         url: a.url,
                     })),
+            },
+            spaces: {
+                $set: lists,
             },
         })
     }
@@ -209,7 +216,7 @@ export default class Logic extends UILogic<State, Event> {
         const { overview: overviewStorage } = this.props.storage.modules
 
         const toggleState = () =>
-            this.emitMutation({ isBookmarked: { $apply: prev => !prev } })
+            this.emitMutation({ isBookmarked: { $apply: (prev) => !prev } })
         toggleState()
 
         try {
@@ -334,7 +341,7 @@ export default class Logic extends UILogic<State, Event> {
         this.props.navigation.navigate('PageEditor', {
             pageUrl: previousState.url,
             mode,
-            updatePage: page => this.updatePageDataFlags(page),
+            updatePage: (page) => this.updatePageDataFlags(page),
         })
     }
 

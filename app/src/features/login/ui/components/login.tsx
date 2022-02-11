@@ -404,11 +404,11 @@ const TextInputBox = styled(TextInput)`
 `
 
 const ForgotPasswordBox = styled.TouchableOpacity`
-    width: 100%;
+    width: 350px;
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
-    padding-right: 20px;
+    padding-right: 10px;
     margin-top: -5px;
 `
 

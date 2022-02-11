@@ -11,6 +11,8 @@ export interface Props extends Omit<WebViewProps, 'onMessage'> {
     className?: string
     onMessage: (data: string) => void
     setRef?: (webView: WebView) => void
+    onHighlightBtnPress: () => void
+    onAnnotateBtnPress: () => void
 }
 
 class ReaderWebView extends React.PureComponent<Props> {
@@ -27,9 +29,21 @@ class ReaderWebView extends React.PureComponent<Props> {
                     mediaPlaybackRequiresUserAction={true}
                     {...this.props}
                     ref={this.props.setRef}
-                    onMessage={({ nativeEvent }) =>
+                    onMessage={({ nativeEvent }) => {
                         this.props.onMessage(nativeEvent.data)
-                    }
+                    }}
+                    menuItems={[
+                        { label: 'Highlight', key: 'highlight' },
+                        { label: 'Add Note', key: 'annotate' },
+                    ]}
+                    onCustomMenuSelection={(webViewEvent) => {
+                        if (webViewEvent.nativeEvent.key === 'highlight') {
+                            this.props.onHighlightBtnPress()
+                        }
+                        if (webViewEvent.nativeEvent.key === 'annotate') {
+                            this.props.onAnnotateBtnPress()
+                        }
+                    }}
                 />
             </Container>
         )
