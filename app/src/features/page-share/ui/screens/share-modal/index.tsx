@@ -127,9 +127,7 @@ export default class ShareModalScreen extends StatefulUIElement<
         if (this.state.metaViewShown) {
             return (
                 <>
-                    <Text style={styles.titleText}>
-                        {this.state.statusText}
-                    </Text>
+                    <TitleText>{this.state.statusText}</TitleText>
                     <ReloadBtn onPress={this.handleReloadPress} />
                 </>
             )
@@ -166,7 +164,11 @@ export default class ShareModalScreen extends StatefulUIElement<
                         />
                     }
                     onLeftBtnPress={this.handleMetaViewTypeSwitch(undefined)}
-                    onRightBtnPress={this.handleSave}
+                    onRightBtnPress={
+                        this.state.metaViewShown
+                            ? this.handleMetaViewTypeSwitch(undefined)
+                            : this.handleSave
+                    }
                     rightBtnText={
                         this.isInputDirty ? (
                             <Icon
@@ -251,8 +253,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                     <AddSpacesContainer
                         onPress={this.handleMetaViewTypeSwitch('collections')}
                     >
-                        {this.state.collectionsState === 'running' &&
-                        !this.state.collectionsToAdd.length ? (
+                        {this.state.collectionsState === 'running' ? (
                             <LoadingIndicatorBox>
                                 <LoadingIndicator size={15} />
                             </LoadingIndicatorBox>
@@ -435,4 +436,10 @@ const AddSpacesText = styled.Text`
     text-align-vertical: bottom;
     width: 90px;
     text-align: right;
+`
+
+const TitleText = styled.Text`
+    color: ${(props) => props.theme.colors.darkerText};
+    font-size: 14px;
+    font-weight: 700;
 `

@@ -13,8 +13,9 @@ import * as icons from 'src/ui/components/icons/icons-list'
 
 export interface Props extends PageBodyProps {
     onLeftPress: () => void
-    onRightPress?: () => void
+    onRightPress?: () => void | undefined
     titleText: string
+    rightIcon: React.FC
 }
 
 export interface Props extends PageSummaryProps {}
@@ -27,7 +28,7 @@ const MainLayout: React.StatelessComponent<Props> = (props) => (
             leftIconStrokeWidth={'6px'}
             leftBtnPress={props.onLeftPress}
             titleText={props.titleText}
-            rightIcon={icons.Plus}
+            rightIcon={props.rightIcon}
             rightBtnPress={props.onRightPress}
             rightIconColor={'purple'}
             rightIconStrokeWidth={'1.5px'}

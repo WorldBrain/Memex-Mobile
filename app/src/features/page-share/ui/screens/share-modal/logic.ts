@@ -92,7 +92,7 @@ export default class Logic extends UILogic<State, Event> {
             syncRetryState: 'pristine',
             bookmarkState: 'pristine',
             tagsState: 'pristine',
-            collectionsState: 'running',
+            collectionsState: 'pristine',
             pageUrl: '',
             pageTitle: '',
             showSavingPage: false,
@@ -238,6 +238,8 @@ export default class Logic extends UILogic<State, Event> {
                         $set: collectionsToAdd,
                     },
                 })
+
+                console.log(collectionsToAdd)
                 this.initValues.collectionsToAdd = collectionsToAdd
             },
         )

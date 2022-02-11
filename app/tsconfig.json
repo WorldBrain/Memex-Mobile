@@ -94,5 +94,6 @@
         "metro.config.js",
         "jest.config.js",
         "src/content-script"
-    ]
+    ],
+    "include": ["src/custom.d.ts"]
 }

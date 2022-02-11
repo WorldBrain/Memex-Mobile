@@ -111,7 +111,7 @@ export { default as AddNote } from 'src/ui/img/AddNote.svg'
 // export const goTo = browser.runtime.getURL('/img/open.svg')
 // export const openSidebar = browser.runtime.getURL('/img/openSidebar.svg')
 // export const sidebarIcon = browser.runtime.getURL('/img/sidebarOn.svg')
-export const copy = 'src/ui/img/copy.svg'
+// export const copy = 'src/ui/img/copy.svg'
 // export const edit = browser.runtime.getURL('/img/edit.svg')
 // export const remove = browser.runtime.getURL('/img/remove.svg')
 // export const removeX = browser.runtime.getURL('/img/removeX.svg')

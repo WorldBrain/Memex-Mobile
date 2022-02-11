@@ -11,7 +11,7 @@ import { MetaType } from 'src/features/meta-picker/types'
 import { MetaTypeShape } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './styles'
-import styled from 'styled-components/native'
+import * as icons from 'src/ui/components/icons/icons-list'
 
 export default class PageEditorScreen extends StatefulUIElement<
     Props,
@@ -131,13 +131,27 @@ export default class PageEditorScreen extends StatefulUIElement<
         }
     }
 
+    private iconRightSide(mode) {
+        switch (mode) {
+            case 'notes':
+                return icons.Plus
+            default:
+                return null
+        }
+    }
+
     render() {
         return (
             <MainLayout
                 {...this.state.page}
                 onLeftPress={() => this.processEvent('goBack', null)}
-                onRightPress={this.initHandleAddNotePress()}
+                onRightPress={
+                    this.state.mode === 'notes'
+                        ? this.initHandleAddNotePress()
+                        : null
+                }
                 titleText={this.TitleText().toString()}
+                rightIcon={this.iconRightSide(this.state.mode)}
             >
                 {this.renderEditor()}
             </MainLayout>

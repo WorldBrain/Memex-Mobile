@@ -32,7 +32,7 @@ const NoteInput: React.StatelessComponent<Props> = (props) => {
 }
 
 const Container = styled.SafeAreaView`
-    height: 100%;
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;

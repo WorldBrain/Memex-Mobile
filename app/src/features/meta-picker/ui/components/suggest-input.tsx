@@ -24,6 +24,7 @@ const SuggestInput: React.StatelessComponent<Props> = (props) => (
             placeholder={props.placeholder}
             placeholderTextColor={theme.colors.lighterText}
             autoCapitalize="none"
+            autoFocus
         />
     </Container>
 )
