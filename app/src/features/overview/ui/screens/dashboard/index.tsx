@@ -163,12 +163,12 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
     private renderList() {
         if (this.state.loadState === 'running') {
-            return <ResultListContainer><LoadingBalls /></ResultListContainer>
+            return <LoadingBalls />
         }
 
         return (
             <ResultListContainer>
-                {this.state.reloadState === 'running' && <LoadingBallsBox><LoadingBalls /></LoadingBallsBox>}
+                {this.state.reloadState === 'running' && <LoadingBalls />}
                 <ResultsList
                     renderItem={this.renderPage}
                     data={selectors.results(this.state)}
@@ -230,10 +230,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     }
 }
 
-const LoadingBallsBox = styled.View`
-    height: 200px;
-`
-
 const Container = styled.SafeAreaView`
     height: 100%;
     position: absolute;
@@ -246,7 +242,7 @@ const Container = styled.SafeAreaView`
 
 const ResultsContainer = styled.View`
     display: flex;
-    margin: 0px 10px;
+    margin: 10px;
 `
 
 const ResultListContainer = styled.View`

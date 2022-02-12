@@ -10,7 +10,6 @@ import styled from 'styled-components/native'
 import Body, { Props as BodyProps } from './result-page-body'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 
-const { height } = Dimensions.get('window');
 export interface Props {
     notes: UINote[]
     clearBackground?: boolean
@@ -18,6 +17,7 @@ export interface Props {
     initNotePress: (note: UINote) => TouchEventHandler
     initNoteEdit: (note: UINote) => TouchEventHandler
     pageData?: UIPage
+    onReaderPress?: TouchEventHandler
 }
 
 class NotesList extends React.PureComponent<Props> {
@@ -36,7 +36,7 @@ class NotesList extends React.PureComponent<Props> {
 
     private renderPageItem() {
         return (
-            <PageResultCard>
+            <PageResultCard onPress={this.props.onReaderPress}>
                 <TopArea>
                     <Body
                         {...this.props.pageData}
@@ -80,7 +80,6 @@ class NotesList extends React.PureComponent<Props> {
                             data={this.props.notes}
                             keyExtractor={(item, index) => index.toString()}
                             contentContainerStyle={styles.list}
-                            ListFooterComponent={<EmptyItem />}
                         />
                     </ResultsContainer>
                 )}
@@ -90,11 +89,6 @@ class NotesList extends React.PureComponent<Props> {
 }
 
 export default NotesList
-
-const EmptyItem = styled.View`
-    height: 300px;
-
-`
 
 const SectionCircle = styled.View`
     background: ${(props) => props.theme.colors.backgroundHighlight};
@@ -109,9 +103,6 @@ const SectionCircle = styled.View`
 const Container = styled.View`
     background: ${(props) => props.theme.colors.backgroundColor};
     width: 100%;
-    height: ${height};
-    flex: 1;
-    margin-top: 10px;
 `
 
 const NoResultsTitle = styled.Text`
@@ -132,7 +123,7 @@ const NoResultsSubTitle = styled.Text`
 `
 
 const ResultsContainer = styled.View`
-    height: ${height};
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -148,18 +139,27 @@ const NoResults = styled.View`
     padding-top: 30px;
 `
 
+const ScrollContainer = styled.ScrollView`
+    height: 50%;
+    flex: 1;
+    align-items: flex-end;
+    display: flex;
+`
+
 const FlatListContainer = styled(FlatList)`
     display: flex;
+    flex: 5;
     border-left-width: 4px;
     border-left-color: ${(props) => props.theme.colors.purple + '80'};
     padding-left: 10px;
-    margin-left: 10px;
+    margin-left: 20px;
     margin-top: -10px;
     padding-top: 5px;
-    padding-right: 10px;
+    width: 600px;
+    max-width: 96%;
 `
 
-const PageResultCard = styled.View`
+const PageResultCard = styled.TouchableOpacity`
     display: flex;
     flex-direction column;
     z-index: 1;

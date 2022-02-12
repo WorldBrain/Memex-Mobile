@@ -1,6 +1,3 @@
-import React from 'react'
-import { View } from 'react-native'
-
 export { default as Mail } from 'src/ui/img/mail.svg'
 export { default as Login } from 'src/ui/img/login.svg'
 export { default as LogOut } from 'src/ui/img/logout.svg'
