@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { AppRegistry, Dimensions } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
+import { theme } from 'src/ui/components/theme/theme'
+import { ThemeProvider } from 'styled-components'
 
 import { name as appName, shareExtName } from '../../app.json'
 import {
@@ -21,7 +23,7 @@ export class UI {
 
         EStyleSheet.build({
             $textColor: '#3a2f45',
-            $greenColor: '#5cd9a6',
+            $greenColor: theme.colors.backgroundHighlight,
             $purpleColor: '#72727f',
             $rem: entireScreenWidth / 30,
         })

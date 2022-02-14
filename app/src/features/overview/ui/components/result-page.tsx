@@ -154,13 +154,16 @@ const ResultContainer = styled.View`
     justify-content: center;
     align-items: stretch;
     shadow-opacity: 0.5;
-    shadow-radius: 5px;
+    shadow-radius: 3px;
     shadow-color: #e0e0e0;
     shadow-offset: 0px 2px;
     border-radius: 8px;
     background: white;
     width: 600px;
     max-width: 100%;
+    border-style: solid;
+    border-width: 1px;
+    border-color: ${(props) => props.theme.colors.lightgrey};
 `
 
 const ResultItem = styled.View`

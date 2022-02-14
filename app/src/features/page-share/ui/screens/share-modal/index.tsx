@@ -277,7 +277,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                                 )}
                             </>
                         )}
-                        <AddSpacesText>Add to Spaces</AddSpacesText>
+                        <AddSpacesText>Add page to Spaces</AddSpacesText>
                     </AddSpacesContainer>
                 </ActionBarContainer>
             </>
@@ -434,7 +434,7 @@ const AddSpacesText = styled.Text`
     flex-direction: row;
     justify-content: flex-end;
     text-align-vertical: bottom;
-    width: 90px;
+    width: 120px;
     text-align: right;
 `
 

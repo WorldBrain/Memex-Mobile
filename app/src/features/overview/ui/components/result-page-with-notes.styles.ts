@@ -34,12 +34,10 @@ export default EStyleSheet.create({
         textAlign: 'center',
     },
     list: {
-        width: '96%',
+        width: '100%',
         flexDirection: 'column',
-        flexGrow: 1,
-        flex: 1,
         alignContent: 'stretch',
-        height: '80%',
+        flex: 1,
     },
     link: {
         textDecorationLine: 'underline',

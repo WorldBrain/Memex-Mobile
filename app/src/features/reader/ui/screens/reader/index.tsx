@@ -170,6 +170,10 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     leftIconSize="30px"
                     leftIconStrokeWidth="5px"
                     titleText={'Annotate this page'}
+                    rightBtnPress={() => Linking.openURL(this.state.url)}
+                    rightIcon={icons.Globe}
+                    rightIconSize="20px"
+                    rightIconStrokeWidth="5px"
                 />
                 {this.renderWebView()}
                 <ActionBar

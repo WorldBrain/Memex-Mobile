@@ -135,6 +135,19 @@ export default class PageEditorScreen extends StatefulUIElement<
         switch (mode) {
             case 'notes':
                 return icons.Plus
+            // case 'reader':
+            //     return icons.Globe
+            default:
+                return null
+        }
+    }
+
+    private iconActionRightSide(mode) {
+        switch (mode) {
+            case 'notes':
+                return this.initHandleAddNotePress()
+            // case 'reader':
+            //     return this.initHandleAddNotePress()
             default:
                 return null
         }
@@ -145,11 +158,7 @@ export default class PageEditorScreen extends StatefulUIElement<
             <MainLayout
                 {...this.state.page}
                 onLeftPress={() => this.processEvent('goBack', null)}
-                onRightPress={
-                    this.state.mode === 'notes'
-                        ? this.initHandleAddNotePress()
-                        : null
-                }
+                onRightPress={this.iconActionRightSide(this.state.mode)}
                 titleText={this.TitleText().toString()}
                 rightIcon={this.iconRightSide(this.state.mode)}
             >

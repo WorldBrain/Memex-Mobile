@@ -46,7 +46,7 @@ const TextBox = styled.View`
     width: 100%;
     flex: 1;
     border: none;
-    width: 620px;
+    width: 800px;
     max-width: 100%;
 `
 

@@ -29,6 +29,7 @@ import SyncRibbon from '../../components/sync-ribbon'
 import Navigation from '../../components/navigation'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
+
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
     private unsubNavFocus!: () => void
@@ -163,12 +164,20 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
     private renderList() {
         if (this.state.loadState === 'running') {
-            return <LoadingBalls />
+            return (
+                <ResultListContainer>
+                    <LoadingBalls />
+                </ResultListContainer>
+            )
         }
 
         return (
             <ResultListContainer>
-                {this.state.reloadState === 'running' && <LoadingBalls />}
+                {this.state.reloadState === 'running' && (
+                    <LoadingBallsBox>
+                        <LoadingBalls />
+                    </LoadingBallsBox>
+                )}
                 <ResultsList
                     renderItem={this.renderPage}
                     data={selectors.results(this.state)}
@@ -230,6 +239,10 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     }
 }
 
+const LoadingBallsBox = styled.View`
+    height: 200px;
+`
+
 const Container = styled.SafeAreaView`
     height: 100%;
     position: absolute;
@@ -242,7 +255,7 @@ const Container = styled.SafeAreaView`
 
 const ResultsContainer = styled.View`
     display: flex;
-    margin: 10px;
+    margin: 0px 5px;
 `
 
 const ResultListContainer = styled.View`
@@ -252,6 +265,6 @@ const ResultListContainer = styled.View`
 
 const ResultsList = styled(FlatList)`
     background: ${(props) => props.theme.colors.backgroundColor};
-    padding-top: 5px;
     display: flex;
+    padding: 5px;
 `
