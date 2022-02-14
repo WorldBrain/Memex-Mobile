@@ -37,7 +37,6 @@ export default EStyleSheet.create({
         width: '100%',
         flexDirection: 'column',
         alignContent: 'stretch',
-        flex: 1,
     },
     link: {
         textDecorationLine: 'underline',

@@ -110,7 +110,6 @@ const Container = styled.View`
     background: ${(props) => props.theme.colors.backgroundColor};
     width: 100%;
     margin-top: 10px;
-    height: 100%;
     flex: 1;
 `
 
