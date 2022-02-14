@@ -47,4 +47,5 @@ const TextInputContainer = styled.TextInput`
     flex: 1;
     height: 100%;
     padding: 0 20px;
+    color: ${(props) => props.theme.colors.darkerText};
 `

@@ -92,6 +92,7 @@ const Container = styled.View`
     border-style: solid;
     border-top-width: 1px;
     border-color: ${(props) => props.theme.colors.lightgrey};
+    background: white;
 `
 
 const ButtonContainer = styled.View`

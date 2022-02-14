@@ -163,7 +163,10 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     )
 
     private renderList() {
-        if (this.state.loadState === 'running') {
+        if (
+            this.state.loadState === 'pristine' ||
+            this.state.loadState === 'running'
+        ) {
             return (
                 <ResultListContainer>
                     <LoadingBalls />
@@ -200,7 +203,11 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     scrollEventThrottle={16}
                     contentContainerStyle={styles.resultsList}
                 />
-                {this.state.loadMoreState === 'running' && <LoadingBalls />}
+                {this.state.loadMoreState === 'running' && (
+                    <LoadingBallsBox>
+                        <LoadingBalls />
+                    </LoadingBallsBox>
+                )}
             </ResultListContainer>
         )
     }

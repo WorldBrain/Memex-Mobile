@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, createRef } from 'react'
 import { View, FlatList, ListRenderItem, Text } from 'react-native'
 
 import { StatefulUIElement } from 'src/ui/types'
@@ -27,12 +27,16 @@ export default class MetaPickerScreen extends StatefulUIElement<
         onEntryPress: async (item: MetaTypeShape) => undefined,
     }
 
+    FlatlistRef
+
     constructor(props: MetaPickerScreenProps) {
         super(props, new Logic(props))
 
         if (props.ref) {
             props.ref(this)
         }
+
+        this.FlatlistRef = React.createRef()
     }
 
     private get initEntries(): string[] {
@@ -53,6 +57,10 @@ export default class MetaPickerScreen extends StatefulUIElement<
         return `Search & Add ${getMetaTypeName(this.props.type)}`
     }
 
+    private ScrollTop = () => {
+        this.FlatlistRef?.current?.scrollToOffset({ animated: true, offset: 0 })
+    }
+
     private initHandleEntryPress = ({
         canAdd,
         ...item
@@ -70,6 +78,10 @@ export default class MetaPickerScreen extends StatefulUIElement<
                 selected: this.initEntries,
             })
         }
+
+        setTimeout(() => {
+            this.ScrollTop()
+        }, 300)
     }
 
     private renderPickerEntry: ListRenderItem<MetaTypeShape> = ({
@@ -94,7 +106,6 @@ export default class MetaPickerScreen extends StatefulUIElement<
     }
 
     render() {
-        console.log(this.props.children)
         return (
             <MetaPicker className={this.props.className}>
                 {this.state.loadState === 'running' ? (
@@ -113,6 +124,7 @@ export default class MetaPickerScreen extends StatefulUIElement<
                             </SearchContainer>
                             <View style={styles.listContainer}>
                                 <FlatList
+                                    ref={this.FlatlistRef}
                                     keyboardShouldPersistTaps="always"
                                     renderItem={this.renderPickerEntry}
                                     data={selectors.pickerEntries(
@@ -122,6 +134,7 @@ export default class MetaPickerScreen extends StatefulUIElement<
                                     keyExtractor={(item, index) =>
                                         index.toString()
                                     }
+                                    showsVerticalScrollIndicator={false}
                                     ListEmptyComponent={
                                         <MetaPickerEmptyRow
                                             hasSearchInput={
@@ -130,6 +143,7 @@ export default class MetaPickerScreen extends StatefulUIElement<
                                             type={this.props.type}
                                         />
                                     }
+                                    ListFooterComponent={<EmptyItem />}
                                 />
                             </View>
                         </InnerContainer>
@@ -139,6 +153,10 @@ export default class MetaPickerScreen extends StatefulUIElement<
         )
     }
 }
+
+const EmptyItem = styled.View`
+    height: 200px;
+`
 
 const InnerContainer = styled.View`
     width: 600px;

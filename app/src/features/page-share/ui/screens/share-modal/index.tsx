@@ -213,13 +213,15 @@ export default class ShareModalScreen extends StatefulUIElement<
                                     styledScrollView.Container
                                 }
                             >
-                                {this.state.collectionsToAdd.map((elements) => (
-                                    <SpacePills>
-                                        <SpacePillsText>
-                                            {elements}
-                                        </SpacePillsText>
-                                    </SpacePills>
-                                ))}
+                                {this.state.collectionsToAdd
+                                    .filter((item) => item !== 'Inbox')
+                                    .map((elements) => (
+                                        <SpacePills>
+                                            <SpacePillsText>
+                                                {elements}
+                                            </SpacePillsText>
+                                        </SpacePills>
+                                    ))}
                             </SpacesContainer>
                         </SpaceBar>
                     )}
@@ -388,7 +390,7 @@ const ActionBarContainer = styled(ActionBar)`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background: red;
+    background: white;
 `
 
 const LoadingIndicatorBox = styled.View`

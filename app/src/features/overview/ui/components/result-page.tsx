@@ -48,13 +48,17 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                         <Body {...props} />
                         {/* <Tags tags={props.tags} /> */}
                     </View>
-                    <SpacesArea>
-                        {props.lists.map((entry) => (
-                            <SpacePill>
-                                <SpacePillText>{entry}</SpacePillText>
-                            </SpacePill>
-                        ))}
-                    </SpacesArea>
+                    {props.lists.length > 0 && (
+                        <SpacesArea>
+                            {props.lists
+                                .filter((item) => item !== 'Inbox')
+                                .map((entry) => (
+                                    <SpacePill>
+                                        <SpacePillText>{entry}</SpacePillText>
+                                    </SpacePill>
+                                ))}
+                        </SpacesArea>
+                    )}
                 </TopArea>
                 <Footer>
                     <AddSpacesContainer onPress={props.onListsPress}>
@@ -172,7 +176,7 @@ const ResultItem = styled.View`
 `
 
 const TopArea = styled.TouchableOpacity`
-    padding: 15px;
+    padding: 15px 15px 5px 15px;
 `
 
 const Footer = styled.View`
@@ -221,6 +225,8 @@ const SpacesArea = styled.View`
     display: flex;
     flex-direction: row;
     margin-top: 10px;
+    flex-wrap: wrap;
+    flex: 1;
 `
 
 const SpacePill = styled.View`
@@ -231,6 +237,7 @@ const SpacePill = styled.View`
     text-align-vertical: center;
     margin-right: 3px;
     border-radius: 3px;
+    margin-bottom: 5px;
 `
 
 const SpacePillText = styled.Text`
