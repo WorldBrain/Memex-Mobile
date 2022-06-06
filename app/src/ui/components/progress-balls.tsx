@@ -1,7 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
 import styled from 'styled-components/native'
-import { ProgressPlugin } from 'webpack'
 
 import styles from './progress-balls.styles'
 
@@ -36,7 +35,7 @@ const Ball = styled.View<{
     background: ${(props) =>
         props.isSelected
             ? props.theme.colors.purple + '70'
-            : props.theme.colors.backgroundColorDarker}};   
+            : props.theme.colors.backgroundColorDarker}};
 `
 
 export default ProgressBalls

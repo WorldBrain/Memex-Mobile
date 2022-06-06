@@ -6,7 +6,6 @@
         "esModuleInterop": true,
         "isolatedModules": true,
         "experimentalDecorators": true,
-        "typeRoots": ["node_modules/@types"],
         "jsx": "react",
         "lib": ["ES2020"],
         "moduleResolution": "node",
@@ -94,6 +93,5 @@
         "metro.config.js",
         "jest.config.js",
         "src/content-script"
-    ],
-    "include": ["src/custom.d.ts"]
+    ]
 }
