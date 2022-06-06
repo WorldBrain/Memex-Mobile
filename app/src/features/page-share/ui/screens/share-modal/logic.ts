@@ -1,4 +1,3 @@
-// tslint:disable:no-console
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
@@ -6,14 +5,10 @@ import {
     UITaskState,
     UIServices,
     UIStorageModules,
-    MainNavProps,
     ShareNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import {
-    SPECIAL_LIST_NAMES,
-    SPECIAL_LIST_IDS,
-} from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
+import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { getMetaTypeName } from 'src/features/meta-picker/utils'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 
@@ -239,7 +234,6 @@ export default class Logic extends UILogic<State, Event> {
                     },
                 })
 
-                console.log(collectionsToAdd)
                 this.initValues.collectionsToAdd = collectionsToAdd
             },
         )

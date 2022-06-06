@@ -560,7 +560,7 @@ describe('share modal UI logic tests', () => {
 
         await element.processEvent('setMetaViewType', { type: 'collections' })
         expect(element.state.metaViewShown).toEqual('collections')
-        expect(element.state.statusText).toEqual('Collections')
+        expect(element.state.statusText).toEqual('Spaces')
 
         await element.processEvent('setMetaViewType', { type: undefined })
         expect(element.state.metaViewShown).toBeUndefined()

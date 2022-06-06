@@ -98,6 +98,7 @@ export async function main() {
                         key: storageKeys.lastSeenUpdateTime,
                         value,
                     }),
+                getClientDeviceType: () => PersonalDeviceType.Mobile,
                 getDeviceId,
             }),
         createDeviceId: async (userId) => {
