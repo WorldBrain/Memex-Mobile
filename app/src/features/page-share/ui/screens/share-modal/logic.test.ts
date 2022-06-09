@@ -397,6 +397,54 @@ describe('share modal UI logic tests', () => {
         }
     })
 
+    it('should correctly track errors in case of load failure of any associated lists, tags, or bookmark data', async (context) => {
+        const pageUrl = DATA.PAGE_URL_1
+        await context.storage.modules.overview.createPage({
+            url: pageUrl,
+            fullUrl: pageUrl,
+        } as any)
+        const {
+            object: { id: listId },
+        } = await context.storage.modules.metaPicker.createList({
+            name: 'My list',
+        })
+        await context.storage.modules.metaPicker.createPageListEntry({
+            fullPageUrl: pageUrl,
+            listId,
+        })
+
+        const testError = new Error('test')
+        context.storage.modules.metaPicker.findListsByPage = async () => {
+            throw testError
+        }
+
+        const { element, trackedErrors } = await setup({
+            ...context,
+            getSharedUrl: () => pageUrl,
+        })
+
+        expect(trackedErrors).toEqual([])
+        expect(element.state.collectionsState).toEqual('pristine')
+
+        await element.init()
+
+        expect(trackedErrors).toEqual([testError])
+        try {
+            expect(element.state).toEqual(
+                expect.objectContaining({
+                    pageUrl,
+                    collectionsToAdd: [],
+                    tagsToAdd: [],
+                    isUnsupportedApplication: false,
+                    isStarred: false,
+                    collectionsState: 'error',
+                }),
+            )
+        } finally {
+            await element.cleanup()
+        }
+    })
+
     it('should be able to undo a page save', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
         const url = DATA.PAGE_URL_1_NORM
@@ -493,6 +541,36 @@ describe('share modal UI logic tests', () => {
                 showSavingPage: true,
             }),
         )
+    })
+
+    it('should correctly track error in case of a failed visit', async (context) => {
+        const pageUrl = DATA.PAGE_URL_1
+        const url = DATA.PAGE_URL_1_NORM
+
+        const testError = new Error('test')
+        context.storage.modules.overview.visitPage = async () => {
+            throw testError
+        }
+
+        const { element, trackedErrors } = await setup({
+            ...context,
+            getSharedUrl: () => pageUrl,
+        })
+
+        await context.storage.modules.overview.createPage({
+            url: pageUrl,
+            fullUrl: pageUrl,
+        } as any)
+
+        expect(
+            await context.storage.manager
+                .collection('pages')
+                .findObject({ url }),
+        ).toBeTruthy()
+
+        expect(trackedErrors).toEqual([])
+        await element.init()
+        expect(trackedErrors).toEqual([testError])
     })
 
     it('should be able to set page url', async (context) => {

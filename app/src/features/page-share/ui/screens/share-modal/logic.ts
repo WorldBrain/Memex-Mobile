@@ -185,21 +185,33 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         this.existingPageVisitTime = Date.now()
-        await storage.modules.overview.visitPage({
-            url,
-            time: this.existingPageVisitTime,
-        })
+
+        try {
+            await storage.modules.overview.visitPage({
+                url,
+                time: this.existingPageVisitTime,
+            })
+        } catch (err) {
+            services.errorTracker.track(err)
+        }
 
         const bookmarkP = executeUITask<State, 'bookmarkState', void>(
             this,
             'bookmarkState',
             async () => {
-                const isStarred = await storage.modules.overview.isPageStarred({
-                    url,
-                })
+                try {
+                    const isStarred = await storage.modules.overview.isPageStarred(
+                        {
+                            url,
+                        },
+                    )
 
-                this.emitMutation({ isStarred: { $set: isStarred } })
-                this.initValues.isStarred = isStarred
+                    this.emitMutation({ isStarred: { $set: isStarred } })
+                    this.initValues.isStarred = isStarred
+                } catch (err) {
+                    services.errorTracker.track(err)
+                    throw err
+                }
             },
         )
 
@@ -207,13 +219,20 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'tagsState',
             async () => {
-                const tags = await storage.modules.metaPicker.findTagsByPage({
-                    url,
-                })
-                const tagsToAdd = tags.map((tag) => tag.name)
+                try {
+                    const tags = await storage.modules.metaPicker.findTagsByPage(
+                        {
+                            url,
+                        },
+                    )
+                    const tagsToAdd = tags.map((tag) => tag.name)
 
-                this.emitMutation({ tagsToAdd: { $set: tagsToAdd } })
-                this.initValues.tagsToAdd = tagsToAdd
+                    this.emitMutation({ tagsToAdd: { $set: tagsToAdd } })
+                    this.initValues.tagsToAdd = tagsToAdd
+                } catch (err) {
+                    services.errorTracker.track(err)
+                    throw err
+                }
             },
         )
 
@@ -221,20 +240,25 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'collectionsState',
             async () => {
-                const collections = await storage.modules.metaPicker.findListsByPage(
-                    {
-                        url,
-                    },
-                )
-                const collectionsToAdd = collections.map((c) => c.name)
+                try {
+                    const collections = await storage.modules.metaPicker.findListsByPage(
+                        {
+                            url,
+                        },
+                    )
+                    const collectionsToAdd = collections.map((c) => c.name)
 
-                this.emitMutation({
-                    collectionsToAdd: {
-                        $set: collectionsToAdd,
-                    },
-                })
+                    this.emitMutation({
+                        collectionsToAdd: {
+                            $set: collectionsToAdd,
+                        },
+                    })
 
-                this.initValues.collectionsToAdd = collectionsToAdd
+                    this.initValues.collectionsToAdd = collectionsToAdd
+                } catch (err) {
+                    services.errorTracker.track(err)
+                    throw err
+                }
             },
         )
 
