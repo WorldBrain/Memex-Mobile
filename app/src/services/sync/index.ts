@@ -1,4 +1,4 @@
-import { generateSecureRandom } from 'react-native-securerandom'
+// import { generateSecureRandom } from 'react-native-securerandom'
 import { COLLECTION_NAMES as PAGES_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/storage/modules/pages/constants'
 import StorageManager from '@worldbrain/storex'
 import some from 'lodash/some'
@@ -53,7 +53,7 @@ export default class AppSyncService extends SyncService {
             syncEncryption: options.disableEncryption
                 ? undefined
                 : new TweetNaclSyncEncryption({
-                      randomBytes: (n) => generateSecureRandom(n),
+                      //   randomBytes: (n) => generateSecureRandom(n),
                   }),
         })
 
