@@ -36,7 +36,7 @@ if (!process.nextTick) {
     process.nextTick = setImmediate
 }
 
-console.disableYellowBox = true
+// console.disableYellowBox = true
 
 export async function main() {
     const ui = new UI()
@@ -102,8 +102,8 @@ export async function main() {
                 getDeviceId,
             }),
         createDeviceId: async (userId) => {
-            const device = await serverStorage.modules.personalCloud.createDeviceInfo(
-                {
+            const device =
+                await serverStorage.modules.personalCloud.createDeviceInfo({
                     device: {
                         os:
                             Platform.OS === 'android'
@@ -114,8 +114,7 @@ export async function main() {
                         browser: 'NULL', // TODO: Remove this once staging is updated
                     },
                     userId,
-                },
-            )
+                })
             return device.id
         },
     })
