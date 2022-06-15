@@ -12,9 +12,9 @@
 
 4. Add Firebase credentials:
 
-   1.1. for main app: `app/ios/app/GoogleService-Info.plist`
+    1.1. for main app: `app/ios/app/GoogleService-Info.plist`
 
-   1.2. for share extension: `app/ios/MemexShare/GoogleService-Info.plist`
+    1.2. for share extension: `app/ios/MemexShare/GoogleService-Info.plist`
 
 1. Go to the `app/ios` directory
 1. Install Cocoapods if not already installed: https://cocoapods.org/
@@ -36,7 +36,7 @@
 1. In another terminal, run `open app/ios/app.xcworkspace` to open the XCode workspace **(important that you don't open `app/ios/app.xcodeproj`)**
 1. In the menu bar, go to `Product > Destination`
 
-   3.1. Choose a connected iPhone or one of the simulators
+    3.1. Choose a connected iPhone or one of the simulators
 
 1. Press the "Play" button in the top left
 
@@ -49,6 +49,22 @@ _Assumes the above steps have been followed and app is currently running in iOS 
 3. Change anything in the source code and save and the app should quickly reload with those new changes.
 
 # Troubleshooting
+
+## Updating React Native
+
+Each time we're faced with this problem it proves itself to be significantly difficult and time consuming.
+
+Here's some tips:
+
+1. Use the RN web upgrade helper to show what RN + native platform files change between versions, then add those changes manually: https://react-native-community.github.io/upgrade-helper/
+    - There is the `npx react-native upgrade` though it doesn't work properly half the time, leaving native platform files untouched (possibly to do with our older setup).
+    - You generally don't need to manually update the the project.pbxproj file (a new app.xcworkspace file will be generated post `pod install`)
+2. After adding changes to the files, install deps in the following order:
+    1. `yarn` (try to delete the `yarn.lock` file and let it generate a new one if faced with issues)
+    2. `pod install` from the `ios/` directory (likely you'll need to delete the existing `Podfile.lock`)
+3. Clear the XCode build folder before attempting build (cmd+shift+k)
+4. If you're facing difficulties attempting an upgrade over many RN versions, first try upgrading to an lower version, then upgrade to the latest version if that works.
+5. Misc. errors are likely on the way. Most I encountered could be found and solved through Googling. Though keep a list, as likely you'll mess up, need to do it again, and resolve the same errors next time.
 
 ## Missing content script runtime error
 
