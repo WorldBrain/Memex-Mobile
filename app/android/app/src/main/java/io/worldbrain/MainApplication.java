@@ -16,7 +16,6 @@ import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.igorbelyayev.rnlocalresource.RNLocalResourcePackage;
 import io.sentry.RNSentryPackage;
-import net.rhogan.rnsecurerandom.RNSecureRandomPackage;
 import io.invertase.firebase.firestore.ReactNativeFirebaseFirestorePackage;
 import io.invertase.firebase.database.ReactNativeFirebaseDatabasePackage;
 import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
@@ -55,7 +54,6 @@ public class MainApplication extends Application implements ReactApplication {
         new RNCWebViewPackage(),
         new RNLocalResourcePackage(),
         new RNSentryPackage(),
-        new RNSecureRandomPackage(),
         new ReactNativeFirebaseAppPackage(),
         new ReactNativeFirebaseAuthPackage(),
         new ReactNativeFirebaseDatabasePackage(),
