@@ -25,4 +25,12 @@ export class CloudSyncService implements CloudSyncAPI {
         const { updatesIntegrated } = await storage.integrateAllUpdates()
         return { totalChanges: updatesIntegrated }
     }
+
+    syncStream: CloudSyncAPI['syncStream'] = async () => {
+        const { storage } = this.props
+
+        await storage.loadDeviceId()
+        await storage.pushAllQueuedUpdates()
+        await storage.integrateUpdatesContinuously()
+    }
 }

@@ -98,6 +98,7 @@ export async function main() {
                     }),
                 getClientDeviceType: () => PersonalDeviceType.Mobile,
                 getDeviceId,
+                getFirebase: () => firebase as any,
             }),
         createDeviceId: async (userId) => {
             const device =
