@@ -43,9 +43,11 @@ import type {
 import type { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
 import ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
+import type { ErrorTrackingService } from 'src/services/error-tracking'
 
 export interface CreateStorageOptions {
     authService: AuthService
+    errorTrackingService: ErrorTrackingService
     typeORMConnectionOpts?: ConnectionOptions
     createDeviceId: (userId: string | number) => Promise<string | number>
     createPersonalCloudBackend: (
@@ -58,6 +60,7 @@ export interface CreateStorageOptions {
 export async function createStorage({
     authService,
     createDeviceId,
+    errorTrackingService,
     typeORMConnectionOpts,
     createPersonalCloudBackend,
 }: CreateStorageOptions): Promise<Storage> {
@@ -115,11 +118,17 @@ export async function createStorage({
                 { localSettings },
                 getDeviceId,
             ),
+            errorTrackingService,
             storageManager,
             createDeviceId,
             getDeviceId,
             setDeviceId: async (value) =>
                 localSettings.setSetting({ key: storageKeys.deviceId, value }),
+            setLastUpdateProcessedTime: (value) =>
+                localSettings.setSetting({
+                    key: storageKeys.lastSeenUpdateTime,
+                    value,
+                }),
             getUserId: async () =>
                 (await authService.getCurrentUser())?.id ?? null,
             userIdChanges: () => authChanges(authService),

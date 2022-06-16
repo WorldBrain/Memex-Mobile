@@ -42,7 +42,9 @@ export async function main() {
     const ui = new UI()
 
     const sentry = __DEV__ ? (new MockSentry() as any) : Sentry
-    const errorTracker = new ErrorTrackingService(sentry, { dsn: sentryDsn })
+    const errorTrackingService = new ErrorTrackingService(sentry, {
+        dsn: sentryDsn,
+    })
 
     if (process.env['USE_FIREBASE_EMULATOR']) {
         await connectToEmulator()
@@ -53,6 +55,7 @@ export async function main() {
     const serverStorage = await createServerStorage('firebase')
     const storage = await createStorage({
         authService,
+        errorTrackingService,
         typeORMConnectionOpts: {
             type: 'react-native',
             location: 'Shared',
@@ -89,14 +92,9 @@ export async function main() {
                         .doc(currentUser.id)
                         .collection('objects') as any
                 },
-                getLastUpdateSeenTime: () =>
+                getLastUpdateProcessedTime: () =>
                     localSettings.getSetting({
                         key: storageKeys.lastSeenUpdateTime,
-                    }),
-                setLastUpdateSeenTime: (value) =>
-                    localSettings.setSetting({
-                        key: storageKeys.lastSeenUpdateTime,
-                        value,
                     }),
                 getClientDeviceType: () => PersonalDeviceType.Mobile,
                 getDeviceId,
@@ -127,7 +125,7 @@ export async function main() {
         },
         auth: authService,
         normalizeUrl,
-        errorTracker,
+        errorTracker: errorTrackingService,
         firebase,
         storage,
     })

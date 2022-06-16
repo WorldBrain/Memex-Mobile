@@ -22,7 +22,7 @@ export class CloudSyncService implements CloudSyncAPI {
 
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
-        const { updatesIntegrated } = await storage.pullAllUpdates()
+        const { updatesIntegrated } = await storage.integrateAllUpdates()
         return { totalChanges: updatesIntegrated }
     }
 }

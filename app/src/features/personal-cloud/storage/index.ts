@@ -27,11 +27,14 @@ import {
     CLOUD_SYNCED_COLLECTIONS,
 } from './constants'
 import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
+import type { ErrorTrackingService } from 'src/services/error-tracking'
 
 export interface Dependencies {
     backend: PersonalCloudBackend
     storageManager: StorageManager
+    errorTrackingService: ErrorTrackingService
     getUserId(): Promise<string | number | null>
+    setLastUpdateProcessedTime(time: number): Promise<void>
     userIdChanges(): AsyncIterableIterator<AuthenticatedUser | null>
     createDeviceId(userId: number | string): Promise<string | number>
     getDeviceId(): Promise<string | number>
@@ -82,12 +85,40 @@ export class PersonalCloudStorage {
         await this.actionQueue.executePendingActions()
     }
 
-    async pullAllUpdates(): Promise<UpdateIntegrationResult> {
-        let updateBatch = await this.dependencies.backend.bulkDownloadUpdates()
+    async integrateAllUpdates(): Promise<UpdateIntegrationResult> {
+        const { backend, setLastUpdateProcessedTime } = this.dependencies
+
+        let { batch: updateBatch, lastSeen } =
+            await backend.bulkDownloadUpdates()
         updateBatch = updateBatch.filter((update) =>
             CLOUD_SYNCED_COLLECTIONS.includes(update.collection),
         )
-        return this.integrateUpdates(updateBatch)
+        const result = await this.integrateUpdates(updateBatch)
+        await setLastUpdateProcessedTime(lastSeen)
+        return result
+    }
+
+    async integrateUpdatesContinuously() {
+        const { backend, errorTrackingService, setLastUpdateProcessedTime } =
+            this.dependencies
+
+        try {
+            for await (const { batch, lastSeen } of backend.streamUpdates()) {
+                try {
+                    await this.integrateUpdates(batch)
+                    await setLastUpdateProcessedTime(lastSeen)
+                } catch (err) {
+                    console.error(`Error integrating update from cloud`, err)
+                    errorTrackingService.track(err)
+                }
+            }
+        } catch (err) {
+            console.error(
+                `Error streaming and integrating updates from cloud`,
+                err,
+            )
+            errorTrackingService.track(err)
+        }
     }
 
     private async integrateUpdates(
