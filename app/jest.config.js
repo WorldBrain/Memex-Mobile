@@ -4,6 +4,9 @@ module.exports = {
     setupFiles: ['./setupJest.js'],
     testMatch: ['<rootDir>/src/**/*.test.(js|jsx|ts|tsx)'],
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    transformIgnorePatterns: [
+        'node_modules/(?!((jest-)?react-native(-.*)?|@react-native(-community)?)/)',
+    ],
     moduleNameMapper: {
         '\\.(css|less)$': 'identity-obj-proxy',
         '^user-logic$': '<rootDir>/external/user-logic/ts',
