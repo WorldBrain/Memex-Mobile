@@ -3,7 +3,6 @@ import { AppState, AppStateStatus } from 'react-native'
 
 import { storageKeys } from '../../../../../app.json'
 import { MainNavProps, UIServices, UITaskState } from 'src/ui/types'
-import { executeUITask } from 'src/ui/utils'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,
@@ -28,6 +27,12 @@ export interface Props extends MainNavProps<'CloudSync'> {
 
 export default class SyncScreenLogic extends UILogic<State, Event> {
     private removeAppChangeListener!: () => void
+    /**
+     * This exists due to the way multiple sync streams can be invoked if you switch away then back to the app fast enough.
+     * We need a way to know that no sync streams invocations are running anymore to finally mark the loading state off as "done",
+     * as opposed to one invocation finishing while others still exist.
+     */
+    private runningSyncInvocations: number = 0
 
     constructor(private props: Props) {
         super()
@@ -42,9 +47,8 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
 
     async init() {
         const handleAppStatusChange = async (nextState: AppStateStatus) => {
-            console.log('app state  change:', nextState)
             if (nextState === 'active') {
-                await this.startSync()
+                await this.doSync()
             } else {
                 await this.stopSync()
             }
@@ -71,19 +75,25 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
     }
 
     private stopSync = async () => {
-        console.log('stop sync')
-    }
-
-    private startSync = async () => {
-        console.log('start sync')
+        await this.props.services.cloudSync.endSyncStream()
     }
 
     private doSync = async () => {
-        await executeUITask<State, 'syncState'>(this, 'syncState', this._doSync)
+        this.emitMutation({ syncState: { $set: 'running' } })
+
+        try {
+            await this._doSync()
+            if (this.runningSyncInvocations === 0) {
+                this.emitMutation({ syncState: { $set: 'done' } })
+            }
+        } catch (err) {
+            this.emitMutation({ syncState: { $set: 'error' } })
+        }
     }
 
     private _doSync = async () => {
         const { route, services } = this.props
+        this.runningSyncInvocations += 1
         services.keepAwake.activate()
 
         if (route.params?.shouldWipeDBFirst) {
@@ -98,6 +108,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
             throw err
         } finally {
             services.keepAwake.deactivate()
+            this.runningSyncInvocations -= 1
         }
     }
 

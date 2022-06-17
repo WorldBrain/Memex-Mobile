@@ -1,4 +1,4 @@
-import StorageManager from '@worldbrain/storex'
+import type StorageManager from '@worldbrain/storex'
 import { dangerousPleaseBeSureDeleteAndRecreateDatabase } from 'src/storage/utils'
 import { CLOUD_SYNCED_COLLECTIONS } from 'src/features/personal-cloud/storage/constants'
 import type { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
@@ -15,6 +15,13 @@ export interface Props {
 }
 
 export class CloudSyncService implements CloudSyncAPI {
+    /**
+     * Each of these booleans correspond to an invocation of `syncStream` method. To allow each
+     * invocation to be interrupted, without affecting other invocations that might overlap their runtimes.
+     * */
+    private shouldInterruptStream: boolean[] = []
+    private streamInvocations: number = 0
+
     constructor(private props: Props) {}
 
     ____wipeDBForSync: CloudSyncAPI['____wipeDBForSync'] = async () => {
@@ -29,10 +36,8 @@ export class CloudSyncService implements CloudSyncAPI {
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
 
-        let {
-            batch: updateBatch,
-            lastSeen,
-        } = await backend.bulkDownloadUpdates()
+        let { batch: updateBatch, lastSeen } =
+            await backend.bulkDownloadUpdates()
 
         updateBatch = updateBatch.filter((update) =>
             CLOUD_SYNCED_COLLECTIONS.includes(update.collection),
@@ -52,32 +57,38 @@ export class CloudSyncService implements CloudSyncAPI {
             setLastUpdateProcessedTime,
         } = this.props
 
+        this.streamInvocations += 1
+        const currentInvocation = this.streamInvocations
+
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
 
         try {
-            for await (const { batch, lastSeen } of backend.streamUpdates()) {
+            for await (const { batch, lastSeen } of backend.streamUpdates({
+                skipUserChangeListening: true,
+            })) {
                 try {
-                    console.log(
-                        'integrating updates:',
-                        batch[0].collection,
-                        batch.length,
-                        lastSeen,
-                    )
+                    if (this.shouldInterruptStream[currentInvocation]) {
+                        break
+                    }
+
                     await storage.integrateUpdates(batch)
                     await setLastUpdateProcessedTime(lastSeen)
+
+                    if (this.shouldInterruptStream[currentInvocation]) {
+                        break
+                    }
                 } catch (err) {
-                    console.error(`Error integrating update from cloud`, err)
                     errorTrackingService.track(err)
                 }
             }
         } catch (err) {
-            console.error(
-                `Error streaming and integrating updates from cloud`,
-                err,
-            )
             errorTrackingService.track(err)
+            throw err
         }
-        console.log('done with sync!')
+    }
+
+    endSyncStream: CloudSyncAPI['endSyncStream'] = async () => {
+        this.shouldInterruptStream[this.streamInvocations] = true
     }
 }
