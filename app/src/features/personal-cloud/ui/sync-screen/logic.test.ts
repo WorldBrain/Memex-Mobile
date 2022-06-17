@@ -28,9 +28,8 @@ describe('cloud sync UI logic tests', () => {
         { skipSyncTests: true },
         async (context) => {
             let isSynced = false
-            context.services.cloudSync.sync = async () => {
+            context.services.cloudSync.syncStream = async () => {
                 isSynced = true
-                return { totalChanges: 1 }
             }
             const { element } = setup(context)
             const { localStorage, keepAwake } = context.services
@@ -59,7 +58,7 @@ describe('cloud sync UI logic tests', () => {
         { skipSyncTests: true },
         async (context) => {
             const errMsg = 'error test'
-            context.services.cloudSync.sync = async () => {
+            context.services.cloudSync.syncStream = async () => {
                 throw new Error(errMsg)
             }
             const { element } = setup(context)
@@ -85,6 +84,7 @@ describe('cloud sync UI logic tests', () => {
         'should wipe DB first if route param flag set',
         { skipSyncTests: true },
         async (context) => {
+            context.services.cloudSync.syncStream = async () => {}
             context.route = new FakeRoute({ shouldWipeDBFirst: true }) as any
             const { element } = setup(context)
             await insertTestData(context.storage.manager)
@@ -101,6 +101,7 @@ describe('cloud sync UI logic tests', () => {
         { skipSyncTests: true },
         async (context) => {
             let isDBWiped = false
+            context.services.cloudSync.syncStream = async () => {}
             context.services.cloudSync.____wipeDBForSync = async () => {
                 isDBWiped = true
             }

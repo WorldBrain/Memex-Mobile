@@ -36,33 +36,25 @@ import { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import { CopyPasterStorage } from 'src/features/copy-paster/storage'
 import { CLOUD_SYNCED_COLLECTIONS } from 'src/features/personal-cloud/storage/constants'
 import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
-import type {
-    PersonalCloudBackend,
-    PersonalCloudDeviceId,
-} from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
+import type { PersonalCloudUpdatePushBatch } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import type { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
 import ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
-import type { ErrorTrackingService } from 'src/services/error-tracking'
 
 export interface CreateStorageOptions {
     authService: AuthService
-    errorTrackingService: ErrorTrackingService
     typeORMConnectionOpts?: ConnectionOptions
+    uploadClientUpdates: (
+        updates: PersonalCloudUpdatePushBatch,
+    ) => Promise<void>
     createDeviceId: (userId: string | number) => Promise<string | number>
-    createPersonalCloudBackend: (
-        storageManager: StorageManager,
-        storageModules: Pick<Storage['modules'], 'localSettings'>,
-        getDeviceId: () => Promise<PersonalCloudDeviceId>,
-    ) => PersonalCloudBackend
 }
 
 export async function createStorage({
     authService,
     createDeviceId,
-    errorTrackingService,
+    uploadClientUpdates,
     typeORMConnectionOpts,
-    createPersonalCloudBackend,
 }: CreateStorageOptions): Promise<Storage> {
     const backend = typeORMConnectionOpts
         ? new TypeORMStorageBackend({
@@ -94,9 +86,6 @@ export async function createStorage({
         collectionVersion: new Date('2021-08-03'),
     })
 
-    const getDeviceId = async () =>
-        localSettings.getSetting({ key: storageKeys.deviceId })
-
     const modules: Storage['modules'] = {
         syncSettings,
         localSettings,
@@ -113,22 +102,13 @@ export async function createStorage({
         reader: new ReaderStorage({ storageManager, normalizeUrl }),
         contentSharing: new ContentSharingClientStorage({ storageManager }),
         personalCloud: new PersonalCloudStorage({
-            backend: createPersonalCloudBackend(
-                storageManager,
-                { localSettings },
-                getDeviceId,
-            ),
-            errorTrackingService,
+            uploadClientUpdates,
             storageManager,
             createDeviceId,
-            getDeviceId,
+            getDeviceId: () =>
+                localSettings.getSetting({ key: storageKeys.deviceId })!,
             setDeviceId: async (value) =>
                 localSettings.setSetting({ key: storageKeys.deviceId, value }),
-            setLastUpdateProcessedTime: (value) =>
-                localSettings.setSetting({
-                    key: storageKeys.lastSeenUpdateTime,
-                    value,
-                }),
             getUserId: async () =>
                 (await authService.getCurrentUser())?.id ?? null,
             userIdChanges: () => authChanges(authService),

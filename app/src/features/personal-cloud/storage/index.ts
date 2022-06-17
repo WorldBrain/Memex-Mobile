@@ -11,9 +11,9 @@ import { preprocessPulledObject } from '@worldbrain/memex-common/lib/personal-cl
 import { AsyncMutex } from '@worldbrain/memex-common/lib/utils/async-mutex'
 import { STORAGE_VERSIONS } from '@worldbrain/memex-common/lib/browser-extension/storage/versions'
 import {
-    PersonalCloudBackend,
     PersonalCloudUpdateType,
     PersonalCloudUpdateBatch,
+    PersonalCloudUpdatePushBatch,
 } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import { getCurrentSchemaVersion } from '@worldbrain/memex-common/lib/storage/utils'
 
@@ -22,19 +22,15 @@ import {
     PersonalCloudActionType,
     UpdateIntegrationResult,
 } from './types'
-import {
-    PERSONAL_CLOUD_ACTION_RETRY_INTERVAL,
-    CLOUD_SYNCED_COLLECTIONS,
-} from './constants'
+import { PERSONAL_CLOUD_ACTION_RETRY_INTERVAL } from './constants'
 import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
-import type { ErrorTrackingService } from 'src/services/error-tracking'
 
 export interface Dependencies {
-    backend: PersonalCloudBackend
     storageManager: StorageManager
-    errorTrackingService: ErrorTrackingService
+    uploadClientUpdates: (
+        updates: PersonalCloudUpdatePushBatch,
+    ) => Promise<void>
     getUserId(): Promise<string | number | null>
-    setLastUpdateProcessedTime(time: number): Promise<void>
     userIdChanges(): AsyncIterableIterator<AuthenticatedUser | null>
     createDeviceId(userId: number | string): Promise<string | number>
     getDeviceId(): Promise<string | number>
@@ -85,43 +81,7 @@ export class PersonalCloudStorage {
         await this.actionQueue.executePendingActions()
     }
 
-    async integrateAllUpdates(): Promise<UpdateIntegrationResult> {
-        const { backend, setLastUpdateProcessedTime } = this.dependencies
-
-        let { batch: updateBatch, lastSeen } =
-            await backend.bulkDownloadUpdates()
-        updateBatch = updateBatch.filter((update) =>
-            CLOUD_SYNCED_COLLECTIONS.includes(update.collection),
-        )
-        const result = await this.integrateUpdates(updateBatch)
-        await setLastUpdateProcessedTime(lastSeen)
-        return result
-    }
-
-    async integrateUpdatesContinuously() {
-        const { backend, errorTrackingService, setLastUpdateProcessedTime } =
-            this.dependencies
-
-        try {
-            for await (const { batch, lastSeen } of backend.streamUpdates()) {
-                try {
-                    await this.integrateUpdates(batch)
-                    await setLastUpdateProcessedTime(lastSeen)
-                } catch (err) {
-                    console.error(`Error integrating update from cloud`, err)
-                    errorTrackingService.track(err)
-                }
-            }
-        } catch (err) {
-            console.error(
-                `Error streaming and integrating updates from cloud`,
-                err,
-            )
-            errorTrackingService.track(err)
-        }
-    }
-
-    private async integrateUpdates(
+    async integrateUpdates(
         updates: PersonalCloudUpdateBatch,
     ): Promise<UpdateIntegrationResult> {
         const { releaseMutex } = await this.pullMutex.lock()
@@ -185,7 +145,7 @@ export class PersonalCloudStorage {
         }
 
         if (action.type === PersonalCloudActionType.PushObject) {
-            await this.dependencies.backend.pushUpdates(
+            await this.dependencies.uploadClientUpdates(
                 action.updates.map((update) => ({
                     ...update,
                     deviceId: update.deviceId ?? this.deviceId,

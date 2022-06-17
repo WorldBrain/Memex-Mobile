@@ -51,55 +51,20 @@ export async function main() {
     }
     const firebase = getFirebase()
 
+    let personalCloudBackend: FirestorePersonalCloudBackend
+
     const authService = new MemexGoAuthService(firebase as any)
     const serverStorage = await createServerStorage('firebase')
     const storage = await createStorage({
         authService,
-        errorTrackingService,
+        uploadClientUpdates: async (updates) => {
+            await personalCloudBackend?.pushUpdates(updates)
+        },
         typeORMConnectionOpts: {
             type: 'react-native',
             location: 'Shared',
             database: 'memex',
         },
-        createPersonalCloudBackend: (
-            storageManager,
-            { localSettings },
-            getDeviceId,
-        ) =>
-            new FirestorePersonalCloudBackend({
-                personalCloudService: firebaseService<PersonalCloudService>(
-                    'personalCloud',
-                    async (name, ...args) => {
-                        const callable = firebase
-                            .functions()
-                            .httpsCallable(name)
-                        const result = await callable(...args)
-                        return result.data
-                    },
-                ),
-                getServerStorageManager: async () => serverStorage.manager,
-                getCurrentSchemaVersion: () =>
-                    getCurrentSchemaVersion(storageManager),
-                userChanges: () => authChanges(authService),
-                getUserChangesReference: async () => {
-                    const currentUser = await authService.getCurrentUser()
-                    if (!currentUser) {
-                        return null
-                    }
-                    const firestore = firebase.firestore()
-                    return firestore
-                        .collection('personalDataChange')
-                        .doc(currentUser.id)
-                        .collection('objects') as any
-                },
-                getLastUpdateProcessedTime: () =>
-                    localSettings.getSetting({
-                        key: storageKeys.lastSeenUpdateTime,
-                    }),
-                getClientDeviceType: () => PersonalDeviceType.Mobile,
-                getDeviceId,
-                getFirebase: () => firebase as any,
-            }),
         createDeviceId: async (userId) => {
             const device =
                 await serverStorage.modules.personalCloud.createDeviceInfo({
@@ -118,6 +83,41 @@ export async function main() {
         },
     })
 
+    personalCloudBackend = new FirestorePersonalCloudBackend({
+        personalCloudService: firebaseService<PersonalCloudService>(
+            'personalCloud',
+            async (name, ...args) => {
+                const callable = firebase.functions().httpsCallable(name)
+                const result = await callable(...args)
+                return result.data
+            },
+        ),
+        getServerStorageManager: async () => serverStorage.manager,
+        getCurrentSchemaVersion: () => getCurrentSchemaVersion(storage.manager),
+        userChanges: () => authChanges(authService),
+        getUserChangesReference: async () => {
+            const currentUser = await authService.getCurrentUser()
+            if (!currentUser) {
+                return null
+            }
+            const firestore = firebase.firestore()
+            return firestore
+                .collection('personalDataChange')
+                .doc(currentUser.id)
+                .collection('objects') as any
+        },
+        getLastUpdateProcessedTime: () =>
+            storage.modules.localSettings.getSetting({
+                key: storageKeys.lastSeenUpdateTime,
+            }),
+        getClientDeviceType: () => PersonalDeviceType.Mobile,
+        getDeviceId: () =>
+            storage.modules.localSettings.getSetting({
+                key: storageKeys.deviceId,
+            })!,
+        getFirebase: () => firebase as any,
+    })
+
     const services = await createServices({
         keychain: new KeychainPackage({ server: 'worldbrain.io' }),
         keepAwakeLib: {
@@ -129,6 +129,7 @@ export async function main() {
         errorTracker: errorTrackingService,
         firebase,
         storage,
+        personalCloudBackend,
     })
 
     const dependencies = { storage, services }
