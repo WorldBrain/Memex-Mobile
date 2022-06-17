@@ -4,6 +4,7 @@ import { AppStateStatus, AppStateStatic } from 'react-native'
 import { storageKeys } from '../../../../../app.json'
 import { MainNavProps, UIServices, UITaskState } from 'src/ui/types'
 import { SyncStreamInterruptError } from 'src/services/cloud-sync'
+import type { SyncStats } from 'src/services/cloud-sync/types'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,
@@ -14,6 +15,8 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 export interface State {
     syncState: UITaskState
     errorMessage: string | null
+    totalDownloads: number | null
+    pendingDownloads: number | null
 }
 
 export type Event = UIEvent<{
@@ -45,10 +48,13 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
         return {
             syncState: 'pristine',
             errorMessage: null,
+            totalDownloads: null,
+            pendingDownloads: null,
         }
     }
 
     async init() {
+        const { appState, services } = this.props
         const handleAppStatusChange = async (nextState: AppStateStatus) => {
             if (nextState === 'active' && !this.syncHasFinished) {
                 await this.doSync()
@@ -56,22 +62,36 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
                 await this.stopSync()
             }
         }
-        this.props.appState.addEventListener('change', handleAppStatusChange)
+        appState.addEventListener('change', handleAppStatusChange)
 
         this.removeAppChangeListener = () =>
-            this.props.appState.removeEventListener(
-                'change',
-                handleAppStatusChange,
-            )
+            appState.removeEventListener('change', handleAppStatusChange)
+
+        services.cloudSync.events.addListener(
+            'syncStatsChanged',
+            ({ stats }) => {
+                this.emitMutation({
+                    pendingDownloads: { $set: stats.pendingDownloads },
+                    // This should only set it the first time
+                    totalDownloads: {
+                        $apply: (prev) => prev ?? stats.pendingDownloads,
+                    },
+                })
+            },
+        )
 
         await this.doSync()
     }
 
     cleanup() {
         this.removeAppChangeListener?.()
+        this.props.services.cloudSync.events.removeAllListeners(
+            'syncStatsChanged',
+        )
     }
 
     private handleSyncSuccess = async () => {
+        this.syncHasFinished = true
         await this.props.services.localStorage.set(storageKeys.syncKey, true)
     }
 
@@ -81,6 +101,10 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
     }
 
     private stopSync = async () => {
+        this.emitMutation({
+            totalDownloads: { $set: null },
+            pendingDownloads: { $set: null },
+        })
         await this.props.services.cloudSync.endSyncStream()
     }
 
@@ -90,7 +114,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
         try {
             await this._doSync()
             if (this.runningSyncInvocations === 0) {
-                this.syncHasFinished = true
+                await this.handleSyncSuccess()
                 this.emitMutation({ syncState: { $set: 'done' } })
             }
         } catch (err) {
@@ -112,7 +136,6 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
 
         try {
             await services.cloudSync.syncStream()
-            await this.handleSyncSuccess()
         } catch (err) {
             this.handleSyncError(err)
             throw err

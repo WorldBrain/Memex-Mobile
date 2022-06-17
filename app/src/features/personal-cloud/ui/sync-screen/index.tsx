@@ -17,6 +17,11 @@ interface Props extends LogicProps {}
 
 const MemexLogoFile = require('src/ui/assets/MemexIcon.png')
 
+const calcPercComplete = ({
+    totalDownloads,
+    pendingDownloads,
+}: State): number => Math.trunc(100 * (1 - pendingDownloads! / totalDownloads!))
+
 export default class CloudSyncScreen extends StatefulUIElement<
     Props,
     State,
@@ -50,6 +55,21 @@ export default class CloudSyncScreen extends StatefulUIElement<
                     <SecondaryText>
                         This can take a while. Please leave your app open and
                         your device on charge.
+                    </SecondaryText>
+                    <SecondaryText>
+                        Total remote changes:{' '}
+                        {this.state.totalDownloads ?? '...'}
+                    </SecondaryText>
+                    <SecondaryText>
+                        Pending remote changes:{' '}
+                        {this.state.pendingDownloads ?? '...'}
+                    </SecondaryText>
+                    <SecondaryText>
+                        Progress:{' '}
+                        {this.state.totalDownloads == null
+                            ? '...'
+                            : calcPercComplete(this.state)}
+                        %
                     </SecondaryText>
                 </InnerContainer>
             </Container>

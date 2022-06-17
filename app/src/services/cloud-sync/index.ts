@@ -1,9 +1,10 @@
+import EventEmitter from 'events'
 import type StorageManager from '@worldbrain/storex'
 import { dangerousPleaseBeSureDeleteAndRecreateDatabase } from 'src/storage/utils'
 import { CLOUD_SYNCED_COLLECTIONS } from 'src/features/personal-cloud/storage/constants'
 import type { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import type { PersonalCloudBackend } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
-import type { CloudSyncAPI } from './types'
+import type { CloudSyncAPI, SyncStats } from './types'
 import type { ErrorTrackingService } from '../error-tracking'
 
 export interface Props {
@@ -22,14 +23,37 @@ export class SyncStreamInterruptError extends Error {
 }
 
 export class CloudSyncService implements CloudSyncAPI {
+    events = new EventEmitter() as CloudSyncAPI['events']
+
     /**
      * Each of these booleans correspond to an invocation of `syncStream` method. To allow each
      * invocation to be interrupted, without affecting other invocations that might overlap their runtimes.
      * */
     private shouldInterruptStream: boolean[] = []
     private streamInvocations: number = 0
+    private stats: SyncStats = {
+        pendingDownloads: 0,
+        pendingUploads: 0,
+    }
 
-    constructor(private props: Props) {}
+    constructor(private props: Props) {
+        props.backend.events.on('incomingChangesPending', (event) => {
+            this._modifyStats({
+                pendingDownloads:
+                    this.stats.pendingDownloads + event.changeCountDelta,
+            })
+        })
+        props.backend.events.on('incomingChangesProcessed', (event) => {
+            this._modifyStats({
+                pendingDownloads: this.stats.pendingDownloads - event.count,
+            })
+        })
+    }
+
+    private _modifyStats(updates: Partial<SyncStats>) {
+        this.stats = { ...this.stats, ...updates }
+        this.events.emit('syncStatsChanged', { stats: this.stats })
+    }
 
     ____wipeDBForSync: CloudSyncAPI['____wipeDBForSync'] = async () => {
         await dangerousPleaseBeSureDeleteAndRecreateDatabase(
@@ -43,15 +67,11 @@ export class CloudSyncService implements CloudSyncAPI {
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
 
-        let { batch: updateBatch, lastSeen } =
-            await backend.bulkDownloadUpdates()
-
-        updateBatch = updateBatch.filter((update) =>
+        let { batch, lastSeen } = await backend.bulkDownloadUpdates()
+        batch = batch.filter((update) =>
             CLOUD_SYNCED_COLLECTIONS.includes(update.collection),
         )
-        const { updatesIntegrated } = await storage.integrateUpdates(
-            updateBatch,
-        )
+        const { updatesIntegrated } = await storage.integrateUpdates(batch)
         await setLastUpdateProcessedTime(lastSeen)
         return { totalChanges: updatesIntegrated }
     }
@@ -102,6 +122,7 @@ export class CloudSyncService implements CloudSyncAPI {
     }
 
     endSyncStream: CloudSyncAPI['endSyncStream'] = async () => {
+        this.stats = { pendingDownloads: 0, pendingUploads: 0 }
         this.shouldInterruptStream[this.streamInvocations] = true
     }
 }
