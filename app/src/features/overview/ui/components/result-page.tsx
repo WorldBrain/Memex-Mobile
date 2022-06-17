@@ -53,7 +53,7 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                             {props.lists
                                 .filter((item) => item !== 'Inbox')
                                 .map((entry) => (
-                                    <SpacePill>
+                                    <SpacePill key={entry}>
                                         <SpacePillText>{entry}</SpacePillText>
                                     </SpacePill>
                                 ))}
