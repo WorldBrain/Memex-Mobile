@@ -88,52 +88,55 @@ export class PersonalCloudStorage {
         const { storageManager } = this.dependencies
         let updatesIntegrated = 0
 
-        for (const update of updates) {
-            if (update.type === PersonalCloudUpdateType.Overwrite) {
-                const object = update.object
-                preprocessPulledObject({
-                    storageRegistry: storageManager.registry,
-                    collection: update.collection,
-                    object,
-                })
+        try {
+            for (const update of updates) {
+                if (update.type === PersonalCloudUpdateType.Overwrite) {
+                    const object = update.object
+                    preprocessPulledObject({
+                        storageRegistry: storageManager.registry,
+                        collection: update.collection,
+                        object,
+                    })
 
-                // TODO: maybe add mobile app support for media fields
-                // if (update.media) {
-                //     await Promise.all(
-                //         Object.entries(update.media).map(
-                //             async ([key, path]) => {
-                //                 object[
-                //                     key
-                //                 ] = await this.dependencies.backend.downloadFromMedia(
-                //                     { path: path.path },
-                //                 )
-                //             },
-                //         ),
-                //     )
-                // }
+                    // TODO: maybe add mobile app support for media fields
+                    // if (update.media) {
+                    //     await Promise.all(
+                    //         Object.entries(update.media).map(
+                    //             async ([key, path]) => {
+                    //                 object[
+                    //                     key
+                    //                 ] = await this.dependencies.backend.downloadFromMedia(
+                    //                     { path: path.path },
+                    //                 )
+                    //             },
+                    //         ),
+                    //     )
+                    // }
 
-                // WARNING: Keep in mind this skips all storage middleware
-                await updateOrCreate({
-                    storageManager,
-                    collection: update.collection,
-                    updates: update.object,
-                    where: update.where,
-                    executeOperation: (...args) =>
-                        storageManager.backend.operation(...args),
-                })
+                    // WARNING: Keep in mind this skips all storage middleware
+                    await updateOrCreate({
+                        storageManager,
+                        collection: update.collection,
+                        updates: update.object,
+                        where: update.where,
+                        executeOperation: (...args) =>
+                            storageManager.backend.operation(...args),
+                    })
 
-                updatesIntegrated++
-            } else if (update.type === PersonalCloudUpdateType.Delete) {
-                await storageManager.backend.operation(
-                    'deleteObjects',
-                    update.collection,
-                    update.where,
-                )
-                updatesIntegrated++
+                    updatesIntegrated++
+                } else if (update.type === PersonalCloudUpdateType.Delete) {
+                    await storageManager.backend.operation(
+                        'deleteObjects',
+                        update.collection,
+                        update.where,
+                    )
+                    updatesIntegrated++
+                }
             }
+        } finally {
+            releaseMutex()
         }
 
-        releaseMutex()
         return { updatesIntegrated }
     }
 
@@ -161,84 +164,86 @@ export class PersonalCloudStorage {
 
         const { releaseMutex } = await this.pushMutex.lock()
 
-        for (const change of event.info.changes) {
-            if (change.type === 'create') {
-                const object = await getObjectByPk(
-                    this.dependencies.storageManager,
-                    change.collection,
-                    change.pk,
-                )
-                if (!object) {
-                    // Here we assume the object is already deleted again before
-                    // we got the change to look at it, so just ignore the create
-                    continue
-                }
-                await this.actionQueue.scheduleAction(
-                    {
-                        type: PersonalCloudActionType.PushObject,
-                        updates: [
-                            {
-                                type: PersonalCloudUpdateType.Overwrite,
-                                schemaVersion: this.currentSchemaVersion!,
-                                deviceId: this.deviceId!,
-                                collection: change.collection,
-                                object,
-                            },
-                        ],
-                    },
-                    { queueInteraction: 'queue-and-return' },
-                )
-            } else if (change.type === 'modify') {
-                const objects = await Promise.all(
-                    change.pks.map((pk) =>
-                        getObjectByPk(
-                            this.dependencies.storageManager,
-                            change.collection,
-                            pk,
+        try {
+            for (const change of event.info.changes) {
+                if (change.type === 'create') {
+                    const object = await getObjectByPk(
+                        this.dependencies.storageManager,
+                        change.collection,
+                        change.pk,
+                    )
+                    if (!object) {
+                        // Here we assume the object is already deleted again before
+                        // we got the change to look at it, so just ignore the create
+                        continue
+                    }
+                    await this.actionQueue.scheduleAction(
+                        {
+                            type: PersonalCloudActionType.PushObject,
+                            updates: [
+                                {
+                                    type: PersonalCloudUpdateType.Overwrite,
+                                    schemaVersion: this.currentSchemaVersion!,
+                                    deviceId: this.deviceId!,
+                                    collection: change.collection,
+                                    object,
+                                },
+                            ],
+                        },
+                        { queueInteraction: 'queue-and-return' },
+                    )
+                } else if (change.type === 'modify') {
+                    const objects = await Promise.all(
+                        change.pks.map((pk) =>
+                            getObjectByPk(
+                                this.dependencies.storageManager,
+                                change.collection,
+                                pk,
+                            ),
                         ),
-                    ),
-                )
-                await this.actionQueue.scheduleAction(
-                    {
-                        type: PersonalCloudActionType.PushObject,
-                        updates: objects
-                            .filter((object) => !!object)
-                            .map((object) => ({
-                                type: PersonalCloudUpdateType.Overwrite,
+                    )
+                    await this.actionQueue.scheduleAction(
+                        {
+                            type: PersonalCloudActionType.PushObject,
+                            updates: objects
+                                .filter((object) => !!object)
+                                .map((object) => ({
+                                    type: PersonalCloudUpdateType.Overwrite,
+                                    schemaVersion: this.currentSchemaVersion!,
+                                    deviceId: this.deviceId!,
+                                    collection: change.collection,
+                                    object,
+                                })),
+                        },
+                        { queueInteraction: 'queue-and-return' },
+                    )
+                } else if (change.type === 'delete') {
+                    const wheres = await Promise.all(
+                        change.pks.map((pk) =>
+                            getObjectWhereByPk(
+                                this.dependencies.storageManager.registry,
+                                change.collection,
+                                pk,
+                            ),
+                        ),
+                    )
+                    await this.actionQueue.scheduleAction(
+                        {
+                            type: PersonalCloudActionType.PushObject,
+                            updates: wheres.map((where) => ({
+                                type: PersonalCloudUpdateType.Delete,
                                 schemaVersion: this.currentSchemaVersion!,
                                 deviceId: this.deviceId!,
                                 collection: change.collection,
-                                object,
+                                where,
                             })),
-                    },
-                    { queueInteraction: 'queue-and-return' },
-                )
-            } else if (change.type === 'delete') {
-                const wheres = await Promise.all(
-                    change.pks.map((pk) =>
-                        getObjectWhereByPk(
-                            this.dependencies.storageManager.registry,
-                            change.collection,
-                            pk,
-                        ),
-                    ),
-                )
-                await this.actionQueue.scheduleAction(
-                    {
-                        type: PersonalCloudActionType.PushObject,
-                        updates: wheres.map((where) => ({
-                            type: PersonalCloudUpdateType.Delete,
-                            schemaVersion: this.currentSchemaVersion!,
-                            deviceId: this.deviceId!,
-                            collection: change.collection,
-                            where,
-                        })),
-                    },
-                    { queueInteraction: 'queue-and-return' },
-                )
+                        },
+                        { queueInteraction: 'queue-and-return' },
+                    )
+                }
             }
+        } finally {
+            releaseMutex()
         }
-
-        releaseMutex()
     }
 }
