@@ -1,5 +1,5 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
-import { AppState, AppStateStatus } from 'react-native'
+import { AppStateStatic, AppStateStatus } from 'react-native'
 
 import { storageKeys } from '../../../../../../app.json'
 import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
@@ -46,6 +46,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends MainNavProps<'Dashboard'> {
+    appState: AppStateStatic
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
     services: UIServices<
         'cloudSync' | 'localStorage' | 'syncStorage' | 'errorTracker'
@@ -123,10 +124,13 @@ export default class Logic extends UILogic<State, Event> {
             }
         }
 
-        AppState.addEventListener('change', handleAppStatusChange)
+        this.props.appState.addEventListener('change', handleAppStatusChange)
 
         this.removeAppChangeListener = () =>
-            AppState.removeEventListener('change', handleAppStatusChange)
+            this.props.appState.removeEventListener(
+                'change',
+                handleAppStatusChange,
+            )
 
         await Promise.all([
             this.doSync(),

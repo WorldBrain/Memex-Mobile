@@ -1,8 +1,9 @@
 import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
-import { AppState, AppStateStatus } from 'react-native'
+import { AppStateStatus, AppStateStatic } from 'react-native'
 
 import { storageKeys } from '../../../../../app.json'
 import { MainNavProps, UIServices, UITaskState } from 'src/ui/types'
+import { SyncStreamInterruptError } from 'src/services/cloud-sync'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,
@@ -20,6 +21,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Props extends MainNavProps<'CloudSync'> {
+    appState: AppStateStatic
     services: UIServices<
         'errorTracker' | 'localStorage' | 'cloudSync' | 'keepAwake'
     >
@@ -33,6 +35,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
      * as opposed to one invocation finishing while others still exist.
      */
     private runningSyncInvocations: number = 0
+    private syncHasFinished = false
 
     constructor(private props: Props) {
         super()
@@ -47,16 +50,19 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
 
     async init() {
         const handleAppStatusChange = async (nextState: AppStateStatus) => {
-            if (nextState === 'active') {
+            if (nextState === 'active' && !this.syncHasFinished) {
                 await this.doSync()
             } else {
                 await this.stopSync()
             }
         }
-        AppState.addEventListener('change', handleAppStatusChange)
+        this.props.appState.addEventListener('change', handleAppStatusChange)
 
         this.removeAppChangeListener = () =>
-            AppState.removeEventListener('change', handleAppStatusChange)
+            this.props.appState.removeEventListener(
+                'change',
+                handleAppStatusChange,
+            )
 
         await this.doSync()
     }
@@ -84,9 +90,13 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
         try {
             await this._doSync()
             if (this.runningSyncInvocations === 0) {
+                this.syncHasFinished = true
                 this.emitMutation({ syncState: { $set: 'done' } })
             }
         } catch (err) {
+            if (err instanceof SyncStreamInterruptError) {
+                return
+            }
             this.emitMutation({ syncState: { $set: 'error' } })
         }
     }

@@ -14,6 +14,13 @@ export interface Props {
     setLastUpdateProcessedTime(time: number): Promise<void>
 }
 
+export class SyncStreamInterruptError extends Error {
+    constructor() {
+        super('Sync interrrupt error')
+        this.name = this.constructor.name
+    }
+}
+
 export class CloudSyncService implements CloudSyncAPI {
     /**
      * Each of these booleans correspond to an invocation of `syncStream` method. To allow each
@@ -69,20 +76,26 @@ export class CloudSyncService implements CloudSyncAPI {
             })) {
                 try {
                     if (this.shouldInterruptStream[currentInvocation]) {
-                        break
+                        throw new SyncStreamInterruptError()
                     }
 
                     await storage.integrateUpdates(batch)
                     await setLastUpdateProcessedTime(lastSeen)
 
                     if (this.shouldInterruptStream[currentInvocation]) {
-                        break
+                        throw new SyncStreamInterruptError()
                     }
                 } catch (err) {
+                    if (err instanceof SyncStreamInterruptError) {
+                        throw err
+                    }
                     errorTrackingService.track(err)
                 }
             }
         } catch (err) {
+            if (err instanceof SyncStreamInterruptError) {
+                throw err
+            }
             errorTrackingService.track(err)
             throw err
         }

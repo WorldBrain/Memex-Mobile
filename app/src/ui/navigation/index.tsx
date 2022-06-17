@@ -1,4 +1,5 @@
 import React from 'react'
+import { AppState } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
 
@@ -43,7 +44,7 @@ export const createMainNavigator: NavigationContainerFactory = ({
 
     const protectedRoutes = [
         <MainStack.Screen name="Dashboard">
-            {(props) => <Dashboard {...props} {...deps} />}
+            {(props) => <Dashboard {...props} {...deps} appState={AppState} />}
         </MainStack.Screen>,
         <MainStack.Screen name="PageEditor">
             {(props) => <PageEditor {...props} {...deps} />}
@@ -61,7 +62,7 @@ export const createMainNavigator: NavigationContainerFactory = ({
             {(props) => <SettingsMenu {...props} {...deps} />}
         </MainStack.Screen>,
         <MainStack.Screen name="CloudSync">
-            {(props) => <CloudSync {...props} {...deps} />}
+            {(props) => <CloudSync {...props} {...deps} appState={AppState} />}
         </MainStack.Screen>,
         <MainStack.Screen name="Pairing">
             {(props) => <Pairing {...props} {...deps} />}
