@@ -4,7 +4,6 @@ import { AppStateStatus, AppStateStatic } from 'react-native'
 import { storageKeys } from '../../../../../app.json'
 import { MainNavProps, UIServices, UITaskState } from 'src/ui/types'
 import { SyncStreamInterruptError } from 'src/services/cloud-sync'
-import type { SyncStats } from 'src/services/cloud-sync/types'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,
@@ -39,6 +38,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
      */
     private runningSyncInvocations: number = 0
     private syncHasFinished = false
+    private hasDBBeenWiped = false
 
     constructor(private props: Props) {
         super()
@@ -130,7 +130,8 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
         this.runningSyncInvocations += 1
         services.keepAwake.activate()
 
-        if (route.params?.shouldWipeDBFirst) {
+        if (route.params?.shouldWipeDBFirst && !this.hasDBBeenWiped) {
+            this.hasDBBeenWiped = true
             await services.cloudSync.____wipeDBForSync()
         }
 

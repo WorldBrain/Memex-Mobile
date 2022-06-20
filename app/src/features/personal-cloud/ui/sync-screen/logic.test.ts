@@ -9,18 +9,37 @@ import { FakeRoute } from 'src/tests/navigation'
 import * as DATA from './logic.test.data'
 import { USER_DATA_COLLECTIONS } from 'src/storage/utils'
 import StorageManager from '@worldbrain/storex'
+import type { AppStateStatus, AppStateStatic } from 'react-native'
 
 describe('cloud sync UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     function setup(context: TestDevice) {
+        let appStateListener: (nextState: AppStateStatus) => Promise<void>
+        const appStateEmitter = {
+            emit: (nextState: AppStateStatus) => appStateListener?.(nextState),
+        }
+        const appState = {
+            addEventListener: (
+                type: string,
+                listener: (nextState: AppStateStatus) => Promise<void>,
+            ) => {
+                appStateListener = listener
+            },
+            removeEventListener: (
+                type: string,
+                listener: (nextState: AppStateStatus) => Promise<void>,
+            ) => {},
+        } as AppStateStatic
+
         const logic = new Logic({
             ...context,
             navigation: context.navigation as any,
+            appState,
         })
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
-        return { logic, element }
+        return { logic, element, appStateEmitter }
     }
 
     it(
@@ -93,6 +112,30 @@ describe('cloud sync UI logic tests', () => {
             await element.init()
 
             await assertTestData(context.storage.manager, { exists: false })
+        },
+    )
+
+    it(
+        'should wipe DB first if route param flag set but NOT if sync invoked a second time',
+        { skipSyncTests: true },
+        async (context) => {
+            context.services.cloudSync.syncStream = async () => {}
+            let dbWipeCount = 0
+            context.services.cloudSync.____wipeDBForSync = async () => {
+                dbWipeCount += 1
+            }
+
+            context.route = new FakeRoute({ shouldWipeDBFirst: true }) as any
+            const { element, logic, appStateEmitter } = setup(context)
+            expect(dbWipeCount).toBe(0)
+
+            await element.init()
+            expect(dbWipeCount).toBe(1)
+
+            // Re-trigger sync, as if user switched away then back to app
+            logic['syncHasFinished'] = false
+            await appStateEmitter.emit('active')
+            expect(dbWipeCount).toBe(1)
         },
     )
 
