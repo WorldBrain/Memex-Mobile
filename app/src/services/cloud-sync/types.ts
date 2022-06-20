@@ -4,7 +4,7 @@ export interface CloudSyncAPI {
     ____wipeDBForSync: () => Promise<void>
     sync: () => Promise<{ totalChanges: number }>
     syncStream: () => Promise<void>
-    endSyncStream: () => Promise<void>
+    interruptSyncStream: () => Promise<void>
     events: TypedEventEmitter<{
         syncStatsChanged(event: { stats: SyncStats }): void
     }>

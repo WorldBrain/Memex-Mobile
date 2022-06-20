@@ -1,5 +1,6 @@
 import EventEmitter from 'events'
 import type StorageManager from '@worldbrain/storex'
+import { AsyncMutex } from '@worldbrain/memex-common/lib/utils/async-mutex'
 import { dangerousPleaseBeSureDeleteAndRecreateDatabase } from 'src/storage/utils'
 import { CLOUD_SYNCED_COLLECTIONS } from 'src/features/personal-cloud/storage/constants'
 import type { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
@@ -24,13 +25,8 @@ export class SyncStreamInterruptError extends Error {
 
 export class CloudSyncService implements CloudSyncAPI {
     events = new EventEmitter() as CloudSyncAPI['events']
-
-    /**
-     * Each of these booleans correspond to an invocation of `syncStream` method. To allow each
-     * invocation to be interrupted, without affecting other invocations that might overlap their runtimes.
-     * */
-    private shouldInterruptStream: boolean[] = []
-    private streamInvocations: number = 0
+    private syncStreamMutex = new AsyncMutex()
+    private shouldInterruptStream = false
     private stats: SyncStats = {
         pendingDownloads: 0,
         pendingUploads: 0,
@@ -38,10 +34,7 @@ export class CloudSyncService implements CloudSyncAPI {
 
     constructor(private props: Props) {
         props.backend.events.on('incomingChangesPending', (event) => {
-            this._modifyStats({
-                pendingDownloads:
-                    this.stats.pendingDownloads + event.changeCountDelta,
-            })
+            this._modifyStats({ pendingDownloads: event.changeCountDelta })
         })
         props.backend.events.on('incomingChangesProcessed', (event) => {
             this._modifyStats({
@@ -84,27 +77,27 @@ export class CloudSyncService implements CloudSyncAPI {
             setLastUpdateProcessedTime,
         } = this.props
 
-        this.streamInvocations += 1
-        const currentInvocation = this.streamInvocations
+        const { releaseMutex } = await this.syncStreamMutex.lock()
 
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
 
         try {
+            const maybeInterruptStream = () => {
+                if (this.shouldInterruptStream) {
+                    this.shouldInterruptStream = false
+                    throw new SyncStreamInterruptError()
+                }
+            }
+
             for await (const { batch, lastSeen } of backend.streamUpdates({
                 skipUserChangeListening: true,
             })) {
                 try {
-                    if (this.shouldInterruptStream[currentInvocation]) {
-                        throw new SyncStreamInterruptError()
-                    }
-
+                    maybeInterruptStream()
                     await storage.integrateUpdates(batch)
                     await setLastUpdateProcessedTime(lastSeen)
-
-                    if (this.shouldInterruptStream[currentInvocation]) {
-                        throw new SyncStreamInterruptError()
-                    }
+                    maybeInterruptStream()
                 } catch (err) {
                     if (err instanceof SyncStreamInterruptError) {
                         throw err
@@ -118,11 +111,12 @@ export class CloudSyncService implements CloudSyncAPI {
             }
             errorTrackingService.track(err)
             throw err
+        } finally {
+            releaseMutex()
         }
     }
 
-    endSyncStream: CloudSyncAPI['endSyncStream'] = async () => {
-        this.stats = { pendingDownloads: 0, pendingUploads: 0 }
-        this.shouldInterruptStream[this.streamInvocations] = true
+    interruptSyncStream: CloudSyncAPI['interruptSyncStream'] = async () => {
+        this.shouldInterruptStream = true
     }
 }

@@ -159,6 +159,66 @@ describe('cloud sync UI logic tests', () => {
             await assertTestData(context.storage.manager, { exists: true })
         },
     )
+
+    it(
+        'should interrupt and restart sync on app state change (app switching)',
+        { skipSyncTests: true },
+        async (context) => {
+            let syncStartCount = 0
+            let syncStopCount = 0
+            let resolveP: () => void = () => {}
+
+            context.services.cloudSync.syncStream = async () => {
+                syncStartCount += 1
+                await new Promise((resolve) => {
+                    resolveP = resolve
+                })
+            }
+            context.services.cloudSync.interruptSyncStream = async () => {
+                syncStopCount += 1
+            }
+
+            const { element, logic, appStateEmitter } = setup(context)
+
+            expect(syncStartCount).toBe(0)
+            expect(syncStopCount).toBe(0)
+            expect(logic['syncHasFinished']).toBe(false)
+
+            element.init()
+
+            expect(syncStartCount).toBe(1)
+            expect(syncStopCount).toBe(0)
+            expect(logic['syncHasFinished']).toBe(false)
+
+            await appStateEmitter.emit('background')
+            resolveP()
+
+            expect(syncStartCount).toBe(1)
+            expect(syncStopCount).toBe(1)
+            expect(logic['syncHasFinished']).toBe(false)
+
+            appStateEmitter.emit('active')
+
+            expect(syncStartCount).toBe(2)
+            expect(syncStopCount).toBe(1)
+            expect(logic['syncHasFinished']).toBe(false)
+
+            await appStateEmitter.emit('background')
+            resolveP()
+
+            expect(syncStartCount).toBe(2)
+            expect(syncStopCount).toBe(2)
+            expect(logic['syncHasFinished']).toBe(false)
+
+            const finalP = appStateEmitter.emit('active')
+            resolveP()
+            await finalP
+
+            expect(syncStartCount).toBe(3)
+            expect(syncStopCount).toBe(2)
+            expect(logic['syncHasFinished']).toBe(true)
+        },
+    )
 })
 
 async function insertTestData(storageManager: StorageManager) {
