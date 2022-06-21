@@ -24,7 +24,7 @@ ANDROID_SERVICE_JSON_PATH = "./android/service-account.json"
 PACKAGE_JSON_PATH = "./package.json"
 XCWORKSPACE_PATH = "./ios/app.xcworkspace"
 XCPROJ_PATH = "./ios/app.xcodeproj"
-AAB_PATH = "./android/app/build/outputs/bundle/productionRelease/app.aab"
+AAB_PATH = "./android/app/build/outputs/bundle/productionRelease/app-production-release.aab"
 AAB_PATH_DEV = "./android/app/build/outputs/bundle/developmentRelease/app.aab"
 
 
