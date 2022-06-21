@@ -7,12 +7,12 @@ import styled from 'styled-components/native'
 export interface Props {
     titleText?: string | React.ReactNode
     renderLeftIcon?: () => JSX.Element
-    renderRightIcon?: () => JSX.Element
+    renderRightIcon?: () => JSX.Element | undefined
     leftBtnPress?: () => void
     leftIcon?: React.FC<SvgProps>
     leftIconSize?: string
     leftIconStrokeWidth?: string
-    rightBtnPress?: () => void | undefined
+    rightBtnPress?: () => Promise<void> | void
     rightIcon?: React.FC<SvgProps> | undefined
     rightIconColor?: ColorThemeKeys
     rightIconSize?: string

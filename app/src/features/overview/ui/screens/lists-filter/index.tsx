@@ -1,14 +1,11 @@
 import React from 'react'
-import { TouchableOpacity, Image } from 'react-native'
 
 import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import Navigation from '../../components/navigation'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { MetaTypeShape } from 'src/features/meta-picker/types'
-import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
 import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
-import styles from './styles'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
 
@@ -57,7 +54,6 @@ export default class ListsFilter extends StatefulUIElement<
                         onEntryPress={this.handleEntryPress}
                         suggestInputPlaceholder="Search Spaces"
                         singleSelect
-                        type="collections"
                         initSelectedEntry={
                             this.selectedEntryName === SPECIAL_LIST_NAMES.MOBILE
                                 ? undefined

@@ -5,12 +5,10 @@ import { supportEmail } from '../../../../../../app.json'
 import { StatefulUIElement } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import Logic, { Props, State, Event } from './logic'
-import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
-import AddCollection from '../../components/add-collections-segment'
+import type { MetaTypeShape } from 'src/features/meta-picker/types'
 import ShareModal from '../../components/share-modal'
 import ActionBar from '../../components/action-bar-segment'
 import NoteInput from '../../components/note-input-segment'
-import AddTags from '../../components/add-tags-segment'
 import UnsupportedApp from '../../components/unsupported-app'
 import ReloadBtn from '../../components/reload-btn'
 import SavingUpdates from '../../components/saving-updates'
@@ -52,21 +50,12 @@ export default class ShareModalScreen extends StatefulUIElement<
             !ShareModalScreen.arraysAreSame(
                 this.state.collectionsToAdd,
                 initValues.collectionsToAdd,
-            ) ||
-            !ShareModalScreen.arraysAreSame(
-                this.state.tagsToAdd,
-                initValues.tagsToAdd,
             )
         )
     }
 
-    private calcInitEntries = (): string[] =>
-        this.state.metaViewShown === 'collections'
-            ? this.state.collectionsToAdd
-            : this.state.tagsToAdd
-
-    private handleMetaViewTypeSwitch = (type?: MetaType) => (e: any) => {
-        this.processEvent('setMetaViewType', { type })
+    private setSpacePickerShown = (isShown: boolean) => (e: any) => {
+        this.processEvent('setSpacePickerShown', { isShown })
     }
 
     private handleModalClose = () => {
@@ -96,7 +85,7 @@ export default class ShareModalScreen extends StatefulUIElement<
     private handleReloadPress = async () => {
         await (this.logic as Logic).syncRunning
         this.metaPicker.processEvent('reload', {
-            selected: this.calcInitEntries(),
+            selected: this.state.collectionsToAdd,
         })
     }
 
@@ -124,7 +113,7 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     private renderTitle() {
-        if (this.state.metaViewShown) {
+        if (this.state.isSpacePickerShown) {
             return (
                 <>
                     <TitleText>{this.state.statusText}</TitleText>
@@ -149,8 +138,7 @@ export default class ShareModalScreen extends StatefulUIElement<
             <>
                 <MetaPicker
                     onEntryPress={this.handleMetaPickerEntryPress}
-                    initSelectedEntries={this.calcInitEntries()}
-                    type={this.state.metaViewShown}
+                    initSelectedEntries={this.state.collectionsToAdd}
                     url={this.state.pageUrl}
                     ref={this.setMetaPickerRef}
                     {...this.props}
@@ -163,10 +151,10 @@ export default class ShareModalScreen extends StatefulUIElement<
                             strokeWidth={'8px'}
                         />
                     }
-                    onLeftBtnPress={this.handleMetaViewTypeSwitch(undefined)}
+                    onLeftBtnPress={this.setSpacePickerShown(false)}
                     onRightBtnPress={
-                        this.state.metaViewShown
-                            ? this.handleMetaViewTypeSwitch(undefined)
+                        this.state.isSpacePickerShown
+                            ? this.setSpacePickerShown(false)
                             : this.handleSave
                     }
                     rightBtnText={
@@ -199,11 +187,6 @@ export default class ShareModalScreen extends StatefulUIElement<
                     onChange={this.handleNoteTextChange}
                     value={this.state.noteText}
                 />
-                {/* <AddTags
-                    onPress={this.handleMetaViewTypeSwitch('tags')}
-                    count={this.state.tagsToAdd.length}
-                    loading={this.state.tagsState === 'running'}
-                /> */}
                 {this.state.collectionsState === 'done' &&
                     this.state.collectionsToAdd.length > 0 && (
                         <SpaceBar>
@@ -226,14 +209,6 @@ export default class ShareModalScreen extends StatefulUIElement<
                         </SpaceBar>
                     )}
                 <ActionBarContainer
-                    leftBtnText={
-                        <Icon
-                            icon={icons.TagEmpty}
-                            heightAndWidth={'20px'}
-                            strokeWidth={'3px'}
-                        />
-                    }
-                    onLeftBtnPress={this.handleMetaViewTypeSwitch('tags')}
                     onRightBtnPress={this.handleSave}
                     rightBtnText={
                         this.isInputDirty ? (
@@ -253,7 +228,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                     }
                 >
                     <AddSpacesContainer
-                        onPress={this.handleMetaViewTypeSwitch('collections')}
+                        onPress={this.setSpacePickerShown(true)}
                     >
                         {this.state.collectionsState === 'running' ? (
                             <LoadingIndicatorBox>
@@ -327,7 +302,7 @@ export default class ShareModalScreen extends StatefulUIElement<
             return this.renderUnsupportedApp()
         }
 
-        return this.state.metaViewShown
+        return this.state.isSpacePickerShown
             ? this.renderMetaPicker()
             : this.renderInputs()
     }
@@ -337,7 +312,7 @@ export default class ShareModalScreen extends StatefulUIElement<
             <ShareModal
                 isModalShown={this.state.isModalShown}
                 onClosed={this.props.services.shareExt.close}
-                stretched={!!this.state.metaViewShown}
+                stretched={!!this.state.isSpacePickerShown}
             >
                 {this.renderModalContent()}
             </ShareModal>

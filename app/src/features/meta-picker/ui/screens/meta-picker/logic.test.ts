@@ -30,26 +30,10 @@ describe('meta picker UI logic tests', () => {
         return { element, state }
     }
 
-    it('should be able to load init tag entries', async () => {
-        const findTagSuggestions = async (args: { url: string }) => testEntries
-        const { element } = setup({
-            ...DEFAULT_DEPS,
-            type: 'tags',
-            storage: { modules: { metaPicker: { findTagSuggestions } as any } },
-        })
-
-        expect(element.state.loadState).toEqual('pristine')
-        expect([...element.state.entries.values()]).toEqual([])
-        await element.init()
-        expect(element.state.loadState).toEqual('done')
-        expect([...element.state.entries.values()]).toEqual(testEntries)
-    })
-
     it('should be able to load init list entries', async () => {
         const findListSuggestions = async (args: { url: string }) => testEntries
         const { element } = setup({
             ...DEFAULT_DEPS,
-            type: 'collections',
             storage: {
                 modules: { metaPicker: { findListSuggestions } as any },
             },
@@ -65,7 +49,6 @@ describe('meta picker UI logic tests', () => {
     it('should be able to add new checked entries, adding them in order of latest first', async () => {
         const { element } = setup({
             ...DEFAULT_DEPS,
-            type: 'collections',
             storage: {
                 modules: {
                     metaPicker: { findListSuggestions: () => [] } as any,
@@ -111,7 +94,6 @@ describe('meta picker UI logic tests', () => {
 
         const { element } = setup({
             ...DEFAULT_DEPS,
-            type: 'collections',
             storage: {
                 modules: {
                     metaPicker: {

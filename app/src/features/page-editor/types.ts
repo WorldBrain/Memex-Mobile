@@ -1,4 +1,4 @@
-export type EditorMode = 'tags' | 'collections' | 'notes'
+export type EditorMode = 'collections' | 'notes'
 
 export interface Note {
     url: string

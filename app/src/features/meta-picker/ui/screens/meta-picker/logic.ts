@@ -1,9 +1,9 @@
 import { UILogic, UIEvent, IncomingUIEvent } from 'ui-logic-core'
 
-import { UIServices, UITaskState, UIStorageModules } from 'src/ui/types'
+import type { UIServices, UITaskState, UIStorageModules } from 'src/ui/types'
+import type { MetaTypeShape } from 'src/features/meta-picker/types'
 import { storageKeys } from '../../../../../../app.json'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import { MetaTypeShape, MetaType } from 'src/features/meta-picker/types'
 import { INIT_SUGGESTIONS_LIMIT } from './constants'
 
 export interface State {
@@ -31,7 +31,6 @@ export interface Props {
     extraEntries?: string[]
     singleSelect?: boolean
     className?: string
-    type: MetaType
     url: string
 }
 
@@ -70,12 +69,10 @@ export default class Logic extends UILogic<State, Event> {
         const { metaPicker } = this.props.storage.modules
         const { syncStorage } = this.props.services
 
-        const storageKey =
-            this.props.type === 'tags'
-                ? storageKeys.tagSuggestionsCache
-                : storageKeys.listSuggestionsCache
-
-        const cache = (await syncStorage.get<string[]>(storageKey)) ?? []
+        const cache =
+            (await syncStorage.get<string[]>(
+                storageKeys.listSuggestionsCache,
+            )) ?? []
 
         const suggestions: MetaTypeShape[] = cache.map((name) => ({
             name,
@@ -86,16 +83,10 @@ export default class Logic extends UILogic<State, Event> {
             return suggestions
         }
 
-        const dbResults =
-            this.props.type === 'tags'
-                ? await metaPicker.findTagSuggestions({
-                      limit: limit - cache.length,
-                      url: this.props.url,
-                  })
-                : await metaPicker.findListSuggestions({
-                      limit: limit - cache.length,
-                      url: this.props.url,
-                  })
+        const dbResults = await metaPicker.findListSuggestions({
+            limit: limit - cache.length,
+            url: this.props.url,
+        })
 
         return [...dbResults, ...suggestions]
     }
@@ -157,11 +148,8 @@ export default class Logic extends UILogic<State, Event> {
 
     private async suggestNewEntries(text: string, selected: string[]) {
         const { metaPicker } = this.props.storage.modules
-        const collection =
-            this.props.type === 'collections' ? 'customLists' : 'tags'
-
         const results = await metaPicker.suggest({
-            collection,
+            collection: 'customLists',
             query: { name: text },
         })
         const entries = results.map((res) => [

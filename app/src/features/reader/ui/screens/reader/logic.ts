@@ -31,7 +31,6 @@ export interface State {
     title: string
     loadState: UITaskState
     selectedText?: string
-    isTagged: boolean
     isBookmarked: boolean
     spaces: []
     isListed: boolean
@@ -95,7 +94,6 @@ export default class Logic extends UILogic<State, Event> {
             loadState: 'pristine',
             isErrorReported: false,
             isBookmarked: false,
-            isTagged: false,
             isListed: false,
             hasNotes: false,
             highlights: [],
@@ -123,10 +121,8 @@ export default class Logic extends UILogic<State, Event> {
         pageTitle: string,
         createdWhen = new Date(),
     ) {
-        const {
-            reader: readerStorage,
-            overview: overviewStorage,
-        } = this.props.storage.modules
+        const { reader: readerStorage, overview: overviewStorage } =
+            this.props.storage.modules
 
         // Update page title with what was found in readability parsing - most pages saved on Memex Go will lack titles
         if (Logic.formUrl(pageTitle) === url) {
@@ -186,14 +182,12 @@ export default class Logic extends UILogic<State, Event> {
 
         const isBookmarked = await overviewStorage.isPageStarred({ url })
         const lists = await metaPicker.findListsByPage({ url })
-        const tags = await metaPicker.findTagsByPage({ url, limit: 1 })
         const notes = await pageEditor.findNotes({ url })
 
         this.emitMutation({
             isBookmarked: { $set: isBookmarked },
             isListed: { $set: !!lists.length },
             hasNotes: { $set: !!notes.length },
-            isTagged: { $set: !!tags.length },
             highlights: {
                 $set: notes
                     .filter(
@@ -328,7 +322,6 @@ export default class Logic extends UILogic<State, Event> {
         // Allow incoming page to go back up to Dashboard so that can also react to changes
         this.props.route.params.updatePage(incomingPage)
         this.emitMutation({
-            isTagged: { $set: incomingPage.tags?.length > 0 },
             isListed: { $set: incomingPage.lists?.length > 0 },
             hasNotes: { $set: incomingPage.notes?.length > 0 },
         })

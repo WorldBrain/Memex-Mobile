@@ -50,13 +50,15 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         this.unsubNavFocus()
     }
 
-    private navToPageEditor = ({ fullUrl }: UIPage, mode: EditorMode) => () => {
-        this.props.navigation.navigate('PageEditor', {
-            pageUrl: fullUrl,
-            mode,
-            updatePage: (page) => this.processEvent('updatePage', { page }),
-        })
-    }
+    private navToPageEditor =
+        ({ fullUrl }: UIPage, mode: EditorMode) =>
+        () => {
+            this.props.navigation.navigate('PageEditor', {
+                pageUrl: fullUrl,
+                mode,
+                updatePage: (page) => this.processEvent('updatePage', { page }),
+            })
+        }
 
     private resetDashboard = () => {
         this.processEvent('setSyncRibbonShow', { show: false })
@@ -76,29 +78,39 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             ],
         )
 
-    private initHandlePageDelete = ({ url }: UIPage) => () => {
-        this.processEvent('deletePage', { url })
-    }
+    private initHandlePageDelete =
+        ({ url }: UIPage) =>
+        () => {
+            this.processEvent('deletePage', { url })
+        }
 
-    private initHandlePageStar = ({ url }: UIPage) => () => {
-        this.processEvent('togglePageStar', { url })
-    }
+    private initHandlePageStar =
+        ({ url }: UIPage) =>
+        () => {
+            this.processEvent('togglePageStar', { url })
+        }
 
-    private initHandleResultPress = ({ url }: UIPage) => () => {
-        this.processEvent('toggleResultPress', { url })
-    }
+    private initHandleResultPress =
+        ({ url }: UIPage) =>
+        () => {
+            this.processEvent('toggleResultPress', { url })
+        }
 
-    private initHandleReaderPress = ({ url, titleText }: UIPage) => () => {
-        this.props.navigation.navigate('Reader', {
-            url,
-            title: titleText,
-            updatePage: (page) => this.processEvent('updatePage', { page }),
-        })
-    }
+    private initHandleReaderPress =
+        ({ url, titleText }: UIPage) =>
+        () => {
+            this.props.navigation.navigate('Reader', {
+                url,
+                title: titleText,
+                updatePage: (page) => this.processEvent('updatePage', { page }),
+            })
+        }
 
-    private handleVisitPress = ({ fullUrl }: UIPage) => () => {
-        Linking.openURL(fullUrl)
-    }
+    private handleVisitPress =
+        ({ fullUrl }: UIPage) =>
+        () => {
+            Linking.openURL(fullUrl)
+        }
 
     private handleScrollToEnd = ({
         nativeEvent,
@@ -154,7 +166,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             onDeletePress={this.initHandleDeletePress(item)}
             onStarPress={this.initHandlePageStar(item)}
             onCommentPress={this.navToPageEditor(item, 'notes')}
-            onTagPress={this.navToPageEditor(item, 'tags')}
             onListsPress={this.navToPageEditor(item, 'collections')}
             onReaderPress={this.initHandleReaderPress(item)}
             key={index}

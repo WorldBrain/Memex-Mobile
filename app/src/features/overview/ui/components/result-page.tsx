@@ -4,7 +4,6 @@ import { View, TouchableWithoutFeedback, Text } from 'react-native'
 import Container from './result-container'
 import Body, { Props as BodyProps } from './result-page-body'
 import type { Props as FooterProps } from './result-footer'
-import Tags from './result-page-tags'
 import {
     DeleteActionBarBtn,
     TagBtnFullWhite,
@@ -27,7 +26,6 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 export interface Props extends FooterProps, BodyProps, UIPage {}
 
 export interface InteractionProps {
-    onTagPress: TouchEventHandler
     onStarPress: TouchEventHandler
     onListsPress: TouchEventHandler
     onVisitPress: TouchEventHandler
@@ -46,7 +44,6 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                 <TopArea onPress={props.onReaderPress}>
                     <View>
                         <Body {...props} />
-                        {/* <Tags tags={props.tags} /> */}
                     </View>
                     {props.lists.length > 0 && (
                         <SpacesArea>
@@ -88,22 +85,6 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                         </IconContainer>
                         {props.isResultPressed && (
                             <MoreButtons>
-                                <IconContainer onPress={props.onTagPress}>
-                                    {props.tags.length > 0 ? (
-                                        <Icon
-                                            icon={icons.TagEmpty}
-                                            height="18px"
-                                            strokeWidth="3"
-                                            fill
-                                        />
-                                    ) : (
-                                        <Icon
-                                            icon={icons.TagEmpty}
-                                            strokeWidth="3"
-                                            height="18px"
-                                        />
-                                    )}
-                                </IconContainer>
                                 <IconContainer onPress={props.onDeletePress}>
                                     <Icon
                                         icon={icons.Trash}

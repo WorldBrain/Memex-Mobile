@@ -1,5 +1,5 @@
-import React, { useRef, createRef } from 'react'
-import { View, FlatList, ListRenderItem, Text } from 'react-native'
+import React from 'react'
+import { View, FlatList, ListRenderItem } from 'react-native'
 
 import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
@@ -8,8 +8,7 @@ import MetaPickerEntry from '../../components/picker-entry'
 import MetaPickerEmptyRow from '../../components/picker-entry-empty'
 import SuggestInput from '../../components/suggest-input'
 import * as selectors from './selectors'
-import { MetaTypeShape } from 'src/features/meta-picker/types'
-import { getMetaTypeName } from 'src/features/meta-picker/utils'
+import type { MetaTypeShape } from 'src/features/meta-picker/types'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './styles'
 import styled from 'styled-components/native'
@@ -27,7 +26,7 @@ export default class MetaPickerScreen extends StatefulUIElement<
         onEntryPress: async (item: MetaTypeShape) => undefined,
     }
 
-    FlatlistRef
+    private flatlistRef: React.RefObject<FlatList<MetaTypeShape>>
 
     constructor(props: MetaPickerScreenProps) {
         super(props, new Logic(props))
@@ -36,7 +35,7 @@ export default class MetaPickerScreen extends StatefulUIElement<
             props.ref(this)
         }
 
-        this.FlatlistRef = React.createRef()
+        this.flatlistRef = React.createRef()
     }
 
     private get initEntries(): string[] {
@@ -54,35 +53,34 @@ export default class MetaPickerScreen extends StatefulUIElement<
             return this.props.suggestInputPlaceholder
         }
 
-        return `Search & Add ${getMetaTypeName(this.props.type)}`
+        return `Search & Add Spaces`
     }
 
     private ScrollTop = () => {
-        this.FlatlistRef?.current?.scrollToOffset({ animated: true, offset: 0 })
+        this.flatlistRef?.current?.scrollToOffset({ animated: true, offset: 0 })
     }
 
-    private initHandleEntryPress = ({
-        canAdd,
-        ...item
-    }: MetaTypeShape) => async () => {
-        await this.props.onEntryPress(item)
+    private initHandleEntryPress =
+        ({ canAdd, ...item }: MetaTypeShape) =>
+        async () => {
+            await this.props.onEntryPress(item)
 
-        if (canAdd) {
-            await this.processEvent('addEntry', {
-                entry: item,
-                selected: this.initEntries,
-            })
-        } else {
-            await this.processEvent('toggleEntryChecked', {
-                name: item.name,
-                selected: this.initEntries,
-            })
+            if (canAdd) {
+                await this.processEvent('addEntry', {
+                    entry: item,
+                    selected: this.initEntries,
+                })
+            } else {
+                await this.processEvent('toggleEntryChecked', {
+                    name: item.name,
+                    selected: this.initEntries,
+                })
+            }
+
+            setTimeout(() => {
+                this.ScrollTop()
+            }, 300)
         }
-
-        setTimeout(() => {
-            this.ScrollTop()
-        }, 300)
-    }
 
     private renderPickerEntry: ListRenderItem<MetaTypeShape> = ({
         item,
@@ -94,7 +92,6 @@ export default class MetaPickerScreen extends StatefulUIElement<
             canAdd={item.canAdd}
             isChecked={item.isChecked}
             onPress={this.initHandleEntryPress(item)}
-            showTextBackground={this.props.type === 'tags'}
         />
     )
 
@@ -124,7 +121,7 @@ export default class MetaPickerScreen extends StatefulUIElement<
                             </SearchContainer>
                             <View style={styles.listContainer}>
                                 <FlatList
-                                    ref={this.FlatlistRef}
+                                    ref={this.flatlistRef}
                                     keyboardShouldPersistTaps="always"
                                     renderItem={this.renderPickerEntry}
                                     data={selectors.pickerEntries(
@@ -140,7 +137,6 @@ export default class MetaPickerScreen extends StatefulUIElement<
                                             hasSearchInput={
                                                 this.state.inputText.length > 0
                                             }
-                                            type={this.props.type}
                                         />
                                     }
                                     ListFooterComponent={<EmptyItem />}

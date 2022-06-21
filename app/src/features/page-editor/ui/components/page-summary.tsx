@@ -9,13 +9,13 @@ import Navigation from 'src/features/overview/ui/components/navigation'
 import styles from './page-summary.styles'
 import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
 
-export interface Props extends PageBodyProps {
+export interface Props {
     onBackPress: (e: GestureResponderEvent) => void
     onAddPress?: (e: GestureResponderEvent) => void
     titleText: string
 }
 
-const MainLayout: React.StatelessComponent<Props> = props => (
+const MainLayout: React.StatelessComponent<Props> = (props) => (
     <Navigation
         titleText={props.titleText}
         renderLeftIcon={() => (

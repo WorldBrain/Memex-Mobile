@@ -44,13 +44,19 @@ describe('dashboard screen UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     async function setup(
-        options: Omit<Props, 'navigation'> & { navigation: FakeNavigation },
+        options: Omit<Props, 'navigation' | 'appState'> & {
+            navigation: FakeNavigation
+        },
     ) {
         await options.services.localStorage.set(storageKeys.syncKey, true)
 
         const logic = new Logic({
             ...options,
             navigation: options.navigation as any,
+            appState: {
+                addEventListener: () => {},
+                removeEventListener: () => {},
+            } as any,
         })
         const element = new FakeStatefulUIElement<State, Event>(logic)
 
@@ -132,7 +138,7 @@ describe('dashboard screen UI logic tests', () => {
                         {
                             ...UI_PAGE_1,
                             isStarred: true,
-                            tags: INTEGRATION_TEST_DATA.tags,
+                            tags: [],
                             lists: [INTEGRATION_TEST_DATA.lists[0]],
                         },
                     ],
@@ -366,7 +372,7 @@ describe('dashboard screen UI logic tests', () => {
         ])
     })
 
-    it("should be able to update an already tracked page's lists, tags, and notes", async (dependencies) => {
+    it("should be able to update an already tracked page's lists, and notes", async (dependencies) => {
         const { storage } = dependencies
         const { element } = await setup({ ...dependencies, pageSize: 1 })
 
@@ -414,20 +420,6 @@ describe('dashboard screen UI logic tests', () => {
         await element.processEvent('updatePage', {
             page: {
                 ...UI_PAGE_2,
-                tags: ['test'],
-            },
-        })
-
-        expect(element.state.pages).toEqual(
-            new Map([
-                [UI_PAGE_2.url, { ...UI_PAGE_2, tags: ['test'] }],
-                [UI_PAGE_1.url, UI_PAGE_1],
-            ]),
-        )
-
-        await element.processEvent('updatePage', {
-            page: {
-                ...UI_PAGE_2,
                 notes: [{ url: 'TESTNOTE' } as any],
             },
         })
@@ -446,7 +438,6 @@ describe('dashboard screen UI logic tests', () => {
             page: {
                 ...UI_PAGE_2,
                 lists: ['test'],
-                tags: ['test'],
                 notes: [{ url: 'TESTNOTE' } as any],
             },
         })
@@ -458,7 +449,6 @@ describe('dashboard screen UI logic tests', () => {
                     {
                         ...UI_PAGE_2,
                         lists: ['test'],
-                        tags: ['test'],
                         notes: [{ url: 'TESTNOTE' } as any],
                     },
                 ],

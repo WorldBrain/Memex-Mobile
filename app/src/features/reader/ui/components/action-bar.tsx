@@ -1,9 +1,7 @@
 import React from 'react'
-import { View } from 'react-native'
 
 import * as actionBtns from 'src/features/overview/ui/components/action-btns'
 import { TouchEventHandler } from 'src/ui/types'
-import styles from './action-bar.styles'
 import { State } from '../screens/reader/logic'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
@@ -11,7 +9,7 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 import LoadingIndicator from 'src/ui/components/loading-balls'
 
 export interface Props
-    extends Pick<State, 'isBookmarked' | 'isTagged' | 'isListed' | 'hasNotes'> {
+    extends Pick<State, 'isBookmarked' | 'isListed' | 'hasNotes'> {
     className?: string
     selectedText?: string
     isErrorView?: boolean
@@ -20,7 +18,6 @@ export interface Props
     onHighlightBtnPress: TouchEventHandler
     onAnnotateBtnPress: TouchEventHandler
     onCommentBtnPress: TouchEventHandler
-    onTagBtnPress: TouchEventHandler
     onListBtnPress: TouchEventHandler
     spaces: []
 }
@@ -116,24 +113,7 @@ class ActionBar extends React.PureComponent<Props> {
     render() {
         return (
             <Container>
-                <LeftBtns>
-                    <IconContainer onPress={this.props.onTagBtnPress}>
-                        {this.props.isTagged ? (
-                            <Icon
-                                icon={icons.TagFull}
-                                strokeWidth="3"
-                                fill
-                                heightAndWidth="24px"
-                            />
-                        ) : (
-                            <Icon
-                                icon={icons.TagFull}
-                                strokeWidth="3"
-                                heightAndWidth="24px"
-                            />
-                        )}
-                    </IconContainer>
-                </LeftBtns>
+                <LeftBtns></LeftBtns>
                 <CenterButton>
                     <AddSpacesContainer onPress={this.props.onListBtnPress}>
                         {!this.props.spaces.length ? (

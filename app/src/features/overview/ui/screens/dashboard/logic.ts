@@ -13,7 +13,6 @@ import { loadInitial, executeUITask } from 'src/ui/utils'
 import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
-import { TAGS_PER_RESULT_LIMIT } from './constants'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 import { MainNavigatorParamList } from 'src/ui/navigation/types'
 import ListsFilter from '../lists-filter'
@@ -350,10 +349,6 @@ export default class Logic extends UILogic<State, Event> {
 
         const lists = await metaPicker.findListsByPage({ url })
         const notes = await pageEditor.findNotes({ url })
-        const tags = await metaPicker.findTagsByPage({
-            url,
-            limit: TAGS_PER_RESULT_LIMIT,
-        })
 
         return {
             url,
@@ -364,7 +359,7 @@ export default class Logic extends UILogic<State, Event> {
             titleText: page.fullTitle || page.url,
             isStarred: !!page.isStarred,
             date: timeFromNow(date),
-            tags: tags.map((tag) => tag.name),
+            tags: [],
             lists: lists.map((list) => list.name),
             notes: notes.map<UINote>((note) => ({
                 domain: page!.domain,
@@ -397,7 +392,7 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'updatePage'>) {
         this.emitMutation({
             pages: {
-                $apply: (pages) => {
+                $apply: (pages: State['pages']) => {
                     const existingPage = pages.get(next.url)
 
                     if (!existingPage) {
