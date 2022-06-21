@@ -76,6 +76,19 @@ This just means the content script has not been built yet. This is a separate we
 Ensure `yarn content-script` is run at least once to build it, or use `yarn content-script:watch` to run it in watch mode if you intend to make
 changes in `src/content-script/`.
 
+## iOS build nvm PREFIX error
+
+The error looks something like this, and occurs late in the build when some node scripts are run:
+
+```
+nvm is not compatible with the "PREFIX" environment variable: currently set to "/usr/local"
+Run `unset PREFIX` to unset it.
+```
+
+If this happens, likely you've installed `yarn` via `homebrew` or some other means while `node` is installed via `nvm`. You'll need to uninstall `yarn` from `homebrew` (and `node`, unless you really need it alongside an `nvm` install) and then reinstall `yarn` via the `nvm` provided `npm` instance: `npm install -g yarn`.
+
+More info: https://medium.com/@andrejkurocenko/fixing-react-native-build-error-nvm-is-not-compatible-with-the-prefix-environment-variable-3948e6e4da80
+
 ## Build issues citing missing deps or libraries
 
 Often I've encountered issues where things either crash on build or at runtime citing missing dependencies, mainly on iOS. If this happens, I would advise trying to re-install all the needed deps and trying again. You can copy and paste the following snippets, running them from the repo root:
