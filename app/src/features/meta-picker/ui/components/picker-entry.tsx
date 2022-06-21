@@ -11,12 +11,10 @@ import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 
-import styles from './picker-entry.styles'
+import type { SpacePickerEntry } from '../../types'
 
-export interface Props {
-    text: string
+export interface Props extends SpacePickerEntry {
     canAdd?: boolean
-    isChecked?: boolean
     skipBottomBorder?: boolean
     showTextBackground?: boolean
     onPress: (e: GestureResponderEvent) => void
@@ -28,7 +26,7 @@ const MetaPickerEntry: React.StatelessComponent<Props> = (props) => (
             <TextContainer>
                 {props.canAdd && <NewText>Add new:</NewText>}
                 <EntryTextBox>
-                    <EntryText>{props.text}</EntryText>
+                    <EntryText>{props.name}</EntryText>
                 </EntryTextBox>
             </TextContainer>
             <CheckMarkContainer>

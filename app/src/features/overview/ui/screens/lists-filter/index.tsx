@@ -4,7 +4,7 @@ import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import Navigation from '../../components/navigation'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
-import { MetaTypeShape } from 'src/features/meta-picker/types'
+import { SpacePickerEntry } from 'src/features/meta-picker/types'
 import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
@@ -29,7 +29,7 @@ export default class ListsFilter extends StatefulUIElement<
         return [ListsFilter.MAGIC_VISITS_FILTER]
     }
 
-    private handleEntryPress = async (item: MetaTypeShape) => {
+    private handleEntryPress = async (item: SpacePickerEntry) => {
         this.props.navigation.navigate('Dashboard', {
             selectedList: item.isChecked
                 ? SPECIAL_LIST_NAMES.MOBILE
@@ -50,14 +50,14 @@ export default class ListsFilter extends StatefulUIElement<
                 <MetaPickerContainer>
                     <MetaPicker
                         {...this.props}
+                        singleSelect
                         extraEntries={this.magicFilters}
                         onEntryPress={this.handleEntryPress}
                         suggestInputPlaceholder="Search Spaces"
-                        singleSelect
-                        initSelectedEntry={
+                        initSelectedEntries={
                             this.selectedEntryName === SPECIAL_LIST_NAMES.MOBILE
-                                ? undefined
-                                : this.selectedEntryName
+                                ? []
+                                : [this.selectedEntryName]
                         }
                     />
                 </MetaPickerContainer>

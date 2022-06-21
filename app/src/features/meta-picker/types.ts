@@ -1,7 +1,7 @@
-export interface MetaTypeShape {
+export interface SpacePickerEntry {
+    id: number
     name: string
     isChecked: boolean
-    canAdd?: boolean
 }
 
 export interface List {

@@ -5,7 +5,7 @@ import { supportEmail } from '../../../../../../app.json'
 import { StatefulUIElement } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import Logic, { Props, State, Event } from './logic'
-import type { MetaTypeShape } from 'src/features/meta-picker/types'
+import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import ShareModal from '../../components/share-modal'
 import ActionBar from '../../components/action-bar-segment'
 import NoteInput from '../../components/note-input-segment'
@@ -78,7 +78,7 @@ export default class ShareModalScreen extends StatefulUIElement<
         this.processEvent('togglePageStar', null)
     }
 
-    private handleMetaPickerEntryPress = async (entry: MetaTypeShape) => {
+    private handleMetaPickerEntryPress = async (entry: SpacePickerEntry) => {
         await this.processEvent('metaPickerEntryPress', { entry })
     }
 

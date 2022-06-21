@@ -1,6 +1,6 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import type { MetaTypeShape } from 'src/features/meta-picker/types'
+import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import type {
     UITaskState,
     UIServices,
@@ -36,7 +36,7 @@ export type Event = UIEvent<{
     retrySync: null
 
     undoPageSave: null
-    metaPickerEntryPress: { entry: MetaTypeShape }
+    metaPickerEntryPress: { entry: SpacePickerEntry }
     setSpacePickerShown: { isShown: boolean }
     setModalVisible: { shown: boolean }
     togglePageStar: null
