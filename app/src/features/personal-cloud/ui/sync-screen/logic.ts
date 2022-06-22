@@ -114,8 +114,8 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
         services.keepAwake.activate()
 
         if (route.params?.shouldWipeDBFirst && !this.hasDBBeenWiped) {
-            this.hasDBBeenWiped = true
             await services.cloudSync.____wipeDBForSync()
+            this.hasDBBeenWiped = true
         }
 
         try {

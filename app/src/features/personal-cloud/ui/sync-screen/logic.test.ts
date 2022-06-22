@@ -106,12 +106,27 @@ describe('cloud sync UI logic tests', () => {
             context.services.cloudSync.syncStream = async () => {}
             context.route = new FakeRoute({ shouldWipeDBFirst: true }) as any
             const { element } = setup(context)
+            await context.storage.modules.localSettings.setSetting({
+                key: storageKeys.lastSeenUpdateTime,
+                value: 4352,
+            })
+
             await insertTestData(context.storage.manager)
             await assertTestData(context.storage.manager, { exists: true })
+            expect(
+                await context.storage.modules.localSettings.getSetting({
+                    key: storageKeys.lastSeenUpdateTime,
+                }),
+            ).not.toEqual(0)
 
             await element.init()
 
             await assertTestData(context.storage.manager, { exists: false })
+            expect(
+                await context.storage.modules.localSettings.getSetting({
+                    key: storageKeys.lastSeenUpdateTime,
+                }),
+            ).toEqual(0)
         },
     )
 

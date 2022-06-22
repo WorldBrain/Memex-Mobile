@@ -49,6 +49,7 @@ export class CloudSyncService implements CloudSyncAPI {
     }
 
     ____wipeDBForSync: CloudSyncAPI['____wipeDBForSync'] = async () => {
+        await this.props.setLastUpdateProcessedTime(0)
         await dangerousPleaseBeSureDeleteAndRecreateDatabase(
             this.props.storageManager,
         )
