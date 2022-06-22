@@ -91,27 +91,17 @@ export class PersonalCloudStorage {
         try {
             for (const update of updates) {
                 if (update.type === PersonalCloudUpdateType.Overwrite) {
+                    if (update.media) {
+                        // We currently don't support media updates on mobile
+                        continue
+                    }
+
                     const object = update.object
                     preprocessPulledObject({
                         storageRegistry: storageManager.registry,
                         collection: update.collection,
                         object,
                     })
-
-                    // TODO: maybe add mobile app support for media fields
-                    // if (update.media) {
-                    //     await Promise.all(
-                    //         Object.entries(update.media).map(
-                    //             async ([key, path]) => {
-                    //                 object[
-                    //                     key
-                    //                 ] = await this.dependencies.backend.downloadFromMedia(
-                    //                     { path: path.path },
-                    //                 )
-                    //             },
-                    //         ),
-                    //     )
-                    // }
 
                     // WARNING: Keep in mind this skips all storage middleware
                     await updateOrCreate({
