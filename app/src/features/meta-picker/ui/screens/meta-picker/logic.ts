@@ -8,6 +8,7 @@ import {
     initNormalizedState,
     normalizedStateToArray,
 } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
+import { validateSpaceName } from '@worldbrain/memex-common/lib/utils/space-name-validation'
 
 export interface State {
     entries: NormalizedState<SpacePickerEntry>
@@ -18,7 +19,7 @@ export interface State {
 export type Event = UIEvent<{
     toggleEntryChecked: { id: number }
     suggestEntries: { text: string }
-    addEntry: { name: string }
+    addEntry: null
     reload: null
 }>
 
@@ -38,10 +39,21 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export default class Logic extends UILogic<State, Event> {
-    private defaultEntries: SpacePickerEntry[] = []
+    private _defaultEntries = initNormalizedState<SpacePickerEntry>()
 
     constructor(private props: Props) {
         super()
+    }
+
+    private set defaultEntries(entries: NormalizedState<SpacePickerEntry>) {
+        this._defaultEntries = {
+            allIds: [...entries.allIds],
+            byId: { ...entries.byId },
+        }
+    }
+
+    private get defaultEntries(): NormalizedState<SpacePickerEntry> {
+        return this._defaultEntries
     }
 
     getInitialState(): State {
@@ -74,7 +86,7 @@ export default class Logic extends UILogic<State, Event> {
         })
 
         // Remember these to be able to reset state to, post-search
-        this.defaultEntries = normalizedStateToArray(entries)
+        this.defaultEntries = entries
 
         this.emitMutation({
             entries: { $set: entries },
@@ -96,7 +108,7 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             entries: {
                 $set: initNormalizedState({
-                    seedData: this.defaultEntries,
+                    seedData: normalizedStateToArray(this.defaultEntries),
                     getId: (entry) => entry.id,
                 }),
             },
@@ -131,28 +143,37 @@ export default class Logic extends UILogic<State, Event> {
         )
     }
 
-    addEntry: EventHandler<'addEntry'> = async ({ event }) => {
+    addEntry: EventHandler<'addEntry'> = async ({ event, previousState }) => {
         const { metaPicker } = this.props.storage.modules
 
-        const existing = await metaPicker.findListByName({ name: event.name })
-        if (existing) {
-            throw new Error('Cannot add new list with name already in use')
+        const validationResult = validateSpaceName(
+            previousState.inputText,
+            normalizedStateToArray(this.defaultEntries),
+        )
+
+        if (!validationResult.valid) {
+            throw new Error(
+                `Cannot add new list with invalid name: ${validationResult.reason}`,
+            )
         }
 
-        const { object: newList } = await metaPicker.createList({
-            name: event.name,
-        })
+        const name = previousState.inputText.trim()
+        const { object: newList } = await metaPicker.createList({ name })
+        const newEntry: SpacePickerEntry = {
+            name,
+            id: newList.id,
+            isChecked: true,
+        }
 
+        this.defaultEntries.allIds.unshift(newEntry.id)
+        this.defaultEntries.byId[newEntry.id] = { ...newEntry }
         this.emitMutation({
+            inputText: { $set: '' },
             entries: {
                 allIds: { $unshift: [newList.id] },
                 byId: {
                     [newList.id]: {
-                        $set: {
-                            id: newList.id,
-                            name: event.name,
-                            isChecked: true,
-                        },
+                        $set: { ...newEntry },
                     },
                 },
             },
@@ -171,6 +192,7 @@ export default class Logic extends UILogic<State, Event> {
             )
         }
 
+        this.defaultEntries.byId[event.id].isChecked = !entry.isChecked
         this.emitMutation({
             entries: {
                 byId: {

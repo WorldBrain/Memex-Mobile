@@ -4,6 +4,11 @@ import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import type { TestDevice } from 'src/types.tests'
 import { normalizedStateToArray } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
+import {
+    EMPTY_SPACE_NAME_ERR_MSG,
+    BAD_CHAR_SPACE_NAME_ERR_MSG,
+    NON_UNIQ_SPACE_NAME_ERR_MSG,
+} from '@worldbrain/memex-common/lib/utils/space-name-validation'
 
 const testEntries: SpacePickerEntry[] = [
     { id: 0, name: 'testA', isChecked: false },
@@ -63,23 +68,77 @@ describe('meta picker UI logic tests', () => {
 
         expect(normalizedStateToArray(element.state.entries)).toEqual([])
 
-        await element.processEvent('addEntry', { name: testEntries[0].name })
+        element.processMutation({
+            inputText: { $set: testEntries[0].name },
+        })
+        await element.processEvent('addEntry', null)
+        expect(element.state.inputText).toEqual('')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
             namesToEntries([testEntries[0].name]),
         )
 
-        await element.processEvent('addEntry', { name: testEntries[1].name })
+        element.processMutation({
+            inputText: { $set: testEntries[1].name },
+        })
+        await element.processEvent('addEntry', null)
+        expect(element.state.inputText).toEqual('')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
             namesToEntries([testEntries[1].name, testEntries[0].name]),
         )
 
-        await element.processEvent('addEntry', { name: testEntries[2].name })
+        element.processMutation({
+            inputText: { $set: testEntries[2].name },
+        })
+        await element.processEvent('addEntry', null)
+        expect(element.state.inputText).toEqual('')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
             namesToEntries([
                 testEntries[2].name,
                 testEntries[1].name,
                 testEntries[0].name,
             ]),
+        )
+    })
+
+    it('should validate and reject on bad space name add attempts', async (context) => {
+        const { element } = await setup(context, { skipTestData: true })
+
+        const namesToEntries = (names: string[]) =>
+            names.map((name) => ({
+                id: expect.any(Number),
+                isChecked: true,
+                name,
+            }))
+        await element.init()
+
+        expect(normalizedStateToArray(element.state.entries)).toEqual([])
+
+        element.processMutation({
+            inputText: { $set: '    ' },
+        })
+        expect(element.processEvent('addEntry', null)).rejects.toThrowError(
+            `Cannot add new list with invalid name: ${EMPTY_SPACE_NAME_ERR_MSG}`,
+        )
+
+        element.processMutation({
+            inputText: { $set: 'test [ ( {' },
+        })
+        expect(element.processEvent('addEntry', null)).rejects.toThrowError(
+            `Cannot add new list with invalid name: ${BAD_CHAR_SPACE_NAME_ERR_MSG}`,
+        )
+
+        element.processMutation({
+            inputText: { $set: testEntries[2].name },
+        })
+        await element.processEvent('addEntry', null)
+        expect(normalizedStateToArray(element.state.entries)).toEqual(
+            namesToEntries([testEntries[2].name]),
+        )
+        element.processMutation({
+            inputText: { $set: testEntries[2].name },
+        })
+        expect(element.processEvent('addEntry', null)).rejects.toThrowError(
+            `Cannot add new list with invalid name: ${NON_UNIQ_SPACE_NAME_ERR_MSG}`,
         )
     })
 
@@ -104,7 +163,8 @@ describe('meta picker UI logic tests', () => {
         expect(element.state.entries.byId[0].isChecked).toBe(false)
 
         const newEntry = 'testA____'
-        await element.processEvent('addEntry', { name: newEntry })
+        element.processMutation({ inputText: { $set: newEntry } })
+        await element.processEvent('addEntry', null)
         expect(
             element.state.entries.byId[element.state.entries.allIds[0]],
         ).toEqual({
