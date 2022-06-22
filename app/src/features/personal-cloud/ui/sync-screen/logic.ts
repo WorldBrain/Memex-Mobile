@@ -68,7 +68,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
                     pendingDownloads: { $set: stats.pendingDownloads },
                     // This should only set it the first time
                     totalDownloads: {
-                        $apply: (prev) => prev ?? stats.pendingDownloads,
+                        $apply: (prev) => prev ?? stats.totalDownloads,
                     },
                 })
             },

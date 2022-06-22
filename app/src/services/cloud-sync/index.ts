@@ -28,17 +28,25 @@ export class CloudSyncService implements CloudSyncAPI {
     private syncStreamMutex = new AsyncMutex()
     private shouldInterruptStream = false
     private stats: SyncStats = {
-        pendingDownloads: 0,
-        pendingUploads: 0,
+        totalDownloads: null,
+        pendingDownloads: null,
     }
 
     constructor(private props: Props) {
         props.backend.events.on('incomingChangesPending', (event) => {
-            this._modifyStats({ pendingDownloads: event.changeCountDelta })
+            this._modifyStats({
+                totalDownloads: event.changeCountDelta,
+                pendingDownloads:
+                    this.stats.pendingDownloads != null &&
+                    this.stats.pendingDownloads < 0
+                        ? event.changeCountDelta + this.stats.pendingDownloads // this case is when 'incomingChangesProcessed' fires first
+                        : event.changeCountDelta,
+            })
         })
         props.backend.events.on('incomingChangesProcessed', (event) => {
             this._modifyStats({
-                pendingDownloads: this.stats.pendingDownloads - event.count,
+                pendingDownloads:
+                    (this.stats.pendingDownloads ?? 0) - event.count,
             })
         })
     }

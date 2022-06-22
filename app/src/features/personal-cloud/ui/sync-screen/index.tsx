@@ -62,7 +62,9 @@ export default class CloudSyncScreen extends StatefulUIElement<
                     </SecondaryText>
                     <SecondaryText>
                         Pending remote changes:{' '}
-                        {this.state.pendingDownloads ?? '...'}
+                        {this.state.totalDownloads == null
+                            ? '...'
+                            : this.state.pendingDownloads}
                     </SecondaryText>
                     <SecondaryText>
                         Progress:{' '}
