@@ -10,6 +10,7 @@ import * as DATA from './logic.test.data'
 import { USER_DATA_COLLECTIONS } from 'src/storage/utils'
 import StorageManager from '@worldbrain/storex'
 import type { AppStateStatus, AppStateStatic } from 'react-native'
+import { CloudSyncService } from 'src/services/cloud-sync'
 
 describe('cloud sync UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -110,6 +111,12 @@ describe('cloud sync UI logic tests', () => {
                 key: storageKeys.lastSeenUpdateTime,
                 value: 4352,
             })
+            const cloudSyncService = context.services
+                .cloudSync as CloudSyncService
+            cloudSyncService['_modifyStats']({
+                pendingDownloads: 10,
+                totalDownloads: 10,
+            })
 
             await insertTestData(context.storage.manager)
             await assertTestData(context.storage.manager, { exists: true })
@@ -118,6 +125,10 @@ describe('cloud sync UI logic tests', () => {
                     key: storageKeys.lastSeenUpdateTime,
                 }),
             ).not.toEqual(0)
+            expect(cloudSyncService['stats']).toEqual({
+                pendingDownloads: 10,
+                totalDownloads: 10,
+            })
 
             await element.init()
 
@@ -127,6 +138,10 @@ describe('cloud sync UI logic tests', () => {
                     key: storageKeys.lastSeenUpdateTime,
                 }),
             ).toEqual(0)
+            expect(cloudSyncService['stats']).toEqual({
+                pendingDownloads: null,
+                totalDownloads: null,
+            })
         },
     )
 
