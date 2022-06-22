@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, FlatList, ListRenderItem } from 'react-native'
+import { View, FlatList } from 'react-native'
 
 import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
@@ -7,17 +7,20 @@ import MetaPicker from '../../components/picker'
 import MetaPickerEntry from '../../components/picker-entry'
 import MetaPickerEmptyRow from '../../components/picker-entry-empty'
 import SuggestInput from '../../components/suggest-input'
-import * as selectors from './selectors'
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './styles'
 import styled from 'styled-components/native'
+import { normalizedStateToArray } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
+import { validateSpaceName } from '@worldbrain/memex-common/lib/utils/space-name-validation'
 
 export interface MetaPickerScreenProps extends Props {
     className?: string
     onEntryPress?: (item: SpacePickerEntry) => Promise<void>
     ref?: (metaPicker: MetaPickerScreen) => void
 }
+
+const newEntryId = -1
 
 export default class MetaPickerScreen extends StatefulUIElement<
     MetaPickerScreenProps,
@@ -36,47 +39,42 @@ export default class MetaPickerScreen extends StatefulUIElement<
         this.flatlistRef = React.createRef()
     }
 
-    private get initEntries(): string[] {
-        if (this.props.singleSelect) {
-            return this.props.initSelectedEntries
+    private get entries(): SpacePickerEntry[] {
+        const inputText = this.state.inputText.trim()
+        const entries = normalizedStateToArray(this.state.entries)
+        const validationResult = validateSpaceName(inputText, entries)
+
+        if (validationResult.valid) {
+            return [
+                {
+                    id: newEntryId,
+                    name: this.state.inputText,
+                    isChecked: false,
+                },
+                ...entries,
+            ]
         }
 
-        return this.props.initSelectedEntries ?? []
+        return entries
     }
 
-    private get suggestInputPlaceholder(): string {
-        if (this.props.suggestInputPlaceholder) {
-            return this.props.suggestInputPlaceholder
-        }
-
-        return `Search & Add Spaces`
-    }
-
-    private ScrollTop = () => {
+    private scrollToTop = () => {
         this.flatlistRef?.current?.scrollToOffset({ animated: true, offset: 0 })
     }
 
-    private initHandleEntryPress =
-        ({ ...item }: SpacePickerEntry) =>
-        async () => {
-            await this.props.onEntryPress?.(item)
+    private initHandleEntryPress = (item: SpacePickerEntry) => async () => {
+        await this.props.onEntryPress?.(item)
 
-            // if (canAdd) {
-            await this.processEvent('addEntry', {
-                entry: item,
-                selected: this.initEntries,
-            })
-            // } else {
-            //     await this.processEvent('toggleEntryChecked', {
-            //         name: item.name,
-            //         selected: this.initEntries,
-            //     })
-            // }
-
-            setTimeout(() => {
-                this.ScrollTop()
-            }, 300)
+        if (item.id === newEntryId) {
+            await this.processEvent('addEntry', null)
+        } else {
+            await this.processEvent('toggleEntryChecked', { id: item.id })
         }
+
+        setTimeout(() => {
+            this.scrollToTop()
+        }, 300)
+    }
 
     render() {
         return (
@@ -90,12 +88,14 @@ export default class MetaPickerScreen extends StatefulUIElement<
                         <InnerContainer>
                             <SearchContainer>
                                 <SearchInputContainer
-                                    value={selectors.inputText(this.state)}
-                                    placeholder={this.suggestInputPlaceholder}
+                                    value={this.state.inputText}
+                                    placeholder={
+                                        this.props.suggestInputPlaceholder ??
+                                        'Search & Add Spaces'
+                                    }
                                     onChange={(text) =>
                                         this.processEvent('suggestEntries', {
                                             text,
-                                            selected: this.initEntries,
                                         })
                                     }
                                 />
@@ -103,24 +103,22 @@ export default class MetaPickerScreen extends StatefulUIElement<
                             <View style={styles.listContainer}>
                                 <FlatList
                                     ref={this.flatlistRef}
-                                    keyboardShouldPersistTaps="always"
+                                    data={this.entries}
                                     renderItem={({ item }) => (
                                         <MetaPickerEntry
                                             {...item}
                                             key={item.id}
+                                            canAdd={item.id === newEntryId}
                                             onPress={this.initHandleEntryPress(
                                                 item,
                                             )}
                                         />
                                     )}
-                                    data={selectors.pickerEntries(
-                                        this.state,
-                                        this.props,
-                                    )}
                                     keyExtractor={(item, index) =>
                                         index.toString()
                                     }
                                     showsVerticalScrollIndicator={false}
+                                    keyboardShouldPersistTaps="always"
                                     ListEmptyComponent={
                                         <MetaPickerEmptyRow
                                             hasSearchInput={

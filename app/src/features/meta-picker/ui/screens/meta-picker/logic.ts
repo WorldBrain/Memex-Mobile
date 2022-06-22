@@ -29,7 +29,7 @@ export interface Props {
     suggestInputPlaceholder?: string
     initSelectedEntries?: number[]
     extraEntries?: SpacePickerEntry[]
-    singleSelect?: boolean
+    filterMode?: boolean
 }
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -129,6 +129,7 @@ export default class Logic extends UILogic<State, Event> {
 
                 const suggestions = await metaPicker.suggestLists({
                     query: { name: event.text },
+                    includeSpecialLists: this.props.filterMode,
                 })
 
                 this.emitMutation({
@@ -225,6 +226,7 @@ export default class Logic extends UILogic<State, Event> {
         const entries = await metaPicker.findListSuggestions({
             // limit: limit - cache.length,
             limit: 10000,
+            includeSpecialLists: this.props.filterMode,
         })
 
         return entries
