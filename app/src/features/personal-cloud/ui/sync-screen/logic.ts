@@ -121,7 +121,9 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
         try {
             await services.cloudSync.syncStream()
         } catch (err) {
-            this.handleSyncError(err)
+            if (!(err instanceof SyncStreamInterruptError)) {
+                this.handleSyncError(err)
+            }
             throw err
         } finally {
             services.keepAwake.deactivate()
