@@ -101,33 +101,38 @@ export default class MetaPickerScreen extends StatefulUIElement<
                                 />
                             </SearchContainer>
                             <View style={styles.listContainer}>
-                                <FlatList
-                                    ref={this.flatlistRef}
-                                    data={this.entries}
-                                    renderItem={({ item }) => (
-                                        <MetaPickerEntry
-                                            {...item}
-                                            key={item.id}
-                                            canAdd={item.id === newEntryId}
-                                            onPress={this.initHandleEntryPress(
-                                                item,
-                                            )}
-                                        />
-                                    )}
-                                    keyExtractor={(item, index) =>
-                                        index.toString()
-                                    }
-                                    showsVerticalScrollIndicator={false}
-                                    keyboardShouldPersistTaps="always"
-                                    ListEmptyComponent={
-                                        <MetaPickerEmptyRow
-                                            hasSearchInput={
-                                                this.state.inputText.length > 0
-                                            }
-                                        />
-                                    }
-                                    ListFooterComponent={<EmptyItem />}
-                                />
+                                {this.state.searchState === 'running' ? (
+                                    <LoadingBalls />
+                                ) : (
+                                    <FlatList
+                                        ref={this.flatlistRef}
+                                        data={this.entries}
+                                        renderItem={({ item }) => (
+                                            <MetaPickerEntry
+                                                {...item}
+                                                key={item.id}
+                                                canAdd={item.id === newEntryId}
+                                                onPress={this.initHandleEntryPress(
+                                                    item,
+                                                )}
+                                            />
+                                        )}
+                                        keyExtractor={(item, index) =>
+                                            index.toString()
+                                        }
+                                        showsVerticalScrollIndicator={false}
+                                        keyboardShouldPersistTaps="always"
+                                        ListEmptyComponent={
+                                            <MetaPickerEmptyRow
+                                                hasSearchInput={
+                                                    this.state.inputText
+                                                        .length > 0
+                                                }
+                                            />
+                                        }
+                                        ListFooterComponent={<EmptyItem />}
+                                    />
+                                )}
                             </View>
                         </InnerContainer>
                     </ResultsContainer>

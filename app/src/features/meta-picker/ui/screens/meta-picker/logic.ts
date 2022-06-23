@@ -15,6 +15,7 @@ export interface State {
     entries: NormalizedState<SpacePickerEntry>
     inputText: string
     loadState: UITaskState
+    searchState: UITaskState
 }
 
 export type Event = UIEvent<{
@@ -58,6 +59,7 @@ export default class Logic extends UILogic<State, Event> {
         return {
             inputText: '',
             loadState: 'pristine',
+            searchState: 'pristine',
             entries: initNormalizedState(),
         }
     }
@@ -110,16 +112,17 @@ export default class Logic extends UILogic<State, Event> {
 
     suggestEntries: EventHandler<'suggestEntries'> = async ({ event }) => {
         const { metaPicker } = this.props.storage.modules
-        await executeUITask<State, 'loadState', void>(
+        this.emitMutation({ inputText: { $set: event.text } })
+
+        if (!event.text.trim().length) {
+            this.resetEntries()
+            return
+        }
+
+        await executeUITask<State, 'searchState', void>(
             this,
-            'loadState',
+            'searchState',
             async () => {
-                this.emitMutation({ inputText: { $set: event.text } })
-
-                if (!event.text.trim().length) {
-                    return this.resetEntries()
-                }
-
                 const suggestions = await metaPicker.suggestLists({
                     query: { name: event.text },
                     includeSpecialLists: this.props.filterMode,

@@ -184,4 +184,45 @@ describe('meta picker UI logic tests', () => {
             name: newEntry,
         })
     })
+
+    it('should be able to suggest entries', async (context) => {
+        const { element } = await setup(context)
+
+        await element.init()
+
+        expect(element.state.inputText).toEqual('')
+        expect(element.state.searchState).toEqual('pristine')
+        expect(normalizedStateToArray(element.state.entries)).toEqual(
+            testEntries,
+        )
+
+        const suggestP = element.processEvent('suggestEntries', {
+            text: 'test',
+        })
+        expect(element.state.searchState).toEqual('running')
+        await suggestP
+        expect(element.state.inputText).toEqual('test')
+        expect(element.state.searchState).toEqual('done')
+        expect(normalizedStateToArray(element.state.entries)).toEqual(
+            testEntries,
+        )
+
+        await element.processEvent('suggestEntries', { text: 'testB' })
+        expect(element.state.inputText).toEqual('testB')
+        expect(normalizedStateToArray(element.state.entries)).toEqual([
+            testEntries[1],
+        ])
+
+        await element.processEvent('suggestEntries', { text: 'testC' })
+        expect(element.state.inputText).toEqual('testC')
+        expect(normalizedStateToArray(element.state.entries)).toEqual([
+            testEntries[2],
+        ])
+
+        await element.processEvent('suggestEntries', { text: '' })
+        expect(element.state.inputText).toEqual('')
+        expect(normalizedStateToArray(element.state.entries)).toEqual(
+            testEntries,
+        )
+    })
 })
