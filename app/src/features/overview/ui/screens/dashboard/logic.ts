@@ -10,15 +10,12 @@ import {
     MainNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import {
-    SPECIAL_LIST_NAMES,
-    SPECIAL_LIST_IDS,
-} from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
+import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 import { MainNavigatorParamList } from 'src/ui/navigation/types'
-import ListsFilter from '../lists-filter'
+import type { List } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
 import { ALL_SAVED_FILTER_ID } from './constants'
 
 export interface State {
@@ -35,6 +32,7 @@ export interface State {
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
+    listsData: { [listId: number]: List }
 }
 
 export type Event = UIEvent<{
@@ -98,6 +96,7 @@ export default class Logic extends UILogic<State, Event> {
             actionFinishedAt: 0,
             pages: new Map(),
             selectedListId,
+            listsData: {},
         }
     }
 
@@ -384,6 +383,19 @@ export default class Logic extends UILogic<State, Event> {
         const lists = await metaPicker.findListsByPage({ url })
         const notes = await pageEditor.findNotes({ url })
 
+        // Add any new lists data to state
+        this.emitMutation({
+            listsData: {
+                $apply: (existing) => ({
+                    ...existing,
+                    ...lists.reduce(
+                        (acc, list) => ({ ...acc, [list.id]: list }),
+                        {},
+                    ),
+                }),
+            },
+        })
+
         return {
             url,
             type: page.type,
@@ -394,7 +406,7 @@ export default class Logic extends UILogic<State, Event> {
             isStarred: !!page.isStarred,
             date: timeFromNow(date),
             tags: [],
-            lists: lists.map((list) => list.name),
+            listIds: lists.map((list) => list.id),
             notes: notes.map<UINote>((note) => ({
                 domain: page!.domain,
                 fullUrl: page!.url,
@@ -421,10 +433,41 @@ export default class Logic extends UILogic<State, Event> {
         return { pages: { $set: new Map(pageEntries) } }
     }
 
-    updatePage({
+    async updatePage({
+        previousState,
         event: { page: next },
     }: IncomingUIEvent<State, Event, 'updatePage'>) {
+        const trackedListIds = new Set(
+            Object.keys(previousState.listsData).map(Number),
+        )
+        let listIdsToTrack: number[] = []
+        for (const incomingListId of next.listIds) {
+            if (trackedListIds.has(incomingListId)) {
+                continue
+            }
+
+            listIdsToTrack.push(incomingListId)
+        }
+
+        const mutation: UIMutation<State> = {}
+        if (listIdsToTrack.length > 0) {
+            const lists =
+                await this.props.storage.modules.metaPicker.findListsByIds({
+                    ids: listIdsToTrack,
+                })
+            mutation.listsData = {
+                $apply: (existing) => ({
+                    ...existing,
+                    ...lists.reduce(
+                        (acc, list) => ({ ...acc, [list.id]: list }),
+                        {},
+                    ),
+                }),
+            }
+        }
+
         this.emitMutation({
+            ...mutation,
             pages: {
                 $apply: (pages: State['pages']) => {
                     const existingPage = pages.get(next.url)
@@ -438,7 +481,7 @@ export default class Logic extends UILogic<State, Event> {
                     return pages.set(next.url, {
                         ...existingPage,
                         tags: next.tags,
-                        lists: next.lists,
+                        listIds: next.listIds,
                         notes: next.notes,
                     })
                 },

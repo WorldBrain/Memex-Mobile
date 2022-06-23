@@ -26,7 +26,7 @@ const UI_PAGE_1: UIPage = {
     date: 'a few seconds ago',
     isStarred: false,
     tags: [],
-    lists: [],
+    listIds: [],
     type: 'page',
 }
 const UI_PAGE_2: UIPage = {
@@ -39,7 +39,7 @@ const UI_PAGE_2: UIPage = {
     date: 'a few seconds ago',
     isStarred: false,
     tags: [],
-    lists: [],
+    listIds: [],
     type: 'page',
 }
 
@@ -423,13 +423,13 @@ describe('dashboard screen UI logic tests', () => {
         await element.processEvent('updatePage', {
             page: {
                 ...UI_PAGE_2,
-                lists: ['test'],
+                listIds: [123],
             },
         })
 
         expect(element.state.pages).toEqual(
             new Map([
-                [UI_PAGE_2.url, { ...UI_PAGE_2, lists: ['test'] }],
+                [UI_PAGE_2.url, { ...UI_PAGE_2, listIds: [123] }],
                 [UI_PAGE_1.url, UI_PAGE_1],
             ]),
         )
@@ -454,7 +454,7 @@ describe('dashboard screen UI logic tests', () => {
         await element.processEvent('updatePage', {
             page: {
                 ...UI_PAGE_2,
-                lists: ['test'],
+                listIds: [123],
                 notes: [{ url: 'TESTNOTE' } as any],
             },
         })
@@ -465,7 +465,7 @@ describe('dashboard screen UI logic tests', () => {
                     UI_PAGE_2.url,
                     {
                         ...UI_PAGE_2,
-                        lists: ['test'],
+                        listIds: [123],
                         notes: [{ url: 'TESTNOTE' } as any],
                     },
                 ],

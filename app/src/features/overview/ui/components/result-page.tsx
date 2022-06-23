@@ -22,8 +22,12 @@ import type { UIPage } from '../../types'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
+import { List } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
+import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 
-export interface Props extends FooterProps, BodyProps, UIPage {}
+export interface Props extends FooterProps, BodyProps, UIPage {
+    listsData: { [listId: string]: List }
+}
 
 export interface InteractionProps {
     onStarPress: TouchEventHandler
@@ -45,13 +49,22 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                     <View>
                         <Body {...props} />
                     </View>
-                    {props.lists.length > 0 && (
+                    {props.listIds.length > 0 && (
                         <SpacesArea>
-                            {props.lists
-                                .filter((item) => item !== 'Inbox')
-                                .map((entry) => (
-                                    <SpacePill key={entry}>
-                                        <SpacePillText>{entry}</SpacePillText>
+                            {props.listIds
+                                .filter(
+                                    (listId) =>
+                                        ![
+                                            SPECIAL_LIST_IDS.INBOX,
+                                            SPECIAL_LIST_IDS.MOBILE,
+                                        ].includes(listId),
+                                )
+                                .map((listId) => (
+                                    <SpacePill key={listId}>
+                                        <SpacePillText>
+                                            {props.listsData[listId]?.name ??
+                                                'Missing list'}
+                                        </SpacePillText>
                                     </SpacePill>
                                 ))}
                         </SpacesArea>

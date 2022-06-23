@@ -171,6 +171,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             onCommentPress={this.navToPageEditor(item, 'notes')}
             onListsPress={this.navToPageEditor(item, 'collections')}
             onReaderPress={this.initHandleReaderPress(item)}
+            listsData={this.state.listsData}
             key={index}
             {...item}
         />

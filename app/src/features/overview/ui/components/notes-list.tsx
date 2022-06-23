@@ -43,7 +43,7 @@ class NotesList extends React.PureComponent<Props> {
                         date={this.props.pageData?.date}
                     />
                     <SpacesArea>
-                        {this.props.pageData?.lists.map((entry) => (
+                        {this.props.pageData?.listIds.map((entry) => (
                             <SpacePill>
                                 <SpacePillText>{entry}</SpacePillText>
                             </SpacePill>
