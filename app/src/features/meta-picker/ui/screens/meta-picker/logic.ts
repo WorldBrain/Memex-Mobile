@@ -107,6 +107,7 @@ export default class Logic extends UILogic<State, Event> {
 
     private resetEntries() {
         this.emitMutation({
+            inputText: { $set: '' },
             entries: { $set: cloneNormalizedState(this.defaultEntries) },
         })
     }
@@ -165,17 +166,7 @@ export default class Logic extends UILogic<State, Event> {
 
         this.defaultEntries.allIds.unshift(newEntry.id)
         this.defaultEntries.byId[newEntry.id] = { ...newEntry }
-        this.emitMutation({
-            inputText: { $set: '' },
-            entries: {
-                allIds: { $unshift: [newList.id] },
-                byId: {
-                    [newList.id]: {
-                        $set: { ...newEntry },
-                    },
-                },
-            },
-        })
+        this.resetEntries()
         await this.props.onEntryPress?.(newEntry)
     }
 

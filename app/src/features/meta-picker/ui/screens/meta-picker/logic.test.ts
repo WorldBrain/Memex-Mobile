@@ -1,5 +1,5 @@
 import { makeStorageTestFactory } from 'src/index.tests'
-import Logic, { State, Event } from './logic'
+import Logic, { State, Event, Props } from './logic'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import type { TestDevice } from 'src/types.tests'
@@ -17,7 +17,13 @@ const testEntries: SpacePickerEntry[] = [
     { id: 3, name: 'testD', isChecked: false },
 ]
 
-async function setup(context: TestDevice, opts?: { skipTestData?: boolean }) {
+async function setup(
+    context: TestDevice,
+    opts?: {
+        skipTestData?: boolean
+        props?: Pick<Props, 'onEntryPress'>
+    },
+) {
     if (!opts?.skipTestData) {
         await insertTestData(context)
     }
@@ -25,6 +31,7 @@ async function setup(context: TestDevice, opts?: { skipTestData?: boolean }) {
     const logic = new Logic({
         storage: context.storage,
         services: context.services,
+        ...opts?.props,
     })
     const element = new FakeStatefulUIElement<State, Event>(logic)
 
@@ -56,7 +63,15 @@ describe('meta picker UI logic tests', () => {
     })
 
     it('should be able to add new list entries, adding them in order of latest first', async (context) => {
-        const { element } = await setup(context, { skipTestData: true })
+        let lastPressedEntryName: string | null = null
+        const { element } = await setup(context, {
+            skipTestData: true,
+            props: {
+                onEntryPress: async (entry) => {
+                    lastPressedEntryName = entry.name
+                },
+            },
+        })
 
         const namesToEntries = (names: string[]) =>
             names.map((name) => ({
@@ -67,29 +82,33 @@ describe('meta picker UI logic tests', () => {
         await element.init()
 
         expect(normalizedStateToArray(element.state.entries)).toEqual([])
+        expect(lastPressedEntryName).toEqual(null)
 
-        element.processMutation({
-            inputText: { $set: testEntries[0].name },
+        await element.processEvent('suggestEntries', {
+            text: testEntries[0].name,
         })
         await element.processEvent('addEntry', null)
+        expect(lastPressedEntryName).toEqual(testEntries[0].name)
         expect(element.state.inputText).toEqual('')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
             namesToEntries([testEntries[0].name]),
         )
 
-        element.processMutation({
-            inputText: { $set: testEntries[1].name },
+        await element.processEvent('suggestEntries', {
+            text: testEntries[1].name,
         })
         await element.processEvent('addEntry', null)
+        expect(lastPressedEntryName).toEqual(testEntries[1].name)
         expect(element.state.inputText).toEqual('')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
             namesToEntries([testEntries[1].name, testEntries[0].name]),
         )
 
-        element.processMutation({
-            inputText: { $set: testEntries[2].name },
+        await element.processEvent('suggestEntries', {
+            text: testEntries[2].name,
         })
         await element.processEvent('addEntry', null)
+        expect(lastPressedEntryName).toEqual(testEntries[2].name)
         expect(element.state.inputText).toEqual('')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
             namesToEntries([
@@ -143,7 +162,14 @@ describe('meta picker UI logic tests', () => {
     })
 
     it('should be able to toggle checked entries', async (context) => {
-        const { element } = await setup(context)
+        let lastPressedEntryId: number | null = null
+        const { element } = await setup(context, {
+            props: {
+                onEntryPress: async (entry) => {
+                    lastPressedEntryId = entry.id
+                },
+            },
+        })
 
         await element.init()
 
@@ -151,16 +177,19 @@ describe('meta picker UI logic tests', () => {
             testEntries,
         )
         expect(element.state.entries.byId[0].isChecked).toBe(false)
+        expect(lastPressedEntryId).toBe(null)
 
         await element.processEvent('toggleEntryChecked', {
             id: testEntries[0].id,
         })
         expect(element.state.entries.byId[0].isChecked).toBe(true)
+        expect(lastPressedEntryId).toBe(testEntries[0].id)
 
         await element.processEvent('toggleEntryChecked', {
             id: testEntries[0].id,
         })
         expect(element.state.entries.byId[0].isChecked).toBe(false)
+        expect(lastPressedEntryId).toBe(testEntries[0].id)
 
         const newEntry = 'testA____'
         element.processMutation({ inputText: { $set: newEntry } })
@@ -183,6 +212,7 @@ describe('meta picker UI logic tests', () => {
             isChecked: false,
             name: newEntry,
         })
+        expect(lastPressedEntryId).toBe(element.state.entries.allIds[0])
     })
 
     it('should be able to suggest entries', async (context) => {
