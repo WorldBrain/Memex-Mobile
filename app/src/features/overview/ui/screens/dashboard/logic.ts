@@ -10,22 +10,28 @@ import {
     MainNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
+import {
+    SPECIAL_LIST_NAMES,
+    SPECIAL_LIST_IDS,
+} from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 import { MainNavigatorParamList } from 'src/ui/navigation/types'
 import ListsFilter from '../lists-filter'
+import { ALL_SAVED_FILTER_ID } from './constants'
 
 export interface State {
     syncState: UITaskState
     loadState: UITaskState
     reloadState: UITaskState
     loadMoreState: UITaskState
+    listNameLoadState: UITaskState
     couldHaveMore: boolean
     shouldShowSyncRibbon: boolean
     pages: Map<string, UIPage>
-    selectedListName: string
+    selectedListId: number
+    selectedListName: string | null
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
@@ -33,14 +39,14 @@ export interface State {
 
 export type Event = UIEvent<{
     setSyncRibbonShow: { show: boolean }
-    reload: { initList?: string; triggerSync?: boolean }
+    reload: { initListId?: number; triggerSync?: boolean }
     loadMore: {}
     setPages: { pages: UIPage[] }
     updatePage: { page: UIPage }
     deletePage: { url: string }
     togglePageStar: { url: string }
     toggleResultPress: { url: string }
-    setFilteredListName: { name: string }
+    setFilteredListId: { id: number }
     focusFromNavigation: MainNavigatorParamList['Dashboard']
 }>
 
@@ -73,23 +79,25 @@ export default class Logic extends UILogic<State, Event> {
         this.getNow = props.getNow || (() => Date.now())
     }
 
-    getInitialState(initList?: string): State {
+    getInitialState(initListId?: number): State {
         const { params } = this.props.route
 
-        const selectedListName =
-            initList ?? params?.selectedList ?? SPECIAL_LIST_NAMES.MOBILE
+        const selectedListId =
+            initListId ?? params?.selectedListId ?? SPECIAL_LIST_IDS.MOBILE
 
         return {
             syncState: 'pristine',
             loadState: 'pristine',
             reloadState: 'pristine',
             loadMoreState: 'pristine',
+            listNameLoadState: 'pristine',
             couldHaveMore: true,
+            selectedListName: null,
             actionState: 'pristine',
             shouldShowSyncRibbon: false,
             actionFinishedAt: 0,
             pages: new Map(),
-            selectedListName,
+            selectedListId,
         }
     }
 
@@ -114,7 +122,7 @@ export default class Logic extends UILogic<State, Event> {
                     return this.processUIEvent('reload', {
                         ...incoming,
                         event: {
-                            initList: incoming.previousState.selectedListName,
+                            initListId: incoming.previousState.selectedListId,
                             triggerSync: true,
                         },
                     })
@@ -130,6 +138,12 @@ export default class Logic extends UILogic<State, Event> {
                 'change',
                 handleAppStatusChange,
             )
+
+        if (incoming.previousState.selectedListId != null) {
+            await this.fetchAndSetListName(
+                incoming.previousState.selectedListId,
+            )
+        }
 
         await Promise.all([
             this.doSync(),
@@ -150,24 +164,28 @@ export default class Logic extends UILogic<State, Event> {
         previousState,
     }: IncomingUIEvent<State, Event, 'focusFromNavigation'>) {
         if (
-            !event?.selectedList ||
-            event.selectedList === previousState.selectedListName
+            !event?.selectedListId ||
+            event.selectedListId === previousState.selectedListId
         ) {
             return
         }
 
-        // While this.emitMutation is NOT async, if you remove this await then the state update doesn't happen somehow :S
-        // Please don't remove the await!
-        // TODO: find cause of this bug in `ui-logic-core` lib
-        await this.emitMutation({
-            selectedListName: { $set: event.selectedList },
-        })
+        await this.fetchAndSetListName(event.selectedListId)
+        // const list = await metaPicker.findListById({ id: event.selectedListId })
+
+        // // While this.emitMutation is NOT async, if you remove this await then the state update doesn't happen somehow :S
+        // // Please don't remove the await!
+        // // TODO: find cause of this bug in `ui-logic-core` lib
+        // await this.emitMutation({
+        //     selectedListId: { $set: event.selectedListId },
+        //     selectedListName: { $set: list?.name ?? '' }
+        // })
 
         await executeUITask<State, 'reloadState', void>(
             this,
             'reloadState',
             async () =>
-                this.doLoadMore(this.getInitialState(event.selectedList)),
+                this.doLoadMore(this.getInitialState(event.selectedListId)),
         )
     }
 
@@ -194,12 +212,30 @@ export default class Logic extends UILogic<State, Event> {
         return { shouldShowSyncRibbon: { $set: incoming.event.show } }
     }
 
-    setFilteredListName(
-        incoming: IncomingUIEvent<State, Event, 'setFilteredListName'>,
-    ): UIMutation<State> {
-        return {
-            selectedListName: { $set: incoming.event.name },
-        }
+    async setFilteredListId(
+        incoming: IncomingUIEvent<State, Event, 'setFilteredListId'>,
+    ): Promise<void> {
+        await this.fetchAndSetListName(incoming.event.id)
+    }
+
+    async fetchAndSetListName(listId: number) {
+        const { metaPicker } = this.props.storage.modules
+        await executeUITask<State, 'listNameLoadState', void>(
+            this,
+            'listNameLoadState',
+            async () => {
+                const selectedList =
+                    listId === ALL_SAVED_FILTER_ID
+                        ? { name: 'All Saved' }
+                        : await metaPicker.findListById({
+                              id: listId,
+                          })
+                this.emitMutation({
+                    selectedListName: { $set: selectedList?.name ?? '' },
+                    selectedListId: { $set: listId },
+                })
+            },
+        )
     }
 
     async reload({ event }: IncomingUIEvent<State, Event, 'reload'>) {
@@ -211,7 +247,7 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'reloadState',
             async () => {
-                await this.doLoadMore(this.getInitialState(event.initList))
+                await this.doLoadMore(this.getInitialState(event.initListId))
             },
         )
     }
@@ -269,11 +305,9 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private choosePageEntryLoader({
-        selectedListName,
+        selectedListId,
     }: State): PageLookupEntryLoader {
-        if (selectedListName === ListsFilter.MAGIC_BMS_FILTER) {
-            return this.loadEntriesForBookmarks
-        } else if (selectedListName === ListsFilter.MAGIC_VISITS_FILTER) {
+        if (selectedListId === ALL_SAVED_FILTER_ID) {
             return this.loadEntriesForVisits
         }
 
@@ -285,16 +319,16 @@ export default class Logic extends UILogic<State, Event> {
     ) => {
         const { metaPicker } = this.props.storage.modules
 
-        const selectedLists = await metaPicker.findListsByNames({
-            names: [prevState.selectedListName],
+        const selectedList = await metaPicker.findListById({
+            id: prevState.selectedListId,
         })
 
-        if (!selectedLists.length) {
-            throw new Error('Selected lists cannot be found')
+        if (!selectedList) {
+            throw new Error('Selected list cannot be found')
         }
 
         let listEntries: ListEntry[] = await metaPicker.findRecentListEntries(
-            selectedLists[0].id,
+            selectedList.id,
             {
                 skip: prevState.pages.size,
                 limit: this.pageSize,

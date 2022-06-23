@@ -24,7 +24,10 @@ import EmptyResults from '../../components/empty-results'
 import DashboardNav from '../../components/dashboard-navigation'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
+import {
+    SPECIAL_LIST_NAMES,
+    SPECIAL_LIST_IDS,
+} from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import SyncRibbon from '../../components/sync-ribbon'
 import Navigation from '../../components/navigation'
 import * as icons from 'src/ui/components/icons/icons-list'
@@ -62,7 +65,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
     private resetDashboard = () => {
         this.processEvent('setSyncRibbonShow', { show: false })
-        this.processEvent('reload', { initList: this.state.selectedListName })
+        this.processEvent('reload', { initListId: this.state.selectedListId })
     }
 
     private initHandleDeletePress = (page: UIPage) => () =>
@@ -117,7 +120,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     }: NativeSyntheticEvent<NativeScrollEvent>) => {
         if (scrollHelpers.isAtTop(nativeEvent)) {
             return this.processEvent('reload', {
-                initList: this.state.selectedListName,
+                initListId: this.state.selectedListId,
                 triggerSync: true,
             })
         }
@@ -142,21 +145,21 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
     private handleListsFilterPress = () => {
         this.props.navigation.navigate('ListsFilter', {
-            selectedList: this.state.selectedListName,
+            selectedListId: this.state.selectedListId,
         })
     }
 
     private handleLogoPress = () => {
-        if (this.state.selectedListName !== SPECIAL_LIST_NAMES.MOBILE) {
+        if (this.state.selectedListId !== SPECIAL_LIST_IDS.MOBILE) {
             this.props.navigation.setParams({
-                selectedList: SPECIAL_LIST_NAMES.MOBILE,
+                selectedListId: SPECIAL_LIST_IDS.MOBILE,
             })
-            this.processEvent('setFilteredListName', {
-                name: SPECIAL_LIST_NAMES.MOBILE,
+            this.processEvent('setFilteredListId', {
+                id: SPECIAL_LIST_IDS.MOBILE,
             })
         }
 
-        this.processEvent('reload', { initList: SPECIAL_LIST_NAMES.MOBILE })
+        this.processEvent('reload', { initListId: SPECIAL_LIST_IDS.MOBILE })
     }
 
     private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
@@ -231,11 +234,8 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     onPress={this.resetDashboard}
                 />
             )
-        } else if (this.state.selectedListName !== SPECIAL_LIST_NAMES.MOBILE) {
-            return this.state.selectedListName
         }
-
-        return 'Saved on Mobile'
+        return this.state.selectedListName ?? ''
     }
 
     render() {

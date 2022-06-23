@@ -10,8 +10,11 @@ import {
 } from 'src/tests/shared-fixtures/integration'
 import { UIPage } from 'src/features/overview/types'
 import { Page } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/overview/types'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
-import ListsFilter from '../lists-filter'
+import {
+    SPECIAL_LIST_NAMES,
+    SPECIAL_LIST_IDS,
+} from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
+import { ALL_SAVED_FILTER_ID } from '../dashboard/constants'
 
 const UI_PAGE_1: UIPage = {
     fullUrl: 'https://www.test.com',
@@ -49,6 +52,8 @@ describe('dashboard screen UI logic tests', () => {
         },
     ) {
         await options.services.localStorage.set(storageKeys.syncKey, true)
+        await options.storage.modules.metaPicker.createInboxListIfAbsent({})
+        await options.storage.modules.metaPicker.createMobileListIfAbsent({})
 
         const logic = new Logic({
             ...options,
@@ -64,7 +69,7 @@ describe('dashboard screen UI logic tests', () => {
     }
 
     async function createRecentlyVisitedPage(
-        page: Omit<Page, 'domain' | 'hostname'>,
+        page: Omit<Page, 'domain' | 'hostname' | 'pageUrl'>,
         dependencies: { storage: Storage },
     ) {
         await dependencies.storage.modules.overview.createPage(page)
@@ -103,6 +108,7 @@ describe('dashboard screen UI logic tests', () => {
                 loadState: 'done',
                 reloadState: 'pristine',
                 loadMoreState: 'pristine',
+                selectedListId: SPECIAL_LIST_IDS.MOBILE,
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 couldHaveMore: false,
                 actionState: 'pristine',
@@ -131,6 +137,7 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: false,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
+                selectedListId: SPECIAL_LIST_IDS.MOBILE,
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([
                     [
@@ -176,6 +183,7 @@ describe('dashboard screen UI logic tests', () => {
                 actionState: 'pristine',
                 actionFinishedAt: 0,
                 pages: new Map([[UI_PAGE_2.url, UI_PAGE_2]]),
+                selectedListId: SPECIAL_LIST_IDS.MOBILE,
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
             }),
         )
@@ -191,6 +199,7 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: true,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
+                selectedListId: SPECIAL_LIST_IDS.MOBILE,
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([
                     [UI_PAGE_2.url, UI_PAGE_2],
@@ -210,6 +219,7 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: false,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
+                selectedListId: SPECIAL_LIST_IDS.MOBILE,
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([
                     [UI_PAGE_2.url, UI_PAGE_2],
@@ -229,6 +239,7 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: true,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
+                selectedListId: SPECIAL_LIST_IDS.MOBILE,
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([[UI_PAGE_2.url, UI_PAGE_2]]),
             }),
@@ -261,6 +272,7 @@ describe('dashboard screen UI logic tests', () => {
                 action: 'delete',
                 actionState: 'done',
                 actionFinishedAt: expect.any(Number),
+                selectedListId: SPECIAL_LIST_IDS.MOBILE,
                 selectedListName: SPECIAL_LIST_NAMES.MOBILE,
                 pages: new Map([]),
             }),
@@ -320,19 +332,20 @@ describe('dashboard screen UI logic tests', () => {
     it('should be able to switch look up of latest collection entries, bookmarks, or visits, depending on set filter', async (dependencies) => {
         const {
             storage: {
-                modules: { overview },
+                modules: { overview, metaPicker },
             },
         } = dependencies
         const { element } = await setup(dependencies)
 
         for (const page of INTEGRATION_TEST_DATA.pages) {
             await overview.createPage(page)
+            await metaPicker.createInboxListEntry({ fullPageUrl: page.fullUrl })
         }
 
-        await dependencies.storage.modules.metaPicker.createMobileListEntry({
+        await metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[0].fullUrl,
         })
-        await dependencies.storage.modules.metaPicker.createMobileListEntry({
+        await metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[3].fullUrl,
         })
 
@@ -343,16 +356,7 @@ describe('dashboard screen UI logic tests', () => {
         const logic = element.logic as Logic
 
         element.processMutation({
-            selectedListName: { $set: ListsFilter.MAGIC_BMS_FILTER },
-        })
-        expect(
-            await logic['choosePageEntryLoader'](element.state)(element.state),
-        ).toEqual([
-            { url: INTEGRATION_TEST_DATA.pages[1].url, date: expect.any(Date) },
-        ])
-
-        element.processMutation({
-            selectedListName: { $set: ListsFilter.MAGIC_VISITS_FILTER },
+            selectedListId: { $set: ALL_SAVED_FILTER_ID },
         })
         expect(
             await logic['choosePageEntryLoader'](element.state)(element.state),
@@ -362,12 +366,25 @@ describe('dashboard screen UI logic tests', () => {
         ])
 
         element.processMutation({
-            selectedListName: { $set: SPECIAL_LIST_NAMES.MOBILE },
+            selectedListId: { $set: SPECIAL_LIST_IDS.MOBILE },
         })
         expect(
             await logic['choosePageEntryLoader'](element.state)(element.state),
         ).toEqual([
             { url: INTEGRATION_TEST_DATA.pages[3].url, date: expect.any(Date) },
+            { url: INTEGRATION_TEST_DATA.pages[0].url, date: expect.any(Date) },
+        ])
+
+        element.processMutation({
+            selectedListId: { $set: SPECIAL_LIST_IDS.INBOX },
+        })
+        expect(
+            await logic['choosePageEntryLoader'](element.state)(element.state),
+        ).toEqual([
+            { url: INTEGRATION_TEST_DATA.pages[4].url, date: expect.any(Date) },
+            { url: INTEGRATION_TEST_DATA.pages[3].url, date: expect.any(Date) },
+            { url: INTEGRATION_TEST_DATA.pages[2].url, date: expect.any(Date) },
+            { url: INTEGRATION_TEST_DATA.pages[1].url, date: expect.any(Date) },
             { url: INTEGRATION_TEST_DATA.pages[0].url, date: expect.any(Date) },
         ])
     })
