@@ -6,6 +6,7 @@ import { loadInitial, executeUITask } from 'src/ui/utils'
 import {
     NormalizedState,
     initNormalizedState,
+    cloneNormalizedState,
     normalizedStateToArray,
 } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
 import { validateSpaceName } from '@worldbrain/memex-common/lib/utils/space-name-validation'
@@ -46,10 +47,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private set defaultEntries(entries: NormalizedState<SpacePickerEntry>) {
-        this._defaultEntries = {
-            allIds: [...entries.allIds],
-            byId: { ...entries.byId },
-        }
+        this._defaultEntries = cloneNormalizedState(entries)
     }
 
     private get defaultEntries(): NormalizedState<SpacePickerEntry> {
@@ -106,12 +104,7 @@ export default class Logic extends UILogic<State, Event> {
 
     private resetEntries() {
         this.emitMutation({
-            entries: {
-                $set: initNormalizedState({
-                    seedData: normalizedStateToArray(this.defaultEntries),
-                    getId: (entry) => entry.id,
-                }),
-            },
+            entries: { $set: cloneNormalizedState(this.defaultEntries) },
         })
     }
 
