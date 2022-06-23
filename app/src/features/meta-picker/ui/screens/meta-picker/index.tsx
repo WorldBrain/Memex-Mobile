@@ -40,6 +40,10 @@ export default class MetaPickerScreen extends StatefulUIElement<
     private get entries(): SpacePickerEntry[] {
         const inputText = this.state.inputText.trim()
         const entries = normalizedStateToArray(this.state.entries)
+
+        if (this.props.filterMode) {
+            return entries
+        }
         const validationResult = validateSpaceName(inputText, entries)
 
         if (validationResult.valid) {
