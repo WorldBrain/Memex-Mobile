@@ -44,7 +44,7 @@ describe('share modal UI logic tests', () => {
                     getSharedUrl: options.getSharedUrl
                         ? options.getSharedUrl
                         : () => 'http://test.com',
-                } as any as any,
+                } as any,
                 pageFetcher,
                 errorTracker: {
                     track: (err: Error) => {
@@ -60,7 +60,7 @@ describe('share modal UI logic tests', () => {
                         return { totalChanges: 0 }
                     },
                     ____wipeDBForSync: async () => undefined,
-                },
+                } as any,
             },
         })
         const initialState = logic.getInitialState()
@@ -81,7 +81,7 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl: '',
-                    collectionsToAdd: [],
+                    spacesToAdd: [],
                     isUnsupportedApplication: true,
                     isStarred: false,
                 }),
@@ -102,7 +102,7 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl,
-                    collectionsToAdd: [],
+                    spacesToAdd: [],
                     isUnsupportedApplication: false,
                     isStarred: false,
                 }),
@@ -315,7 +315,7 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl,
-                    collectionsToAdd: [],
+                    spacesToAdd: [],
                     isUnsupportedApplication: false,
                     isStarred: true,
                 }),
@@ -348,7 +348,7 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl,
-                    collectionsToAdd: [],
+                    spacesToAdd: [],
                     isUnsupportedApplication: false,
                     isStarred: false,
                 }),
@@ -382,7 +382,7 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl,
-                    collectionsToAdd: ['My list'],
+                    spacesToAdd: [expect.any(Number)],
                     isUnsupportedApplication: false,
                     isStarred: false,
                 }),
@@ -419,7 +419,7 @@ describe('share modal UI logic tests', () => {
         })
 
         expect(trackedErrors).toEqual([])
-        expect(element.state.collectionsState).toEqual('pristine')
+        expect(element.state.spacesState).toEqual('pristine')
 
         await element.init()
 
@@ -428,10 +428,10 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl,
-                    collectionsToAdd: [],
+                    spacesToAdd: [],
                     isUnsupportedApplication: false,
                     isStarred: false,
-                    collectionsState: 'error',
+                    spacesState: 'error',
                 }),
             )
         } finally {
@@ -654,43 +654,43 @@ describe('share modal UI logic tests', () => {
         const { logic, initialState: state } = await setup(context)
         const testLists = ['a', 'b', 'c']
 
-        expect(state.collectionsToAdd.length).toBe(0)
+        expect(state.spacesToAdd.length).toBe(0)
         const nextStateA = logic.withMutation(
             state,
-            logic.setCollectionsToAdd({
+            logic.setSpacesToAdd({
                 event: { values: testLists },
                 previousState: state,
             }),
         )
 
-        expect(nextStateA.collectionsToAdd.length).toBe(testLists.length)
-        expect(nextStateA.collectionsToAdd).toEqual(testLists)
+        expect(nextStateA.spacesToAdd.length).toBe(testLists.length)
+        expect(nextStateA.spacesToAdd).toEqual(testLists)
     })
 
     it('should be able to toggle collections to add/remove', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const testCollection = 'test coll'
 
-        expect(state.collectionsToAdd.length).toBe(0)
+        expect(state.spacesToAdd.length).toBe(0)
         const nextStateA = logic.withMutation(
             state,
-            logic.toggleCollection({
-                event: { name: testCollection },
+            logic.toggleSpace({
+                event: { id: testCollection },
                 previousState: state,
             }),
         )
 
-        expect(nextStateA.collectionsToAdd.length).toBe(1)
-        expect(nextStateA.collectionsToAdd[0]).toEqual(testCollection)
+        expect(nextStateA.spacesToAdd.length).toBe(1)
+        expect(nextStateA.spacesToAdd[0]).toEqual(testCollection)
 
         const nextStateB = logic.withMutation(
             nextStateA,
-            logic.toggleCollection({
-                event: { name: testCollection },
+            logic.toggleSpace({
+                event: { id: testCollection },
                 previousState: nextStateA,
             }),
         )
-        expect(nextStateB.collectionsToAdd.length).toBe(0)
+        expect(nextStateB.spacesToAdd.length).toBe(0)
     })
 
     it('should be able to store a page', async (context) => {

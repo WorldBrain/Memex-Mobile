@@ -48,8 +48,8 @@ export default class ShareModalScreen extends StatefulUIElement<
             this.state.noteText.length > 0 ||
             this.state.isStarred !== initValues.isStarred ||
             !ShareModalScreen.arraysAreSame(
-                this.state.collectionsToAdd,
-                initValues.collectionsToAdd,
+                this.state.spacesToAdd,
+                initValues.spacesToAdd,
             )
         )
     }
@@ -84,9 +84,7 @@ export default class ShareModalScreen extends StatefulUIElement<
 
     private handleReloadPress = async () => {
         await (this.logic as Logic).syncRunning
-        this.metaPicker.processEvent('reload', {
-            selected: this.state.collectionsToAdd,
-        })
+        await this.metaPicker.processEvent('reload', null)
     }
 
     private handleNoteTextChange = (value: string) => {
@@ -138,8 +136,7 @@ export default class ShareModalScreen extends StatefulUIElement<
             <>
                 <MetaPicker
                     onEntryPress={this.handleMetaPickerEntryPress}
-                    initSelectedEntries={this.state.collectionsToAdd}
-                    url={this.state.pageUrl}
+                    initSelectedEntries={this.state.spacesToAdd}
                     ref={this.setMetaPickerRef}
                     {...this.props}
                 />
@@ -187,8 +184,8 @@ export default class ShareModalScreen extends StatefulUIElement<
                     onChange={this.handleNoteTextChange}
                     value={this.state.noteText}
                 />
-                {this.state.collectionsState === 'done' &&
-                    this.state.collectionsToAdd.length > 0 && (
+                {/* {this.state.spacesState === 'done' &&
+                    this.state.spacesToAdd.length > 0 && (
                         <SpaceBar>
                             <SpacesContainer
                                 horizontal={true}
@@ -196,8 +193,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                                     styledScrollView.Container
                                 }
                             >
-                                {this.state.collectionsToAdd
-                                    .filter((item) => item !== 'Inbox')
+                                {this.state.spacesToAdd
                                     .map((elements) => (
                                         <SpacePills>
                                             <SpacePillsText>
@@ -207,7 +203,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                                     ))}
                             </SpacesContainer>
                         </SpaceBar>
-                    )}
+                    )} */}
                 <ActionBarContainer
                     onRightBtnPress={this.handleSave}
                     rightBtnText={
@@ -230,13 +226,13 @@ export default class ShareModalScreen extends StatefulUIElement<
                     <AddSpacesContainer
                         onPress={this.setSpacePickerShown(true)}
                     >
-                        {this.state.collectionsState === 'running' ? (
+                        {this.state.spacesState === 'running' ? (
                             <LoadingIndicatorBox>
                                 <LoadingIndicator size={15} />
                             </LoadingIndicatorBox>
                         ) : (
                             <>
-                                {this.state.collectionsToAdd.length === 0 ? (
+                                {this.state.spacesToAdd.length === 0 ? (
                                     <>
                                         <Icon
                                             icon={icons.Plus}
@@ -248,7 +244,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                                 ) : (
                                     <SpacesCounterPill>
                                         <SpacesCounterText>
-                                            {this.state.collectionsToAdd.length}
+                                            {this.state.spacesToAdd.length}
                                         </SpacesCounterText>
                                     </SpacesCounterPill>
                                 )}

@@ -8,21 +8,20 @@ import type {
     ShareNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
+import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 
 export interface State {
     loadState: UITaskState
-    tagsState: UITaskState
+    spacesState: UITaskState
     bookmarkState: UITaskState
     syncRetryState: UITaskState
-    collectionsState: UITaskState
 
     pageUrl: string
     pageTitle: string
     statusText: string
     noteText: string
-    collectionsToAdd: string[]
+    spacesToAdd: number[]
     isStarred: boolean
     isModalShown: boolean
     errorMessage?: string
@@ -42,12 +41,11 @@ export type Event = UIEvent<{
     togglePageStar: null
     setNoteText: { value: string }
 
-    toggleTag: { name: string }
-    toggleCollection: { name: string }
+    toggleSpace: { id: number }
     setPageUrl: { url: string }
     setPageStar: { value: boolean }
     setStatusText: { value: string }
-    setCollectionsToAdd: { values: string[] }
+    setSpacesToAdd: { values: number[] }
     clearSyncError: null
 }>
 
@@ -68,9 +66,9 @@ export default class Logic extends UILogic<State, Event> {
     private existingPageVisitTime: number | null = null
     syncRunning: Promise<void> | null = null
     pageTitleFetchRunning: Promise<void> | null = null
-    initValues: Pick<State, 'isStarred' | 'collectionsToAdd'> = {
+    initValues: Pick<State, 'isStarred' | 'spacesToAdd'> = {
         isStarred: false,
-        collectionsToAdd: [],
+        spacesToAdd: [],
     }
 
     constructor(private props: Props) {
@@ -80,11 +78,10 @@ export default class Logic extends UILogic<State, Event> {
     getInitialState(): State {
         return {
             isUnsupportedApplication: false,
-            loadState: 'pristine',
             syncRetryState: 'pristine',
             bookmarkState: 'pristine',
-            tagsState: 'pristine',
-            collectionsState: 'pristine',
+            spacesState: 'pristine',
+            loadState: 'pristine',
             pageUrl: '',
             pageTitle: '',
             isSpacePickerShown: false,
@@ -212,24 +209,24 @@ export default class Logic extends UILogic<State, Event> {
             },
         )
 
-        const listsP = executeUITask<State, 'collectionsState', void>(
+        const listsP = executeUITask<State, 'spacesState', void>(
             this,
-            'collectionsState',
+            'spacesState',
             async () => {
                 try {
-                    const collections =
+                    const spaces =
                         await storage.modules.metaPicker.findListsByPage({
                             url,
                         })
-                    const collectionsToAdd = collections.map((c) => c.name)
+                    const spacesToAdd = spaces.map((c) => c.id)
 
                     this.emitMutation({
-                        collectionsToAdd: {
-                            $set: collectionsToAdd,
+                        spacesToAdd: {
+                            $set: spacesToAdd,
                         },
                     })
 
-                    this.initValues.collectionsToAdd = collectionsToAdd
+                    this.initValues.spacesToAdd = spacesToAdd
                 } catch (err) {
                     services.errorTracker.track(err)
                     throw err
@@ -282,24 +279,24 @@ export default class Logic extends UILogic<State, Event> {
         return { isStarred: { $set: incoming.event.value } }
     }
 
-    setCollectionsToAdd(
-        incoming: IncomingUIEvent<State, Event, 'setCollectionsToAdd'>,
+    setSpacesToAdd(
+        incoming: IncomingUIEvent<State, Event, 'setSpacesToAdd'>,
     ): UIMutation<State> {
-        return { collectionsToAdd: { $set: incoming.event.values } }
+        return { spacesToAdd: { $set: incoming.event.values } }
     }
 
-    toggleCollection(
-        incoming: IncomingUIEvent<State, Event, 'toggleCollection'>,
+    toggleSpace(
+        incoming: IncomingUIEvent<State, Event, 'toggleSpace'>,
     ): UIMutation<State> {
         return {
-            collectionsToAdd: (state) => {
-                const index = state.indexOf(incoming.event.name)
+            spacesToAdd: (state) => {
+                const index = state.indexOf(incoming.event.id)
 
                 if (index !== -1) {
                     return [...state.slice(0, index), ...state.slice(index + 1)]
                 }
 
-                return [...state, incoming.event.name]
+                return [...state, incoming.event.id]
             },
         }
     }
@@ -368,12 +365,12 @@ export default class Logic extends UILogic<State, Event> {
     metaPickerEntryPress(
         incoming: IncomingUIEvent<State, Event, 'metaPickerEntryPress'>,
     ) {
-        const event = {
-            ...incoming,
-            event: { name: incoming.event.entry.name },
-        }
-
-        this.emitMutation(this.toggleCollection(event))
+        this.emitMutation(
+            this.toggleSpace({
+                ...incoming,
+                event: { id: incoming.event.entry.id },
+            }),
+        )
     }
 
     private async storePage(state: State, customTimestamp?: number) {
@@ -407,10 +404,10 @@ export default class Logic extends UILogic<State, Event> {
 
         await metaPicker.setPageLists({
             fullPageUrl: state.pageUrl,
-            lists: [
-                ...state.collectionsToAdd,
-                SPECIAL_LIST_NAMES.MOBILE,
-                SPECIAL_LIST_NAMES.INBOX,
+            listIds: [
+                ...state.spacesToAdd,
+                SPECIAL_LIST_IDS.MOBILE,
+                SPECIAL_LIST_IDS.INBOX,
             ],
         })
 

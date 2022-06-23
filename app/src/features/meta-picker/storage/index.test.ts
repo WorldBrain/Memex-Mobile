@@ -411,7 +411,7 @@ describe('meta picker StorageModule', () => {
         )
 
         await metaPicker.setPageLists({
-            lists: [data.lists[1], data.lists[2]],
+            listIds: [listIds[1], listIds[2]],
             fullPageUrl: pageData.pages[0].fullUrl,
         })
 

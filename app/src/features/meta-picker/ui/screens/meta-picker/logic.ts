@@ -32,6 +32,7 @@ export interface Props {
     initSelectedEntries?: number[]
     extraEntries?: SpacePickerEntry[]
     filterMode?: boolean
+    onEntryPress?: (item: SpacePickerEntry) => Promise<void>
 }
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -175,6 +176,7 @@ export default class Logic extends UILogic<State, Event> {
                 },
             },
         })
+        await this.props.onEntryPress?.(newEntry)
     }
 
     toggleEntryChecked: EventHandler<'toggleEntryChecked'> = async ({
@@ -199,6 +201,7 @@ export default class Logic extends UILogic<State, Event> {
                 },
             },
         })
+        await this.props.onEntryPress?.(entry)
     }
 
     private async loadSuggestions(): Promise<SpacePickerEntry[]> {

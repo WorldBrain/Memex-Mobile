@@ -13,14 +13,12 @@ import styles from './styles'
 import styled from 'styled-components/native'
 import { normalizedStateToArray } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
 import { validateSpaceName } from '@worldbrain/memex-common/lib/utils/space-name-validation'
+import { NEW_ENTRY_ID } from './constants'
 
 export interface MetaPickerScreenProps extends Props {
     className?: string
-    onEntryPress?: (item: SpacePickerEntry) => Promise<void>
     ref?: (metaPicker: MetaPickerScreen) => void
 }
-
-const newEntryId = -1
 
 export default class MetaPickerScreen extends StatefulUIElement<
     MetaPickerScreenProps,
@@ -47,7 +45,7 @@ export default class MetaPickerScreen extends StatefulUIElement<
         if (validationResult.valid) {
             return [
                 {
-                    id: newEntryId,
+                    id: NEW_ENTRY_ID,
                     name: this.state.inputText,
                     isChecked: false,
                 },
@@ -63,9 +61,7 @@ export default class MetaPickerScreen extends StatefulUIElement<
     }
 
     private initHandleEntryPress = (item: SpacePickerEntry) => async () => {
-        await this.props.onEntryPress?.(item)
-
-        if (item.id === newEntryId) {
+        if (item.id === NEW_ENTRY_ID) {
             await this.processEvent('addEntry', null)
         } else {
             await this.processEvent('toggleEntryChecked', { id: item.id })
@@ -111,7 +107,9 @@ export default class MetaPickerScreen extends StatefulUIElement<
                                             <MetaPickerEntry
                                                 {...item}
                                                 key={item.id}
-                                                canAdd={item.id === newEntryId}
+                                                canAdd={
+                                                    item.id === NEW_ENTRY_ID
+                                                }
                                                 onPress={this.initHandleEntryPress(
                                                     item,
                                                 )}
