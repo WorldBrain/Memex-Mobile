@@ -322,7 +322,7 @@ export default class Logic extends UILogic<State, Event> {
         // Allow incoming page to go back up to Dashboard so that can also react to changes
         this.props.route.params.updatePage(incomingPage)
         this.emitMutation({
-            isListed: { $set: incomingPage.lists?.length > 0 },
+            isListed: { $set: incomingPage.listIds?.length > 0 },
             hasNotes: { $set: incomingPage.notes?.length > 0 },
         })
     }

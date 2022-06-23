@@ -27,8 +27,8 @@ export interface State {
 
 export type Event = UIEvent<{
     toggleNotePress: { url: string }
-    removeEntry: { name: string }
-    createEntry: { name: string }
+    removeEntry: { listId: number }
+    createEntry: { listId: number }
     confirmNoteDelete: { url: string }
     saveNote: { text: string }
     focusFromNavigation: MainNavigatorParamList['PageEditor']
@@ -87,7 +87,7 @@ export default class Logic extends UILogic<State, Event> {
             titleText: storedPage.fullTitle,
             date: 'a minute ago',
             tags: [],
-            lists: lists.map((l) => l.name),
+            listIds: lists.map((l) => l.id),
             pageUrl: storedPage.url,
             // TODO: unify this map fn with the identical one in DashboardLogic
             notes: notes.map<UINote>((note) => ({
@@ -103,7 +103,7 @@ export default class Logic extends UILogic<State, Event> {
                     note.lastEdited?.getTime() !== note.createdWhen!.getTime(),
                 date: timeFromNow(note.lastEdited ?? note.createdWhen!),
             })),
-        } as Page
+        }
     }
 
     toggleNotePress(
@@ -132,7 +132,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async removeEntry({
-        event: { name },
+        event: { listId },
         previousState,
     }: IncomingUIEvent<State, Event, 'removeEntry'>) {
         const { metaPicker } = this.props.storage.modules
@@ -140,21 +140,21 @@ export default class Logic extends UILogic<State, Event> {
 
         this.emitMutation({
             page: (state) => {
-                const i = state.lists.indexOf(name)
+                const i = state.listIds.indexOf(listId)
                 return {
                     ...state,
-                    lists: [
-                        ...state.lists.slice(0, i),
-                        ...state.lists.slice(i + 1),
+                    listIds: [
+                        ...state.listIds.slice(0, i),
+                        ...state.listIds.slice(i + 1),
                     ],
                 }
             },
         })
-        await metaPicker.deletePageEntryByName({ url, name })
+        await metaPicker.deletePageEntryFromList({ url, listId })
     }
 
     async createEntry({
-        event: { name },
+        event: { listId },
         previousState,
     }: IncomingUIEvent<State, Event, 'createEntry'>) {
         const { metaPicker } = this.props.storage.modules
@@ -162,25 +162,15 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             page: (state) => ({
                 ...state,
-                lists: [name, ...state.lists],
+                listIds: [listId, ...state.listIds],
             }),
         })
-
-        const lists = await metaPicker.findListsByNames({ names: [name] })
-
-        let listId
-        if (!lists.length) {
-            const { object } = await metaPicker.createList({ name })
-            listId = object.id
-        } else {
-            listId = lists[0].id
-        }
 
         await metaPicker.createPageListEntry({
             fullPageUrl: previousState.page.url,
             listId,
         })
-        await this._updateListSuggestionsCache({ added: name })
+        // await this._updateListSuggestionsCache({ added: listId })
     }
 
     async confirmNoteDelete({
