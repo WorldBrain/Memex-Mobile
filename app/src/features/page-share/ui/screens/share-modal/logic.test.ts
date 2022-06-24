@@ -8,7 +8,7 @@ import type { Storage } from 'src/storage/types'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 
 import * as DATA from './logic.test.data'
-import type { List } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
+import type { List } from 'src/features/meta-picker/types'
 import {
     SPECIAL_LIST_NAMES,
     SPECIAL_LIST_IDS,

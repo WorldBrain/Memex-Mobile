@@ -22,7 +22,7 @@ import type { UIPage } from '../../types'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
-import { List } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
+import type { List } from 'src/features/meta-picker/types'
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 
 export interface Props extends FooterProps, BodyProps, UIPage {

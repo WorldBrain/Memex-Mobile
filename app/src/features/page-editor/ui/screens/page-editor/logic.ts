@@ -1,7 +1,6 @@
 import { Alert } from 'react-native'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { storageKeys } from '../../../../../../app.json'
 import type {
     UIPageWithNotes as Page,
     UINote,
@@ -15,8 +14,6 @@ import type {
 } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
-import { updateSuggestionsCache } from 'src/features/page-editor/utils'
-import { INIT_SUGGESTIONS_LIMIT } from 'src/features/meta-picker/ui/screens/meta-picker/constants'
 import type { MainNavigatorParamList } from 'src/ui/navigation/types'
 
 export interface State {
@@ -170,7 +167,6 @@ export default class Logic extends UILogic<State, Event> {
             fullPageUrl: previousState.page.url,
             listId,
         })
-        // await this._updateListSuggestionsCache({ added: listId })
     }
 
     async confirmNoteDelete({
@@ -232,26 +228,5 @@ export default class Logic extends UILogic<State, Event> {
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
         this.props.route.params.updatePage(previousState.page)
         this.props.navigation.goBack()
-    }
-
-    private _updateListSuggestionsCache(args: {
-        added?: string
-        removed?: string
-        updated?: [string, string]
-    }) {
-        const { syncStorage } = this.props.services
-
-        return updateSuggestionsCache({
-            ...args,
-            suggestionLimit: INIT_SUGGESTIONS_LIMIT,
-            setCache: async (suggestions) =>
-                syncStorage.set(storageKeys.listSuggestionsCache, suggestions),
-            getCache: async () => {
-                const suggestions = await syncStorage.get<string[]>(
-                    storageKeys.listSuggestionsCache,
-                )
-                return suggestions ?? []
-            },
-        })
     }
 }

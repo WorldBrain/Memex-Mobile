@@ -10,7 +10,7 @@ import { extractUrlParts, normalizeUrl } from '@worldbrain/memex-url-utils'
 import { createStorexPlugins } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/plugins'
 import UserStorage from '@worldbrain/memex-common/lib/user-management/storage'
 import { OverviewStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/overview/storage'
-import { MetaPickerStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/storage'
+import { MetaPickerStorage } from '../features/meta-picker/storage'
 import { PageEditorStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/page-editor/storage'
 import { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import PersonalCloudServerStorage from '@worldbrain/memex-common/lib/personal-cloud/storage'
@@ -94,7 +94,22 @@ export async function createStorage({
             normalizeUrl,
             extractUrlParts,
         }),
-        metaPicker: new MetaPickerStorage({ storageManager, normalizeUrl }),
+        metaPicker: new MetaPickerStorage({
+            storageManager,
+            normalizeUrl,
+            getSpaceSuggestions: async () => {
+                const spaceIds = await localSettings.getSetting({
+                    key: storageKeys.spaceSuggestionsCache,
+                })
+                return spaceIds ?? []
+            },
+            setSpaceSuggestions: async (spaceIds) => {
+                await localSettings.setSetting({
+                    key: storageKeys.spaceSuggestionsCache,
+                    value: spaceIds,
+                })
+            },
+        }),
         pageEditor: new PageEditorStorage({ storageManager, normalizeUrl }),
         copyPaster: new CopyPasterStorage({ storageManager }),
         clientSyncLog: new MemexClientSyncLogStorage({ storageManager }),

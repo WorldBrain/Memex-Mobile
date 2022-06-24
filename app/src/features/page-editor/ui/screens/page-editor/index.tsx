@@ -6,10 +6,10 @@ import Logic, { Props, State, Event } from './logic'
 import MainLayout from '../../components/main-layout'
 import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
-import { SpacePickerEntry } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './styles'
 import * as icons from 'src/ui/components/icons/icons-list'
+import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 
 export default class PageEditorScreen extends StatefulUIElement<
     Props,

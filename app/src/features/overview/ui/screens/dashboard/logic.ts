@@ -15,7 +15,7 @@ import { ListEntry } from 'src/features/meta-picker/types'
 import { timeFromNow } from 'src/utils/time-helpers'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 import { MainNavigatorParamList } from 'src/ui/navigation/types'
-import type { List } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
+import type { List } from 'src/features/meta-picker/types'
 import { ALL_SAVED_FILTER_ID } from './constants'
 
 export interface State {

@@ -4,6 +4,11 @@ export interface SpacePickerEntry {
     isChecked: boolean
 }
 
+export interface Tag {
+    url: string
+    name: string
+}
+
 export interface List {
     id: number
     name: string
