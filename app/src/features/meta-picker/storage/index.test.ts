@@ -385,6 +385,63 @@ describe('meta picker StorageModule', () => {
         )
     })
 
+    it('should be able to get list suggestions, setting cache if empty', async ({
+        storage: {
+            modules: { metaPicker, overview, localSettings },
+        },
+    }) => {
+        await overview.createPage(pageData.pages[0])
+        await overview.createPage(pageData.pages[1])
+
+        const listIds: number[] = []
+
+        for (const name of data.lists) {
+            const { object } = await metaPicker.createList({ name })
+            listIds.push(object.id)
+        }
+
+        expect(listIds.length).toBe(data.lists.length)
+
+        await metaPicker.createPageListEntry({
+            fullPageUrl: pageData.pages[0].fullUrl,
+            listId: listIds[0],
+        })
+        await metaPicker.createPageListEntry({
+            fullPageUrl: pageData.pages[0].fullUrl,
+            listId: listIds[1],
+        })
+        await metaPicker.createPageListEntry({
+            fullPageUrl: pageData.pages[1].fullUrl,
+            listId: listIds[2],
+        })
+        await metaPicker.createPageListEntry({
+            fullPageUrl: pageData.pages[1].fullUrl,
+            listId: listIds[3],
+        })
+
+        await localSettings.clearSetting({
+            key: storageKeys.spaceSuggestionsCache,
+        })
+
+        expect(
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual(null)
+
+        const listSuggestions = await metaPicker.findListSuggestions({})
+
+        expect(listSuggestions.length).toBe(4)
+        expect(listSuggestions.map((s) => s.name)).toEqual(
+            expect.arrayContaining(data.lists),
+        )
+        expect(
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual(listSuggestions.map((s) => s.id))
+    })
+
     it('should be able to set a page to only given tags (delete existing, add missing)', async ({
         storage: {
             modules: { metaPicker, overview },

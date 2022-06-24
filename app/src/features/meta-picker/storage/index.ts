@@ -35,8 +35,8 @@ export class MetaPickerStorage extends StorageModule {
     constructor(
         private options: StorageModuleConstructorArgs & {
             normalizeUrl: URLNormalizer
-            getSpaceSuggestions: () => Promise<number[]>
-            setSpaceSuggestions: (spaceIds: number[]) => Promise<void>
+            getSpaceSuggestionsCache: () => Promise<number[]>
+            setSpaceSuggestionsCache: (spaceIds: number[]) => Promise<void>
         },
     ) {
         super(options)
@@ -204,8 +204,8 @@ export class MetaPickerStorage extends StorageModule {
     }) {
         return updateSuggestionsCache({
             ...args,
-            getCache: this.options.getSpaceSuggestions,
-            setCache: this.options.setSpaceSuggestions,
+            getCache: this.options.getSpaceSuggestionsCache,
+            setCache: this.options.setSpaceSuggestionsCache,
             suggestionLimit: MetaPickerStorage.DEF_SUGGESTION_LIMIT,
         })
     }
@@ -315,21 +315,52 @@ export class MetaPickerStorage extends StorageModule {
         limit?: number
         includeSpecialLists?: boolean
     }): Promise<SpacePickerEntry[]> {
+        const spaceToPickerEntry = (space: List): SpacePickerEntry => ({
+            id: space.id,
+            name: space.name,
+            isChecked: false,
+        })
+
+        // Try to use the cache first
+        const suggestionIds = await this.options.getSpaceSuggestionsCache()
+        if (suggestionIds?.length) {
+            const spaces = await this.findListsByIds({ ids: suggestionIds })
+
+            if (includeSpecialLists) {
+                spaces.unshift({
+                    id: SPECIAL_LIST_IDS.MOBILE,
+                    name: SPECIAL_LIST_NAMES.MOBILE,
+                    createdAt: new Date(),
+                })
+                spaces.unshift({
+                    id: SPECIAL_LIST_IDS.INBOX,
+                    name: SPECIAL_LIST_NAMES.INBOX,
+                    createdAt: new Date(),
+                })
+            }
+
+            return spaces
+                .sort(
+                    (a, b) =>
+                        suggestionIds.indexOf(a.id) -
+                        suggestionIds.indexOf(b.id),
+                )
+                .map(spaceToPickerEntry)
+        }
+
         const lists: List[] = await this.operation('findListSuggestions', {
             limit,
         })
 
-        const suggestions: SpacePickerEntry[] = lists.map((list) => ({
-            id: list.id,
-            name: list.name,
-            isChecked: false,
-        }))
+        const suggestions = lists.map(spaceToPickerEntry)
+        const filteredSuggestions = this.filterOutSpecialLists(suggestions)
 
-        if (includeSpecialLists) {
-            return suggestions
-        }
+        // Set cache for next time
+        await this.options.setSpaceSuggestionsCache(
+            filteredSuggestions.map((s) => s.id),
+        )
 
-        return this.filterOutSpecialLists(suggestions)
+        return includeSpecialLists ? suggestions : filteredSuggestions
     }
 
     async findTagSuggestions({

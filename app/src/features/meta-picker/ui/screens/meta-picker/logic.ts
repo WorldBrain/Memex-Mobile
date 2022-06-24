@@ -1,6 +1,6 @@
 import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
 
-import type { UIServices, UITaskState, UIStorageModules } from 'src/ui/types'
+import type { UITaskState, UIStorageModules } from 'src/ui/types'
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import {
@@ -10,6 +10,7 @@ import {
     normalizedStateToArray,
 } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
 import { validateSpaceName } from '@worldbrain/memex-common/lib/utils/space-name-validation'
+import { INIT_SUGGESTIONS_LIMIT } from './constants'
 
 export interface State {
     entries: NormalizedState<SpacePickerEntry>
@@ -27,7 +28,6 @@ export type Event = UIEvent<{
 
 export interface Props {
     storage: UIStorageModules<'metaPicker'>
-    services: UIServices<'syncStorage'>
     suggestInputPlaceholder?: string
     initSelectedEntries?: number[]
     extraEntries?: SpacePickerEntry[]
@@ -72,7 +72,11 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async loadInitEntries() {
-        const loadedSuggestions = await this.loadSuggestions()
+        const loadedSuggestions =
+            await this.props.storage.modules.metaPicker.findListSuggestions({
+                limit: INIT_SUGGESTIONS_LIMIT,
+                includeSpecialLists: this.props.filterMode,
+            })
 
         const entries = initNormalizedState<SpacePickerEntry>({
             seedData: [
@@ -193,32 +197,5 @@ export default class Logic extends UILogic<State, Event> {
             },
         })
         await this.props.onEntryPress?.(entry)
-    }
-
-    private async loadSuggestions(): Promise<SpacePickerEntry[]> {
-        const { metaPicker } = this.props.storage.modules
-        const { syncStorage } = this.props.services
-
-        const cache: number[] = [] // TODO: Set up new cache with IDs
-        // (await syncStorage.get<number[]>(
-        //     storageKeys.listSuggestionsCache,
-        // )) ?? []
-
-        // const suggestions: SpacePickerEntry[] = cache.map((id) => ({
-        //     name,
-        //     isChecked: false,
-        // }))
-
-        // if (suggestions.length >= limit) {
-        //     return suggestions
-        // }
-
-        const entries = await metaPicker.findListSuggestions({
-            // limit: limit - cache.length,
-            limit: 10000,
-            includeSpecialLists: this.props.filterMode,
-        })
-
-        return entries
     }
 }

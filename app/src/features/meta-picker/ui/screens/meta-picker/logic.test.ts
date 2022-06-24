@@ -58,7 +58,7 @@ describe('meta picker UI logic tests', () => {
         await element.init()
         expect(element.state.loadState).toEqual('done')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
-            testEntries,
+            [...testEntries].reverse(),
         )
     })
 
@@ -174,7 +174,7 @@ describe('meta picker UI logic tests', () => {
         await element.init()
 
         expect(normalizedStateToArray(element.state.entries)).toEqual(
-            testEntries,
+            [...testEntries].reverse(),
         )
         expect(element.state.entries.byId[0].isChecked).toBe(false)
         expect(lastPressedEntryId).toBe(null)
@@ -223,7 +223,7 @@ describe('meta picker UI logic tests', () => {
         expect(element.state.inputText).toEqual('')
         expect(element.state.searchState).toEqual('pristine')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
-            testEntries,
+            [...testEntries].reverse(),
         )
 
         const suggestP = element.processEvent('suggestEntries', {
@@ -252,7 +252,7 @@ describe('meta picker UI logic tests', () => {
         await element.processEvent('suggestEntries', { text: '' })
         expect(element.state.inputText).toEqual('')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
-            testEntries,
+            [...testEntries].reverse(),
         )
     })
 })

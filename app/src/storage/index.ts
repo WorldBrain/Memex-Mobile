@@ -97,13 +97,13 @@ export async function createStorage({
         metaPicker: new MetaPickerStorage({
             storageManager,
             normalizeUrl,
-            getSpaceSuggestions: async () => {
+            getSpaceSuggestionsCache: async () => {
                 const spaceIds = await localSettings.getSetting({
                     key: storageKeys.spaceSuggestionsCache,
                 })
                 return spaceIds ?? []
             },
-            setSpaceSuggestions: async (spaceIds) => {
+            setSpaceSuggestionsCache: async (spaceIds) => {
                 await localSettings.setSetting({
                     key: storageKeys.spaceSuggestionsCache,
                     value: spaceIds,
