@@ -17,6 +17,11 @@ import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 import { MainNavigatorParamList } from 'src/ui/navigation/types'
 import type { List } from 'src/features/meta-picker/types'
 import { ALL_SAVED_FILTER_ID } from './constants'
+import {
+    NormalizedState,
+    initNormalizedState,
+    normalizedStateToArray,
+} from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
 
 export interface State {
     syncState: UITaskState
@@ -26,7 +31,7 @@ export interface State {
     listNameLoadState: UITaskState
     couldHaveMore: boolean
     shouldShowSyncRibbon: boolean
-    pages: Map<string, UIPage>
+    pages: NormalizedState<UIPage>
     selectedListId: number
     selectedListName: string | null
     action?: 'delete' | 'togglePageStar'
@@ -94,7 +99,7 @@ export default class Logic extends UILogic<State, Event> {
             actionState: 'pristine',
             shouldShowSyncRibbon: false,
             actionFinishedAt: 0,
-            pages: new Map(),
+            pages: initNormalizedState(),
             selectedListId,
             listsData: {},
         }
@@ -281,12 +286,12 @@ export default class Logic extends UILogic<State, Event> {
             couldHaveMore = false
         }
 
-        const pages: Array<[string, UIPage]> = []
+        const pages: UIPage[] = []
 
         for (const entry of entries) {
             try {
                 const page = await this.lookupPageForEntry(entry)
-                pages.push([entry.url, page])
+                pages.push(page)
             } catch (err) {
                 continue
             }
@@ -295,10 +300,13 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             couldHaveMore: { $set: couldHaveMore },
             pages: {
-                $set: new Map<string, UIPage>([
-                    ...prevState.pages.entries(),
-                    ...pages,
-                ]),
+                $set: initNormalizedState({
+                    getId: (page) => page.url,
+                    seedData: [
+                        ...normalizedStateToArray(prevState.pages),
+                        ...pages,
+                    ],
+                }),
             },
         })
     }
@@ -329,7 +337,7 @@ export default class Logic extends UILogic<State, Event> {
         let listEntries: ListEntry[] = await metaPicker.findRecentListEntries(
             selectedList.id,
             {
-                skip: prevState.pages.size,
+                skip: prevState.pages.allIds.length,
                 limit: this.pageSize,
             },
         )
@@ -348,7 +356,7 @@ export default class Logic extends UILogic<State, Event> {
         const { overview } = this.props.storage.modules
 
         const bookmarks = await overview.findLatestBookmarks({
-            skip: prevState.pages.size,
+            skip: prevState.pages.allIds.length,
             limit: this.pageSize,
         })
 
@@ -359,7 +367,7 @@ export default class Logic extends UILogic<State, Event> {
         const { overview } = this.props.storage.modules
 
         const visits = await overview.findLatestVisitsByPage({
-            skip: prevState.pages.size,
+            skip: prevState.pages.allIds.length,
             limit: this.pageSize,
         })
 
@@ -438,7 +446,8 @@ export default class Logic extends UILogic<State, Event> {
             page.url,
             page,
         ]) as [string, UIPage][]
-        return { pages: { $set: new Map(pageEntries) } }
+        return {}
+        // return { pages: { $set: new Map(pageEntries) } }
     }
 
     async updatePage({
@@ -477,27 +486,20 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             ...mutation,
             pages: {
-                $apply: (pages: State['pages']) => {
-                    const existingPage = pages.get(next.url)
-
-                    if (!existingPage) {
-                        throw new Error(
-                            'No existing page found in dashboard state to update',
-                        )
-                    }
-
-                    return pages.set(next.url, {
-                        ...existingPage,
-                        tags: next.tags,
-                        listIds: next.listIds,
-                        notes: next.notes,
-                    })
+                byId: {
+                    [next.url]: {
+                        listIds: { $set: next.listIds },
+                        notes: { $set: next.notes },
+                    },
                 },
             },
         })
     }
 
-    async deletePage(incoming: IncomingUIEvent<State, Event, 'deletePage'>) {
+    async deletePage({
+        event,
+        previousState,
+    }: IncomingUIEvent<State, Event, 'deletePage'>) {
         await executeUITask<State, 'actionState', void>(
             this,
             'actionState',
@@ -507,12 +509,16 @@ export default class Logic extends UILogic<State, Event> {
                 })
                 try {
                     await this.props.storage.modules.overview.deletePage({
-                        url: incoming.event.url,
+                        url: event.url,
                     })
                     this.emitMutation({
-                        pages: (state) => {
-                            state.delete(incoming.event.url)
-                            return state
+                        pages: {
+                            byId: { $unset: [event.url] },
+                            allIds: {
+                                $set: previousState.pages.allIds.filter(
+                                    (id) => id !== event.url,
+                                ),
+                            },
                         },
                     })
                 } finally {
@@ -536,18 +542,19 @@ export default class Logic extends UILogic<State, Event> {
                     action: { $set: 'togglePageStar' },
                 })
                 try {
-                    const page = pages.get(url)!
-                    const isStarred = !page.isStarred
-                    await this.props.storage.modules.overview.setPageStar({
-                        url,
-                        isStarred,
-                    })
-                    this.emitMutation({
-                        pages: (state) => {
-                            const current = state.get(url)!
-                            return state.set(url, { ...current, isStarred })
-                        },
-                    })
+                    // TODO: fix this if we ever bring it back
+                    // const page = pages.get(url)!
+                    // const isStarred = !page.isStarred
+                    // await this.props.storage.modules.overview.setPageStar({
+                    //     url,
+                    //     isStarred,
+                    // })
+                    // this.emitMutation({
+                    //     pages: (state) => {
+                    //         const current = state.get(url)!
+                    //         return state.set(url, { ...current, isStarred })
+                    //     },
+                    // })
                 } finally {
                     this.emitMutation({
                         actionFinishedAt: { $set: this.getNow() },
@@ -558,16 +565,23 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     toggleResultPress({
-        event: { url },
+        event,
     }: IncomingUIEvent<State, Event, 'toggleResultPress'>): UIMutation<State> {
         return {
-            pages: (state) => {
-                const page = state.get(url)!
-                return state.set(url, {
-                    ...page,
-                    isResultPressed: !page.isResultPressed,
-                })
+            pages: {
+                byId: {
+                    [event.url]: {
+                        isResultPressed: { $apply: (prev) => !prev },
+                    },
+                },
             },
+            // pages: (state) => {
+            //     const page = state.get(url)!
+            //     return state.set(url, {
+            //         ...page,
+            //         isResultPressed: !page.isResultPressed,
+            //     })
+            // },
         }
     }
 }

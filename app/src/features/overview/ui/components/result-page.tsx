@@ -14,7 +14,6 @@ export interface Props extends FooterProps, BodyProps, UIPage {
 }
 
 export interface InteractionProps {
-    onStarPress: TouchEventHandler
     onListsPress: TouchEventHandler
     onVisitPress: TouchEventHandler
     onDeletePress: TouchEventHandler
@@ -114,7 +113,7 @@ const ResultContainer = styled.View`
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: stretch;
     shadow-opacity: 0.5;
     shadow-radius: 3px;
@@ -130,7 +129,6 @@ const ResultContainer = styled.View`
 `
 
 const ResultItem = styled.View`
-    min-height: 145px;
     max-width: 600px;
     width: 100%;
 `

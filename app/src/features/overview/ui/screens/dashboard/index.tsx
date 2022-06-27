@@ -1,25 +1,18 @@
 import React from 'react'
 import {
-    Image,
     FlatList,
     ListRenderItem,
-    View,
     Alert,
     Linking,
     NativeSyntheticEvent,
     NativeScrollEvent,
-    TouchableOpacity,
-    Text,
 } from 'react-native'
-import throttle from 'lodash/throttle'
 
 import Logic, { State, Event, Props } from './logic'
 import { StatefulUIElement } from 'src/ui/types'
-import styles from './styles'
 import ResultPage from '../../components/result-page'
 import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
-import * as selectors from './selectors'
 import EmptyResults from '../../components/empty-results'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
@@ -28,6 +21,7 @@ import SyncRibbon from '../../components/sync-ribbon'
 import Navigation from '../../components/navigation'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
+import { normalizedStateToArray } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -163,7 +157,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             onVisitPress={this.handleVisitPress(item)}
             onResultPress={this.initHandleResultPress(item)}
             onDeletePress={this.initHandleDeletePress(item)}
-            onStarPress={this.initHandlePageStar(item)}
             onCommentPress={this.navToPageEditor(item, 'notes')}
             onListsPress={this.navToPageEditor(item, 'collections')}
             onReaderPress={this.initHandleReaderPress(item)}
@@ -187,7 +180,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         }
 
         const preparedData: Array<UIPage & { spacePills?: JSX.Element }> =
-            selectors.results(this.state).map((item) => ({
+            normalizedStateToArray(this.state.pages).map((item) => ({
                 ...item,
                 spacePills:
                     item.listIds.length > 0 ? (

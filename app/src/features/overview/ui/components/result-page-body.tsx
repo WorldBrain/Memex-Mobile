@@ -43,7 +43,6 @@ const TitleText = styled.Text`
     color: ${(props) => props.theme.colors.darkerText}
     font-weight: 700;
     font-size: 16px;
-
 `
 
 const DomainText = styled.Text`
