@@ -21,13 +21,9 @@ import { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import * as selectors from './selectors'
 import EmptyResults from '../../components/empty-results'
-import DashboardNav from '../../components/dashboard-navigation'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
-import {
-    SPECIAL_LIST_NAMES,
-    SPECIAL_LIST_IDS,
-} from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
+import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import SyncRibbon from '../../components/sync-ribbon'
 import Navigation from '../../components/navigation'
 import * as icons from 'src/ui/components/icons/icons-list'
@@ -115,33 +111,31 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             Linking.openURL(fullUrl)
         }
 
-    private handleScrollToEnd = ({
+    private handleScrollToEnd = async ({
         nativeEvent,
     }: NativeSyntheticEvent<NativeScrollEvent>) => {
         if (scrollHelpers.isAtTop(nativeEvent)) {
-            return this.processEvent('reload', {
+            await this.processEvent('reload', {
                 initListId: this.state.selectedListId,
                 triggerSync: true,
             })
         }
     }
 
-    private handleScroll = throttle(
-        ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
-            if (
-                this.state.loadMoreState !== 'running' &&
-                nativeEvent != null &&
-                scrollHelpers.isAtBottom(
-                    nativeEvent,
-                    Dashboard.BOTTOM_PAGINATION_TRIGGER_PX,
-                )
-            ) {
-                return this.processEvent('loadMore', {})
-            }
-        },
-        300,
-        { leading: true },
-    )
+    private handleScroll = async ({
+        nativeEvent,
+    }: NativeSyntheticEvent<NativeScrollEvent>) => {
+        if (
+            this.state.loadMoreState !== 'running' &&
+            nativeEvent != null &&
+            scrollHelpers.isAtBottom(
+                nativeEvent,
+                Dashboard.BOTTOM_PAGINATION_TRIGGER_PX,
+            )
+        ) {
+            await this.processEvent('loadMore', {})
+        }
+    }
 
     private handleListsFilterPress = () => {
         this.props.navigation.navigate('ListsFilter', {
@@ -162,7 +156,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         this.processEvent('reload', { initListId: SPECIAL_LIST_IDS.MOBILE })
     }
 
-    private renderPage: ListRenderItem<UIPage> = ({ item, index }) => (
+    private renderListPage: ListRenderItem<
+        UIPage & { spacePills?: JSX.Element }
+    > = ({ item }) => (
         <ResultPage
             onVisitPress={this.handleVisitPress(item)}
             onResultPress={this.initHandleResultPress(item)}
@@ -171,11 +167,12 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             onCommentPress={this.navToPageEditor(item, 'notes')}
             onListsPress={this.navToPageEditor(item, 'collections')}
             onReaderPress={this.initHandleReaderPress(item)}
-            listsData={this.state.listsData}
-            key={index}
+            spacePills={item.spacePills}
             {...item}
         />
     )
+
+    private listKeyExtracter = (item: UIPage) => item.url
 
     private renderList() {
         if (
@@ -189,6 +186,24 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             )
         }
 
+        const preparedData: Array<UIPage & { spacePills?: JSX.Element }> =
+            selectors.results(this.state).map((item) => ({
+                ...item,
+                spacePills:
+                    item.listIds.length > 0 ? (
+                        <SpacesArea>
+                            {item.listIds.map((listId) => (
+                                <SpacePill key={listId}>
+                                    <SpacePillText>
+                                        {this.state.listsData[listId]?.name ??
+                                            'Missing list'}
+                                    </SpacePillText>
+                                </SpacePill>
+                            ))}
+                        </SpacesArea>
+                    ) : undefined,
+            }))
+
         return (
             <ResultListContainer>
                 {this.state.reloadState === 'running' && (
@@ -197,10 +212,12 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     </LoadingBallsBox>
                 )}
                 <ResultsList
-                    renderItem={this.renderPage}
-                    data={selectors.results(this.state)}
-                    showsVerticalScrollIndicator={false}
-                    keyExtractor={(item, index) => index.toString()}
+                    data={preparedData}
+                    renderItem={this.renderListPage}
+                    keyExtractor={this.listKeyExtracter}
+                    onScrollEndDrag={this.handleScrollToEnd}
+                    onScroll={this.handleScroll}
+                    scrollEventThrottle={16}
                     ListEmptyComponent={
                         <EmptyResults
                             goToPairing={() =>
@@ -213,10 +230,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                             }
                         />
                     }
-                    onScroll={this.handleScroll}
-                    onScrollEndDrag={this.handleScrollToEnd}
-                    scrollEventThrottle={16}
-                    contentContainerStyle={styles.resultsList}
                 />
                 {this.state.loadMoreState === 'running' && (
                     <LoadingBallsBox>
@@ -286,4 +299,30 @@ const ResultsList = styled(FlatList)`
     background: ${(props) => props.theme.colors.backgroundColor};
     display: flex;
     padding: 5px;
+` as unknown as typeof FlatList
+
+const SpacePill = styled.View`
+    padding: 3px 8px;
+    background: ${(props) => props.theme.colors.purple};
+    align-items: center;
+    display: flex;
+    text-align-vertical: center;
+    margin-right: 3px;
+    border-radius: 3px;
+    margin-bottom: 5px;
+`
+
+const SpacePillText = styled.Text`
+    color: white;
+    display: flex;
+    text-align-vertical: center;
+    font-size: 12px;
+`
+
+const SpacesArea = styled.View`
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    flex: 1;
 `

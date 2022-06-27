@@ -406,7 +406,15 @@ export default class Logic extends UILogic<State, Event> {
             isStarred: !!page.isStarred,
             date: timeFromNow(date),
             tags: [],
-            listIds: lists.map((list) => list.id),
+            listIds: lists
+                .filter(
+                    (list) =>
+                        ![
+                            SPECIAL_LIST_IDS.INBOX,
+                            SPECIAL_LIST_IDS.MOBILE,
+                        ].includes(list.id),
+                )
+                .map((list) => list.id),
             notes: notes.map<UINote>((note) => ({
                 domain: page!.domain,
                 fullUrl: page!.url,

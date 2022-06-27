@@ -1,32 +1,16 @@
 import React from 'react'
-import { View, TouchableWithoutFeedback, Text } from 'react-native'
+import { View } from 'react-native'
 
-import Container from './result-container'
 import Body, { Props as BodyProps } from './result-page-body'
 import type { Props as FooterProps } from './result-footer'
-import {
-    DeleteActionBarBtn,
-    TagBtnFullWhite,
-    TagBtnWhite,
-    CommentBtn,
-    FullCommentBtn,
-    FullListActionBarWhiteBtn,
-    AddListActionBarWhiteBtn,
-    ReaderActionBarBtn,
-    VisitActionBarBtn,
-} from './action-btns'
-import ActionBar from './result-page-action-bar'
 import type { TouchEventHandler } from 'src/ui/types'
-import styles from './result-page-view-button.styles'
 import type { UIPage } from '../../types'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
-import type { List } from 'src/features/meta-picker/types'
-import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 
 export interface Props extends FooterProps, BodyProps, UIPage {
-    listsData: { [listId: string]: List }
+    spacePills?: JSX.Element
 }
 
 export interface InteractionProps {
@@ -49,34 +33,15 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                     <View>
                         <Body {...props} />
                     </View>
-                    {props.listIds.length > 0 && (
-                        <SpacesArea>
-                            {props.listIds
-                                .filter(
-                                    (listId) =>
-                                        ![
-                                            SPECIAL_LIST_IDS.INBOX,
-                                            SPECIAL_LIST_IDS.MOBILE,
-                                        ].includes(listId),
-                                )
-                                .map((listId) => (
-                                    <SpacePill key={listId}>
-                                        <SpacePillText>
-                                            {props.listsData[listId]?.name ??
-                                                'Missing list'}
-                                        </SpacePillText>
-                                    </SpacePill>
-                                ))}
-                        </SpacesArea>
-                    )}
+                    {props.spacePills}
                 </TopArea>
                 <Footer>
                     <AddSpacesContainer onPress={props.onListsPress}>
                         <Icon
                             icon={icons.Plus}
-                            heightAndWidth={'14px'}
                             color={'purple'}
                             strokeWidth={'2px'}
+                            heightAndWidth={'14px'}
                         />
                         <AddSpacesText>Add to Spaces</AddSpacesText>
                     </AddSpacesContainer>
@@ -165,6 +130,7 @@ const ResultContainer = styled.View`
 `
 
 const ResultItem = styled.View`
+    min-height: 145px;
     max-width: 600px;
     width: 100%;
 `
@@ -213,32 +179,6 @@ align-items flex-end;
 flex-direction: row;
 justify-content: center;
 text-align-vertical: bottom;
-`
-
-const SpacesArea = styled.View`
-    display: flex;
-    flex-direction: row;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    flex: 1;
-`
-
-const SpacePill = styled.View`
-    padding: 3px 8px;
-    background: ${(props) => props.theme.colors.purple};
-    align-items: center;
-    display: flex;
-    text-align-vertical: center;
-    margin-right: 3px;
-    border-radius: 3px;
-    margin-bottom: 5px;
-`
-
-const SpacePillText = styled.Text`
-    color: white;
-    display: flex;
-    text-align-vertical: center;
-    font-size: 12px;
 `
 
 const IconContainer = styled.TouchableOpacity`

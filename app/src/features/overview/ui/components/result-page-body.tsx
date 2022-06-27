@@ -1,13 +1,11 @@
 import React from 'react'
-import { View, Text, TouchableWithoutFeedback } from 'react-native'
-import type { TouchEventHandler } from 'src/ui/types'
+import { View, Text } from 'react-native'
 import type { UIPage } from '../../types'
 import styles from './result-page-body.styles'
 
 import styled from 'styled-components/native'
 
 export interface Props extends UIPage {
-    onResultPress?: TouchEventHandler
     date: string | undefined
 }
 
