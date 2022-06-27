@@ -11,7 +11,7 @@ import Button from 'src/ui/components/memex-btn'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
-import { PrimaryAction } from 'src/ui/utils/ActionButtons'
+import { PrimaryAction, SecondaryAction } from 'src/ui/utils/ActionButtons'
 
 interface Props extends LogicProps {}
 
@@ -84,17 +84,20 @@ export default class CloudSyncScreen extends StatefulUIElement<
                     <HeadingText>Error syncing data</HeadingText>
                 </View>
                 <View>
-                    <SecondaryText>
-                        Restart the app and try again.
-                    </SecondaryText>
+                    <PrimaryAction
+                        label="Retry"
+                        onPress={() => this.processEvent('retrySync', null)}
+                    />
                 </View>
-                <SecondaryText>Continues to fail?</SecondaryText>
-                <PrimaryAction
-                    label={'Contact Support'}
-                    onPress={() => {
-                        Linking.openURL('mailto:support@memex.garden')
-                    }}
-                />
+                <ContactContainer>
+                    <SecondaryText>Continues to fail?</SecondaryText>
+                    <SecondaryAction
+                        label="Contact Support"
+                        onPress={() => {
+                            Linking.openURL('mailto:support@memex.garden')
+                        }}
+                    />
+                </ContactContainer>
             </Container>
         )
     }
@@ -145,6 +148,14 @@ export default class CloudSyncScreen extends StatefulUIElement<
         }
     }
 }
+
+const ContactContainer = styled.View`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 35px;
+`
 
 const HeadingText = styled.Text`
     color: ${(props) => props.theme.colors.darkerText};

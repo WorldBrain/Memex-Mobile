@@ -20,6 +20,7 @@ export interface State {
 
 export type Event = UIEvent<{
     goToDashboard: null
+    retrySync: null
 }>
 
 export interface Props extends MainNavProps<'CloudSync'> {
@@ -126,6 +127,10 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
         } finally {
             services.keepAwake.deactivate()
         }
+    }
+
+    retrySync: EventHandler<'retrySync'> = async ({ event }) => {
+        await this.doSync()
     }
 
     goToDashboard: EventHandler<'goToDashboard'> = () => {
