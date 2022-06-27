@@ -202,6 +202,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"
     implementation project(':react-native-background-fetch')
     compile project(':react-native-keychain')
+    implementation "io.grpc:grpc-okhttp:1.32.2"
 
     addUnimodulesDependencies()
 
