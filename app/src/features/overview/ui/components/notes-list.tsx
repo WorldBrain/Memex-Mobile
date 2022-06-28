@@ -23,7 +23,6 @@ export interface Props {
 class NotesList extends React.PureComponent<Props> {
     private renderNote: ListRenderItem<UINote> = ({ item, index }) => (
         <ResultNote
-            key={index}
             hideFooter
             onEditPress={this.props.initNoteEdit(item)}
             onNotePress={this.props.initNotePress(item)}
@@ -78,7 +77,7 @@ class NotesList extends React.PureComponent<Props> {
                         <FlatListContainer
                             renderItem={this.renderNote}
                             data={this.props.notes}
-                            keyExtractor={(item, index) => index.toString()}
+                            keyExtractor={(item) => item.url}
                             contentContainerStyle={styles.list}
                             ListFooterComponent={<EmptyItem />}
                             showsVerticalScrollIndicator={false}
@@ -159,7 +158,7 @@ const FlatListContainer = styled(FlatList)`
     width: 94%;
     max-width: 600px;
     flex: 1;
-`
+` as unknown as typeof FlatList
 
 const PageResultCard = styled.View`
     display: flex;
