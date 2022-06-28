@@ -2,7 +2,7 @@ import { Alert } from 'react-native'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import type {
-    UIPageWithNotes as Page,
+    UIPageWithNotes as _Page,
     UINote,
 } from 'src/features/overview/types'
 import type { EditorMode } from 'src/features/page-editor/types'
@@ -15,6 +15,10 @@ import type {
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 import type { MainNavigatorParamList } from 'src/ui/navigation/types'
+
+interface Page extends _Page {
+    listNames: string[]
+}
 
 export interface State {
     loadState: UITaskState
@@ -60,7 +64,6 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'focusFromNavigation'>) {
         await loadInitial<State>(this, async () => {
             const page = await this.loadPageData(params.pageUrl)
-
             this.emitMutation({
                 page: { $set: page },
                 mode: { $set: params.mode ?? 'collections' },
@@ -85,6 +88,7 @@ export default class Logic extends UILogic<State, Event> {
             date: 'a minute ago',
             tags: [],
             listIds: lists.map((l) => l.id),
+            listNames: lists.map((l) => l.name),
             pageUrl: storedPage.url,
             // TODO: unify this map fn with the identical one in DashboardLogic
             notes: notes.map<UINote>((note) => ({

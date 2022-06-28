@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, ListRenderItem, View, Text, Dimensions } from 'react-native'
+import { FlatList, ListRenderItem } from 'react-native'
 
 import styles from './result-page-with-notes.styles'
 import ResultNote from './result-note'
@@ -10,14 +10,13 @@ import styled from 'styled-components/native'
 import Body, { Props as BodyProps } from './result-page-body'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 
-const { height } = Dimensions.get('window')
 export interface Props {
     notes: UINote[]
     clearBackground?: boolean
     initNoteDelete: (note: UINote) => TouchEventHandler
     initNotePress: (note: UINote) => TouchEventHandler
     initNoteEdit: (note: UINote) => TouchEventHandler
-    pageData?: UIPage
+    pageData?: UIPage & { listNames: string[] }
 }
 
 class NotesList extends React.PureComponent<Props> {
@@ -38,11 +37,11 @@ class NotesList extends React.PureComponent<Props> {
             <PageResultCard>
                 <TopArea>
                     <Body
-                        {...this.props.pageData}
+                        {...this.props.pageData!}
                         date={this.props.pageData?.date}
                     />
                     <SpacesArea>
-                        {this.props.pageData?.listIds.map((entry) => (
+                        {this.props.pageData?.listNames.map((entry) => (
                             <SpacePill>
                                 <SpacePillText>{entry}</SpacePillText>
                             </SpacePill>
