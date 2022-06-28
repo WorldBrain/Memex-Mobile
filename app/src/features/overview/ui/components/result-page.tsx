@@ -2,14 +2,16 @@ import React from 'react'
 import { View } from 'react-native'
 
 import Body, { Props as BodyProps } from './result-page-body'
-import type { Props as FooterProps } from './result-footer'
 import type { TouchEventHandler } from 'src/ui/types'
 import type { UIPage } from '../../types'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 
-export interface Props extends FooterProps, BodyProps, UIPage {
+export interface Props
+    extends BodyProps,
+        InteractionProps,
+        Pick<UIPage, 'isResultPressed' | 'notes'> {
     spacePills?: JSX.Element
 }
 
@@ -22,20 +24,18 @@ export interface InteractionProps {
     onCommentPress: TouchEventHandler
 }
 
-const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
-    props,
-) => {
-    return (
-        <ResultContainer>
-            <ResultItem>
-                <TopArea onPress={props.onReaderPress}>
+class ResultPage extends React.PureComponent<Props> {
+    render() {
+        return (
+            <ResultContainer>
+                <TopArea onPress={this.props.onReaderPress}>
                     <View>
-                        <Body {...props} />
+                        <Body {...this.props} />
                     </View>
-                    {props.spacePills}
+                    {this.props.spacePills}
                 </TopArea>
                 <Footer>
-                    <AddSpacesContainer onPress={props.onListsPress}>
+                    <AddSpacesContainer onPress={this.props.onListsPress}>
                         <Icon
                             icon={icons.Plus}
                             color={'purple'}
@@ -45,8 +45,8 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                         <AddSpacesText>Add to Spaces</AddSpacesText>
                     </AddSpacesContainer>
                     <FooterRightSide>
-                        <IconContainer onPress={props.onResultPress}>
-                            {props.isResultPressed ? (
+                        <IconContainer onPress={this.props.onResultPress}>
+                            {this.props.isResultPressed ? (
                                 <Icon
                                     icon={icons.ForwardArrow}
                                     strokeWidth="6"
@@ -60,16 +60,20 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                                 />
                             )}
                         </IconContainer>
-                        {props.isResultPressed && (
+                        {this.props.isResultPressed && (
                             <MoreButtons>
-                                <IconContainer onPress={props.onDeletePress}>
+                                <IconContainer
+                                    onPress={this.props.onDeletePress}
+                                >
                                     <Icon
                                         icon={icons.Trash}
                                         strokeWidth="3"
                                         heightAndWidth="16px"
                                     />
                                 </IconContainer>
-                                <IconContainer onPress={props.onVisitPress}>
+                                <IconContainer
+                                    onPress={this.props.onVisitPress}
+                                >
                                     <Icon
                                         icon={icons.Globe}
                                         strokeWidth="3"
@@ -78,8 +82,8 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                                 </IconContainer>
                             </MoreButtons>
                         )}
-                        <IconContainer onPress={props.onCommentPress}>
-                            {props.notes.length > 0 ? (
+                        <IconContainer onPress={this.props.onCommentPress}>
+                            {this.props.notes.length > 0 ? (
                                 <Icon
                                     icon={icons.Comment}
                                     strokeWidth="3"
@@ -96,9 +100,9 @@ const ResultPage: React.StatelessComponent<Props & InteractionProps> = (
                         </IconContainer>
                     </FooterRightSide>
                 </Footer>
-            </ResultItem>
-        </ResultContainer>
-    )
+            </ResultContainer>
+        )
+    }
 }
 
 export default ResultPage
@@ -110,7 +114,6 @@ const MoreButtons = styled.View`
 
 const ResultContainer = styled.View`
     margin: 5px 0px;
-    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -121,16 +124,11 @@ const ResultContainer = styled.View`
     shadow-offset: 0px 2px;
     border-radius: 8px;
     background: white;
-    width: 600px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 600px;
     border-style: solid;
     border-width: 1px;
     border-color: ${(props) => props.theme.colors.lightgrey};
-`
-
-const ResultItem = styled.View`
-    max-width: 600px;
-    width: 100%;
 `
 
 const TopArea = styled.TouchableOpacity`
@@ -170,13 +168,13 @@ const AddSpacesContainer = styled.TouchableOpacity`
 `
 
 const AddSpacesText = styled.Text`
-color: ${(props) => props.theme.colors.purple};
-font-size: 12px;
-display: flex;
-align-items flex-end;
-flex-direction: row;
-justify-content: center;
-text-align-vertical: bottom;
+    color: ${(props) => props.theme.colors.purple};
+    font-size: 12px;
+    display: flex;
+    align-items flex-end;
+    flex-direction: row;
+    justify-content: center;
+    text-align-vertical: bottom;
 `
 
 const IconContainer = styled.TouchableOpacity`

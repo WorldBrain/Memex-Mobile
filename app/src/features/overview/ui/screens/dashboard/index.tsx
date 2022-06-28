@@ -116,17 +116,10 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         }
     }
 
-    private handleScroll = async ({
-        nativeEvent,
-    }: NativeSyntheticEvent<NativeScrollEvent>) => {
-        if (
-            this.state.loadMoreState !== 'running' &&
-            nativeEvent != null &&
-            scrollHelpers.isAtBottom(
-                nativeEvent,
-                Dashboard.BOTTOM_PAGINATION_TRIGGER_PX,
-            )
-        ) {
+    private handleListEndReached = async (args: {
+        distanceFromEnd: number
+    }) => {
+        if (this.state.loadMoreState !== 'running') {
             await this.processEvent('loadMore', {})
         }
     }
@@ -209,8 +202,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     renderItem={this.renderListPage}
                     keyExtractor={this.listKeyExtracter}
                     onScrollEndDrag={this.handleScrollToEnd}
-                    onScroll={this.handleScroll}
-                    scrollEventThrottle={16}
+                    scrollEventThrottle={32}
+                    onEndReachedThreshold={0.1}
+                    onEndReached={this.handleListEndReached}
                     ListEmptyComponent={
                         <EmptyResults
                             goToPairing={() =>
@@ -317,5 +311,4 @@ const SpacesArea = styled.View`
     flex-direction: row;
     margin-top: 10px;
     flex-wrap: wrap;
-    flex: 1;
 `

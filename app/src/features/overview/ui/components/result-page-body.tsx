@@ -5,7 +5,7 @@ import styles from './result-page-body.styles'
 
 import styled from 'styled-components/native'
 
-export interface Props extends UIPage {
+export interface Props extends Pick<UIPage, 'titleText' | 'type' | 'domain'> {
     date: string | undefined
 }
 
