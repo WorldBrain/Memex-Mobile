@@ -5,10 +5,12 @@ import Logic, { Props, State, Event } from './logic'
 import Navigation from '../../components/navigation'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { SpacePickerEntry } from 'src/features/meta-picker/types'
-import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
-import { ALL_SAVED_FILTER_ID } from '../dashboard/constants'
+import {
+    ALL_SAVED_FILTER_ID,
+    ALL_SAVED_FILTER_NAME,
+} from '../dashboard/constants'
 
 export default class ListsFilter extends StatefulUIElement<
     Props,
@@ -25,7 +27,7 @@ export default class ListsFilter extends StatefulUIElement<
 
     private handleEntryPress = async (item: SpacePickerEntry) => {
         this.props.navigation.navigate('Dashboard', {
-            selectedListId: item.isChecked ? SPECIAL_LIST_IDS.MOBILE : item.id,
+            selectedListId: item.isChecked ? ALL_SAVED_FILTER_ID : item.id,
         })
     }
 
@@ -45,7 +47,7 @@ export default class ListsFilter extends StatefulUIElement<
                         filterMode
                         extraEntries={[
                             {
-                                name: 'All Saved',
+                                name: ALL_SAVED_FILTER_NAME,
                                 id: ALL_SAVED_FILTER_ID,
                                 isChecked: false,
                             },

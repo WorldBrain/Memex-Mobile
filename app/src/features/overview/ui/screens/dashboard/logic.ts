@@ -16,7 +16,7 @@ import { timeFromNow } from 'src/utils/time-helpers'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 import { MainNavigatorParamList } from 'src/ui/navigation/types'
 import type { List } from 'src/features/meta-picker/types'
-import { ALL_SAVED_FILTER_ID } from './constants'
+import { ALL_SAVED_FILTER_ID, ALL_SAVED_FILTER_NAME } from './constants'
 import {
     NormalizedState,
     initNormalizedState,
@@ -33,7 +33,7 @@ export interface State {
     shouldShowSyncRibbon: boolean
     pages: NormalizedState<UIPage>
     selectedListId: number
-    selectedListName: string | null
+    selectedListName: string
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
@@ -86,7 +86,7 @@ export default class Logic extends UILogic<State, Event> {
         const { params } = this.props.route
 
         const selectedListId =
-            initListId ?? params?.selectedListId ?? SPECIAL_LIST_IDS.MOBILE
+            initListId ?? params?.selectedListId ?? ALL_SAVED_FILTER_ID
 
         return {
             syncState: 'pristine',
@@ -95,7 +95,7 @@ export default class Logic extends UILogic<State, Event> {
             loadMoreState: 'pristine',
             listNameLoadState: 'pristine',
             couldHaveMore: true,
-            selectedListName: null,
+            selectedListName: ALL_SAVED_FILTER_NAME,
             actionState: 'pristine',
             shouldShowSyncRibbon: false,
             actionFinishedAt: 0,
@@ -175,15 +175,6 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         await this.fetchAndSetListName(event.selectedListId)
-        // const list = await metaPicker.findListById({ id: event.selectedListId })
-
-        // // While this.emitMutation is NOT async, if you remove this await then the state update doesn't happen somehow :S
-        // // Please don't remove the await!
-        // // TODO: find cause of this bug in `ui-logic-core` lib
-        // await this.emitMutation({
-        //     selectedListId: { $set: event.selectedListId },
-        //     selectedListName: { $set: list?.name ?? '' }
-        // })
 
         await executeUITask<State, 'reloadState', void>(
             this,
@@ -230,7 +221,7 @@ export default class Logic extends UILogic<State, Event> {
             async () => {
                 const selectedList =
                     listId === ALL_SAVED_FILTER_ID
-                        ? { name: 'All Saved' }
+                        ? { name: ALL_SAVED_FILTER_NAME }
                         : await metaPicker.findListById({
                               id: listId,
                           })

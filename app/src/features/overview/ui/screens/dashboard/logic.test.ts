@@ -14,7 +14,10 @@ import {
     SPECIAL_LIST_NAMES,
     SPECIAL_LIST_IDS,
 } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
-import { ALL_SAVED_FILTER_ID } from '../dashboard/constants'
+import {
+    ALL_SAVED_FILTER_ID,
+    ALL_SAVED_FILTER_NAME,
+} from '../dashboard/constants'
 import { initNormalizedState } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
 
 const UI_PAGE_1: UIPage = {
@@ -77,6 +80,7 @@ describe('dashboard screen UI logic tests', () => {
         await dependencies.storage.modules.metaPicker.createMobileListEntry({
             fullPageUrl: page.fullUrl,
         })
+        await dependencies.storage.modules.overview.visitPage({ url: page.url })
     }
 
     it(
@@ -109,8 +113,8 @@ describe('dashboard screen UI logic tests', () => {
                 loadState: 'done',
                 reloadState: 'pristine',
                 loadMoreState: 'pristine',
-                selectedListId: SPECIAL_LIST_IDS.MOBILE,
-                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
+                selectedListId: ALL_SAVED_FILTER_ID,
+                selectedListName: ALL_SAVED_FILTER_NAME,
                 couldHaveMore: false,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
@@ -126,6 +130,9 @@ describe('dashboard screen UI logic tests', () => {
         await dependencies.storage.modules.metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[0].fullUrl,
         })
+        await dependencies.storage.modules.overview.visitPage({
+            url: INTEGRATION_TEST_DATA.pages[0].url,
+        })
 
         await element.init()
         expect(element.state).toEqual(
@@ -138,8 +145,8 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: false,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
-                selectedListId: SPECIAL_LIST_IDS.MOBILE,
-                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
+                selectedListId: ALL_SAVED_FILTER_ID,
+                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: {
                     allIds: ['test.com'],
                     byId: {
@@ -168,8 +175,14 @@ describe('dashboard screen UI logic tests', () => {
         await storage.modules.metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[0].fullUrl,
         })
+        await storage.modules.overview.visitPage({
+            url: INTEGRATION_TEST_DATA.pages[0].url,
+        })
         await storage.modules.metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[1].fullUrl,
+        })
+        await storage.modules.overview.visitPage({
+            url: INTEGRATION_TEST_DATA.pages[1].url,
         })
 
         await element.init()
@@ -183,8 +196,8 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: true,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
-                selectedListId: SPECIAL_LIST_IDS.MOBILE,
-                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
+                selectedListId: ALL_SAVED_FILTER_ID,
+                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: {
                     allIds: [UI_PAGE_2.url],
                     byId: {
@@ -205,8 +218,8 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: true,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
-                selectedListId: SPECIAL_LIST_IDS.MOBILE,
-                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
+                selectedListId: ALL_SAVED_FILTER_ID,
+                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: {
                     allIds: [UI_PAGE_2.url, UI_PAGE_1.url],
                     byId: {
@@ -228,8 +241,8 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: false,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
-                selectedListId: SPECIAL_LIST_IDS.MOBILE,
-                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
+                selectedListId: ALL_SAVED_FILTER_ID,
+                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: {
                     allIds: [UI_PAGE_2.url, UI_PAGE_1.url],
                     byId: {
@@ -251,8 +264,8 @@ describe('dashboard screen UI logic tests', () => {
                 couldHaveMore: true,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
-                selectedListId: SPECIAL_LIST_IDS.MOBILE,
-                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
+                selectedListId: ALL_SAVED_FILTER_ID,
+                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: {
                     allIds: [UI_PAGE_2.url],
                     byId: {
@@ -289,8 +302,8 @@ describe('dashboard screen UI logic tests', () => {
                 action: 'delete',
                 actionState: 'done',
                 actionFinishedAt: expect.any(Number),
-                selectedListId: SPECIAL_LIST_IDS.MOBILE,
-                selectedListName: SPECIAL_LIST_NAMES.MOBILE,
+                selectedListId: ALL_SAVED_FILTER_ID,
+                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: initNormalizedState(),
             }),
         )
@@ -420,8 +433,14 @@ describe('dashboard screen UI logic tests', () => {
         await storage.modules.metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[0].fullUrl,
         })
+        await storage.modules.overview.visitPage({
+            url: INTEGRATION_TEST_DATA.pages[0].url,
+        })
         await storage.modules.metaPicker.createMobileListEntry({
             fullPageUrl: INTEGRATION_TEST_DATA.pages[1].fullUrl,
+        })
+        await storage.modules.overview.visitPage({
+            url: INTEGRATION_TEST_DATA.pages[1].url,
         })
 
         await element.init()
