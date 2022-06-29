@@ -13,7 +13,7 @@ import { validateSpaceName } from '@worldbrain/memex-common/lib/utils/space-name
 import { INIT_SUGGESTIONS_LIMIT } from './constants'
 
 export interface State {
-    entries: NormalizedState<SpacePickerEntry>
+    entries: NormalizedState<SpacePickerEntry, number>
     inputText: string
     loadState: UITaskState
     searchState: UITaskState
@@ -42,17 +42,19 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export default class Logic extends UILogic<State, Event> {
-    private _defaultEntries = initNormalizedState<SpacePickerEntry>()
+    private _defaultEntries = initNormalizedState<SpacePickerEntry, number>()
 
     constructor(private props: Props) {
         super()
     }
 
-    private set defaultEntries(entries: NormalizedState<SpacePickerEntry>) {
+    private set defaultEntries(
+        entries: NormalizedState<SpacePickerEntry, number>,
+    ) {
         this._defaultEntries = cloneNormalizedState(entries)
     }
 
-    private get defaultEntries(): NormalizedState<SpacePickerEntry> {
+    private get defaultEntries(): NormalizedState<SpacePickerEntry, number> {
         return this._defaultEntries
     }
 
@@ -78,7 +80,7 @@ export default class Logic extends UILogic<State, Event> {
                 includeSpecialLists: this.props.filterMode,
             })
 
-        const entries = initNormalizedState<SpacePickerEntry>({
+        const entries = initNormalizedState<SpacePickerEntry, number>({
             seedData: [
                 ...(this.props.extraEntries ?? []),
                 ...loadedSuggestions,
