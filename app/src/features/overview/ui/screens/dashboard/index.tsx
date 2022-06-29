@@ -205,6 +205,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     scrollEventThrottle={32}
                     onEndReachedThreshold={0.1}
                     onEndReached={this.handleListEndReached}
+                    contentContainerStyle={{
+                        paddingBottom: 100,
+                    }}
                     ListEmptyComponent={
                         <EmptyResults
                             goToPairing={() =>

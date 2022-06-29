@@ -28,78 +28,80 @@ class ResultPage extends React.PureComponent<Props> {
     render() {
         return (
             <ResultContainer>
-                <TopArea onPress={this.props.onReaderPress}>
-                    <View>
-                        <Body {...this.props} />
-                    </View>
-                    {this.props.spacePills}
-                </TopArea>
-                <Footer>
-                    <AddSpacesContainer onPress={this.props.onListsPress}>
-                        <Icon
-                            icon={icons.Plus}
-                            color={'purple'}
-                            strokeWidth={'2px'}
-                            heightAndWidth={'14px'}
-                        />
-                        <AddSpacesText>Add to Spaces</AddSpacesText>
-                    </AddSpacesContainer>
-                    <FooterRightSide>
-                        <IconContainer onPress={this.props.onResultPress}>
-                            {this.props.isResultPressed ? (
-                                <Icon
-                                    icon={icons.ForwardArrow}
-                                    strokeWidth="6"
-                                    heightAndWidth="22px"
-                                />
-                            ) : (
-                                <Icon
-                                    icon={icons.Dots}
-                                    strokeWidth="4"
-                                    heightAndWidth="15px"
-                                />
-                            )}
-                        </IconContainer>
-                        {this.props.isResultPressed && (
-                            <MoreButtons>
-                                <IconContainer
-                                    onPress={this.props.onDeletePress}
-                                >
+                <ResultItem>
+                    <TopArea onPress={this.props.onReaderPress}>
+                        <View>
+                            <Body {...this.props} />
+                        </View>
+                        {this.props.spacePills}
+                    </TopArea>
+                    <Footer>
+                        <AddSpacesContainer onPress={this.props.onListsPress}>
+                            <Icon
+                                icon={icons.Plus}
+                                color={'purple'}
+                                strokeWidth={'2px'}
+                                heightAndWidth={'14px'}
+                            />
+                            <AddSpacesText>Add to Spaces</AddSpacesText>
+                        </AddSpacesContainer>
+                        <FooterRightSide>
+                            <IconContainer onPress={this.props.onResultPress}>
+                                {this.props.isResultPressed ? (
                                     <Icon
-                                        icon={icons.Trash}
+                                        icon={icons.ForwardArrow}
+                                        strokeWidth="6"
+                                        heightAndWidth="22px"
+                                    />
+                                ) : (
+                                    <Icon
+                                        icon={icons.Dots}
+                                        strokeWidth="4"
+                                        heightAndWidth="15px"
+                                    />
+                                )}
+                            </IconContainer>
+                            {this.props.isResultPressed && (
+                                <MoreButtons>
+                                    <IconContainer
+                                        onPress={this.props.onDeletePress}
+                                    >
+                                        <Icon
+                                            icon={icons.Trash}
+                                            strokeWidth="3"
+                                            heightAndWidth="16px"
+                                        />
+                                    </IconContainer>
+                                    <IconContainer
+                                        onPress={this.props.onVisitPress}
+                                    >
+                                        <Icon
+                                            icon={icons.Globe}
+                                            strokeWidth="3"
+                                            heightAndWidth="16px"
+                                        />
+                                    </IconContainer>
+                                </MoreButtons>
+                            )}
+                            <IconContainer onPress={this.props.onCommentPress}>
+                                {this.props.notes.length > 0 ? (
+                                    <Icon
+                                        icon={icons.Comment}
+                                        strokeWidth="3"
+                                        fill
+                                        heightAndWidth="16px"
+                                    />
+                                ) : (
+                                    <Icon
+                                        icon={icons.Comment}
                                         strokeWidth="3"
                                         heightAndWidth="16px"
                                     />
-                                </IconContainer>
-                                <IconContainer
-                                    onPress={this.props.onVisitPress}
-                                >
-                                    <Icon
-                                        icon={icons.Globe}
-                                        strokeWidth="3"
-                                        heightAndWidth="16px"
-                                    />
-                                </IconContainer>
-                            </MoreButtons>
-                        )}
-                        <IconContainer onPress={this.props.onCommentPress}>
-                            {this.props.notes.length > 0 ? (
-                                <Icon
-                                    icon={icons.Comment}
-                                    strokeWidth="3"
-                                    fill
-                                    heightAndWidth="16px"
-                                />
-                            ) : (
-                                <Icon
-                                    icon={icons.Comment}
-                                    strokeWidth="3"
-                                    heightAndWidth="16px"
-                                />
-                            )}
-                        </IconContainer>
-                    </FooterRightSide>
-                </Footer>
+                                )}
+                            </IconContainer>
+                        </FooterRightSide>
+                    </Footer>
+                </ResultItem>
             </ResultContainer>
         )
     }
@@ -124,11 +126,16 @@ const ResultContainer = styled.View`
     shadow-offset: 0px 2px;
     border-radius: 8px;
     background: white;
-    width: 100%;
-    max-width: 600px;
+    width: 600px;
+    max-width: 100%;
     border-style: solid;
     border-width: 1px;
     border-color: ${(props) => props.theme.colors.lightgrey};
+`
+
+const ResultItem = styled.View`
+    max-width: 600px;
+    width: 100%;
 `
 
 const TopArea = styled.TouchableOpacity`
