@@ -176,7 +176,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 />
                 {this.renderWebView()}
                 <ActionBar
-                    className={styles.actionBar}
                     isErrorView={this.state.error != null}
                     {...this.state}
                     onBackBtnPress={() => this.processEvent('goBack', null)}
@@ -197,6 +196,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     onCommentBtnPress={() =>
                         this.processEvent('navToPageEditor', { mode: 'notes' })
                     }
+                    spaceCount={this.state.spaces.length}
                 />
             </Container>
         )
@@ -205,5 +205,5 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 
 const Container = styled.SafeAreaView`
     height: 50%;
-    flex: 1;
+    display: flex;
 `

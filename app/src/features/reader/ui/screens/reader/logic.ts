@@ -5,6 +5,7 @@ import {
     UIEventHandler,
     UIMutation,
 } from 'ui-logic-core'
+import { Dimensions, ScaledSize } from 'react-native'
 
 import {
     UITaskState,
@@ -18,6 +19,7 @@ import { ContentScriptLoader } from 'src/features/reader/utils/load-content-scri
 import { Anchor, Highlight } from 'src/content-script/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import { UIPageWithNotes } from 'src/features/overview/types'
+import type { List } from 'src/features/meta-picker/types'
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
@@ -32,11 +34,12 @@ export interface State {
     loadState: UITaskState
     selectedText?: string
     isBookmarked: boolean
-    spaces: []
+    spaces: List[]
     isListed: boolean
     hasNotes: boolean
     htmlSource?: string
     contentScriptSource?: string
+    rotation: 'landscape' | 'portrait'
     error?: Error
     isErrorReported: boolean
     highlights: Highlight[]
@@ -88,7 +91,10 @@ export default class Logic extends UILogic<State, Event> {
             throw new Error("Navigation error: reader didn't receive URL")
         }
 
+        const screen = Dimensions.get('screen')
+
         return {
+            rotation: screen.width > screen.height ? 'landscape' : 'portrait',
             title: params.title,
             url: Logic.formUrl(params.url),
             loadState: 'pristine',
@@ -103,6 +109,7 @@ export default class Logic extends UILogic<State, Event> {
 
     async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
+            Dimensions.addEventListener('change', this.handleDimensionsChange)
             try {
                 await this.loadPageState(previousState.url)
                 await this.loadReadablePage(
@@ -112,6 +119,23 @@ export default class Logic extends UILogic<State, Event> {
             } catch (err) {
                 this.emitMutation({ error: { $set: err } })
             }
+        })
+    }
+
+    cleanup() {
+        Dimensions.removeEventListener('change', this.handleDimensionsChange)
+    }
+
+    private handleDimensionsChange = ({
+        screen,
+    }: {
+        window: ScaledSize
+        screen: ScaledSize
+    }) => {
+        this.emitMutation({
+            rotation: {
+                $set: screen.width > screen.height ? 'landscape' : 'portrait',
+            },
         })
     }
 

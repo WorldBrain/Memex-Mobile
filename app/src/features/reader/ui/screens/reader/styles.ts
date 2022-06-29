@@ -14,7 +14,6 @@ export default EStyleSheet.create({
         justifyContent: 'space-between',
         backgroundColor: theme.colors.backgroundColor,
     },
-    actionBar: {},
     webViewLoader: {
         justifyContent: 'center',
         alignItems: 'center',
