@@ -1,8 +1,11 @@
 import { UILogic, UIEvent } from 'ui-logic-core'
 
-import { MainNavProps } from 'src/ui/types'
+import type { MainNavProps, UIStorageModules, UIServices } from 'src/ui/types'
 
-export interface Props extends MainNavProps<'ListsFilter'> {}
+export interface Props extends MainNavProps<'ListsFilter'> {
+    storage: UIStorageModules<'metaPicker'>
+    services: UIServices<'syncStorage'>
+}
 
 export interface State {}
 

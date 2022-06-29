@@ -1,13 +1,11 @@
 import React from 'react'
-import { View, Text, TouchableWithoutFeedback } from 'react-native'
-import type { TouchEventHandler } from 'src/ui/types'
+import { View, Text } from 'react-native'
 import type { UIPage } from '../../types'
 import styles from './result-page-body.styles'
 
 import styled from 'styled-components/native'
 
-export interface Props extends UIPage {
-    onResultPress?: TouchEventHandler
+export interface Props extends Pick<UIPage, 'titleText' | 'type' | 'domain'> {
     date: string | undefined
 }
 
@@ -45,7 +43,6 @@ const TitleText = styled.Text`
     color: ${(props) => props.theme.colors.darkerText}
     font-weight: 700;
     font-size: 16px;
-
 `
 
 const DomainText = styled.Text`

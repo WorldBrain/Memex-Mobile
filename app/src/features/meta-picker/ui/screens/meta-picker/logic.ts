@@ -1,200 +1,203 @@
-import { UILogic, UIEvent, IncomingUIEvent } from 'ui-logic-core'
+import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
 
-import { UIServices, UITaskState, UIStorageModules } from 'src/ui/types'
-import { storageKeys } from '../../../../../../app.json'
+import type { UITaskState, UIStorageModules } from 'src/ui/types'
+import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import { MetaTypeShape, MetaType } from 'src/features/meta-picker/types'
+import {
+    NormalizedState,
+    initNormalizedState,
+    cloneNormalizedState,
+    normalizedStateToArray,
+} from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
+import { validateSpaceName } from '@worldbrain/memex-common/lib/utils/space-name-validation'
 import { INIT_SUGGESTIONS_LIMIT } from './constants'
 
 export interface State {
-    entries: Map<string, MetaTypeShape>
+    entries: NormalizedState<SpacePickerEntry, number>
     inputText: string
     loadState: UITaskState
-    selectedEntryName?: string
+    searchState: UITaskState
 }
 
 export type Event = UIEvent<{
-    suggestEntries: { text: string; selected: string[] }
-    addEntry: { entry: MetaTypeShape; selected: string[] }
-    toggleEntryChecked: { name: string; selected: string[] }
-    setEntries: { entries: MetaTypeShape[] }
-    reload: { selected: string[] }
+    toggleEntryChecked: { id: number }
+    suggestEntries: { text: string }
+    addEntry: null
+    reload: null
 }>
 
 export interface Props {
-    onEntryPress: (item: MetaTypeShape) => Promise<void>
     storage: UIStorageModules<'metaPicker'>
-    services: UIServices<'syncStorage'>
     suggestInputPlaceholder?: string
-    initSelectedEntries?: string[]
-    initSelectedEntry?: string
-    extraEntries?: string[]
-    singleSelect?: boolean
-    className?: string
-    type: MetaType
-    url: string
+    initSelectedEntries?: number[]
+    extraEntries?: SpacePickerEntry[]
+    filterMode?: boolean
+    onEntryPress?: (item: SpacePickerEntry) => Promise<void>
 }
 
+type EventHandler<EventName extends keyof Event> = UIEventHandler<
+    State,
+    Event,
+    EventName
+>
+
 export default class Logic extends UILogic<State, Event> {
+    private _defaultEntries = initNormalizedState<SpacePickerEntry, number>()
+
     constructor(private props: Props) {
         super()
     }
 
+    private set defaultEntries(
+        entries: NormalizedState<SpacePickerEntry, number>,
+    ) {
+        this._defaultEntries = cloneNormalizedState(entries)
+    }
+
+    private get defaultEntries(): NormalizedState<SpacePickerEntry, number> {
+        return this._defaultEntries
+    }
+
     getInitialState(): State {
         return {
-            loadState: 'pristine',
-            entries: new Map(),
             inputText: '',
-            selectedEntryName: this.props.initSelectedEntry,
+            loadState: 'pristine',
+            searchState: 'pristine',
+            entries: initNormalizedState(),
         }
     }
 
-    async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+    init: EventHandler<'init'> = async () => {
         await loadInitial<State>(this, async () => {
             await this.loadInitEntries()
         })
     }
 
-    private calculateSelectedEntries(): string[] {
-        if (this.props.singleSelect) {
-            return this.props.initSelectedEntry
-                ? [this.props.initSelectedEntry]
-                : []
-        }
-        return this.props.initSelectedEntries ?? []
-    }
+    private async loadInitEntries() {
+        const loadedSuggestions =
+            await this.props.storage.modules.metaPicker.findListSuggestions({
+                limit: INIT_SUGGESTIONS_LIMIT,
+                includeSpecialLists: this.props.filterMode,
+            })
 
-    private async loadSuggestions(
-        limit = INIT_SUGGESTIONS_LIMIT,
-    ): Promise<MetaTypeShape[]> {
-        const { metaPicker } = this.props.storage.modules
-        const { syncStorage } = this.props.services
-
-        const storageKey =
-            this.props.type === 'tags'
-                ? storageKeys.tagSuggestionsCache
-                : storageKeys.listSuggestionsCache
-
-        const cache = (await syncStorage.get<string[]>(storageKey)) ?? []
-
-        const suggestions: MetaTypeShape[] = cache.map((name) => ({
-            name,
-            isChecked: false,
-        }))
-
-        if (suggestions.length >= limit) {
-            return suggestions
-        }
-
-        const dbResults =
-            this.props.type === 'tags'
-                ? await metaPicker.findTagSuggestions({
-                      limit: limit - cache.length,
-                      url: this.props.url,
-                  })
-                : await metaPicker.findListSuggestions({
-                      limit: limit - cache.length,
-                      url: this.props.url,
-                  })
-
-        return [...dbResults, ...suggestions]
-    }
-
-    private async loadInitEntries(selected?: string[]) {
-        const entries = new Map<string, MetaTypeShape>()
-        selected = selected ?? this.calculateSelectedEntries()
-
-        this.props.extraEntries?.forEach((name) => {
-            entries.set(name, { name, isChecked: false })
+        const entries = initNormalizedState<SpacePickerEntry, number>({
+            seedData: [
+                ...(this.props.extraEntries ?? []),
+                ...loadedSuggestions,
+            ],
+            getId: (entry) => entry.id,
         })
 
-        const loadedSuggestions = await this.loadSuggestions()
-
-        selected.forEach((name) => {
-            entries.set(name, { name, isChecked: true })
+        this.props.initSelectedEntries?.forEach((id) => {
+            entries.byId[id] = { ...entries.byId[id], isChecked: true }
         })
 
-        loadedSuggestions.forEach((res) => {
-            const existing = entries.get(res.name) ?? {}
-            entries.set(res.name, { ...res, ...existing })
-        })
+        // Remember these to be able to reset state to, post-search
+        this.defaultEntries = entries
 
         this.emitMutation({
-            entries: {
-                $set: entries,
-            },
+            entries: { $set: entries },
             inputText: { $set: '' },
         })
     }
 
-    async reload(incoming: IncomingUIEvent<State, Event, 'reload'>) {
-        return executeUITask<State, 'loadState', void>(
-            this,
-            'loadState',
-            async () => {
-                await this.loadInitEntries(incoming.event.selected)
-            },
-        )
-    }
-
-    async suggestEntries({
-        event: { text, selected },
-    }: IncomingUIEvent<State, Event, 'suggestEntries'>) {
+    reload: EventHandler<'reload'> = async ({}) => {
         await executeUITask<State, 'loadState', void>(
             this,
             'loadState',
             async () => {
-                this.emitMutation({ inputText: { $set: text } })
-
-                if (!text.trim().length) {
-                    return this.loadInitEntries(selected)
-                }
-
-                return this.suggestNewEntries(text, selected)
+                await this.loadInitEntries()
             },
         )
     }
 
-    private async suggestNewEntries(text: string, selected: string[]) {
-        const { metaPicker } = this.props.storage.modules
-        const collection =
-            this.props.type === 'collections' ? 'customLists' : 'tags'
-
-        const results = await metaPicker.suggest({
-            collection,
-            query: { name: text },
-        })
-        const entries = results.map((res) => [
-            res.name,
-            { ...res, isChecked: selected.includes(res.name) },
-        ]) as [string, MetaTypeShape][]
-
+    private resetEntries() {
         this.emitMutation({
-            entries: {
-                $set: new Map(entries),
-            },
+            inputText: { $set: '' },
+            entries: { $set: cloneNormalizedState(this.defaultEntries) },
         })
     }
 
-    async addEntry(incoming: IncomingUIEvent<State, Event, 'addEntry'>) {
-        const { entry, selected } = incoming.event
+    suggestEntries: EventHandler<'suggestEntries'> = async ({ event }) => {
+        const { metaPicker } = this.props.storage.modules
+        this.emitMutation({ inputText: { $set: event.text } })
 
-        return this.loadInitEntries([entry.name, ...selected])
-    }
-
-    async toggleEntryChecked({
-        event: { name, selected },
-        previousState,
-    }: IncomingUIEvent<State, Event, 'toggleEntryChecked'>) {
-        const entry = previousState.entries.get(name)!
-
-        if (entry.isChecked) {
-            const i = selected.indexOf(name)
-            selected = [...selected.slice(0, i), ...selected.slice(i + 1)]
-        } else {
-            selected = [name, ...selected]
+        if (!event.text.trim().length) {
+            this.resetEntries()
+            return
         }
 
-        return this.loadInitEntries(selected)
+        await executeUITask<State, 'searchState', void>(
+            this,
+            'searchState',
+            async () => {
+                const suggestions = await metaPicker.suggestLists({
+                    query: { name: event.text },
+                    includeSpecialLists: this.props.filterMode,
+                })
+
+                this.emitMutation({
+                    entries: {
+                        $set: initNormalizedState({
+                            seedData: suggestions,
+                            getId: (entry) => entry.id,
+                        }),
+                    },
+                })
+            },
+        )
+    }
+
+    addEntry: EventHandler<'addEntry'> = async ({ event, previousState }) => {
+        const { metaPicker } = this.props.storage.modules
+
+        const validationResult = validateSpaceName(
+            previousState.inputText,
+            normalizedStateToArray(this.defaultEntries),
+        )
+
+        if (!validationResult.valid) {
+            throw new Error(
+                `Cannot add new list with invalid name: ${validationResult.reason}`,
+            )
+        }
+
+        const name = previousState.inputText.trim()
+        const { object: newList } = await metaPicker.createList({ name })
+        const newEntry: SpacePickerEntry = {
+            name,
+            id: newList.id,
+            isChecked: true,
+        }
+
+        this.defaultEntries.allIds.unshift(newEntry.id)
+        this.defaultEntries.byId[newEntry.id] = { ...newEntry }
+        this.resetEntries()
+        await this.props.onEntryPress?.(newEntry)
+    }
+
+    toggleEntryChecked: EventHandler<'toggleEntryChecked'> = async ({
+        event,
+        previousState,
+    }) => {
+        const entry = previousState.entries.byId[event.id]
+
+        if (!entry) {
+            throw new Error(
+                `Space entry not found to toggle for ID ${event.id}`,
+            )
+        }
+
+        this.defaultEntries.byId[event.id].isChecked = !entry.isChecked
+        this.emitMutation({
+            entries: {
+                byId: {
+                    [event.id]: {
+                        isChecked: { $set: !entry.isChecked },
+                    },
+                },
+            },
+        })
+        await this.props.onEntryPress?.(entry)
     }
 }

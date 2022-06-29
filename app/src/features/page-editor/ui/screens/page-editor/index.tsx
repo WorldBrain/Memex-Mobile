@@ -4,14 +4,12 @@ import { View } from 'react-native'
 import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import MainLayout from '../../components/main-layout'
-import Footer from '../../components/footer'
 import NotesList from 'src/features/overview/ui/components/notes-list'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
-import { MetaType } from 'src/features/meta-picker/types'
-import { MetaTypeShape } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import styles from './styles'
 import * as icons from 'src/ui/components/icons/icons-list'
+import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 
 export default class PageEditorScreen extends StatefulUIElement<
     Props,
@@ -36,11 +34,11 @@ export default class PageEditorScreen extends StatefulUIElement<
         this.unsubNavFocus()
     }
 
-    private handleEntryPress = (entry: MetaTypeShape) => {
+    private handleEntryPress = (entry: SpacePickerEntry) => {
         if (entry.isChecked) {
-            return this.processEvent('removeEntry', { name: entry.name })
+            return this.processEvent('removeEntry', { listId: entry.id })
         } else {
-            return this.processEvent('createEntry', { name: entry.name })
+            return this.processEvent('createEntry', { listId: entry.id })
         }
     }
 
@@ -78,23 +76,6 @@ export default class PageEditorScreen extends StatefulUIElement<
         )
     }
 
-    private renderMetaPicker(type: MetaType) {
-        const initEntries =
-            type === 'tags' ? this.state.page.tags : this.state.page.lists
-
-        return (
-            <>
-                <MetaPicker
-                    {...this.props}
-                    initSelectedEntries={initEntries}
-                    type={type}
-                    url={this.state.page.url}
-                    onEntryPress={this.handleEntryPress}
-                />
-            </>
-        )
-    }
-
     private renderEditor() {
         if (this.state.loadState !== 'done') {
             return (
@@ -104,17 +85,20 @@ export default class PageEditorScreen extends StatefulUIElement<
             )
         }
 
-        switch (this.state.mode) {
-            case 'notes':
-                return this.renderNotes()
-            case 'tags':
-            case 'collections':
-            default:
-                return this.renderMetaPicker(this.state.mode)
+        if (this.state.mode === 'notes') {
+            return this.renderNotes()
         }
+
+        return (
+            <MetaPicker
+                {...this.props}
+                onEntryPress={this.handleEntryPress}
+                initSelectedEntries={this.state.page.listIds}
+            />
+        )
     }
 
-    private TitleText() {
+    private titleText() {
         if (this.state.loadState !== 'done') {
             return ' '
         }
@@ -122,34 +106,9 @@ export default class PageEditorScreen extends StatefulUIElement<
         switch (this.state.mode) {
             case 'notes':
                 return 'Annotations'
-            case 'tags':
-                return 'Add Tags'
             case 'collections':
+            default:
                 return 'Add to Spaces'
-            default:
-                return this.renderMetaPicker(this.state.mode)
-        }
-    }
-
-    private iconRightSide(mode) {
-        switch (mode) {
-            case 'notes':
-                return icons.Plus
-            // case 'reader':
-            //     return icons.Globe
-            default:
-                return null
-        }
-    }
-
-    private iconActionRightSide(mode) {
-        switch (mode) {
-            case 'notes':
-                return this.initHandleAddNotePress()
-            // case 'reader':
-            //     return this.initHandleAddNotePress()
-            default:
-                return null
         }
     }
 
@@ -158,9 +117,10 @@ export default class PageEditorScreen extends StatefulUIElement<
             <MainLayout
                 {...this.state.page}
                 onLeftPress={() => this.processEvent('goBack', null)}
-                onRightPress={this.iconActionRightSide(this.state.mode)}
-                titleText={this.TitleText().toString()}
-                rightIcon={this.iconRightSide(this.state.mode)}
+                onRightPress={this.initHandleAddNotePress()}
+                titleText={this.titleText().toString()}
+                rightIcon={this.state.mode === 'notes' && icons.Plus}
+                onBackPress={() => this.props.navigation.goBack()}
             >
                 {this.renderEditor()}
             </MainLayout>

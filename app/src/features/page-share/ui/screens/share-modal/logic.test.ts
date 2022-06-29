@@ -8,7 +8,7 @@ import type { Storage } from 'src/storage/types'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 
 import * as DATA from './logic.test.data'
-import type { List } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/types'
+import type { List } from 'src/features/meta-picker/types'
 import {
     SPECIAL_LIST_NAMES,
     SPECIAL_LIST_IDS,
@@ -37,14 +37,14 @@ describe('share modal UI logic tests', () => {
             route: options.route as any,
             services: {
                 ...options.services,
-                shareExt: ({
+                shareExt: {
                     getSharedText: options.getSharedText
                         ? options.getSharedText
                         : () => 'test page',
                     getSharedUrl: options.getSharedUrl
                         ? options.getSharedUrl
                         : () => 'http://test.com',
-                } as any) as any,
+                } as any,
                 pageFetcher,
                 errorTracker: {
                     track: (err: Error) => {
@@ -60,7 +60,7 @@ describe('share modal UI logic tests', () => {
                         return { totalChanges: 0 }
                     },
                     ____wipeDBForSync: async () => undefined,
-                },
+                } as any,
             },
         })
         const initialState = logic.getInitialState()
@@ -81,8 +81,7 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl: '',
-                    tagsToAdd: [],
-                    collectionsToAdd: [],
+                    spacesToAdd: [],
                     isUnsupportedApplication: true,
                     isStarred: false,
                 }),
@@ -103,8 +102,7 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl,
-                    tagsToAdd: [],
-                    collectionsToAdd: [],
+                    spacesToAdd: [],
                     isUnsupportedApplication: false,
                     isStarred: false,
                 }),
@@ -317,8 +315,7 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl,
-                    tagsToAdd: [],
-                    collectionsToAdd: [],
+                    spacesToAdd: [],
                     isUnsupportedApplication: false,
                     isStarred: true,
                 }),
@@ -351,8 +348,7 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl,
-                    collectionsToAdd: [],
-                    tagsToAdd: ['tagA', 'tagB'],
+                    spacesToAdd: [],
                     isUnsupportedApplication: false,
                     isStarred: false,
                 }),
@@ -386,8 +382,7 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl,
-                    collectionsToAdd: ['My list'],
-                    tagsToAdd: [],
+                    spacesToAdd: [expect.any(Number)],
                     isUnsupportedApplication: false,
                     isStarred: false,
                 }),
@@ -397,7 +392,7 @@ describe('share modal UI logic tests', () => {
         }
     })
 
-    it('should correctly track errors in case of load failure of any associated lists, tags, or bookmark data', async (context) => {
+    it('should correctly track errors in case of load failure of any associated lists or bookmark data', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
         await context.storage.modules.overview.createPage({
             url: pageUrl,
@@ -424,7 +419,7 @@ describe('share modal UI logic tests', () => {
         })
 
         expect(trackedErrors).toEqual([])
-        expect(element.state.collectionsState).toEqual('pristine')
+        expect(element.state.spacesState).toEqual('pristine')
 
         await element.init()
 
@@ -433,11 +428,10 @@ describe('share modal UI logic tests', () => {
             expect(element.state).toEqual(
                 expect.objectContaining({
                     pageUrl,
-                    collectionsToAdd: [],
-                    tagsToAdd: [],
+                    spacesToAdd: [],
                     isUnsupportedApplication: false,
                     isStarred: false,
-                    collectionsState: 'error',
+                    spacesState: 'error',
                 }),
             )
         } finally {
@@ -626,22 +620,18 @@ describe('share modal UI logic tests', () => {
         expect(newStateB.isModalShown).toBe(false)
     })
 
-    it('should be able to set meta view type', async (context) => {
+    it('should be able to show and hide space picker', async (context) => {
         const { element } = await setup(context)
 
-        expect(element.state.metaViewShown).toBeUndefined()
+        expect(element.state.isSpacePickerShown).toBe(false)
         expect(element.state.statusText).toEqual('')
 
-        await element.processEvent('setMetaViewType', { type: 'tags' })
-        expect(element.state.metaViewShown).toEqual('tags')
-        expect(element.state.statusText).toEqual('Tags')
-
-        await element.processEvent('setMetaViewType', { type: 'collections' })
-        expect(element.state.metaViewShown).toEqual('collections')
+        await element.processEvent('setSpacePickerShown', { isShown: true })
+        expect(element.state.isSpacePickerShown).toBe(true)
         expect(element.state.statusText).toEqual('Spaces')
 
-        await element.processEvent('setMetaViewType', { type: undefined })
-        expect(element.state.metaViewShown).toBeUndefined()
+        await element.processEvent('setSpacePickerShown', { isShown: false })
+        expect(element.state.isSpacePickerShown).toBe(false)
         expect(element.state.statusText).toEqual('')
     })
 
@@ -664,66 +654,43 @@ describe('share modal UI logic tests', () => {
         const { logic, initialState: state } = await setup(context)
         const testLists = ['a', 'b', 'c']
 
-        expect(state.collectionsToAdd.length).toBe(0)
+        expect(state.spacesToAdd.length).toBe(0)
         const nextStateA = logic.withMutation(
             state,
-            logic.setCollectionsToAdd({
+            logic.setSpacesToAdd({
                 event: { values: testLists },
                 previousState: state,
             }),
         )
 
-        expect(nextStateA.collectionsToAdd.length).toBe(testLists.length)
-        expect(nextStateA.collectionsToAdd).toEqual(testLists)
-    })
-
-    it('should be able to toggle tags to add/remove', async (context) => {
-        const { logic, initialState: state } = await setup(context)
-        const testTag = 'test tag'
-
-        expect(state.tagsToAdd.length).toBe(0)
-        const nextStateA = logic.withMutation(
-            state,
-            logic.toggleTag({ event: { name: testTag }, previousState: state }),
-        )
-
-        expect(nextStateA.tagsToAdd.length).toBe(1)
-        expect(nextStateA.tagsToAdd[0]).toEqual(testTag)
-
-        const nextStateB = logic.withMutation(
-            nextStateA,
-            logic.toggleTag({
-                event: { name: testTag },
-                previousState: nextStateA,
-            }),
-        )
-        expect(nextStateB.tagsToAdd.length).toBe(0)
+        expect(nextStateA.spacesToAdd.length).toBe(testLists.length)
+        expect(nextStateA.spacesToAdd).toEqual(testLists)
     })
 
     it('should be able to toggle collections to add/remove', async (context) => {
         const { logic, initialState: state } = await setup(context)
         const testCollection = 'test coll'
 
-        expect(state.collectionsToAdd.length).toBe(0)
+        expect(state.spacesToAdd.length).toBe(0)
         const nextStateA = logic.withMutation(
             state,
-            logic.toggleCollection({
-                event: { name: testCollection },
+            logic.toggleSpace({
+                event: { id: testCollection },
                 previousState: state,
             }),
         )
 
-        expect(nextStateA.collectionsToAdd.length).toBe(1)
-        expect(nextStateA.collectionsToAdd[0]).toEqual(testCollection)
+        expect(nextStateA.spacesToAdd.length).toBe(1)
+        expect(nextStateA.spacesToAdd[0]).toEqual(testCollection)
 
         const nextStateB = logic.withMutation(
             nextStateA,
-            logic.toggleCollection({
-                event: { name: testCollection },
+            logic.toggleSpace({
+                event: { id: testCollection },
                 previousState: nextStateA,
             }),
         )
-        expect(nextStateB.collectionsToAdd.length).toBe(0)
+        expect(nextStateB.spacesToAdd.length).toBe(0)
     })
 
     it('should be able to store a page', async (context) => {

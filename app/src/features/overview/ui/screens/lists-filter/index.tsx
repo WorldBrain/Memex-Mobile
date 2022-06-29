@@ -1,42 +1,33 @@
 import React from 'react'
-import { TouchableOpacity, Image } from 'react-native'
 
 import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import Navigation from '../../components/navigation'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
-import { MetaTypeShape } from 'src/features/meta-picker/types'
-import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
-import styles from './styles'
+import { SpacePickerEntry } from 'src/features/meta-picker/types'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
+import {
+    ALL_SAVED_FILTER_ID,
+    ALL_SAVED_FILTER_NAME,
+} from '../dashboard/constants'
 
 export default class ListsFilter extends StatefulUIElement<
     Props,
     State,
     Event
 > {
-    static MAGIC_VISITS_FILTER = 'All Saved'
-    static MAGIC_BMS_FILTER = 'All Bookmarks'
-
-    private selectedEntryName?: string
+    private selectedEntryId: number
 
     constructor(props: Props) {
         super(props, new Logic(props))
 
-        this.selectedEntryName = this.props.route.params.selectedList
+        this.selectedEntryId = this.props.route.params.selectedListId
     }
 
-    private get magicFilters(): string[] {
-        return [ListsFilter.MAGIC_VISITS_FILTER]
-    }
-
-    private handleEntryPress = async (item: MetaTypeShape) => {
+    private handleEntryPress = async (item: SpacePickerEntry) => {
         this.props.navigation.navigate('Dashboard', {
-            selectedList: item.isChecked
-                ? SPECIAL_LIST_NAMES.MOBILE
-                : item.name,
+            selectedListId: item.isChecked ? ALL_SAVED_FILTER_ID : item.id,
         })
     }
 
@@ -53,16 +44,17 @@ export default class ListsFilter extends StatefulUIElement<
                 <MetaPickerContainer>
                     <MetaPicker
                         {...this.props}
-                        extraEntries={this.magicFilters}
+                        filterMode
+                        extraEntries={[
+                            {
+                                name: ALL_SAVED_FILTER_NAME,
+                                id: ALL_SAVED_FILTER_ID,
+                                isChecked: false,
+                            },
+                        ]}
                         onEntryPress={this.handleEntryPress}
                         suggestInputPlaceholder="Search Spaces"
-                        singleSelect
-                        type="collections"
-                        initSelectedEntry={
-                            this.selectedEntryName === SPECIAL_LIST_NAMES.MOBILE
-                                ? undefined
-                                : this.selectedEntryName
-                        }
+                        initSelectedEntries={[this.selectedEntryId]}
                     />
                 </MetaPickerContainer>
             </Container>

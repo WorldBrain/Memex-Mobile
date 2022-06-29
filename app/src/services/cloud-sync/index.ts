@@ -110,20 +110,13 @@ export class CloudSyncService implements CloudSyncAPI {
             for await (let { batch, lastSeen } of backend.streamUpdates({
                 skipUserChangeListening: true,
             })) {
-                try {
-                    maybeInterruptStream()
-                    batch = batch.filter((update) =>
-                        CLOUD_SYNCED_COLLECTIONS.includes(update.collection),
-                    )
-                    await storage.integrateUpdates(batch)
-                    await setLastUpdateProcessedTime(lastSeen)
-                    maybeInterruptStream()
-                } catch (err) {
-                    if (err instanceof SyncStreamInterruptError) {
-                        throw err
-                    }
-                    errorTrackingService.track(err)
-                }
+                maybeInterruptStream()
+                batch = batch.filter((update) =>
+                    CLOUD_SYNCED_COLLECTIONS.includes(update.collection),
+                )
+                await storage.integrateUpdates(batch)
+                await setLastUpdateProcessedTime(lastSeen)
+                maybeInterruptStream()
             }
         } catch (err) {
             if (err instanceof SyncStreamInterruptError) {

@@ -1,11 +1,12 @@
 import { Alert } from 'react-native'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
-import { VALID_TAG_PATTERN } from '@worldbrain/memex-common/lib/storage/constants'
 
-import { storageKeys } from '../../../../../../app.json'
-import { UIPageWithNotes as Page, UINote } from 'src/features/overview/types'
-import { EditorMode } from 'src/features/page-editor/types'
-import {
+import type {
+    UIPageWithNotes as _Page,
+    UINote,
+} from 'src/features/overview/types'
+import type { EditorMode } from 'src/features/page-editor/types'
+import type {
     MainNavProps,
     UIStorageModules,
     UITaskState,
@@ -13,9 +14,11 @@ import {
 } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
-import { updateSuggestionsCache } from 'src/features/page-editor/utils'
-import { INIT_SUGGESTIONS_LIMIT } from 'src/features/meta-picker/ui/screens/meta-picker/constants'
-import { MainNavigatorParamList } from 'src/ui/navigation/types'
+import type { MainNavigatorParamList } from 'src/ui/navigation/types'
+
+interface Page extends _Page {
+    listNames: string[]
+}
 
 export interface State {
     loadState: UITaskState
@@ -25,8 +28,8 @@ export interface State {
 
 export type Event = UIEvent<{
     toggleNotePress: { url: string }
-    removeEntry: { name: string }
-    createEntry: { name: string }
+    removeEntry: { listId: number }
+    createEntry: { listId: number }
     confirmNoteDelete: { url: string }
     saveNote: { text: string }
     focusFromNavigation: MainNavigatorParamList['PageEditor']
@@ -41,14 +44,12 @@ export interface Props extends MainNavProps<'PageEditor'> {
 export default class Logic extends UILogic<State, Event> {
     constructor(private props: Props) {
         super()
-
-        const { params } = props.route
     }
 
     getInitialState(): State {
         return {
             loadState: 'pristine',
-            mode: 'tags',
+            mode: 'collections',
             page: {} as any,
         }
     }
@@ -63,10 +64,9 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'focusFromNavigation'>) {
         await loadInitial<State>(this, async () => {
             const page = await this.loadPageData(params.pageUrl)
-
             this.emitMutation({
                 page: { $set: page },
-                mode: { $set: params.mode ?? 'tags' },
+                mode: { $set: params.mode ?? 'collections' },
             })
         })
     }
@@ -80,27 +80,15 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const notes = await pageEditor.findNotes({ url })
-        const tags = await metaPicker.findTagsByPage({ url })
         const lists = await metaPicker.findListsByPage({ url })
-
-        const noteTags = new Map<string, string[]>()
-
-        for (const note of notes) {
-            const tags = await metaPicker.findTagsByAnnotation({
-                url: note.url,
-            })
-            noteTags.set(
-                note.url,
-                tags.map((t) => t.name),
-            )
-        }
 
         return {
             ...storedPage,
             titleText: storedPage.fullTitle,
             date: 'a minute ago',
-            tags: tags.map((t) => t.name),
-            lists: lists.map((l) => l.name),
+            tags: [],
+            listIds: lists.map((l) => l.id),
+            listNames: lists.map((l) => l.name),
             pageUrl: storedPage.url,
             // TODO: unify this map fn with the identical one in DashboardLogic
             notes: notes.map<UINote>((note) => ({
@@ -111,12 +99,12 @@ export default class Logic extends UILogic<State, Event> {
                 commentText: note.comment || undefined,
                 noteText: note.body,
                 isNotePressed: false,
-                tags: noteTags.get(note.url)!,
+                tags: [],
                 isEdited:
                     note.lastEdited?.getTime() !== note.createdWhen!.getTime(),
                 date: timeFromNow(note.lastEdited ?? note.createdWhen!),
             })),
-        } as Page
+        }
     }
 
     toggleNotePress(
@@ -134,8 +122,8 @@ export default class Logic extends UILogic<State, Event> {
                         ...state.notes.slice(0, noteIndex),
                         {
                             ...state.notes[noteIndex],
-                            isNotePressed: !state.notes[noteIndex]
-                                .isNotePressed,
+                            isNotePressed:
+                                !state.notes[noteIndex].isNotePressed,
                         },
                         ...state.notes.slice(noteIndex + 1),
                     ],
@@ -145,94 +133,44 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async removeEntry({
-        event: { name },
+        event: { listId },
         previousState,
     }: IncomingUIEvent<State, Event, 'removeEntry'>) {
         const { metaPicker } = this.props.storage.modules
         const url = previousState.page.url
 
-        if (previousState.mode === 'tags') {
-            this.emitMutation({
-                page: (state) => {
-                    const i = state.tags.indexOf(name)
-
-                    const tags = [
-                        ...state.tags.slice(0, i),
-                        ...state.tags.slice(i + 1),
-                    ]
-
-                    return { ...state, tags }
-                },
-            })
-            await metaPicker.deleteTag({ url, name })
-        } else {
-            this.emitMutation({
-                page: (state) => {
-                    const i = state.lists.indexOf(name)
-
-                    const lists = [
-                        ...state.lists.slice(0, i),
-                        ...state.lists.slice(i + 1),
-                    ]
-
-                    return { ...state, lists }
-                },
-            })
-            await metaPicker.deletePageEntryByName({ url, name })
-        }
-    }
-
-    private async createTagEntry(url: string, name: string) {
-        if (!VALID_TAG_PATTERN.test(name)) {
-            throw new Error(`Attempted to create a badly shaped tag: ${name}`)
-        }
-
         this.emitMutation({
-            page: (state) => ({
-                ...state,
-                tags: [name, ...state.tags],
-            }),
+            page: (state) => {
+                const i = state.listIds.indexOf(listId)
+                return {
+                    ...state,
+                    listIds: [
+                        ...state.listIds.slice(0, i),
+                        ...state.listIds.slice(i + 1),
+                    ],
+                }
+            },
         })
-
-        await this.props.storage.modules.metaPicker.createTag({ url, name })
-        await this._updateTagSuggestionsCache({ added: name })
+        await metaPicker.deletePageEntryFromList({ url, listId })
     }
 
-    private async createListEntry(url: string, name: string) {
+    async createEntry({
+        event: { listId },
+        previousState,
+    }: IncomingUIEvent<State, Event, 'createEntry'>) {
         const { metaPicker } = this.props.storage.modules
 
         this.emitMutation({
             page: (state) => ({
                 ...state,
-                lists: [name, ...state.lists],
+                listIds: [listId, ...state.listIds],
             }),
         })
-        const lists = await metaPicker.findListsByNames({ names: [name] })
 
-        let listId
-        if (!lists.length) {
-            const { object } = await metaPicker.createList({ name })
-            listId = object.id
-        } else {
-            listId = lists[0].id
-        }
-
-        await metaPicker.createPageListEntry({ fullPageUrl: url, listId })
-        await this._updateListSuggestionsCache({ added: name })
-    }
-
-    async createEntry({
-        event: { name },
-        previousState,
-    }: IncomingUIEvent<State, Event, 'createEntry'>) {
-        const { page } = previousState
-
-        switch (previousState.mode) {
-            case 'tags':
-                return this.createTagEntry(page.url, name)
-            default:
-                return this.createListEntry(page.url, name)
-        }
+        await metaPicker.createPageListEntry({
+            fullPageUrl: previousState.page.url,
+            listId,
+        })
     }
 
     async confirmNoteDelete({
@@ -284,6 +222,7 @@ export default class Logic extends UILogic<State, Event> {
                         commentText: incoming.event.text,
                         domain: page.domain,
                         fullUrl: page.fullUrl,
+                        tags: [],
                     },
                 ],
             }),
@@ -293,47 +232,5 @@ export default class Logic extends UILogic<State, Event> {
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
         this.props.route.params.updatePage(previousState.page)
         this.props.navigation.goBack()
-    }
-
-    private _updateListSuggestionsCache(args: {
-        added?: string
-        removed?: string
-        updated?: [string, string]
-    }) {
-        const { syncStorage } = this.props.services
-
-        return updateSuggestionsCache({
-            ...args,
-            suggestionLimit: INIT_SUGGESTIONS_LIMIT,
-            setCache: async (suggestions) =>
-                syncStorage.set(storageKeys.listSuggestionsCache, suggestions),
-            getCache: async () => {
-                const suggestions = await syncStorage.get<string[]>(
-                    storageKeys.listSuggestionsCache,
-                )
-                return suggestions ?? []
-            },
-        })
-    }
-
-    private _updateTagSuggestionsCache(args: {
-        added?: string
-        removed?: string
-        updated?: [string, string]
-    }) {
-        const { syncStorage } = this.props.services
-
-        return updateSuggestionsCache({
-            ...args,
-            suggestionLimit: INIT_SUGGESTIONS_LIMIT,
-            setCache: async (suggestions) =>
-                syncStorage.set(storageKeys.tagSuggestionsCache, suggestions),
-            getCache: async () => {
-                const suggestions = await syncStorage.get<string[]>(
-                    storageKeys.tagSuggestionsCache,
-                )
-                return suggestions ?? []
-            },
-        })
     }
 }

@@ -1,5 +1,6 @@
 import expect from 'expect'
 
+import { storageKeys } from '../../../../app.json'
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
 import * as pageData from 'src/features/overview/storage/index.test.data'
@@ -35,14 +36,28 @@ describe('meta picker StorageModule', () => {
         }
     })
 
-    it('should be able to create new lists', async ({
+    it('should be able to create new lists, adding them to the suggestions cache', async ({
         storage: {
-            modules: { metaPicker },
+            modules: { metaPicker, localSettings },
         },
     }) => {
+        expect(
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual(null)
+
+        let listIds: number[] = []
         for (const name of data.lists) {
-            await metaPicker.createList({ name })
+            const { object } = await metaPicker.createList({ name })
+            listIds.push(object.id)
         }
+
+        expect(
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual([...listIds].reverse())
 
         const lists = await metaPicker.findListsByNames({ names: data.lists })
         expect(lists.length).toBe(data.lists.length)
@@ -51,17 +66,29 @@ describe('meta picker StorageModule', () => {
         )
     })
 
-    it('should be able to create page list entries', async ({
+    it('should be able to create page list entries, adding the lists to the suggestions cache', async ({
         storage: {
-            modules: { metaPicker, overview },
+            modules: { metaPicker, overview, localSettings },
         },
     }) => {
         const listIds: number[] = []
+
+        expect(
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual(null)
 
         for (const name of data.lists) {
             const { object } = await metaPicker.createList({ name })
             listIds.push(object.id)
         }
+
+        expect(
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual([...listIds].reverse())
 
         expect(listIds.length).toBe(data.lists.length)
 
@@ -69,13 +96,19 @@ describe('meta picker StorageModule', () => {
         for (const page of pageData.pages) {
             await overview.createPage(page)
 
-            for (const listId of listIds) {
+            for (const listId of [...listIds].reverse()) {
                 await metaPicker.createPageListEntry({
                     fullPageUrl: page.fullUrl,
                     listId,
                 })
             }
         }
+
+        expect(
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual(listIds)
 
         for (const listId of listIds) {
             const entries = await metaPicker.findPageListEntriesByList({
@@ -96,7 +129,7 @@ describe('meta picker StorageModule', () => {
 
     it('should be able to delete lists + associated entries', async ({
         storage: {
-            modules: { metaPicker, overview },
+            modules: { metaPicker, overview, localSettings },
         },
     }) => {
         const listIds: number[] = []
@@ -135,6 +168,28 @@ describe('meta picker StorageModule', () => {
                 }),
             ).toEqual([])
         }
+
+        expect(await metaPicker.findListsByIds({ ids: listIds })).toEqual(
+            listIds.map((id, i) =>
+                expect.objectContaining({ id, name: data.lists[i] }),
+            ),
+        )
+        expect(
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual([...listIds].reverse())
+
+        for (const listId of listIds) {
+            await metaPicker.deleteList({ listId })
+        }
+
+        expect(await metaPicker.findListsByIds({ ids: listIds })).toEqual([])
+        expect(
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual([])
     })
 
     it('should be able to delete page list entries', async ({
@@ -323,19 +378,68 @@ describe('meta picker StorageModule', () => {
             listId: listIds[3],
         })
 
-        const listSuggestions = await metaPicker.findListSuggestions({
-            url: pageData.pages[0].url,
+        const listSuggestions = await metaPicker.findListSuggestions({})
+        expect(listSuggestions.length).toBe(4)
+        expect(listSuggestions.map((s) => s.name)).toEqual(
+            expect.arrayContaining(data.lists),
+        )
+    })
+
+    it('should be able to get list suggestions, setting cache if empty', async ({
+        storage: {
+            modules: { metaPicker, overview, localSettings },
+        },
+    }) => {
+        await overview.createPage(pageData.pages[0])
+        await overview.createPage(pageData.pages[1])
+
+        const listIds: number[] = []
+
+        for (const name of data.lists) {
+            const { object } = await metaPicker.createList({ name })
+            listIds.push(object.id)
+        }
+
+        expect(listIds.length).toBe(data.lists.length)
+
+        await metaPicker.createPageListEntry({
+            fullPageUrl: pageData.pages[0].fullUrl,
+            listId: listIds[0],
         })
+        await metaPicker.createPageListEntry({
+            fullPageUrl: pageData.pages[0].fullUrl,
+            listId: listIds[1],
+        })
+        await metaPicker.createPageListEntry({
+            fullPageUrl: pageData.pages[1].fullUrl,
+            listId: listIds[2],
+        })
+        await metaPicker.createPageListEntry({
+            fullPageUrl: pageData.pages[1].fullUrl,
+            listId: listIds[3],
+        })
+
+        await localSettings.clearSetting({
+            key: storageKeys.spaceSuggestionsCache,
+        })
+
+        expect(
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual(null)
+
+        const listSuggestions = await metaPicker.findListSuggestions({})
+
         expect(listSuggestions.length).toBe(4)
         expect(listSuggestions.map((s) => s.name)).toEqual(
             expect.arrayContaining(data.lists),
         )
         expect(
-            listSuggestions.filter((s) => s.isChecked).map((s) => s.name),
-        ).toEqual(expect.arrayContaining([data.lists[0], data.lists[1]]))
-        expect(
-            listSuggestions.filter((s) => !s.isChecked).map((s) => s.name),
-        ).toEqual(expect.arrayContaining([data.lists[2], data.lists[3]]))
+            await localSettings.getSetting({
+                key: storageKeys.spaceSuggestionsCache,
+            }),
+        ).toEqual(listSuggestions.map((s) => s.id))
     })
 
     it('should be able to set a page to only given tags (delete existing, add missing)', async ({
@@ -411,7 +515,7 @@ describe('meta picker StorageModule', () => {
         )
 
         await metaPicker.setPageLists({
-            lists: [data.lists[1], data.lists[2]],
+            listIds: [listIds[1], listIds[2]],
             fullPageUrl: pageData.pages[0].fullUrl,
         })
 

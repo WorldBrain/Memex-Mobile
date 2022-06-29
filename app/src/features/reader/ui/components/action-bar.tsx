@@ -1,17 +1,14 @@
 import React from 'react'
-import { View } from 'react-native'
 
 import * as actionBtns from 'src/features/overview/ui/components/action-btns'
 import { TouchEventHandler } from 'src/ui/types'
-import styles from './action-bar.styles'
 import { State } from '../screens/reader/logic'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
-import LoadingIndicator from 'src/ui/components/loading-balls'
 
 export interface Props
-    extends Pick<State, 'isBookmarked' | 'isTagged' | 'isListed' | 'hasNotes'> {
+    extends Pick<State, 'isBookmarked' | 'isListed' | 'hasNotes' | 'rotation'> {
     className?: string
     selectedText?: string
     isErrorView?: boolean
@@ -20,9 +17,8 @@ export interface Props
     onHighlightBtnPress: TouchEventHandler
     onAnnotateBtnPress: TouchEventHandler
     onCommentBtnPress: TouchEventHandler
-    onTagBtnPress: TouchEventHandler
     onListBtnPress: TouchEventHandler
-    spaces: []
+    spaceCount: number
 }
 
 class ActionBar extends React.PureComponent<Props> {
@@ -30,10 +26,6 @@ class ActionBar extends React.PureComponent<Props> {
         return this.props.isBookmarked
             ? actionBtns.StarBtnFull
             : actionBtns.StarBtn
-    }
-
-    private get TagBtn(): actionBtns.ActionBtnComponent {
-        return this.props.isTagged ? actionBtns.TagBtnFull : actionBtns.TagBtn
     }
 
     private get ListBtn(): actionBtns.ActionBtnComponent {
@@ -115,50 +107,23 @@ class ActionBar extends React.PureComponent<Props> {
 
     render() {
         return (
-            <Container>
-                <LeftBtns>
-                    <IconContainer onPress={this.props.onTagBtnPress}>
-                        {this.props.isTagged ? (
-                            <Icon
-                                icon={icons.TagFull}
-                                strokeWidth="3"
-                                fill
-                                heightAndWidth="24px"
-                            />
-                        ) : (
-                            <Icon
-                                icon={icons.TagFull}
-                                strokeWidth="3"
-                                heightAndWidth="24px"
-                            />
-                        )}
-                    </IconContainer>
-                </LeftBtns>
+            <Container rotation={this.props.rotation}>
+                <LeftBtns></LeftBtns>
                 <CenterButton>
                     <AddSpacesContainer onPress={this.props.onListBtnPress}>
-                        {!this.props.spaces.length ? (
-                            <LoadingIndicatorBox>
-                                <LoadingIndicator size={15} />
-                            </LoadingIndicatorBox>
+                        {this.props.spaceCount === 0 ? (
+                            <Icon
+                                icon={icons.Plus}
+                                heightAndWidth="14px"
+                                strokeWidth="2px"
+                                color="purple"
+                            />
                         ) : (
-                            <>
-                                {this.props.spaces.length === 0 ? (
-                                    <>
-                                        <Icon
-                                            icon={icons.Plus}
-                                            heightAndWidth={'14px'}
-                                            color={'purple'}
-                                            strokeWidth={'2px'}
-                                        />
-                                    </>
-                                ) : (
-                                    <SpacesCounterPill>
-                                        <SpacesCounterText>
-                                            {this.props.spaces.length}
-                                        </SpacesCounterText>
-                                    </SpacesCounterPill>
-                                )}
-                            </>
+                            <SpacesCounterPill>
+                                <SpacesCounterText>
+                                    {this.props.spaceCount}
+                                </SpacesCounterText>
+                            </SpacesCounterPill>
                         )}
                         <AddSpacesText>Add to Spaces</AddSpacesText>
                     </AddSpacesContainer>
@@ -171,13 +136,17 @@ class ActionBar extends React.PureComponent<Props> {
 
 export default ActionBar
 
-const Container = styled.View`
+const Container = styled.View<Pick<Props, 'rotation'>>`
+    position: absolute;
+    bottom: ${(props) => (props.rotation === 'landscape' ? '-105%' : '-100%')};
+    width: 100%;
     height: 60px;
     padding: 0px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
+    background-color: #fff;
     border-style: solid;
     border-top-width: 1px;
     border-color: ${(props) => props.theme.colors.lightgrey};

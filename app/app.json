@@ -14,6 +14,7 @@
         "showOnboarding": "@MemexApp_show-onboarding",
         "lastSeenUpdateTime": "@MemexApp_last-seen-update-time",
         "listSuggestionsCache": "@MemexApp_list-suggestions-cache",
+        "spaceSuggestionsCache": "@MemexApp_space-suggestions-cache",
         "tagSuggestionsCache": "@MemexApp_tag-suggestions-cache",
         "skipAutoSync": "@MemexApp_skip-auto-sync",
         "cloudSettingsMigrationRun": "@MemexApp_run-cloud-settings-migration"

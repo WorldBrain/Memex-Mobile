@@ -30,44 +30,44 @@ export const createMainNavigator: NavigationContainerFactory = ({
     dependencies: deps,
 }) => {
     const freeRoutes = [
-        <MainStack.Screen name="Onboarding">
+        <MainStack.Screen name="Onboarding" key="Onboarding">
             {(props) => <Onboarding {...props} {...deps} />}
         </MainStack.Screen>,
     ]
 
     const publicRoutes = [
         ...freeRoutes,
-        <MainStack.Screen name="Login">
+        <MainStack.Screen name="Login" key="Login">
             {(props) => <Login {...props} {...deps} />}
         </MainStack.Screen>,
     ]
 
     const protectedRoutes = [
-        <MainStack.Screen name="Dashboard">
+        <MainStack.Screen name="Dashboard" key="Dashboard">
             {(props) => <Dashboard {...props} {...deps} appState={AppState} />}
         </MainStack.Screen>,
-        <MainStack.Screen name="PageEditor">
+        <MainStack.Screen name="PageEditor" key="PageEditor">
             {(props) => <PageEditor {...props} {...deps} />}
         </MainStack.Screen>,
-        <MainStack.Screen name="NoteEditor">
+        <MainStack.Screen name="NoteEditor" key="NoteEditor">
             {(props) => <NoteEditor {...props} {...deps} />}
         </MainStack.Screen>,
-        <MainStack.Screen name="ListsFilter">
+        <MainStack.Screen name="ListsFilter" key="ListsFilter">
             {(props) => <ListsFilter {...props} {...deps} />}
         </MainStack.Screen>,
-        <MainStack.Screen name="DebugConsole">
+        <MainStack.Screen name="DebugConsole" key="DebugConsole">
             {(props) => <DebugConsole {...props} {...deps} />}
         </MainStack.Screen>,
-        <MainStack.Screen name="SettingsMenu">
+        <MainStack.Screen name="SettingsMenu" key="SettingsMenu">
             {(props) => <SettingsMenu {...props} {...deps} />}
         </MainStack.Screen>,
-        <MainStack.Screen name="CloudSync">
+        <MainStack.Screen name="CloudSync" key="CloudSync">
             {(props) => <CloudSync {...props} {...deps} appState={AppState} />}
         </MainStack.Screen>,
-        <MainStack.Screen name="Pairing">
+        <MainStack.Screen name="Pairing" key="Pairing">
             {(props) => <Pairing {...props} {...deps} />}
         </MainStack.Screen>,
-        <MainStack.Screen name="Reader">
+        <MainStack.Screen name="Reader" key="Reader">
             {(props) => (
                 <Reader
                     {...props}

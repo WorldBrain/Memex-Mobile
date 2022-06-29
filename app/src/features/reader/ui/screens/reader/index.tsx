@@ -13,7 +13,6 @@ import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
 import { Message as WebViewMessage, Anchor } from 'src/content-script/types'
 import Navigation from 'src/features/overview/ui/components/navigation'
 import * as icons from 'src/ui/components/icons/icons-list'
-import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 
 export default class Reader extends StatefulUIElement<Props, State, Event> {
@@ -177,7 +176,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 />
                 {this.renderWebView()}
                 <ActionBar
-                    className={styles.actionBar}
                     isErrorView={this.state.error != null}
                     {...this.state}
                     onBackBtnPress={() => this.processEvent('goBack', null)}
@@ -198,9 +196,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     onCommentBtnPress={() =>
                         this.processEvent('navToPageEditor', { mode: 'notes' })
                     }
-                    onTagBtnPress={() =>
-                        this.processEvent('navToPageEditor', { mode: 'tags' })
-                    }
+                    spaceCount={this.state.spaces.length}
                 />
             </Container>
         )
@@ -209,5 +205,5 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 
 const Container = styled.SafeAreaView`
     height: 50%;
-    flex: 1;
+    display: flex;
 `

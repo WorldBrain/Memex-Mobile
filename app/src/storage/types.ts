@@ -4,7 +4,7 @@ import type UserStorage from '@worldbrain/memex-common/lib/user-management/stora
 import type PersonalCloudServerStorage from '@worldbrain/memex-common/lib/personal-cloud/storage'
 import type { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import type { OverviewStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/overview/storage'
-import type { MetaPickerStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/meta-picker/storage'
+import type { MetaPickerStorage } from '../features/meta-picker/storage'
 import type { PageEditorStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/page-editor/storage'
 import type {
     MemexClientSyncLogStorage,

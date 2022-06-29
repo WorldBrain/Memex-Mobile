@@ -1,36 +1,33 @@
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
-import { MetaType, MetaTypeShape } from 'src/features/meta-picker/types'
-import {
+import type { SpacePickerEntry } from 'src/features/meta-picker/types'
+import type {
     UITaskState,
     UIServices,
     UIStorageModules,
     ShareNavProps,
 } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import { SPECIAL_LIST_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
-import { getMetaTypeName } from 'src/features/meta-picker/utils'
+import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 
 export interface State {
     loadState: UITaskState
-    tagsState: UITaskState
+    spacesState: UITaskState
     bookmarkState: UITaskState
     syncRetryState: UITaskState
-    collectionsState: UITaskState
 
     pageUrl: string
     pageTitle: string
     statusText: string
     noteText: string
-    tagsToAdd: string[]
-    collectionsToAdd: string[]
+    spacesToAdd: number[]
     isStarred: boolean
     isModalShown: boolean
     errorMessage?: string
     showSavingPage: boolean
+    isSpacePickerShown: boolean
     isUnsupportedApplication: boolean
-    metaViewShown?: MetaType
 }
 
 export type Event = UIEvent<{
@@ -38,18 +35,17 @@ export type Event = UIEvent<{
     retrySync: null
 
     undoPageSave: null
-    metaPickerEntryPress: { entry: MetaTypeShape }
-    setMetaViewType: { type?: MetaType }
+    metaPickerEntryPress: { entry: SpacePickerEntry }
+    setSpacePickerShown: { isShown: boolean }
     setModalVisible: { shown: boolean }
     togglePageStar: null
     setNoteText: { value: string }
 
-    toggleTag: { name: string }
-    toggleCollection: { name: string }
+    toggleSpace: { id: number }
     setPageUrl: { url: string }
     setPageStar: { value: boolean }
     setStatusText: { value: string }
-    setCollectionsToAdd: { values: string[] }
+    setSpacesToAdd: { values: number[] }
     clearSyncError: null
 }>
 
@@ -70,10 +66,9 @@ export default class Logic extends UILogic<State, Event> {
     private existingPageVisitTime: number | null = null
     syncRunning: Promise<void> | null = null
     pageTitleFetchRunning: Promise<void> | null = null
-    initValues: Pick<State, 'isStarred' | 'tagsToAdd' | 'collectionsToAdd'> = {
+    initValues: Pick<State, 'isStarred' | 'spacesToAdd'> = {
         isStarred: false,
-        tagsToAdd: [],
-        collectionsToAdd: [],
+        spacesToAdd: [],
     }
 
     constructor(private props: Props) {
@@ -83,13 +78,13 @@ export default class Logic extends UILogic<State, Event> {
     getInitialState(): State {
         return {
             isUnsupportedApplication: false,
-            loadState: 'pristine',
             syncRetryState: 'pristine',
             bookmarkState: 'pristine',
-            tagsState: 'pristine',
-            collectionsState: 'pristine',
+            spacesState: 'pristine',
+            loadState: 'pristine',
             pageUrl: '',
             pageTitle: '',
+            isSpacePickerShown: false,
             showSavingPage: false,
             isModalShown: true,
             noteText: '',
@@ -200,11 +195,10 @@ export default class Logic extends UILogic<State, Event> {
             'bookmarkState',
             async () => {
                 try {
-                    const isStarred = await storage.modules.overview.isPageStarred(
-                        {
+                    const isStarred =
+                        await storage.modules.overview.isPageStarred({
                             url,
-                        },
-                    )
+                        })
 
                     this.emitMutation({ isStarred: { $set: isStarred } })
                     this.initValues.isStarred = isStarred
@@ -215,46 +209,24 @@ export default class Logic extends UILogic<State, Event> {
             },
         )
 
-        const tagsP = executeUITask<State, 'tagsState', void>(
+        const listsP = executeUITask<State, 'spacesState', void>(
             this,
-            'tagsState',
+            'spacesState',
             async () => {
                 try {
-                    const tags = await storage.modules.metaPicker.findTagsByPage(
-                        {
+                    const spaces =
+                        await storage.modules.metaPicker.findListsByPage({
                             url,
-                        },
-                    )
-                    const tagsToAdd = tags.map((tag) => tag.name)
-
-                    this.emitMutation({ tagsToAdd: { $set: tagsToAdd } })
-                    this.initValues.tagsToAdd = tagsToAdd
-                } catch (err) {
-                    services.errorTracker.track(err)
-                    throw err
-                }
-            },
-        )
-
-        const listsP = executeUITask<State, 'collectionsState', void>(
-            this,
-            'collectionsState',
-            async () => {
-                try {
-                    const collections = await storage.modules.metaPicker.findListsByPage(
-                        {
-                            url,
-                        },
-                    )
-                    const collectionsToAdd = collections.map((c) => c.name)
+                        })
+                    const spacesToAdd = spaces.map((c) => c.id)
 
                     this.emitMutation({
-                        collectionsToAdd: {
-                            $set: collectionsToAdd,
+                        spacesToAdd: {
+                            $set: spacesToAdd,
                         },
                     })
 
-                    this.initValues.collectionsToAdd = collectionsToAdd
+                    this.initValues.spacesToAdd = spacesToAdd
                 } catch (err) {
                     services.errorTracker.track(err)
                     throw err
@@ -262,7 +234,7 @@ export default class Logic extends UILogic<State, Event> {
             },
         )
 
-        await Promise.all([bookmarkP, tagsP, listsP])
+        await Promise.all([bookmarkP, listsP])
     }
 
     async retrySync() {
@@ -307,40 +279,24 @@ export default class Logic extends UILogic<State, Event> {
         return { isStarred: { $set: incoming.event.value } }
     }
 
-    setCollectionsToAdd(
-        incoming: IncomingUIEvent<State, Event, 'setCollectionsToAdd'>,
+    setSpacesToAdd(
+        incoming: IncomingUIEvent<State, Event, 'setSpacesToAdd'>,
     ): UIMutation<State> {
-        return { collectionsToAdd: { $set: incoming.event.values } }
+        return { spacesToAdd: { $set: incoming.event.values } }
     }
 
-    toggleTag(
-        incoming: IncomingUIEvent<State, Event, 'toggleTag'>,
+    toggleSpace(
+        incoming: IncomingUIEvent<State, Event, 'toggleSpace'>,
     ): UIMutation<State> {
         return {
-            tagsToAdd: (state) => {
-                const index = state.indexOf(incoming.event.name)
+            spacesToAdd: (state) => {
+                const index = state.indexOf(incoming.event.id)
 
                 if (index !== -1) {
                     return [...state.slice(0, index), ...state.slice(index + 1)]
                 }
 
-                return [...state, incoming.event.name]
-            },
-        }
-    }
-
-    toggleCollection(
-        incoming: IncomingUIEvent<State, Event, 'toggleCollection'>,
-    ): UIMutation<State> {
-        return {
-            collectionsToAdd: (state) => {
-                const index = state.indexOf(incoming.event.name)
-
-                if (index !== -1) {
-                    return [...state.slice(0, index), ...state.slice(index + 1)]
-                }
-
-                return [...state, incoming.event.name]
+                return [...state, incoming.event.id]
             },
         }
     }
@@ -397,33 +353,24 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ isModalShown: { $set: false } })
     }
 
-    setMetaViewType(
-        incoming: IncomingUIEvent<State, Event, 'setMetaViewType'>,
+    setSpacePickerShown(
+        incoming: IncomingUIEvent<State, Event, 'setSpacePickerShown'>,
     ) {
         this.emitMutation({
-            metaViewShown: { $set: incoming.event.type },
-            statusText: {
-                $set: incoming.event.type
-                    ? getMetaTypeName(incoming.event.type)
-                    : '',
-            },
+            isSpacePickerShown: { $set: incoming.event.isShown },
+            statusText: { $set: incoming.event.isShown ? 'Spaces' : '' },
         })
     }
 
     metaPickerEntryPress(
         incoming: IncomingUIEvent<State, Event, 'metaPickerEntryPress'>,
     ) {
-        const event = {
-            ...incoming,
-            event: { name: incoming.event.entry.name },
-        }
-
-        const mutation =
-            incoming.previousState.metaViewShown === 'tags'
-                ? this.toggleTag(event)
-                : this.toggleCollection(event)
-
-        this.emitMutation(mutation)
+        this.emitMutation(
+            this.toggleSpace({
+                ...incoming,
+                event: { id: incoming.event.entry.id },
+            }),
+        )
     }
 
     private async storePage(state: State, customTimestamp?: number) {
@@ -457,15 +404,11 @@ export default class Logic extends UILogic<State, Event> {
 
         await metaPicker.setPageLists({
             fullPageUrl: state.pageUrl,
-            lists: [
-                ...state.collectionsToAdd,
-                SPECIAL_LIST_NAMES.MOBILE,
-                SPECIAL_LIST_NAMES.INBOX,
+            listIds: [
+                ...state.spacesToAdd,
+                SPECIAL_LIST_IDS.MOBILE,
+                SPECIAL_LIST_IDS.INBOX,
             ],
-        })
-        await metaPicker.setPageTags({
-            url: state.pageUrl,
-            tags: state.tagsToAdd,
         })
 
         if (state.noteText?.trim().length > 0) {

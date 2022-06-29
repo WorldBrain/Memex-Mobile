@@ -5,6 +5,7 @@ import {
     UIEventHandler,
     UIMutation,
 } from 'ui-logic-core'
+import { Dimensions, ScaledSize } from 'react-native'
 
 import {
     UITaskState,
@@ -18,6 +19,7 @@ import { ContentScriptLoader } from 'src/features/reader/utils/load-content-scri
 import { Anchor, Highlight } from 'src/content-script/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import { UIPageWithNotes } from 'src/features/overview/types'
+import type { List } from 'src/features/meta-picker/types'
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
@@ -31,13 +33,13 @@ export interface State {
     title: string
     loadState: UITaskState
     selectedText?: string
-    isTagged: boolean
     isBookmarked: boolean
-    spaces: []
+    spaces: List[]
     isListed: boolean
     hasNotes: boolean
     htmlSource?: string
     contentScriptSource?: string
+    rotation: 'landscape' | 'portrait'
     error?: Error
     isErrorReported: boolean
     highlights: Highlight[]
@@ -89,13 +91,15 @@ export default class Logic extends UILogic<State, Event> {
             throw new Error("Navigation error: reader didn't receive URL")
         }
 
+        const screen = Dimensions.get('screen')
+
         return {
+            rotation: screen.width > screen.height ? 'landscape' : 'portrait',
             title: params.title,
             url: Logic.formUrl(params.url),
             loadState: 'pristine',
             isErrorReported: false,
             isBookmarked: false,
-            isTagged: false,
             isListed: false,
             hasNotes: false,
             highlights: [],
@@ -105,6 +109,7 @@ export default class Logic extends UILogic<State, Event> {
 
     async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
         await loadInitial<State>(this, async () => {
+            Dimensions.addEventListener('change', this.handleDimensionsChange)
             try {
                 await this.loadPageState(previousState.url)
                 await this.loadReadablePage(
@@ -117,16 +122,31 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
+    cleanup() {
+        Dimensions.removeEventListener('change', this.handleDimensionsChange)
+    }
+
+    private handleDimensionsChange = ({
+        screen,
+    }: {
+        window: ScaledSize
+        screen: ScaledSize
+    }) => {
+        this.emitMutation({
+            rotation: {
+                $set: screen.width > screen.height ? 'landscape' : 'portrait',
+            },
+        })
+    }
+
     private async storeReadableArticle(
         url: string,
         article: ReadabilityArticle,
         pageTitle: string,
         createdWhen = new Date(),
     ) {
-        const {
-            reader: readerStorage,
-            overview: overviewStorage,
-        } = this.props.storage.modules
+        const { reader: readerStorage, overview: overviewStorage } =
+            this.props.storage.modules
 
         // Update page title with what was found in readability parsing - most pages saved on Memex Go will lack titles
         if (Logic.formUrl(pageTitle) === url) {
@@ -186,14 +206,12 @@ export default class Logic extends UILogic<State, Event> {
 
         const isBookmarked = await overviewStorage.isPageStarred({ url })
         const lists = await metaPicker.findListsByPage({ url })
-        const tags = await metaPicker.findTagsByPage({ url, limit: 1 })
         const notes = await pageEditor.findNotes({ url })
 
         this.emitMutation({
             isBookmarked: { $set: isBookmarked },
             isListed: { $set: !!lists.length },
             hasNotes: { $set: !!notes.length },
-            isTagged: { $set: !!tags.length },
             highlights: {
                 $set: notes
                     .filter(
@@ -328,8 +346,7 @@ export default class Logic extends UILogic<State, Event> {
         // Allow incoming page to go back up to Dashboard so that can also react to changes
         this.props.route.params.updatePage(incomingPage)
         this.emitMutation({
-            isTagged: { $set: incomingPage.tags?.length > 0 },
-            isListed: { $set: incomingPage.lists?.length > 0 },
+            isListed: { $set: incomingPage.listIds?.length > 0 },
             hasNotes: { $set: incomingPage.notes?.length > 0 },
         })
     }
