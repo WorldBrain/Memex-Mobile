@@ -21,7 +21,7 @@ async function setup(
     context: TestDevice,
     opts?: {
         skipTestData?: boolean
-        props?: Pick<Props, 'onEntryPress'>
+        props?: Pick<Props, 'onEntryPress' | 'filterMode'>
     },
 ) {
     if (!opts?.skipTestData) {
@@ -30,7 +30,6 @@ async function setup(
 
     const logic = new Logic({
         storage: context.storage,
-        services: context.services,
         ...opts?.props,
     })
     const element = new FakeStatefulUIElement<State, Event>(logic)
@@ -161,12 +160,31 @@ describe('meta picker UI logic tests', () => {
         )
     })
 
+    it('show throw error on add new entry attempt when in filter mode', async (context) => {
+        const { element } = await setup(context, {
+            skipTestData: true,
+            props: { filterMode: true },
+        })
+        await element.init()
+
+        expect(normalizedStateToArray(element.state.entries)).toEqual([])
+
+        element.processMutation({
+            inputText: { $set: 'test space' },
+        })
+        expect(element.processEvent('addEntry', null)).rejects.toThrowError(
+            `Cannot add new entries in SpacePicker filter mode`,
+        )
+
+        expect(normalizedStateToArray(element.state.entries)).toEqual([])
+    })
+
     it('should be able to toggle checked entries', async (context) => {
-        let lastPressedEntryId: number | null = null
+        let lastPressedEntry: SpacePickerEntry | null = null
         const { element } = await setup(context, {
             props: {
                 onEntryPress: async (entry) => {
-                    lastPressedEntryId = entry.id
+                    lastPressedEntry = entry
                 },
             },
         })
@@ -177,19 +195,20 @@ describe('meta picker UI logic tests', () => {
             [...testEntries].reverse(),
         )
         expect(element.state.entries.byId[0].isChecked).toBe(false)
-        expect(lastPressedEntryId).toBe(null)
+        expect(lastPressedEntry).toEqual(null)
 
         await element.processEvent('toggleEntryChecked', {
             id: testEntries[0].id,
         })
         expect(element.state.entries.byId[0].isChecked).toBe(true)
-        expect(lastPressedEntryId).toBe(testEntries[0].id)
+        expect(lastPressedEntry).toEqual(testEntries[0])
 
         await element.processEvent('toggleEntryChecked', {
             id: testEntries[0].id,
         })
         expect(element.state.entries.byId[0].isChecked).toBe(false)
-        expect(lastPressedEntryId).toBe(testEntries[0].id)
+        // NOTE: the `isChecked` prop should reflect what it was set to when the entry was pressed
+        expect(lastPressedEntry).toEqual({ ...testEntries[0], isChecked: true })
 
         const newEntry = 'testA____'
         element.processMutation({ inputText: { $set: newEntry } })
@@ -201,9 +220,14 @@ describe('meta picker UI logic tests', () => {
             isChecked: true,
             name: newEntry,
         })
+        expect(lastPressedEntry).toEqual({
+            name: newEntry,
+            id: expect.any(Number),
+            isChecked: false,
+        })
 
         await element.processEvent('toggleEntryChecked', {
-            id: element.state.entries.allIds[0] as number,
+            id: element.state.entries.allIds[0],
         })
         expect(
             element.state.entries.byId[element.state.entries.allIds[0]],
@@ -212,7 +236,10 @@ describe('meta picker UI logic tests', () => {
             isChecked: false,
             name: newEntry,
         })
-        expect(lastPressedEntryId).toBe(element.state.entries.allIds[0])
+        expect(lastPressedEntry).toEqual({
+            ...element.state.entries.byId[element.state.entries.allIds[0]],
+            isChecked: true,
+        })
     })
 
     it('should be able to suggest entries', async (context) => {

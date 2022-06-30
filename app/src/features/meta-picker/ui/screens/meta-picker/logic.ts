@@ -149,7 +149,9 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     addEntry: EventHandler<'addEntry'> = async ({ event, previousState }) => {
-        const { metaPicker } = this.props.storage.modules
+        if (this.props.filterMode) {
+            throw new Error('Cannot add new entries in SpacePicker filter mode')
+        }
 
         const validationResult = validateSpaceName(
             previousState.inputText,
@@ -163,7 +165,8 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const name = previousState.inputText.trim()
-        const { object: newList } = await metaPicker.createList({ name })
+        const { object: newList } =
+            await this.props.storage.modules.metaPicker.createList({ name })
         const newEntry: SpacePickerEntry = {
             name,
             id: newList.id,
@@ -173,7 +176,7 @@ export default class Logic extends UILogic<State, Event> {
         this.defaultEntries.allIds.unshift(newEntry.id)
         this.defaultEntries.byId[newEntry.id] = { ...newEntry }
         this.resetEntries()
-        await this.props.onEntryPress?.(newEntry)
+        await this.props.onEntryPress?.({ ...newEntry, isChecked: false })
     }
 
     toggleEntryChecked: EventHandler<'toggleEntryChecked'> = async ({
