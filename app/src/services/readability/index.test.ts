@@ -1,7 +1,7 @@
 import { ReadabilityService } from '.'
 
-const testUrlA = 'https://getmemex.com'
-const testUrlB = 'https://getmemex.com/test/route'
+const testUrlA = 'https://getmemex.com/'
+const testUrlB = 'https://getmemex.com/test/route/'
 
 const createSimpleHtml = (args: {
     title: string
@@ -35,7 +35,7 @@ describe('readability service tests', () => {
             host: 'getmemex.com',
             scheme: 'https',
             prePath: `https://getmemex.com`,
-            pathBase: `https://getmemex.com`,
+            pathBase: testUrlA,
         })
 
         expect(service['deriveUrlDescriptor'](testUrlB)).toEqual({
@@ -43,7 +43,7 @@ describe('readability service tests', () => {
             host: 'getmemex.com',
             scheme: 'https',
             prePath: `https://getmemex.com`,
-            pathBase: `https://getmemex.com/test/`,
+            pathBase: testUrlB,
         })
     })
 })
