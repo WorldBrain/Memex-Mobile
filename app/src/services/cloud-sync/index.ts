@@ -2,7 +2,6 @@ import EventEmitter from 'events'
 import type StorageManager from '@worldbrain/storex'
 import { AsyncMutex } from '@worldbrain/memex-common/lib/utils/async-mutex'
 import { dangerousPleaseBeSureDeleteAndRecreateDatabase } from 'src/storage/utils'
-import { CLOUD_SYNCED_COLLECTIONS } from 'src/features/personal-cloud/storage/constants'
 import type { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import type { PersonalCloudBackend } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import type { CloudSyncAPI, SyncStats } from './types'
@@ -77,10 +76,7 @@ export class CloudSyncService implements CloudSyncAPI {
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
 
-        let { batch, lastSeen } = await backend.bulkDownloadUpdates()
-        batch = batch.filter((update) =>
-            CLOUD_SYNCED_COLLECTIONS.includes(update.collection),
-        )
+        const { batch, lastSeen } = await backend.bulkDownloadUpdates()
         const { updatesIntegrated } = await storage.integrateUpdates(batch)
         await setLastUpdateProcessedTime(lastSeen)
         return { totalChanges: updatesIntegrated }
@@ -107,13 +103,10 @@ export class CloudSyncService implements CloudSyncAPI {
                 }
             }
 
-            for await (let { batch, lastSeen } of backend.streamUpdates({
+            for await (const { batch, lastSeen } of backend.streamUpdates({
                 skipUserChangeListening: true,
             })) {
                 maybeInterruptStream()
-                batch = batch.filter((update) =>
-                    CLOUD_SYNCED_COLLECTIONS.includes(update.collection),
-                )
                 await storage.integrateUpdates(batch)
                 await setLastUpdateProcessedTime(lastSeen)
                 maybeInterruptStream()

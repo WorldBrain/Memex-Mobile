@@ -42,7 +42,7 @@ class NotesList extends React.PureComponent<Props> {
                     />
                     <SpacesArea>
                         {this.props.pageData?.listNames.map((entry) => (
-                            <SpacePill>
+                            <SpacePill key={entry}>
                                 <SpacePillText>{entry}</SpacePillText>
                             </SpacePill>
                         ))}

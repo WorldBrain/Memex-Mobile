@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react-native'
+import type Sentry from '@sentry/react-native'
 
 import { ErrorTracker, ErrorTrackerProps } from './types'
 

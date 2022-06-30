@@ -22,7 +22,10 @@ import {
     PersonalCloudActionType,
     UpdateIntegrationResult,
 } from './types'
-import { PERSONAL_CLOUD_ACTION_RETRY_INTERVAL } from './constants'
+import {
+    PERSONAL_CLOUD_ACTION_RETRY_INTERVAL,
+    CLOUD_SYNCED_COLLECTIONS,
+} from './constants'
 import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
 
 export interface Dependencies {
@@ -66,7 +69,7 @@ export class PersonalCloudStorage {
         const userId = await this.dependencies.getUserId()
         if (userId) {
             this.deviceId = await this.dependencies.getDeviceId()
-            if (!this.deviceId) {
+            if (this.deviceId == null) {
                 this.deviceId = await this.dependencies.createDeviceId(userId)
                 await this.dependencies.setDeviceId(this.deviceId!)
             }
@@ -90,6 +93,10 @@ export class PersonalCloudStorage {
 
         try {
             for (const update of updates) {
+                if (!CLOUD_SYNCED_COLLECTIONS.includes(update.collection)) {
+                    continue
+                }
+
                 if (update.type === PersonalCloudUpdateType.Overwrite) {
                     if (update.media) {
                         // We currently don't support media updates on mobile
