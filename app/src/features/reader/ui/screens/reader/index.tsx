@@ -20,13 +20,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         super(props, new Logic(props))
     }
 
-    private scrollTimeout: number = 0
     private webView!: WebView
-
-    componentWillUnmount() {
-        super.componentWillUnmount()
-        clearTimeout(this.scrollTimeout)
-    }
 
     private constructJsRemoteFnCall = (
         fnName: RemoteFnName,

@@ -40,6 +40,7 @@ import type { PersonalCloudUpdatePushBatch } from '@worldbrain/memex-common/lib/
 import type { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
 import ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
+import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 
 export interface CreateStorageOptions {
     authService: AuthService
@@ -49,6 +50,9 @@ export interface CreateStorageOptions {
     ) => Promise<void>
     createDeviceId: (userId: string | number) => Promise<string | number>
 }
+
+const filterOutSpecialListId = (id: number) =>
+    id !== SPECIAL_LIST_IDS.INBOX && id !== SPECIAL_LIST_IDS.MOBILE
 
 export async function createStorage({
     authService,
@@ -98,15 +102,15 @@ export async function createStorage({
             storageManager,
             normalizeUrl,
             getSpaceSuggestionsCache: async () => {
-                const spaceIds = await localSettings.getSetting({
+                const spaceIds = await localSettings.getSetting<number[]>({
                     key: storageKeys.spaceSuggestionsCache,
                 })
-                return spaceIds ?? []
+                return spaceIds?.filter(filterOutSpecialListId) ?? []
             },
             setSpaceSuggestionsCache: async (spaceIds) => {
                 await localSettings.setSetting({
                     key: storageKeys.spaceSuggestionsCache,
-                    value: spaceIds,
+                    value: spaceIds.filter(filterOutSpecialListId),
                 })
             },
         }),

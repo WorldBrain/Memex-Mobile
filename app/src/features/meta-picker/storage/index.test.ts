@@ -66,66 +66,84 @@ describe('meta picker StorageModule', () => {
         )
     })
 
-    it('should be able to create page list entries, adding the lists to the suggestions cache', async ({
-        storage: {
-            modules: { metaPicker, overview, localSettings },
-        },
-    }) => {
-        const listIds: number[] = []
+    it(
+        'should be able to create page list entries, adding the lists to the suggestions cache',
+        { skipSyncTests: true },
+        async ({
+            storage: {
+                modules: { metaPicker, overview, localSettings },
+            },
+        }) => {
+            const listIds: number[] = []
 
-        expect(
-            await localSettings.getSetting({
-                key: storageKeys.spaceSuggestionsCache,
-            }),
-        ).toEqual(null)
+            expect(
+                await localSettings.getSetting({
+                    key: storageKeys.spaceSuggestionsCache,
+                }),
+            ).toEqual(null)
 
-        for (const name of data.lists) {
-            const { object } = await metaPicker.createList({ name })
-            listIds.push(object.id)
-        }
+            for (const name of data.lists) {
+                const { object } = await metaPicker.createList({ name })
+                listIds.push(object.id)
+            }
 
-        expect(
-            await localSettings.getSetting({
-                key: storageKeys.spaceSuggestionsCache,
-            }),
-        ).toEqual([...listIds].reverse())
+            expect(
+                await localSettings.getSetting({
+                    key: storageKeys.spaceSuggestionsCache,
+                }),
+            ).toEqual([...listIds].reverse())
 
-        expect(listIds.length).toBe(data.lists.length)
+            expect(listIds.length).toBe(data.lists.length)
 
-        // For each test page, create entries in all lists
-        for (const page of pageData.pages) {
-            await overview.createPage(page)
+            // For each test page, create entries in all lists
+            for (const page of pageData.pages) {
+                await overview.createPage(page)
 
-            for (const listId of [...listIds].reverse()) {
+                for (const listId of [...listIds].reverse()) {
+                    await metaPicker.createPageListEntry({
+                        fullPageUrl: page.fullUrl,
+                        listId,
+                    })
+                }
+
+                // Also pages to the special lists, to assert they don't get added to the cache
                 await metaPicker.createPageListEntry({
                     fullPageUrl: page.fullUrl,
-                    listId,
+                    listId: SPECIAL_LIST_IDS.INBOX,
+                })
+                await metaPicker.createPageListEntry({
+                    fullPageUrl: page.fullUrl,
+                    listId: SPECIAL_LIST_IDS.MOBILE,
                 })
             }
-        }
 
-        expect(
-            await localSettings.getSetting({
-                key: storageKeys.spaceSuggestionsCache,
-            }),
-        ).toEqual(listIds)
+            expect(
+                await localSettings.getSetting({
+                    key: storageKeys.spaceSuggestionsCache,
+                }),
+            ).toEqual(listIds)
 
-        for (const listId of listIds) {
-            const entries = await metaPicker.findPageListEntriesByList({
-                listId,
-            })
-            expect(entries.map((e) => e.pageUrl).sort()).toEqual(
-                pageData.pages.map((p) => p.url).sort(),
-            )
-        }
+            for (const listId of listIds) {
+                const entries = await metaPicker.findPageListEntriesByList({
+                    listId,
+                })
+                expect(entries.map((e) => e.pageUrl).sort()).toEqual(
+                    pageData.pages.map((p) => p.url).sort(),
+                )
+            }
 
-        for (const page of pageData.pages) {
-            const entries = await metaPicker.findPageListEntriesByPage({
-                url: page.url,
-            })
-            expect(entries.map((e) => +e.listId).sort()).toEqual(listIds.sort())
-        }
-    })
+            for (const page of pageData.pages) {
+                const entries = await metaPicker.findPageListEntriesByPage({
+                    url: page.url,
+                })
+                expect(entries.map((e) => +e.listId).sort()).toEqual([
+                    ...listIds.sort(),
+                    SPECIAL_LIST_IDS.INBOX,
+                    SPECIAL_LIST_IDS.MOBILE,
+                ])
+            }
+        },
+    )
 
     it('should be able to delete lists + associated entries', async ({
         storage: {
@@ -392,6 +410,8 @@ describe('meta picker StorageModule', () => {
     }) => {
         await overview.createPage(pageData.pages[0])
         await overview.createPage(pageData.pages[1])
+        await metaPicker.createInboxListIfAbsent({})
+        await metaPicker.createMobileListIfAbsent({})
 
         const listIds: number[] = []
 

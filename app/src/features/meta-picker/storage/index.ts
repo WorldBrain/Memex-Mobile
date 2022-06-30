@@ -235,7 +235,14 @@ export class MetaPickerStorage extends StorageModule {
             fullUrl: entry.fullPageUrl,
         })
 
-        await this.updateListSuggestionsCache({ added: entry.listId })
+        if (
+            ![SPECIAL_LIST_IDS.INBOX, SPECIAL_LIST_IDS.MOBILE].includes(
+                entry.listId,
+            )
+        ) {
+            await this.updateListSuggestionsCache({ added: entry.listId })
+        }
+
         return result
     }
 
