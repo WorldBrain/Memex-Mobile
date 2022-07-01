@@ -202,7 +202,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"
     implementation project(':react-native-background-fetch')
     compile project(':react-native-keychain')
-    // implementation "io.grpc:grpc-okhttp:1.32.2"
+    implementation "io.grpc:grpc-okhttp:1.32.2"
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
     implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.1")
 

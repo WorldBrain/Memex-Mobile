@@ -21,6 +21,7 @@
         "android:prod": "bundle exec fastlane android production",
         "android:dev": "bundle exec fastlane android development",
         "android-device": "react-native run-android --variant=ProdDebug",
+        "android-device:prod": "react-native run-android --variant=ProdRelease",
         "android-device:testdrive": "react-native run-android --variant=DevDebug",
         "ios:prod": "bundle exec fastlane ios production",
         "ios:dev": "bundle exec fastlane ios development",
