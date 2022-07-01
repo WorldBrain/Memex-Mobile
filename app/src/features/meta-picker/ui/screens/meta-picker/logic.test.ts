@@ -50,20 +50,24 @@ describe('meta picker UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     it('should be able to load init list entries', async (context) => {
-        const { element } = await setup(context)
+        const { element, logic } = await setup(context)
 
         expect(element.state.loadState).toEqual('pristine')
         expect(normalizedStateToArray(element.state.entries)).toEqual([])
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual([])
         await element.init()
         expect(element.state.loadState).toEqual('done')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
+            [...testEntries].reverse(),
+        )
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual(
             [...testEntries].reverse(),
         )
     })
 
     it('should be able to add new list entries, adding them in order of latest first', async (context) => {
         let lastPressedEntryName: string | null = null
-        const { element } = await setup(context, {
+        const { element, logic } = await setup(context, {
             skipTestData: true,
             props: {
                 onEntryPress: async (entry) => {
@@ -81,6 +85,8 @@ describe('meta picker UI logic tests', () => {
         await element.init()
 
         expect(normalizedStateToArray(element.state.entries)).toEqual([])
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual([])
+
         expect(lastPressedEntryName).toEqual(null)
 
         await element.processEvent('suggestEntries', {
@@ -92,7 +98,9 @@ describe('meta picker UI logic tests', () => {
         expect(normalizedStateToArray(element.state.entries)).toEqual(
             namesToEntries([testEntries[0].name]),
         )
-
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual(
+            namesToEntries([testEntries[0].name]),
+        )
         await element.processEvent('suggestEntries', {
             text: testEntries[1].name,
         })
@@ -100,6 +108,9 @@ describe('meta picker UI logic tests', () => {
         expect(lastPressedEntryName).toEqual(testEntries[1].name)
         expect(element.state.inputText).toEqual('')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
+            namesToEntries([testEntries[1].name, testEntries[0].name]),
+        )
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual(
             namesToEntries([testEntries[1].name, testEntries[0].name]),
         )
 
@@ -116,10 +127,17 @@ describe('meta picker UI logic tests', () => {
                 testEntries[0].name,
             ]),
         )
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual(
+            namesToEntries([
+                testEntries[2].name,
+                testEntries[1].name,
+                testEntries[0].name,
+            ]),
+        )
     })
 
     it('should validate and reject on bad space name add attempts', async (context) => {
-        const { element } = await setup(context, { skipTestData: true })
+        const { element, logic } = await setup(context, { skipTestData: true })
 
         const namesToEntries = (names: string[]) =>
             names.map((name) => ({
@@ -130,6 +148,7 @@ describe('meta picker UI logic tests', () => {
         await element.init()
 
         expect(normalizedStateToArray(element.state.entries)).toEqual([])
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual([])
 
         element.processMutation({
             inputText: { $set: '    ' },
@@ -152,6 +171,10 @@ describe('meta picker UI logic tests', () => {
         expect(normalizedStateToArray(element.state.entries)).toEqual(
             namesToEntries([testEntries[2].name]),
         )
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual(
+            namesToEntries([testEntries[2].name]),
+        )
+
         element.processMutation({
             inputText: { $set: testEntries[2].name },
         })
@@ -161,13 +184,14 @@ describe('meta picker UI logic tests', () => {
     })
 
     it('show throw error on add new entry attempt when in filter mode', async (context) => {
-        const { element } = await setup(context, {
+        const { element, logic } = await setup(context, {
             skipTestData: true,
             props: { filterMode: true },
         })
         await element.init()
 
         expect(normalizedStateToArray(element.state.entries)).toEqual([])
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual([])
 
         element.processMutation({
             inputText: { $set: 'test space' },
@@ -177,11 +201,12 @@ describe('meta picker UI logic tests', () => {
         )
 
         expect(normalizedStateToArray(element.state.entries)).toEqual([])
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual([])
     })
 
     it('should be able to toggle checked entries', async (context) => {
         let lastPressedEntry: SpacePickerEntry | null = null
-        const { element } = await setup(context, {
+        const { element, logic } = await setup(context, {
             props: {
                 onEntryPress: async (entry) => {
                     lastPressedEntry = entry
@@ -195,18 +220,24 @@ describe('meta picker UI logic tests', () => {
             [...testEntries].reverse(),
         )
         expect(element.state.entries.byId[0].isChecked).toBe(false)
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual(
+            [...testEntries].reverse(),
+        )
+        expect(logic['_defaultEntries'].byId[0].isChecked).toBe(false)
         expect(lastPressedEntry).toEqual(null)
 
         await element.processEvent('toggleEntryChecked', {
             id: testEntries[0].id,
         })
         expect(element.state.entries.byId[0].isChecked).toBe(true)
+        expect(logic['_defaultEntries'].byId[0].isChecked).toBe(true)
         expect(lastPressedEntry).toEqual(testEntries[0])
 
         await element.processEvent('toggleEntryChecked', {
             id: testEntries[0].id,
         })
         expect(element.state.entries.byId[0].isChecked).toBe(false)
+        expect(logic['_defaultEntries'].byId[0].isChecked).toBe(false)
         // NOTE: the `isChecked` prop should reflect what it was set to when the entry was pressed
         expect(lastPressedEntry).toEqual({ ...testEntries[0], isChecked: true })
 
@@ -215,6 +246,13 @@ describe('meta picker UI logic tests', () => {
         await element.processEvent('addEntry', null)
         expect(
             element.state.entries.byId[element.state.entries.allIds[0]],
+        ).toEqual({
+            id: expect.any(Number),
+            isChecked: true,
+            name: newEntry,
+        })
+        expect(
+            logic['_defaultEntries'].byId[element.state.entries.allIds[0]],
         ).toEqual({
             id: expect.any(Number),
             isChecked: true,
@@ -236,6 +274,13 @@ describe('meta picker UI logic tests', () => {
             isChecked: false,
             name: newEntry,
         })
+        expect(
+            logic['_defaultEntries'].byId[element.state.entries.allIds[0]],
+        ).toEqual({
+            id: expect.any(Number),
+            isChecked: false,
+            name: newEntry,
+        })
         expect(lastPressedEntry).toEqual({
             ...element.state.entries.byId[element.state.entries.allIds[0]],
             isChecked: true,
@@ -243,13 +288,27 @@ describe('meta picker UI logic tests', () => {
     })
 
     it('should be able to suggest entries', async (context) => {
-        const { element } = await setup(context)
+        const { element, logic } = await setup(context)
 
         await element.init()
+
+        const dummyEntry: SpacePickerEntry = {
+            id: expect.any(Number),
+            name: 'dummy A',
+            isChecked: false,
+        }
+
+        await context.storage.modules.metaPicker.createList(
+            { name: dummyEntry.name },
+            { skipSuggestionCache: true },
+        )
 
         expect(element.state.inputText).toEqual('')
         expect(element.state.searchState).toEqual('pristine')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
+            [...testEntries].reverse(),
+        )
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual(
             [...testEntries].reverse(),
         )
 
@@ -263,23 +322,47 @@ describe('meta picker UI logic tests', () => {
         expect(normalizedStateToArray(element.state.entries)).toEqual(
             testEntries,
         )
-
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual(
+            [...testEntries].reverse(),
+        )
         await element.processEvent('suggestEntries', { text: 'testB' })
         expect(element.state.inputText).toEqual('testB')
         expect(normalizedStateToArray(element.state.entries)).toEqual([
             testEntries[1],
         ])
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual(
+            [...testEntries].reverse(),
+        )
 
         await element.processEvent('suggestEntries', { text: 'testC' })
         expect(element.state.inputText).toEqual('testC')
         expect(normalizedStateToArray(element.state.entries)).toEqual([
             testEntries[2],
         ])
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual(
+            [...testEntries].reverse(),
+        )
+
+        // Get an entry showing up that wasn't in the initial suggestions. It should be added to `defaultEntries` after showing up
+        await element.processEvent('suggestEntries', { text: 'dummy' })
+        expect(element.state.inputText).toEqual('dummy')
+        expect(normalizedStateToArray(element.state.entries)).toEqual([
+            dummyEntry,
+        ])
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual([
+            ...[...testEntries].reverse(),
+            dummyEntry,
+        ])
 
         await element.processEvent('suggestEntries', { text: '' })
         expect(element.state.inputText).toEqual('')
-        expect(normalizedStateToArray(element.state.entries)).toEqual(
-            [...testEntries].reverse(),
-        )
+        expect(normalizedStateToArray(element.state.entries)).toEqual([
+            ...[...testEntries].reverse(),
+            dummyEntry,
+        ])
+        expect(normalizedStateToArray(logic['_defaultEntries'])).toEqual([
+            ...[...testEntries].reverse(),
+            dummyEntry,
+        ])
     })
 })

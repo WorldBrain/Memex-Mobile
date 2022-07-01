@@ -215,6 +215,9 @@ export class MetaPickerStorage extends StorageModule {
             __id?: number
             __createdAt?: Date
         },
+        opts?: {
+            skipSuggestionCache?: boolean
+        },
     ): Promise<{ object: { id: number } }> {
         const result = await this.operation('createList', {
             id: list.__id ?? MetaPickerStorage.generateListId(),
@@ -223,7 +226,10 @@ export class MetaPickerStorage extends StorageModule {
             searchableName: list.name,
         })
 
-        await this.updateListSuggestionsCache({ added: result.object.id })
+        if (!opts?.skipSuggestionCache) {
+            await this.updateListSuggestionsCache({ added: result.object.id })
+        }
+
         return result
     }
 

@@ -136,6 +136,15 @@ export default class Logic extends UILogic<State, Event> {
                     includeSpecialLists: this.props.filterMode,
                 })
 
+                // Ensure any new suggestions, not present in init query, get added to the default entries state (so they can be toggled and interacted withn)
+                const nonTracked = suggestions.filter(
+                    (s) => !this.defaultEntries.allIds.includes(s.id),
+                )
+                for (const suggestion of nonTracked) {
+                    this.defaultEntries.allIds.push(suggestion.id)
+                    this.defaultEntries.byId[suggestion.id] = { ...suggestion }
+                }
+
                 this.emitMutation({
                     entries: {
                         $set: initNormalizedState({
