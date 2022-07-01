@@ -313,11 +313,11 @@ describe('meta picker UI logic tests', () => {
         )
 
         const suggestP = element.processEvent('suggestEntries', {
-            text: 'test',
+            text: 'est',
         })
         expect(element.state.searchState).toEqual('running')
         await suggestP
-        expect(element.state.inputText).toEqual('test')
+        expect(element.state.inputText).toEqual('est')
         expect(element.state.searchState).toEqual('done')
         expect(normalizedStateToArray(element.state.entries)).toEqual(
             testEntries,
@@ -334,8 +334,8 @@ describe('meta picker UI logic tests', () => {
             [...testEntries].reverse(),
         )
 
-        await element.processEvent('suggestEntries', { text: 'testC' })
-        expect(element.state.inputText).toEqual('testC')
+        await element.processEvent('suggestEntries', { text: 'stC' })
+        expect(element.state.inputText).toEqual('stC')
         expect(normalizedStateToArray(element.state.entries)).toEqual([
             testEntries[2],
         ])
@@ -344,8 +344,8 @@ describe('meta picker UI logic tests', () => {
         )
 
         // Get an entry showing up that wasn't in the initial suggestions. It should be added to `defaultEntries` after showing up
-        await element.processEvent('suggestEntries', { text: 'dummy' })
-        expect(element.state.inputText).toEqual('dummy')
+        await element.processEvent('suggestEntries', { text: 'ummy' })
+        expect(element.state.inputText).toEqual('ummy')
         expect(normalizedStateToArray(element.state.entries)).toEqual([
             dummyEntry,
         ])
