@@ -1,8 +1,8 @@
 import React from 'react'
 
 import * as actionBtns from 'src/features/overview/ui/components/action-btns'
-import { TouchEventHandler } from 'src/ui/types'
-import { State } from '../screens/reader/logic'
+import type { TouchEventHandler } from 'src/ui/types'
+import type { State } from '../screens/reader/logic'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
@@ -107,7 +107,7 @@ class ActionBar extends React.PureComponent<Props> {
 
     render() {
         return (
-            <Container rotation={this.props.rotation}>
+            <Container isLandscape={this.props.rotation === 'landscape'}>
                 <LeftBtns></LeftBtns>
                 <CenterButton>
                     <AddSpacesContainer onPress={this.props.onListBtnPress}>
@@ -136,9 +136,9 @@ class ActionBar extends React.PureComponent<Props> {
 
 export default ActionBar
 
-const Container = styled.View<Pick<Props, 'rotation'>>`
+const Container = styled.View<{ isLandscape?: boolean }>`
     position: absolute;
-    bottom: ${(props) => (props.rotation === 'landscape' ? '-105%' : '-100%')};
+    bottom: ${(props) => (props.isLandscape ? '-105%' : '-100%')};
     width: 100%;
     height: 60px;
     padding: 0px 5%;
