@@ -207,10 +207,10 @@ describe('reader screen UI logic tests', () => {
             text: '',
         })
 
-        const { object } = await pageEditor.createAnnotation(testNote)
+        const { annotationUrl } = await pageEditor.createAnnotation(testNote)
 
         await element.processEvent('editHighlight', {
-            highlightUrl: object.url,
+            highlightUrl: annotationUrl,
         })
 
         expect(navigation.popRequests()).toEqual([
@@ -219,7 +219,7 @@ describe('reader screen UI logic tests', () => {
                 target: 'NoteEditor',
                 params: {
                     mode: 'update',
-                    noteUrl: object.url,
+                    noteUrl: annotationUrl,
                     highlightText: testNote.body,
                     noteText: testNote.comment,
                     anchor: testNote.selector,

@@ -4,7 +4,6 @@ import { storageKeys } from '../../../../../../app.json'
 import Logic, { State, Event } from './logic'
 import { makeStorageTestFactory } from 'src/index.tests'
 import type { TestDevice } from 'src/types.tests'
-import type { Storage } from 'src/storage/types'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 
 import * as DATA from './logic.test.data'
@@ -13,6 +12,7 @@ import {
     SPECIAL_LIST_NAMES,
     SPECIAL_LIST_IDS,
 } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
+import type { Note } from 'src/features/page-editor/types'
 
 describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -652,7 +652,7 @@ describe('share modal UI logic tests', () => {
 
     it('should be able to set lists to add', async (context) => {
         const { logic, initialState: state } = await setup(context)
-        const testLists = ['a', 'b', 'c']
+        const testLists = [1, 2, 3]
 
         expect(state.spacesToAdd.length).toBe(0)
         const nextStateA = logic.withMutation(
@@ -669,7 +669,7 @@ describe('share modal UI logic tests', () => {
 
     it('should be able to toggle collections to add/remove', async (context) => {
         const { logic, initialState: state } = await setup(context)
-        const testCollection = 'test coll'
+        const testCollection = 123
 
         expect(state.spacesToAdd.length).toBe(0)
         const nextStateA = logic.withMutation(
@@ -748,6 +748,173 @@ describe('share modal UI logic tests', () => {
                 fullUrl: DATA.PAGE_URL_1,
                 pageUrl: DATA.PAGE_URL_1_NORM,
                 listId: lists[1].id,
+            }),
+        ])
+    })
+
+    it('should be able to store a page with spaces to be added', async (context) => {
+        const { logic, element } = await setup(context)
+        const TEST_DATA = new DATA.TestData({
+            url: DATA.PAGE_URL_1,
+            title: DATA.PAGE_TITLE_1,
+            normalizedUrl: DATA.PAGE_URL_1_NORM,
+        })
+
+        await context.storage.modules.metaPicker.createList({
+            __id: 1,
+            name: 'test a',
+        })
+        await context.storage.modules.metaPicker.createList({
+            __id: 2,
+            name: 'test b',
+        })
+
+        await element.processEvent('setSpacesToAdd', { values: [1, 2] })
+
+        expect(
+            await context.storage.manager.collection('pages').findObjects({}),
+        ).toEqual([])
+
+        expect(
+            await context.storage.manager
+                .collection('pageListEntries')
+                .findObjects({}),
+        ).toEqual([])
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findObjects({}),
+        ).toEqual([])
+
+        await logic['storePage']({
+            ...element.state,
+            pageUrl: DATA.PAGE_URL_1,
+            pageTitle: DATA.PAGE_TITLE_1,
+        })
+
+        expect(
+            await context.storage.manager.collection('pages').findObjects({}),
+        ).toEqual([TEST_DATA.PAGE])
+
+        expect(
+            await context.storage.manager
+                .collection('pageListEntries')
+                .findObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                fullUrl: DATA.PAGE_URL_1,
+                pageUrl: DATA.PAGE_URL_1_NORM,
+                listId: SPECIAL_LIST_IDS.INBOX,
+            }),
+            expect.objectContaining({
+                fullUrl: DATA.PAGE_URL_1,
+                pageUrl: DATA.PAGE_URL_1_NORM,
+                listId: SPECIAL_LIST_IDS.MOBILE,
+            }),
+            expect.objectContaining({
+                fullUrl: DATA.PAGE_URL_1,
+                pageUrl: DATA.PAGE_URL_1_NORM,
+                listId: 1,
+            }),
+            expect.objectContaining({
+                fullUrl: DATA.PAGE_URL_1,
+                pageUrl: DATA.PAGE_URL_1_NORM,
+                listId: 2,
+            }),
+        ])
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findObjects({}),
+        ).toEqual([])
+    })
+
+    it('should be able to store a page with a note, with spaces to be added to the note', async (context) => {
+        const { logic, element } = await setup(context)
+        const TEST_DATA = new DATA.TestData({
+            url: DATA.PAGE_URL_1,
+            title: DATA.PAGE_TITLE_1,
+            normalizedUrl: DATA.PAGE_URL_1_NORM,
+            noteText: DATA.NOTE_1_TEXT,
+        })
+
+        await context.storage.modules.metaPicker.createList({
+            __id: 1,
+            name: 'test a',
+        })
+        await context.storage.modules.metaPicker.createList({
+            __id: 2,
+            name: 'test b',
+        })
+
+        await element.processEvent('setSpacesToAdd', { values: [1, 2] })
+        await element.processEvent('setNoteText', { value: 'hi' })
+
+        expect(
+            await context.storage.manager.collection('pages').findObjects({}),
+        ).toEqual([])
+
+        expect(
+            await context.storage.manager
+                .collection('pageListEntries')
+                .findObjects({}),
+        ).toEqual([])
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findObjects({}),
+        ).toEqual([])
+
+        expect(
+            await context.storage.manager
+                .collection('annotations')
+                .findObjects({}),
+        ).toEqual([])
+
+        await logic['storePage']({
+            ...element.state,
+            pageUrl: DATA.PAGE_URL_1,
+            pageTitle: DATA.PAGE_TITLE_1,
+            noteText: DATA.NOTE_1_TEXT,
+        })
+
+        expect(
+            await context.storage.manager.collection('pages').findObjects({}),
+        ).toEqual([TEST_DATA.PAGE])
+
+        expect(
+            await context.storage.manager
+                .collection('pageListEntries')
+                .findObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                fullUrl: DATA.PAGE_URL_1,
+                pageUrl: DATA.PAGE_URL_1_NORM,
+                listId: SPECIAL_LIST_IDS.INBOX,
+            }),
+            expect.objectContaining({
+                fullUrl: DATA.PAGE_URL_1,
+                pageUrl: DATA.PAGE_URL_1_NORM,
+                listId: SPECIAL_LIST_IDS.MOBILE,
+            }),
+        ])
+        const annots: Note[] = await context.storage.manager
+            .collection('annotations')
+            .findObjects({})
+
+        expect(annots).toEqual([{ ...TEST_DATA.NOTE, url: expect.any(String) }])
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                url: annots[0].url,
+                listId: 1,
+            }),
+            expect.objectContaining({
+                url: annots[0].url,
+                listId: 2,
             }),
         ])
     })

@@ -45,7 +45,7 @@ export default class ShareModalScreen extends StatefulUIElement<
         const { initValues } = this.logic as Logic
 
         return (
-            this.state.noteText.length > 0 ||
+            this.state.noteText.trim().length > 0 ||
             this.state.isStarred !== initValues.isStarred ||
             !ShareModalScreen.arraysAreSame(
                 this.state.spacesToAdd,
@@ -230,27 +230,27 @@ export default class ShareModalScreen extends StatefulUIElement<
                             <LoadingIndicatorBox>
                                 <LoadingIndicator size={15} />
                             </LoadingIndicatorBox>
+                        ) : this.state.spacesToAdd.length === 0 ? (
+                            <Icon
+                                icon={icons.Plus}
+                                heightAndWidth={'14px'}
+                                color={'purple'}
+                                strokeWidth={'2px'}
+                            />
                         ) : (
-                            <>
-                                {this.state.spacesToAdd.length === 0 ? (
-                                    <>
-                                        <Icon
-                                            icon={icons.Plus}
-                                            heightAndWidth={'14px'}
-                                            color={'purple'}
-                                            strokeWidth={'2px'}
-                                        />
-                                    </>
-                                ) : (
-                                    <SpacesCounterPill>
-                                        <SpacesCounterText>
-                                            {this.state.spacesToAdd.length}
-                                        </SpacesCounterText>
-                                    </SpacesCounterPill>
-                                )}
-                            </>
+                            <SpacesCounterPill>
+                                <SpacesCounterText>
+                                    {this.state.spacesToAdd.length}
+                                </SpacesCounterText>
+                            </SpacesCounterPill>
                         )}
-                        <AddSpacesText>Add page to Spaces</AddSpacesText>
+                        <AddSpacesText>
+                            Add{' '}
+                            {this.state.noteText.trim().length
+                                ? 'Note'
+                                : 'Page'}{' '}
+                            to Spaces
+                        </AddSpacesText>
                     </AddSpacesContainer>
                 </ActionBarContainer>
             </>

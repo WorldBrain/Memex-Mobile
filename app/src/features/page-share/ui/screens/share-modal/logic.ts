@@ -402,17 +402,9 @@ export default class Logic extends UILogic<State, Event> {
             isStarred: state.isStarred,
         })
 
-        await metaPicker.setPageLists({
-            fullPageUrl: state.pageUrl,
-            listIds: [
-                ...state.spacesToAdd,
-                SPECIAL_LIST_IDS.MOBILE,
-                SPECIAL_LIST_IDS.INBOX,
-            ],
-        })
-
-        if (state.noteText?.trim().length > 0) {
-            await pageEditor.createNote(
+        const hasNote = state.noteText?.trim().length > 0
+        if (hasNote) {
+            const { annotationUrl } = await pageEditor.createNote(
                 {
                     comment: state.noteText.trim(),
                     pageUrl: state.pageUrl,
@@ -420,6 +412,22 @@ export default class Logic extends UILogic<State, Event> {
                 },
                 customTimestamp,
             )
+
+            if (state.spacesToAdd.length) {
+                await metaPicker.setAnnotationLists({
+                    annotationUrl,
+                    listIds: state.spacesToAdd,
+                })
+            }
         }
+
+        await metaPicker.setPageLists({
+            fullPageUrl: state.pageUrl,
+            listIds: [
+                ...(hasNote ? [] : state.spacesToAdd), // If there is a note, don't add page to the set spaces
+                SPECIAL_LIST_IDS.MOBILE,
+                SPECIAL_LIST_IDS.INBOX,
+            ],
+        })
     }
 }

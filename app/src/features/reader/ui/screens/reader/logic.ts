@@ -270,14 +270,14 @@ export default class Logic extends UILogic<State, Event> {
     }: { previousState: State } & CreateHighlightArgs): Promise<Highlight> => {
         const { pageEditor } = this.props.storage.modules
 
-        const { object } = await pageEditor.createAnnotation({
+        const { annotationUrl } = await pageEditor.createAnnotation({
             pageUrl: previousState.url,
             pageTitle: previousState.title,
             selector: anchor,
             body: anchor.quote,
         })
 
-        const newHighlight = { url: object.url, anchor }
+        const newHighlight = { url: annotationUrl, anchor }
         renderHighlight(newHighlight)
 
         this.emitMutation({
