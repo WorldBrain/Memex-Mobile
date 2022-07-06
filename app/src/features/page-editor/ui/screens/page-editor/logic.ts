@@ -2,7 +2,7 @@ import { Alert } from 'react-native'
 import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
 
 import type {
-    UIPageWithNotes as _Page,
+    UIPageWithNotes as Page,
     UINote,
 } from 'src/features/overview/types'
 import type { EditorMode } from 'src/features/page-editor/types'
@@ -15,15 +15,13 @@ import type {
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 import type { MainNavigatorParamList } from 'src/ui/navigation/types'
-
-interface Page extends _Page {
-    listNames: string[]
-}
+import type { List } from 'src/features/meta-picker/types'
 
 export interface State {
-    loadState: UITaskState
     page: Page
     mode: EditorMode
+    loadState: UITaskState
+    listData: { [listId: string]: List }
 }
 
 export type Event = UIEvent<{
@@ -51,6 +49,7 @@ export default class Logic extends UILogic<State, Event> {
             loadState: 'pristine',
             mode: 'collections',
             page: {} as any,
+            listData: {},
         }
     }
 
@@ -80,15 +79,31 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const notes = await pageEditor.findNotes({ url })
-        const lists = await metaPicker.findListsByPage({ url })
+        const listIdsByNotes = await metaPicker.findAnnotListIdsByAnnots({
+            annotationUrls: notes.map((note) => note.url),
+        })
+
+        const pageListIds = await metaPicker.findListIdsByPage({ url })
+        const noteListIds = new Set(Object.values(listIdsByNotes).flat())
+        const listData = await metaPicker.findListsByIds({
+            ids: [...noteListIds, ...pageListIds],
+        })
+
+        this.emitMutation({
+            listData: {
+                $set: listData.reduce(
+                    (acc, list) => ({ ...acc, [list.id]: list }),
+                    {},
+                ),
+            },
+        })
 
         return {
             ...storedPage,
             titleText: storedPage.fullTitle,
             date: 'a minute ago',
             tags: [],
-            listIds: lists.map((l) => l.id),
-            listNames: lists.map((l) => l.name),
+            listIds: pageListIds,
             pageUrl: storedPage.url,
             // TODO: unify this map fn with the identical one in DashboardLogic
             notes: notes.map<UINote>((note) => ({
@@ -100,6 +115,7 @@ export default class Logic extends UILogic<State, Event> {
                 noteText: note.body,
                 isNotePressed: false,
                 tags: [],
+                listIds: listIdsByNotes[note.url],
                 isEdited:
                     note.lastEdited?.getTime() !== note.createdWhen!.getTime(),
                 date: timeFromNow(note.lastEdited ?? note.createdWhen!),
@@ -222,6 +238,7 @@ export default class Logic extends UILogic<State, Event> {
                         commentText: incoming.event.text,
                         domain: page.domain,
                         fullUrl: page.fullUrl,
+                        listIds: [],
                         tags: [],
                     },
                 ],

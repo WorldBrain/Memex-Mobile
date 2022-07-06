@@ -70,6 +70,7 @@ export default class PageEditorScreen extends StatefulUIElement<
                 initNotePress={(n) => () =>
                     this.processEvent('toggleNotePress', { url: n.url })}
                 notes={this.state.page.notes}
+                listData={this.state.listData}
                 pageData={this.state.page}
                 clearBackground
             />

@@ -7,29 +7,35 @@ import { TouchEventHandler } from 'src/ui/types'
 import { UINote, UIPage } from 'src/features/overview/types'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
-import Body, { Props as BodyProps } from './result-page-body'
+import Body from './result-page-body'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import SpacePill from 'src/ui/components/space-pill'
+import type { List } from 'src/features/meta-picker/types'
 
 export interface Props {
     notes: UINote[]
+    pageData?: UIPage
     clearBackground?: boolean
+    listData: { [listId: string]: List }
     initNoteDelete: (note: UINote) => TouchEventHandler
     initNotePress: (note: UINote) => TouchEventHandler
     initNoteEdit: (note: UINote) => TouchEventHandler
-    pageData?: UIPage & { listNames: string[] }
 }
 
 class NotesList extends React.PureComponent<Props> {
-    private renderNote: ListRenderItem<UINote> = ({ item, index }) => (
+    private renderNote: ListRenderItem<UINote> = ({ item }) => (
         <ResultNote
             hideFooter
+            onAddSpacesPress={() => console.log('add spaces!!!')}
             onEditPress={this.props.initNoteEdit(item)}
             onNotePress={this.props.initNotePress(item)}
             onDeletePress={this.props.initNoteDelete(item)}
             clearBackground={this.props.clearBackground}
             {...item}
             isNotePressed={!!item.isNotePressed}
+            listNames={item.listIds.map(
+                (listId) => this.props.listData[listId].name,
+            )}
         />
     )
 

@@ -52,13 +52,40 @@ describe('page editor UI logic tests', () => {
             createdWhen: new Date(),
             lastEdited: new Date(),
         })
+        await context.storage.modules.metaPicker.createList({
+            __id: 123,
+            name: 'test a',
+        })
+        await context.storage.modules.metaPicker.createList({
+            __id: 124,
+            name: 'test b',
+        })
+        await manager.collection('pageListEntries').createObject({
+            pageUrl: DATA.PAGE_1.url,
+            fullUrl: DATA.PAGE_1.fullUrl,
+            listId: 123,
+            createdAt: new Date(),
+        })
+        await manager.collection('annotListEntries').createObject({
+            url: DATA.NOTE_1.url,
+            listId: 123,
+            createdAt: new Date(),
+        })
+        await manager.collection('annotListEntries').createObject({
+            url: DATA.NOTE_1.url,
+            listId: 124,
+            createdAt: new Date(),
+        })
 
         expect(element.state.page).toEqual({})
+        expect(element.state.listData).toEqual({})
+
         await element.init()
+
         expect(element.state.page).toEqual(
             expect.objectContaining({
                 titleText: DATA.PAGE_1.fullTitle,
-                listIds: [],
+                listIds: [123],
                 pageUrl: DATA.PAGE_1.url,
                 isStarred: true,
                 notes: [
@@ -67,10 +94,15 @@ describe('page editor UI logic tests', () => {
                         domain: DATA.PAGE_1.domain,
                         isStarred: false,
                         commentText: DATA.NOTE_1.comment,
+                        listIds: [123, 124],
                     }),
                 ],
             }),
         )
+        expect(element.state.listData).toEqual({
+            [123]: expect.objectContaining({ name: 'test a' }),
+            [124]: expect.objectContaining({ name: 'test b' }),
+        })
     })
 
     it('should be able to set save notes', async (context) => {

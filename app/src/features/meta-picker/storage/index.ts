@@ -159,6 +159,13 @@ export class MetaPickerStorage extends StorageModule {
                     url: '$url:string',
                 },
             },
+            findEntriesByAnnots: {
+                operation: 'findObjects',
+                collection: ANNOT_COLL_NAMES.listEntry,
+                args: {
+                    url: { $in: '$annotationUrls:string[]' },
+                },
+            },
             findAnnotEntriesByList: {
                 operation: 'findObjects',
                 collection: ANNOT_COLL_NAMES.listEntry,
@@ -361,6 +368,27 @@ export class MetaPickerStorage extends StorageModule {
         return this.operation('findEntriesByPage', { url })
     }
 
+    async findAnnotListIdsByAnnots({
+        annotationUrls,
+    }: {
+        annotationUrls: string[]
+    }): Promise<{ [annotationUrl: string]: number[] }> {
+        const result = annotationUrls.reduce<{
+            [annotationUrl: string]: number[]
+        }>((acc, url) => ({ ...acc, [url]: [] }), {})
+
+        const annotListEntries: AnnotListEntry[] = await this.operation(
+            'findEntriesByAnnots',
+            { annotationUrls },
+        )
+
+        for (const entry of annotListEntries) {
+            result[entry.url].push(entry.listId)
+        }
+
+        return result
+    }
+
     findAnnotListEntriesByAnnot({
         annotationUrl,
     }: {
@@ -369,15 +397,28 @@ export class MetaPickerStorage extends StorageModule {
         return this.operation('findEntriesByAnnot', { url: annotationUrl })
     }
 
-    async findListsByPage({ url }: { url: string }): Promise<List[]> {
-        url = this.options.normalizeUrl(url)
-        const entries = await this.findPageListEntriesByPage({ url })
-        const listIds = [...new Set(entries.map((e) => e.listId))]
+    async findListsByPage({
+        url,
+        extraListIds,
+    }: {
+        url: string
+        extraListIds?: number[]
+    }): Promise<List[]> {
+        const listIds = await this.findListIdsByPage({ url })
+        if (extraListIds) {
+            listIds.push(...extraListIds)
+        }
         const storedLists: List[] = await this.operation('findListsByIds', {
             listIds,
         })
 
         return this.filterOutSpecialLists(storedLists)
+    }
+
+    async findListIdsByPage({ url }: { url: string }): Promise<number[]> {
+        url = this.options.normalizeUrl(url)
+        const entries = await this.findPageListEntriesByPage({ url })
+        return [...new Set(entries.map((e) => e.listId))]
     }
 
     private filterOutSpecialLists = <T extends { name: string }>(

@@ -423,6 +423,7 @@ export default class Logic extends UILogic<State, Event> {
                 noteText: note.body,
                 isNotePressed: false,
                 tags: [],
+                listIds: [],
                 isEdited:
                     note.lastEdited?.getTime() !== note.createdWhen!.getTime(),
                 date: timeFromNow(note.lastEdited ?? note.createdWhen!),

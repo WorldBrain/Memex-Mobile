@@ -1,20 +1,16 @@
 import React from 'react'
-import { View, TouchableWithoutFeedback } from 'react-native'
 
-import Container from './result-container'
-import Body, { Props as BodyProps } from './result-note-body'
-import { DeleteActionBarBtn, EditNoteActionBarBtn } from './action-btns'
-import Tags from './result-page-tags'
+import type { Props as BodyProps } from './result-note-body'
 import { TouchEventHandler } from 'src/ui/types'
-import styles from './result-note.styles'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
-
 import styled from 'styled-components/native'
+import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
+import SpacePill from 'src/ui/components/space-pill'
 
-export interface Props extends BodyProps {
+export interface Props extends BodyProps, InteractionProps {
     isStarred?: boolean
-    tags: string[]
+    listNames: string[]
 }
 
 export interface InteractionProps {
@@ -23,12 +19,11 @@ export interface InteractionProps {
     onDeletePress: TouchEventHandler
     onEditPress: TouchEventHandler
     onNotePress: TouchEventHandler
+    onAddSpacesPress: TouchEventHandler
     hideFooter?: boolean
 }
 
-const ResultNote: React.StatelessComponent<Props & InteractionProps> = (
-    props,
-) => {
+const ResultNote: React.StatelessComponent<Props> = (props) => {
     return (
         <NoteContainer>
             <TopArea>
@@ -47,11 +42,22 @@ const ResultNote: React.StatelessComponent<Props & InteractionProps> = (
                     {props.commentText && (
                         <AnnotationNote>{props.commentText}</AnnotationNote>
                     )}
+                    <AnnotationSpacing />
+                    <DateBox>{props.date}</DateBox>
                 </ContentContainer>
                 {/* </TouchableWithoutFeedback> */}
             </TopArea>
-            <Footer>
-                <DateBox>{props.date}</DateBox>
+            {props.listNames.length > 0 && (
+                <Section>
+                    <SpaceList>
+                        {props.listNames.map((name, i) => (
+                            <SpacePill key={`${name}-${i}`} name={name} />
+                        ))}
+                    </SpaceList>
+                </Section>
+            )}
+            <Section>
+                <AddToSpacesBtn onPress={props.onAddSpacesPress} />
                 <ActionBar>
                     <IconContainer onPress={props.onEditPress}>
                         <Icon
@@ -64,7 +70,7 @@ const ResultNote: React.StatelessComponent<Props & InteractionProps> = (
                         <Icon icon={icons.Trash} heightAndWidth={'16px'} />
                     </IconContainer>
                 </ActionBar>
-            </Footer>
+            </Section>
         </NoteContainer>
     )
 }
@@ -126,7 +132,14 @@ const IconContainer = styled.TouchableOpacity`
     margin-left: 15px;
 `
 
-const Footer = styled.View`
+const SpaceList = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+`
+
+const Section = styled.View`
     height: 40px;
     display: flex;
     flex-direction: row;
