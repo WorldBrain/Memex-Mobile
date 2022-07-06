@@ -9,6 +9,7 @@ import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
 import Body, { Props as BodyProps } from './result-page-body'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
+import SpacePill from 'src/ui/components/space-pill'
 
 export interface Props {
     notes: UINote[]
@@ -33,18 +34,17 @@ class NotesList extends React.PureComponent<Props> {
     )
 
     private renderPageItem() {
+        const { pageData, listData } = this.props
         return (
             <PageResultCard>
                 <TopArea>
-                    <Body
-                        {...this.props.pageData!}
-                        date={this.props.pageData?.date}
-                    />
+                    <Body {...pageData!} date={pageData?.date} />
                     <SpacesArea>
-                        {this.props.pageData?.listNames.map((entry) => (
-                            <SpacePill key={entry}>
-                                <SpacePillText>{entry}</SpacePillText>
-                            </SpacePill>
+                        {pageData?.listIds.map((listId) => (
+                            <SpacePill
+                                key={listId}
+                                name={listData[listId]?.name}
+                            />
                         ))}
                     </SpacesArea>
                 </TopArea>
@@ -203,20 +203,4 @@ const SpacesArea = styled.View`
     display: flex;
     flex-direction: row;
     margin-top: 10px;
-`
-
-const SpacePill = styled.View`
-    padding: 2px 7px;
-    background: ${(props) => props.theme.colors.purple};
-    align-items: center;
-    display: flex;
-    text-align-vertical: center;
-    margin-right: 3px;
-    border-radius: 3px;
-`
-
-const SpacePillText = styled.Text`
-    color: white;
-    display: flex;
-    text-align-vertical: center;
 `

@@ -22,6 +22,7 @@ import Navigation from '../../components/navigation'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
 import { normalizedStateToArray } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
+import SpacePill from 'src/ui/components/space-pill'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -179,12 +180,10 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     item.listIds.length > 0 ? (
                         <SpacesArea>
                             {item.listIds.map((listId) => (
-                                <SpacePill key={listId}>
-                                    <SpacePillText>
-                                        {this.state.listsData[listId]?.name ??
-                                            'Missing list'}
-                                    </SpacePillText>
-                                </SpacePill>
+                                <SpacePill
+                                    key={listId}
+                                    name={this.state.listsData[listId]?.name}
+                                />
                             ))}
                         </SpacesArea>
                     ) : undefined,
@@ -290,24 +289,6 @@ const ResultsList = styled(FlatList)`
     display: flex;
     padding: 5px;
 ` as unknown as typeof FlatList
-
-const SpacePill = styled.View`
-    padding: 3px 8px;
-    background: ${(props) => props.theme.colors.purple};
-    align-items: center;
-    display: flex;
-    text-align-vertical: center;
-    margin-right: 3px;
-    border-radius: 3px;
-    margin-bottom: 5px;
-`
-
-const SpacePillText = styled.Text`
-    color: white;
-    display: flex;
-    text-align-vertical: center;
-    font-size: 12px;
-`
 
 const SpacesArea = styled.View`
     display: flex;
