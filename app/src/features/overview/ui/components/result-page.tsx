@@ -7,6 +7,7 @@ import type { UIPage } from '../../types'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
+import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 
 export interface Props
     extends BodyProps,
@@ -36,15 +37,7 @@ class ResultPage extends React.PureComponent<Props> {
                         {this.props.spacePills}
                     </TopArea>
                     <Footer>
-                        <AddSpacesContainer onPress={this.props.onListsPress}>
-                            <Icon
-                                icon={icons.Plus}
-                                color={'purple'}
-                                strokeWidth={'2px'}
-                                heightAndWidth={'14px'}
-                            />
-                            <AddSpacesText>Add to Spaces</AddSpacesText>
-                        </AddSpacesContainer>
+                        <AddToSpacesBtn onPress={this.props.onListsPress} />
                         <FooterRightSide>
                             <IconContainer onPress={this.props.onResultPress}>
                                 {this.props.isResultPressed ? (
@@ -158,30 +151,6 @@ const FooterRightSide = styled.View`
     justify-content: flex-end;
     align-items: center;
     flex-direction: row;
-`
-
-const AddSpacesContainer = styled.TouchableOpacity`
-    border-width: 2px;
-    border-style: dotted;
-    border-color: ${(props) => props.theme.colors.lightgrey}
-    display: flex;
-    justify-content: space-between;
-    width: 124px;
-    align-items: center;
-    flex-direction: row;
-    text-align-vertical: center;
-    height: 30px;
-    padding: 2px 8px;
-`
-
-const AddSpacesText = styled.Text`
-    color: ${(props) => props.theme.colors.purple};
-    font-size: 12px;
-    display: flex;
-    align-items flex-end;
-    flex-direction: row;
-    justify-content: center;
-    text-align-vertical: bottom;
 `
 
 const IconContainer = styled.TouchableOpacity`
