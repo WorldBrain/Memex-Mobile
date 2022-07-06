@@ -15,10 +15,20 @@ import {
     SPECIAL_LIST_IDS,
 } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import {
+    COLLECTION_DEFINITIONS as ANNOT_COLL_DEFINITIONS,
+    COLLECTION_NAMES as ANNOT_COLL_NAMES,
+} from '@worldbrain/memex-common/lib/storage/modules/annotations/constants'
+import {
     SuggestArgs,
     SuggestPlugin,
 } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/plugins/suggest'
-import type { List, ListEntry, SpacePickerEntry, Tag } from '../types'
+import type {
+    List,
+    ListEntry,
+    AnnotListEntry,
+    SpacePickerEntry,
+    Tag,
+} from '../types'
 import { updateSuggestionsCache } from '@worldbrain/memex-common/lib/utils/suggestions-cache'
 
 export class MetaPickerStorage extends StorageModule {
@@ -46,6 +56,8 @@ export class MetaPickerStorage extends StorageModule {
         collections: {
             ...TAG_COLL_DEFINITIONS,
             ...LIST_COLL_DEFINITIONS,
+            [ANNOT_COLL_NAMES.listEntry]:
+                ANNOT_COLL_DEFINITIONS[ANNOT_COLL_NAMES.listEntry],
         },
         operations: {
             createList: {
@@ -55,6 +67,10 @@ export class MetaPickerStorage extends StorageModule {
             createListEntry: {
                 operation: 'createObject',
                 collection: MetaPickerStorage.LIST_ENTRY_COLL,
+            },
+            createAnnotListEntry: {
+                operation: 'createObject',
+                collection: ANNOT_COLL_NAMES.listEntry,
             },
             createTag: {
                 operation: 'createObject',
@@ -136,6 +152,20 @@ export class MetaPickerStorage extends StorageModule {
                     },
                 ],
             },
+            findEntriesByAnnot: {
+                operation: 'findObjects',
+                collection: ANNOT_COLL_NAMES.listEntry,
+                args: {
+                    url: '$url:string',
+                },
+            },
+            findAnnotEntriesByList: {
+                operation: 'findObjects',
+                collection: ANNOT_COLL_NAMES.listEntry,
+                args: {
+                    listId: '$listId:number',
+                },
+            },
             deleteList: {
                 operation: 'deleteObject',
                 collection: MetaPickerStorage.LIST_COLL,
@@ -158,11 +188,19 @@ export class MetaPickerStorage extends StorageModule {
                     listId: '$listId:number',
                 },
             },
-            deleteEntriesForPage: {
+            deleteAnnotFromList: {
                 operation: 'deleteObjects',
-                collection: MetaPickerStorage.LIST_ENTRY_COLL,
+                collection: ANNOT_COLL_NAMES.listEntry,
                 args: {
-                    pageUrl: '$url:string',
+                    listId: '$listId:number',
+                    url: '$url:string',
+                },
+            },
+            deleteAnnotEntriesForList: {
+                operation: 'deleteObjects',
+                collection: ANNOT_COLL_NAMES.listEntry,
+                args: {
+                    listId: '$listId:number',
                 },
             },
             deleteTag: {
@@ -233,6 +271,28 @@ export class MetaPickerStorage extends StorageModule {
         return result
     }
 
+    async createAnnotListEntry(entry: {
+        annotationUrl: string
+        listId: number
+        createdAt?: Date
+    }): Promise<{ id: number }> {
+        const { object } = await this.operation('createAnnotListEntry', {
+            createdAt: entry.createdAt ?? new Date(),
+            listId: entry.listId,
+            url: entry.annotationUrl,
+        })
+
+        if (
+            ![SPECIAL_LIST_IDS.INBOX, SPECIAL_LIST_IDS.MOBILE].includes(
+                entry.listId,
+            )
+        ) {
+            await this.updateListSuggestionsCache({ added: entry.listId })
+        }
+
+        return object
+    }
+
     async createPageListEntry(entry: { fullPageUrl: string; listId: number }) {
         const result = await this.operation('createListEntry', {
             createdAt: new Date(),
@@ -299,6 +359,14 @@ export class MetaPickerStorage extends StorageModule {
 
     findPageListEntriesByPage({ url }: { url: string }): Promise<ListEntry[]> {
         return this.operation('findEntriesByPage', { url })
+    }
+
+    findAnnotListEntriesByAnnot({
+        annotationUrl,
+    }: {
+        annotationUrl: string
+    }): Promise<AnnotListEntry[]> {
+        return this.operation('findEntriesByAnnot', { url: annotationUrl })
     }
 
     async findListsByPage({ url }: { url: string }): Promise<List[]> {
@@ -424,6 +492,14 @@ export class MetaPickerStorage extends StorageModule {
         return this.operation('findEntriesByList', { listId })
     }
 
+    findAnnotListEntriesByList({
+        listId,
+    }: {
+        listId: number
+    }): Promise<AnnotListEntry[]> {
+        return this.operation('findAnnotEntriesByList', { listId })
+    }
+
     /**
      * Should go through input `tags` and ensure only these tags exist for a given page.
      */
@@ -472,6 +548,7 @@ export class MetaPickerStorage extends StorageModule {
         const toAdd = listIds.filter(
             (listId) => !existingEntryListIds.has(listId),
         )
+
         for (const listId of toAdd) {
             await this.createPageListEntry({ listId, fullPageUrl })
         }
@@ -489,30 +566,65 @@ export class MetaPickerStorage extends StorageModule {
         }
     }
 
+    /**
+     * Should go through input `listIds`, then ensure entries for only these lists exist for a given annotation.
+     */
+    async setAnnotationLists({
+        listIds,
+        annotationUrl,
+    }: {
+        listIds: number[]
+        annotationUrl: string
+    }) {
+        const existingEntries = await this.findAnnotListEntriesByAnnot({
+            annotationUrl,
+        })
+        const existingEntryListIds = new Set(
+            existingEntries.map((e) => e.listId),
+        )
+        const toAdd = listIds.filter(
+            (listId) => !existingEntryListIds.has(listId),
+        )
+
+        for (const listId of toAdd) {
+            await this.createAnnotListEntry({ listId, annotationUrl })
+        }
+
+        // Find any existing entries that are not in input lists
+        const toRemove = existingEntries
+            .map((entry) => entry.listId)
+            .filter((id) => !listIds.includes(id))
+
+        for (const listId of toRemove) {
+            await this.deleteAnnotEntryFromList({ listId, annotationUrl })
+        }
+    }
+
     async deleteList({ listId }: { listId: number }) {
         await this.deletePageListEntriesByList({ listId })
+        await this.deleteAnnotListEntriesByList({ listId })
         await this.operation('deleteList', { listId })
         await this.updateListSuggestionsCache({ removed: listId })
+    }
+
+    deleteAnnotListEntriesByList({ listId }: { listId: number }) {
+        return this.operation('deleteAnnotEntriesForList', { listId })
     }
 
     deletePageListEntriesByList({ listId }: { listId: number }) {
         return this.operation('deleteEntriesForList', { listId })
     }
 
-    deletePageEntryFromList(entry: { listId: number; url: string }) {
-        return this.operation('deletePageFromList', entry)
+    deleteAnnotEntryFromList(entry: { listId: number; annotationUrl: string }) {
+        return this.operation('deleteAnnotFromList', {
+            listId: entry.listId,
+            url: entry.annotationUrl,
+        })
     }
 
-    async deletePageEntryByName(entry: { name: string; url: string }) {
-        const lists = await this.findListsByNames({ names: [entry.name] })
-        const listId = lists[0]?.id
-
-        if (!listId) {
-            return
-        }
-
+    deletePageEntryFromList(entry: { listId: number; url: string }) {
         return this.operation('deletePageFromList', {
-            listId,
+            listId: entry.listId,
             url: entry.url,
         })
     }

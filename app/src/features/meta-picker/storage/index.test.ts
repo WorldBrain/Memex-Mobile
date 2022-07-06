@@ -4,6 +4,7 @@ import { storageKeys } from '../../../../app.json'
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
 import * as pageData from 'src/features/overview/storage/index.test.data'
+import { notes as noteData } from 'src/features/page-editor/storage/index.test.data'
 import {
     SPECIAL_LIST_NAMES,
     SPECIAL_LIST_IDS,
@@ -145,9 +146,76 @@ describe('meta picker StorageModule', () => {
         },
     )
 
+    it(
+        'should be able to create annotation list entries, adding the lists to the suggestions cache',
+        { skipSyncTests: true },
+        async ({
+            storage: {
+                modules: { metaPicker, pageEditor, localSettings },
+            },
+        }) => {
+            const listIds: number[] = []
+
+            expect(
+                await localSettings.getSetting({
+                    key: storageKeys.spaceSuggestionsCache,
+                }),
+            ).toEqual(null)
+
+            for (const name of data.lists) {
+                const { object } = await metaPicker.createList({ name })
+                listIds.push(object.id)
+            }
+
+            expect(
+                await localSettings.getSetting({
+                    key: storageKeys.spaceSuggestionsCache,
+                }),
+            ).toEqual([...listIds].reverse())
+
+            expect(listIds.length).toBe(data.lists.length)
+
+            // For each test page, create entries in all lists
+            for (const note of noteData) {
+                await pageEditor.createNote(note)
+
+                for (const listId of [...listIds].reverse()) {
+                    await metaPicker.createAnnotListEntry({
+                        annotationUrl: note.url,
+                        listId,
+                    })
+                }
+            }
+
+            expect(
+                await localSettings.getSetting({
+                    key: storageKeys.spaceSuggestionsCache,
+                }),
+            ).toEqual(listIds)
+
+            for (const listId of listIds) {
+                const entries = await metaPicker.findAnnotListEntriesByList({
+                    listId,
+                })
+                expect(entries.map((e) => e.url).sort()).toEqual(
+                    noteData.map((p) => p.url).sort(),
+                )
+            }
+
+            for (const note of noteData) {
+                const entries = await metaPicker.findAnnotListEntriesByAnnot({
+                    annotationUrl: note.url,
+                })
+                expect(entries.map((e) => +e.listId).sort()).toEqual(
+                    listIds.sort(),
+                )
+            }
+        },
+    )
+
     it('should be able to delete lists + associated entries', async ({
         storage: {
-            modules: { metaPicker, overview, localSettings },
+            modules: { metaPicker, overview, pageEditor, localSettings },
         },
     }) => {
         const listIds: number[] = []
@@ -170,21 +238,16 @@ describe('meta picker StorageModule', () => {
             }
         }
 
-        for (const listId of listIds) {
-            await metaPicker.deletePageListEntriesByList({ listId })
-            expect(
-                await metaPicker.findPageListEntriesByList({
-                    listId,
-                }),
-            ).toEqual([])
-        }
+        // For each test page, create entries in all lists
+        for (const note of noteData) {
+            await pageEditor.createNote(note)
 
-        for (const page of pageData.pages) {
-            expect(
-                await metaPicker.findPageListEntriesByPage({
-                    url: page.url,
-                }),
-            ).toEqual([])
+            for (const listId of listIds) {
+                await metaPicker.createAnnotListEntry({
+                    annotationUrl: note.url,
+                    listId,
+                })
+            }
         }
 
         expect(await metaPicker.findListsByIds({ ids: listIds })).toEqual(
@@ -192,6 +255,32 @@ describe('meta picker StorageModule', () => {
                 expect.objectContaining({ id, name: data.lists[i] }),
             ),
         )
+
+        for (const listId of listIds) {
+            expect(
+                await metaPicker.findPageListEntriesByList({
+                    listId,
+                }),
+            ).toEqual(
+                expect.arrayContaining(
+                    pageData.pages.map((p) =>
+                        expect.objectContaining({ listId, pageUrl: p.url }),
+                    ),
+                ),
+            )
+            expect(
+                await metaPicker.findAnnotListEntriesByList({
+                    listId,
+                }),
+            ).toEqual(
+                expect.arrayContaining(
+                    noteData.map((a) =>
+                        expect.objectContaining({ listId, url: a.url }),
+                    ),
+                ),
+            )
+        }
+
         expect(
             await localSettings.getSetting({
                 key: storageKeys.spaceSuggestionsCache,
@@ -203,6 +292,20 @@ describe('meta picker StorageModule', () => {
         }
 
         expect(await metaPicker.findListsByIds({ ids: listIds })).toEqual([])
+
+        for (const listId of listIds) {
+            expect(
+                await metaPicker.findPageListEntriesByList({
+                    listId,
+                }),
+            ).toEqual([])
+            expect(
+                await metaPicker.findAnnotListEntriesByList({
+                    listId,
+                }),
+            ).toEqual([])
+        }
+
         expect(
             await localSettings.getSetting({
                 key: storageKeys.spaceSuggestionsCache,
@@ -211,6 +314,48 @@ describe('meta picker StorageModule', () => {
     })
 
     it('should be able to delete page list entries', async ({
+        storage: {
+            modules: { overview, metaPicker },
+        },
+    }) => {
+        const listIds: number[] = []
+
+        for (const name of data.lists) {
+            const { object } = await metaPicker.createList({ name })
+            listIds.push(object.id)
+        }
+
+        expect(listIds.length).toBe(data.lists.length)
+
+        // For each test page, create entries in all lists
+        for (const page of pageData.pages) {
+            await overview.createPage(page)
+
+            for (const listId of listIds) {
+                await metaPicker.createPageListEntry({
+                    fullPageUrl: page.fullUrl,
+                    listId,
+                })
+            }
+        }
+
+        // Test single delete
+        const entry = { listId: listIds[0], url: pageData.pages[0].url }
+        const beforeEntries = await metaPicker.findPageListEntriesByList(entry)
+        await metaPicker.deletePageEntryFromList(entry)
+        const afterEntries = await metaPicker.findPageListEntriesByList(entry)
+        expect(beforeEntries.length).toBe(afterEntries.length + 1)
+
+        // Test delete by entire list
+        for (const listId of listIds) {
+            await metaPicker.deletePageListEntriesByList({ listId })
+            expect(
+                await metaPicker.findPageListEntriesByList({ listId }),
+            ).toEqual([])
+        }
+    })
+
+    it('should be able to delete annot list entries', async ({
         storage: {
             modules: { overview, metaPicker },
         },
@@ -546,6 +691,57 @@ describe('meta picker StorageModule', () => {
             expect.arrayContaining([listIds[0], listIds[1]]),
         )
         expect(pageEntriesAfter.map((e) => e.listId)).toEqual(
+            expect.arrayContaining([listIds[1], listIds[2]]),
+        )
+    })
+
+    it('should be able to set an annotation to only given lists (delete existing, add missing)', async ({
+        storage: {
+            modules: { metaPicker, overview, pageEditor },
+        },
+    }) => {
+        await overview.createPage(pageData.pages[0])
+        await pageEditor.createNote(noteData[0])
+
+        const listIds: number[] = []
+
+        for (const name of data.lists) {
+            const { object } = await metaPicker.createList({ name })
+            listIds.push(object.id)
+        }
+
+        expect(listIds.length).toBe(data.lists.length)
+
+        await metaPicker.createAnnotListEntry({
+            annotationUrl: noteData[0].url,
+            listId: listIds[0],
+        })
+        await metaPicker.createAnnotListEntry({
+            annotationUrl: noteData[0].url,
+            listId: listIds[1],
+        })
+
+        const annotEntriesBefore = await metaPicker.findAnnotListEntriesByAnnot(
+            {
+                annotationUrl: noteData[0].url,
+            },
+        )
+        expect(annotEntriesBefore.map((e) => e.listId)).toEqual(
+            expect.arrayContaining([listIds[0], listIds[1]]),
+        )
+
+        await metaPicker.setAnnotationLists({
+            listIds: [listIds[1], listIds[2]],
+            annotationUrl: noteData[0].url,
+        })
+
+        const annotEntriesAfter = await metaPicker.findAnnotListEntriesByAnnot({
+            annotationUrl: noteData[0].url,
+        })
+        expect(annotEntriesAfter.map((e) => e.listId)).not.toEqual(
+            expect.arrayContaining([listIds[0], listIds[1]]),
+        )
+        expect(annotEntriesAfter.map((e) => e.listId)).toEqual(
             expect.arrayContaining([listIds[1], listIds[2]]),
         )
     })

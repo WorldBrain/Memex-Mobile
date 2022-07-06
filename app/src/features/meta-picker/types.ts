@@ -24,3 +24,9 @@ export interface ListEntry {
     fullUrl: string
     createdAt: Date
 }
+
+export interface AnnotListEntry {
+    listId: number
+    url: string
+    createdAt: Date
+}

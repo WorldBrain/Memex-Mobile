@@ -6,19 +6,22 @@ export const pages: Omit<Page, 'domain' | 'hostname' | 'pageUrl'>[] = [
         url: 'test.com',
         fullUrl: 'https://test.com',
         text: '',
-        fullTitle: 'test page',
+        fullTitle: 'This is a test page',
+        type: 'page',
     },
     {
         url: 'test.com/page1',
         fullUrl: 'https://test.com/page1',
         text: '',
-        fullTitle: 'test page 1',
+        fullTitle: 'This is yet another test page',
+        type: 'page',
     },
     {
         url: 'info.test.com/page1',
         fullUrl: 'https://info.test.com/page1',
         text: '',
-        fullTitle: 'test page 1 info',
+        fullTitle: 'This is another test page but on a different subdomain',
+        type: 'page',
     },
 ]
 
@@ -34,8 +37,7 @@ export const notes: Note[] = [
         url: 'test.com/#112',
         pageUrl: 'test.com',
         pageTitle: pages[0].fullTitle,
-        body:
-            'this is some other highlighted text from the page with different terms',
+        body: 'this is some other highlighted text from the page with different terms',
         selector: {},
         comment: 'this is a comment written by a user',
     },
