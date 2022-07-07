@@ -58,7 +58,9 @@ export default class PageEditorScreen extends StatefulUIElement<
         return (
             <NotesList
                 initNoteAddSpaces={(note) => () =>
-                    this.processEvent('setEditorMode', { mode: 'collections' })}
+                    this.processEvent('setAnnotationToEdit', {
+                        annotationUrl: note.url,
+                    })}
                 initNoteDelete={(n) => () =>
                     this.processEvent('confirmNoteDelete', { url: n.url })}
                 initNoteEdit={(note) => () =>
@@ -71,7 +73,9 @@ export default class PageEditorScreen extends StatefulUIElement<
                     })}
                 initNotePress={(n) => () =>
                     this.processEvent('toggleNotePress', { url: n.url })}
-                notes={this.state.page.notes}
+                notes={this.state.page.noteIds.map(
+                    (noteId) => this.state.noteData[noteId],
+                )}
                 listData={this.state.listData}
                 pageData={this.state.page}
                 clearBackground
@@ -91,6 +95,11 @@ export default class PageEditorScreen extends StatefulUIElement<
         if (this.state.mode === 'notes') {
             return this.renderNotes()
         }
+
+        // const selectedListIds =
+        //     this.state.mode === 'annotation-spaces'
+        //         ? this.state.page.notes.find()
+        //         : this.state.page.listIds
 
         return (
             <MetaPicker

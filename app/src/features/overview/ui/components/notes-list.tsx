@@ -14,7 +14,7 @@ import type { List } from 'src/features/meta-picker/types'
 
 export interface Props {
     notes: UINote[]
-    pageData?: UIPage
+    pageData?: Omit<UIPage, 'notes'>
     clearBackground?: boolean
     listData: { [listId: string]: List }
     initNoteAddSpaces: (note: UINote) => TouchEventHandler

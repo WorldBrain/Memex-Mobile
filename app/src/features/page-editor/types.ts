@@ -1,4 +1,4 @@
-export type EditorMode = 'collections' | 'notes'
+export type EditorMode = 'collections' | 'annotation-spaces' | 'notes'
 
 export interface Note {
     url: string

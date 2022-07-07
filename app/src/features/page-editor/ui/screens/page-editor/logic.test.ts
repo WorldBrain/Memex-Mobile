@@ -89,61 +89,68 @@ describe('page editor UI logic tests', () => {
                 listIds: [123],
                 pageUrl: DATA.PAGE_1.url,
                 isStarred: true,
-                notes: [
-                    expect.objectContaining({
-                        url: DATA.NOTE_1.url,
-                        domain: DATA.PAGE_1.domain,
-                        isStarred: false,
-                        commentText: DATA.NOTE_1.comment,
-                        listIds: [123, 124],
-                    }),
-                ],
+                noteIds: [DATA.NOTE_1.url],
             }),
         )
+        expect(element.state.noteData).toEqual({
+            [DATA.NOTE_1.url]: expect.objectContaining({
+                url: DATA.NOTE_1.url,
+                domain: DATA.PAGE_1.domain,
+                isStarred: false,
+                commentText: DATA.NOTE_1.comment,
+                listIds: [123, 124],
+            }),
+        })
         expect(element.state.listData).toEqual({
             [123]: expect.objectContaining({ name: 'test a' }),
             [124]: expect.objectContaining({ name: 'test b' }),
         })
     })
 
-    it('should be able to set save notes', async (context) => {
-        const { logicContainer } = setup(context)
+    // it('should be able to set save notes', async (context) => {
+    //     const { logicContainer } = setup(context)
 
-        logicContainer.logic.emitMutation({
-            page: { $set: testPage as any },
-        })
-        expect(logicContainer.state.page.notes.length).toBe(0)
+    //     logicContainer.logic.emitMutation({
+    //         page: { $set: testPage as any },
+    //     })
+    //     expect(logicContainer.state.page.notes.length).toBe(0)
 
-        await logicContainer.processEvent('saveNote', { text: testText })
+    //     await logicContainer.processEvent('saveNote', { text: testText })
 
-        expect(logicContainer.state.page.notes.length).toBe(1)
-        const note =
-            logicContainer.state.page.notes[
-                logicContainer.state.page.notes.length - 1
-            ]
-        expect(note.commentText).toEqual(testText)
-    })
+    //     expect(logicContainer.state.page.notes.length).toBe(1)
+    //     const note =
+    //         logicContainer.state.page.notes[
+    //             logicContainer.state.page.notes.length - 1
+    //         ]
+    //     expect(note.commentText).toEqual(testText)
+    // })
 
     it('should be able to toggle note being pressed', async (context) => {
         const { logicContainer } = setup(context)
+        const testNoteId = 'test.com/#1234'
 
         logicContainer.logic.emitMutation({
-            page: { $set: testPage as any },
+            page: { $set: { ...testPage, noteIds: [testNoteId] } as any },
+            noteData: {
+                $set: { [testNoteId]: { isNotePressed: false } as any },
+            },
         })
-        expect(logicContainer.state.page.notes.length).toBe(0)
 
-        await logicContainer.processEvent('saveNote', { text: testText })
-
-        expect(logicContainer.state.page.notes[0].isNotePressed).toBe(undefined)
-        const { url } = logicContainer.state.page.notes[0]
-
-        await logicContainer.processEvent('toggleNotePress', { url })
-
-        expect(logicContainer.state.page.notes[0].isNotePressed).toBe(true)
-
-        await logicContainer.processEvent('toggleNotePress', { url })
-
-        expect(logicContainer.state.page.notes[0].isNotePressed).toBe(false)
+        expect(logicContainer.state.noteData[testNoteId].isNotePressed).toBe(
+            false,
+        )
+        await logicContainer.processEvent('toggleNotePress', {
+            url: testNoteId,
+        })
+        expect(logicContainer.state.noteData[testNoteId].isNotePressed).toBe(
+            true,
+        )
+        await logicContainer.processEvent('toggleNotePress', {
+            url: testNoteId,
+        })
+        expect(logicContainer.state.noteData[testNoteId].isNotePressed).toBe(
+            false,
+        )
     })
 
     it('should be able to add/remove pages to/from a list', async (context) => {
@@ -233,22 +240,21 @@ describe('page editor UI logic tests', () => {
             text: '',
         })
 
-        const TEST_NOTE_TEXT_1 = 'test 1'
         const TEST_LIST_1 = 'test 1'
         const { object } = await context.storage.modules.metaPicker.createList({
             name: TEST_LIST_1,
         })
         const TEST_LIST_1_ID = object.id
+        const TEST_NOTE_ID = 'test.com/#1234'
 
         logicContainer.logic.emitMutation({
-            page: { $set: testPage as any },
+            page: { $set: { ...testPage, noteIds: [TEST_NOTE_ID] } as any },
+            noteData: {
+                $set: { [TEST_NOTE_ID]: { url: TEST_NOTE_ID } as any },
+            },
             mode: { $set: 'notes' },
         })
-        expect(logicContainer.state.page.notes.length).toBe(0)
-
-        await logicContainer.processEvent('saveNote', {
-            text: TEST_NOTE_TEXT_1,
-        })
+        expect(logicContainer.state.page.noteIds.length).toBe(1)
 
         logicContainer.logic.emitMutation({ mode: { $set: 'collections' } })
         await logicContainer.processEvent('createEntry', {
@@ -260,9 +266,7 @@ describe('page editor UI logic tests', () => {
         expect(updatedPage).toEqual(
             expect.objectContaining({
                 listIds: [TEST_LIST_1_ID],
-                notes: [
-                    expect.objectContaining({ commentText: TEST_NOTE_TEXT_1 }),
-                ],
+                notes: [expect.objectContaining({ url: TEST_NOTE_ID })],
             }),
         )
     })
@@ -281,22 +285,28 @@ describe('page editor UI logic tests', () => {
             ...DATA.PAGE_1,
             text: '',
         })
+        const testAnnotationUrl = 'test.com/#1234'
 
         await logicContainer.processEvent('init', undefined)
 
         expect(logicContainer.state.mode).toEqual('notes')
         expect(logicContainer.state.previousMode).toEqual(null)
+        expect(logicContainer.state.annotationUrlToEdit).toEqual(null)
 
-        await logicContainer.processEvent('setEditorMode', {
-            mode: 'collections',
+        await logicContainer.processEvent('setAnnotationToEdit', {
+            annotationUrl: testAnnotationUrl,
         })
 
-        expect(logicContainer.state.mode).toEqual('collections')
+        expect(logicContainer.state.mode).toEqual('annotation-spaces')
         expect(logicContainer.state.previousMode).toEqual('notes')
+        expect(logicContainer.state.annotationUrlToEdit).toEqual(
+            testAnnotationUrl,
+        )
 
         await logicContainer.processEvent('goBack', null)
 
         expect(logicContainer.state.mode).toEqual('notes')
         expect(logicContainer.state.previousMode).toEqual(null)
+        expect(logicContainer.state.annotationUrlToEdit).toEqual(null)
     })
 })

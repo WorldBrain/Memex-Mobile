@@ -8,8 +8,8 @@ import {
 } from 'ui-logic-core'
 
 import type {
-    UIPageWithNotes as Page,
-    UINote,
+    UIPageWithNotes as _Page,
+    UINote as Note,
 } from 'src/features/overview/types'
 import type { EditorMode } from 'src/features/page-editor/types'
 import type {
@@ -23,21 +23,24 @@ import { timeFromNow } from 'src/utils/time-helpers'
 import type { MainNavigatorParamList } from 'src/ui/navigation/types'
 import type { List } from 'src/features/meta-picker/types'
 
+type Page = Omit<_Page, 'notes'> & { noteIds: string[] }
+
 export interface State {
-    page: Page
+    page: Omit<Page, 'notes'> & { noteIds: string[] }
     mode: EditorMode
     previousMode: EditorMode | null
+    annotationUrlToEdit: string | null
     loadState: UITaskState
     listData: { [listId: string]: List }
+    noteData: { [noteId: string]: Note }
 }
 
 export type Event = UIEvent<{
-    setEditorMode: { mode: EditorMode }
+    setAnnotationToEdit: { annotationUrl: string }
     toggleNotePress: { url: string }
     removeEntry: { listId: number }
     createEntry: { listId: number }
     confirmNoteDelete: { url: string }
-    saveNote: { text: string }
     focusFromNavigation: MainNavigatorParamList['PageEditor']
     goBack: null
 }>
@@ -63,8 +66,10 @@ export default class Logic extends UILogic<State, Event> {
             loadState: 'pristine',
             mode: 'collections',
             previousMode: null,
+            annotationUrlToEdit: null,
             page: {} as any,
             listData: {},
+            noteData: {},
         }
     }
 
@@ -111,6 +116,31 @@ export default class Logic extends UILogic<State, Event> {
                     {},
                 ),
             },
+            noteData: {
+                $set: notes.reduce(
+                    (acc, note) => ({
+                        ...acc,
+                        [note.url]: {
+                            domain: storedPage.domain,
+                            fullUrl: url,
+                            url: note.url,
+                            isStarred: note.isStarred,
+                            commentText: note.comment || undefined,
+                            noteText: note.body,
+                            isNotePressed: false,
+                            tags: [],
+                            listIds: listIdsByNotes[note.url],
+                            isEdited:
+                                note.lastEdited?.getTime() !==
+                                note.createdWhen!.getTime(),
+                            date: timeFromNow(
+                                note.lastEdited ?? note.createdWhen!,
+                            ),
+                        },
+                    }),
+                    {},
+                ),
+            },
         })
 
         return {
@@ -120,31 +150,18 @@ export default class Logic extends UILogic<State, Event> {
             tags: [],
             listIds: pageListIds,
             pageUrl: storedPage.url,
-            // TODO: unify this map fn with the identical one in DashboardLogic
-            notes: notes.map<UINote>((note) => ({
-                domain: storedPage.domain,
-                fullUrl: url,
-                url: note.url,
-                isStarred: note.isStarred,
-                commentText: note.comment || undefined,
-                noteText: note.body,
-                isNotePressed: false,
-                tags: [],
-                listIds: listIdsByNotes[note.url],
-                isEdited:
-                    note.lastEdited?.getTime() !== note.createdWhen!.getTime(),
-                date: timeFromNow(note.lastEdited ?? note.createdWhen!),
-            })),
+            noteIds: notes.map((note) => note.url),
         }
     }
 
-    setEditorMode: EventHandler<'setEditorMode'> = async ({
+    setAnnotationToEdit: EventHandler<'setAnnotationToEdit'> = async ({
         event,
         previousState,
     }) => {
         this.emitMutation({
-            mode: { $set: event.mode },
+            mode: { $set: 'annotation-spaces' },
             previousMode: { $set: previousState.mode },
+            annotationUrlToEdit: { $set: event.annotationUrl },
         })
     }
 
@@ -152,23 +169,8 @@ export default class Logic extends UILogic<State, Event> {
         incoming: IncomingUIEvent<State, Event, 'toggleNotePress'>,
     ): UIMutation<State> {
         return {
-            page: (state) => {
-                const noteIndex = state.notes.findIndex(
-                    (note) => note.url === incoming.event.url,
-                )
-
-                return {
-                    ...state,
-                    notes: [
-                        ...state.notes.slice(0, noteIndex),
-                        {
-                            ...state.notes[noteIndex],
-                            isNotePressed:
-                                !state.notes[noteIndex].isNotePressed,
-                        },
-                        ...state.notes.slice(noteIndex + 1),
-                    ],
-                }
+            noteData: {
+                [incoming.event.url]: { isNotePressed: (prev) => !prev },
             },
         }
     }
@@ -228,19 +230,8 @@ export default class Logic extends UILogic<State, Event> {
 
     private async deleteNote(url: string) {
         this.emitMutation({
-            page: (state) => {
-                const noteIndex = state.notes.findIndex(
-                    (note) => note.url === url,
-                )
-
-                return {
-                    ...state,
-                    notes: [
-                        ...state.notes.slice(0, noteIndex),
-                        ...state.notes.slice(noteIndex + 1),
-                    ],
-                }
-            },
+            noteData: { $unset: [url] },
+            page: { noteIds: (ids) => ids.filter((id) => id !== url) },
         })
 
         const { pageEditor } = this.props.storage.modules
@@ -248,38 +239,21 @@ export default class Logic extends UILogic<State, Event> {
         await pageEditor.deleteNoteByUrl({ url })
     }
 
-    saveNote(
-        incoming: IncomingUIEvent<State, Event, 'saveNote'>,
-    ): UIMutation<State> {
-        // TODO: Generate new URL, or get it from storage layer
-        return {
-            page: ({ notes = [], ...page }) => ({
-                ...page,
-                notes: [
-                    ...notes,
-                    {
-                        url: page.url,
-                        date: 'now',
-                        commentText: incoming.event.text,
-                        domain: page.domain,
-                        fullUrl: page.fullUrl,
-                        listIds: [],
-                        tags: [],
-                    },
-                ],
-            }),
-        }
-    }
-
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
         if (previousState.previousMode != null) {
             this.emitMutation({
                 mode: { $set: previousState.previousMode },
+                annotationUrlToEdit: { $set: null },
                 previousMode: { $set: null },
             })
             return
         }
-        this.props.route.params.updatePage(previousState.page)
+        this.props.route.params.updatePage({
+            ...previousState.page,
+            notes: previousState.page.noteIds.map(
+                (noteId) => previousState.noteData[noteId],
+            ),
+        })
         this.props.navigation.goBack()
     }
 }
