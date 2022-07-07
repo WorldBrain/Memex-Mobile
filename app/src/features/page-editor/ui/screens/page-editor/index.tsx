@@ -34,6 +34,20 @@ export default class PageEditorScreen extends StatefulUIElement<
         this.unsubNavFocus()
     }
 
+    private get spacePickerSelectedIds(): number[] {
+        if (
+            this.state.mode === 'annotation-spaces' &&
+            this.state.annotationUrlToEdit != null
+        ) {
+            return (
+                this.state.noteData[this.state.annotationUrlToEdit!]?.listIds ??
+                []
+            )
+        }
+
+        return this.state.page.listIds
+    }
+
     private handleEntryPress = (entry: SpacePickerEntry) => {
         if (entry.isChecked) {
             return this.processEvent('removeEntry', { listId: entry.id })
@@ -96,16 +110,11 @@ export default class PageEditorScreen extends StatefulUIElement<
             return this.renderNotes()
         }
 
-        // const selectedListIds =
-        //     this.state.mode === 'annotation-spaces'
-        //         ? this.state.page.notes.find()
-        //         : this.state.page.listIds
-
         return (
             <MetaPicker
                 {...this.props}
                 onEntryPress={this.handleEntryPress}
-                initSelectedEntries={this.state.page.listIds}
+                initSelectedEntries={this.spacePickerSelectedIds}
             />
         )
     }

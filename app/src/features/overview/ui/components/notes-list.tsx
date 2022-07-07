@@ -35,7 +35,8 @@ class NotesList extends React.PureComponent<Props> {
             {...item}
             isNotePressed={!!item.isNotePressed}
             listNames={item.listIds.map(
-                (listId) => this.props.listData[listId].name,
+                (listId) =>
+                    this.props.listData[listId]?.name ?? 'Missing Space',
             )}
         />
     )

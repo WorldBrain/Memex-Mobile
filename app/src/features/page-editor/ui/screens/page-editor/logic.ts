@@ -175,45 +175,68 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async removeEntry({
+    removeEntry: EventHandler<'removeEntry'> = async ({
         event: { listId },
         previousState,
-    }: IncomingUIEvent<State, Event, 'removeEntry'>) {
+    }) => {
         const { metaPicker } = this.props.storage.modules
-        const url = previousState.page.url
 
-        this.emitMutation({
-            page: (state) => {
-                const i = state.listIds.indexOf(listId)
-                return {
-                    ...state,
-                    listIds: [
-                        ...state.listIds.slice(0, i),
-                        ...state.listIds.slice(i + 1),
-                    ],
-                }
-            },
-        })
-        await metaPicker.deletePageEntryFromList({ url, listId })
+        if (
+            previousState.mode === 'annotation-spaces' &&
+            previousState.annotationUrlToEdit != null
+        ) {
+            this.emitMutation({
+                noteData: {
+                    [previousState.annotationUrlToEdit]: {
+                        listIds: (ids) => ids.filter((id) => id != listId),
+                    },
+                },
+            })
+            await metaPicker.deleteAnnotEntryFromList({
+                annotationUrl: previousState.annotationUrlToEdit,
+                listId,
+            })
+        } else {
+            this.emitMutation({
+                page: {
+                    listIds: (ids) => ids.filter((id) => id != listId),
+                },
+            })
+            await metaPicker.deletePageEntryFromList({
+                url: previousState.page.url,
+                listId,
+            })
+        }
     }
 
-    async createEntry({
+    createEntry: EventHandler<'createEntry'> = async ({
         event: { listId },
         previousState,
-    }: IncomingUIEvent<State, Event, 'createEntry'>) {
+    }) => {
         const { metaPicker } = this.props.storage.modules
 
-        this.emitMutation({
-            page: (state) => ({
-                ...state,
-                listIds: [listId, ...state.listIds],
-            }),
-        })
-
-        await metaPicker.createPageListEntry({
-            fullPageUrl: previousState.page.url,
-            listId,
-        })
+        if (
+            previousState.mode === 'annotation-spaces' &&
+            previousState.annotationUrlToEdit != null
+        ) {
+            this.emitMutation({
+                noteData: {
+                    [previousState.annotationUrlToEdit]: {
+                        listIds: { $unshift: [listId] },
+                    },
+                },
+            })
+            await metaPicker.createAnnotListEntry({
+                annotationUrl: previousState.annotationUrlToEdit,
+                listId,
+            })
+        } else {
+            this.emitMutation({ page: { listIds: { $unshift: [listId] } } })
+            await metaPicker.createPageListEntry({
+                fullPageUrl: previousState.page.url,
+                listId,
+            })
+        }
     }
 
     async confirmNoteDelete({

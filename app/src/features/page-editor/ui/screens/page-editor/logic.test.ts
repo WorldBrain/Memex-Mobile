@@ -157,7 +157,6 @@ describe('page editor UI logic tests', () => {
         let createListEntryValue: any
         let deleteListEntryValue: any
         const testLists = ['a', 'b', 'c']
-        const settingsStorage = new MockSettingsStorage()
 
         const { logicContainer } = setup({
             ...context,
@@ -173,11 +172,6 @@ describe('page editor UI logic tests', () => {
                     },
                 },
             } as any,
-            services: {
-                ...context.services,
-                localStorage: new StorageService({ settingsStorage }),
-                syncStorage: new StorageService({ settingsStorage }),
-            },
         })
 
         logicContainer.logic.emitMutation({
@@ -194,19 +188,12 @@ describe('page editor UI logic tests', () => {
             testListIds.push(object.id)
         }
 
-        const tmpCache = []
         for (const listId of testListIds) {
             await logicContainer.processEvent('createEntry', { listId })
             expect(createListEntryValue).toEqual({
                 fullPageUrl: testPage.url,
                 listId,
             })
-            tmpCache.unshift(listId)
-
-            // TODO: fix cache
-            // expect(
-            //     settingsStorage.settings['@MemexApp_list-suggestions-cache'],
-            // ).toEqual(tmpCache)
         }
 
         expect(logicContainer.state.page.listIds.length).toBe(
@@ -219,6 +206,71 @@ describe('page editor UI logic tests', () => {
             expect(deleteListEntryValue).toEqual({ url: testPage.url, listId })
         }
         expect(logicContainer.state.page.listIds.length).toBe(0)
+    })
+
+    it('should be able to add/remove annotations to/from a list', async (context) => {
+        let createListEntryValue: any
+        let deleteListEntryValue: any
+        const testLists = ['a', 'b', 'c']
+
+        const { logicContainer } = setup({
+            ...context,
+            storage: {
+                ...context.storage,
+                modules: {
+                    ...context.storage.modules,
+                    metaPicker: {
+                        createAnnotListEntry: async (args: any) =>
+                            (createListEntryValue = args),
+                        deleteAnnotEntryFromList: async (args: any) =>
+                            (deleteListEntryValue = args),
+                    },
+                },
+            } as any,
+        })
+
+        const TEST_NOTE_ID = 'test.com/#1234'
+
+        logicContainer.logic.emitMutation({
+            noteData: {
+                $set: {
+                    [TEST_NOTE_ID]: { url: TEST_NOTE_ID, listIds: [] } as any,
+                },
+            },
+            page: { $set: { ...testPage, noteIds: [TEST_NOTE_ID] } as any },
+            annotationUrlToEdit: { $set: TEST_NOTE_ID },
+            mode: { $set: 'annotation-spaces' },
+        })
+
+        expect(logicContainer.state.noteData[TEST_NOTE_ID].listIds).toEqual([])
+
+        const testListIds = []
+        for (const name of testLists) {
+            const { object } =
+                await context.storage.modules.metaPicker.createList({ name })
+            testListIds.push(object.id)
+        }
+
+        for (const listId of testListIds) {
+            await logicContainer.processEvent('createEntry', { listId })
+            expect(createListEntryValue).toEqual({
+                annotationUrl: TEST_NOTE_ID,
+                listId,
+            })
+        }
+
+        expect(logicContainer.state.noteData[TEST_NOTE_ID].listIds).toEqual(
+            [...testListIds].reverse(),
+        )
+
+        for (const listId of testListIds) {
+            await logicContainer.processEvent('removeEntry', { listId })
+            expect(deleteListEntryValue).toEqual({
+                annotationUrl: TEST_NOTE_ID,
+                listId,
+            })
+        }
+        expect(logicContainer.state.noteData[TEST_NOTE_ID].listIds).toEqual([])
     })
 
     it('should be able to nav back, passing page state to update param', async (context) => {

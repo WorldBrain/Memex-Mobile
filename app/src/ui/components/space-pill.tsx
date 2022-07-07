@@ -7,7 +7,7 @@ export interface Props {
 
 const SpacePill: React.SFC<Props> = ({ name }) => (
     <SpacePillContainer>
-        <SpacePillText>{name ?? 'Missing list'}</SpacePillText>
+        <SpacePillText>{name ?? 'Missing Space'}</SpacePillText>
     </SpacePillContainer>
 )
 
