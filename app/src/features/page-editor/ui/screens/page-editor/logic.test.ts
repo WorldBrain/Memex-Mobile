@@ -1,11 +1,12 @@
 import Logic, { Props, State, Event } from './logic'
 import { TestLogicContainer } from 'src/tests/ui-logic'
 import { FakeNavigation, FakeRoute } from 'src/tests/navigation'
-import { makeStorageTestFactory, TestDevice } from 'src/index.tests'
+import { makeStorageTestFactory } from 'src/index.tests'
 import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import * as DATA from './logic.test.data'
 import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 import { StorageService } from 'src/services/settings-storage'
+import type { TestDevice } from 'src/types.tests'
 
 const testText = 'this is a test'
 const testPage = {
@@ -264,5 +265,38 @@ describe('page editor UI logic tests', () => {
                 ],
             }),
         )
+    })
+
+    it('should be able to "nav" back to prev editor mode, after switching to space picker mode', async (context) => {
+        const { logicContainer, logic } = setup({
+            ...context,
+            route: new FakeRoute({
+                fullPageUrl: DATA.PAGE_1.url,
+                pageUrl: DATA.PAGE_1.url,
+                mode: 'notes',
+            }) as any,
+        })
+
+        await context.storage.modules.overview.createPage({
+            ...DATA.PAGE_1,
+            text: '',
+        })
+
+        await logicContainer.processEvent('init', undefined)
+
+        expect(logicContainer.state.mode).toEqual('notes')
+        expect(logicContainer.state.previousMode).toEqual(null)
+
+        await logicContainer.processEvent('setEditorMode', {
+            mode: 'collections',
+        })
+
+        expect(logicContainer.state.mode).toEqual('collections')
+        expect(logicContainer.state.previousMode).toEqual('notes')
+
+        await logicContainer.processEvent('goBack', null)
+
+        expect(logicContainer.state.mode).toEqual('notes')
+        expect(logicContainer.state.previousMode).toEqual(null)
     })
 })

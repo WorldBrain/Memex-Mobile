@@ -17,6 +17,7 @@ export interface Props {
     pageData?: UIPage
     clearBackground?: boolean
     listData: { [listId: string]: List }
+    initNoteAddSpaces: (note: UINote) => TouchEventHandler
     initNoteDelete: (note: UINote) => TouchEventHandler
     initNotePress: (note: UINote) => TouchEventHandler
     initNoteEdit: (note: UINote) => TouchEventHandler
@@ -26,10 +27,10 @@ class NotesList extends React.PureComponent<Props> {
     private renderNote: ListRenderItem<UINote> = ({ item }) => (
         <ResultNote
             hideFooter
-            onAddSpacesPress={() => console.log('add spaces!!!')}
             onEditPress={this.props.initNoteEdit(item)}
             onNotePress={this.props.initNotePress(item)}
             onDeletePress={this.props.initNoteDelete(item)}
+            onAddSpacesPress={this.props.initNoteAddSpaces(item)}
             clearBackground={this.props.clearBackground}
             {...item}
             isNotePressed={!!item.isNotePressed}

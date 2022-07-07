@@ -57,6 +57,8 @@ export default class PageEditorScreen extends StatefulUIElement<
     private renderNotes() {
         return (
             <NotesList
+                initNoteAddSpaces={(note) => () =>
+                    this.processEvent('setEditorMode', { mode: 'collections' })}
                 initNoteDelete={(n) => () =>
                     this.processEvent('confirmNoteDelete', { url: n.url })}
                 initNoteEdit={(note) => () =>

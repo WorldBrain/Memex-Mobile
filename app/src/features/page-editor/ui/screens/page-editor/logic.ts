@@ -1,5 +1,11 @@
 import { Alert } from 'react-native'
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import {
+    UILogic,
+    UIEvent,
+    IncomingUIEvent,
+    UIMutation,
+    UIEventHandler,
+} from 'ui-logic-core'
 
 import type {
     UIPageWithNotes as Page,
@@ -20,11 +26,13 @@ import type { List } from 'src/features/meta-picker/types'
 export interface State {
     page: Page
     mode: EditorMode
+    previousMode: EditorMode | null
     loadState: UITaskState
     listData: { [listId: string]: List }
 }
 
 export type Event = UIEvent<{
+    setEditorMode: { mode: EditorMode }
     toggleNotePress: { url: string }
     removeEntry: { listId: number }
     createEntry: { listId: number }
@@ -33,6 +41,12 @@ export type Event = UIEvent<{
     focusFromNavigation: MainNavigatorParamList['PageEditor']
     goBack: null
 }>
+
+type EventHandler<EventName extends keyof Event> = UIEventHandler<
+    State,
+    Event,
+    EventName
+>
 
 export interface Props extends MainNavProps<'PageEditor'> {
     services: UIServices<'syncStorage'>
@@ -48,6 +62,7 @@ export default class Logic extends UILogic<State, Event> {
         return {
             loadState: 'pristine',
             mode: 'collections',
+            previousMode: null,
             page: {} as any,
             listData: {},
         }
@@ -121,6 +136,16 @@ export default class Logic extends UILogic<State, Event> {
                 date: timeFromNow(note.lastEdited ?? note.createdWhen!),
             })),
         }
+    }
+
+    setEditorMode: EventHandler<'setEditorMode'> = async ({
+        event,
+        previousState,
+    }) => {
+        this.emitMutation({
+            mode: { $set: event.mode },
+            previousMode: { $set: previousState.mode },
+        })
     }
 
     toggleNotePress(
@@ -247,6 +272,13 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     goBack({ previousState }: IncomingUIEvent<State, Event, 'goBack'>) {
+        if (previousState.previousMode != null) {
+            this.emitMutation({
+                mode: { $set: previousState.previousMode },
+                previousMode: { $set: null },
+            })
+            return
+        }
         this.props.route.params.updatePage(previousState.page)
         this.props.navigation.goBack()
     }
