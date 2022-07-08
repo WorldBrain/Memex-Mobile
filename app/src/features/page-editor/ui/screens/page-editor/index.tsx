@@ -79,9 +79,9 @@ export default class PageEditorScreen extends StatefulUIElement<
                     this.processEvent('confirmNoteDelete', { url: n.url })}
                 initNoteEdit={(note) => () =>
                     this.props.navigation.navigate('NoteEditor', {
-                        pageUrl: this.state.page.fullUrl,
                         highlightText: note.noteText,
                         noteText: note.commentText,
+                        listIds: note.listIds,
                         noteUrl: note.url,
                         mode: 'update',
                     })}

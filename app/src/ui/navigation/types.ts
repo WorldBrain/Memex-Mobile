@@ -26,14 +26,14 @@ export type MainNavigatorParamList = {
         updatePage: (page: UIPageWithNotes) => void
     }
     NoteEditor: {
-        mode: NoteEditMode
-        pageUrl: string
         pageTitle?: string
         anchor?: Anchor
-        noteUrl?: string
         noteText?: string
         highlightText?: string
-    }
+    } & (
+        | { mode: 'create'; pageUrl: string }
+        | { mode: 'update'; noteUrl: string; listIds: number[] }
+    )
     Reader: {
         url: string
         title: string

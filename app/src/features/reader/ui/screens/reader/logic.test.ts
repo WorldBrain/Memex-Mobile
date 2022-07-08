@@ -181,8 +181,8 @@ describe('reader screen UI logic tests', () => {
                     mode: 'update',
                     highlightText: TEST_ANCHOR_1.quote,
                     anchor: TEST_ANCHOR_1,
-                    pageUrl: Logic.formUrl(TEST_URL_1),
                     noteUrl: renderedHighlight!.url,
+                    listIds: [],
                 },
             },
         ])
@@ -224,7 +224,7 @@ describe('reader screen UI logic tests', () => {
                     noteText: testNote.comment,
                     anchor: testNote.selector,
                     pageTitle: TEST_TITLE_1,
-                    pageUrl: Logic.formUrl(TEST_URL_1),
+                    listIds: [1111111], // TODO: fix this
                 },
             },
         ])

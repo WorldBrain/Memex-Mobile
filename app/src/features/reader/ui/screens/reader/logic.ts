@@ -310,8 +310,8 @@ export default class Logic extends UILogic<State, Event> {
             mode: 'update',
             highlightText: event.anchor.quote,
             anchor: event.anchor,
-            pageUrl: previousState.url,
             noteUrl: highlight.url,
+            listIds: [],
         })
     }
 
@@ -336,7 +336,7 @@ export default class Logic extends UILogic<State, Event> {
             noteText: note.comment,
             anchor: note.selector,
             pageTitle: previousState.title,
-            pageUrl: previousState.url,
+            listIds: [], // TODO: implement
         })
     }
 

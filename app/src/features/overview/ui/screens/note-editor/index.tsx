@@ -1,12 +1,5 @@
 import React from 'react'
-import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    LayoutChangeEvent,
-    ScrollView,
-} from 'react-native'
+import { Text, TouchableOpacity, LayoutChangeEvent } from 'react-native'
 
 import Navigation from '../../components/navigation'
 import Logic, { State, Props, Event } from './logic'
@@ -14,9 +7,11 @@ import { StatefulUIElement } from 'src/ui/types'
 import NoteInput from 'src/features/page-share/ui/components/note-input-segment'
 import styles from './styles'
 import * as selectors from './selectors'
-import navigationStyles from 'src/features/overview/ui/components/navigation.styles'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
+import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
+import SpacePill from 'src/ui/components/space-pill'
+import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 
 export default class extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
@@ -121,8 +116,9 @@ export default class extends StatefulUIElement<Props, State, Event> {
                         this.state.noteText.length > 0 && icons.CheckMark
                     }
                     rightBtnPress={
-                        this.state.noteText.length > 0 &&
-                        this.handleSaveBtnPress
+                        this.state.noteText.length > 0
+                            ? this.handleSaveBtnPress
+                            : undefined
                     }
                     rightIconColor={'purple'}
                     rightIconSize={'24px'}
@@ -147,15 +143,46 @@ export default class extends StatefulUIElement<Props, State, Event> {
                     // )}
                 />
                 <ScrollContainer highlightText={this.state.highlightText}>
-                    {this.renderHighlightText()}
-                    <NoteInputEditorBox>
-                        <NoteInputEditor
-                            onChange={this.handleInputChange}
-                            disabled={this.disableInputs}
-                            className={styles.noteInput}
-                            value={this.state.noteText}
+                    {this.state.isSpacePickerShown ? (
+                        <MetaPicker
+                            storage={this.props.storage}
+                            initSelectedEntries={this.state.spacesToAdd}
+                            onEntryPress={(entry) =>
+                                this.processEvent('selectSpacePickerEntry', {
+                                    entry,
+                                })
+                            }
                         />
-                    </NoteInputEditorBox>
+                    ) : (
+                        <>
+                            <SpaceBar>
+                                <AddToSpacesBtn
+                                    mini={this.state.spacesToAdd.length > 0}
+                                    onPress={() =>
+                                        this.processEvent(
+                                            'setSpacePickerShown',
+                                            { isShown: true },
+                                        )
+                                    }
+                                />
+                                {this.state.spacesToAdd.map((id) => (
+                                    <SpacePill
+                                        key={id}
+                                        name={`FIX THIS: ${id}`}
+                                    />
+                                ))}
+                            </SpaceBar>
+                            {this.renderHighlightText()}
+                            <NoteInputEditorBox>
+                                <NoteInputEditor
+                                    onChange={this.handleInputChange}
+                                    disabled={this.disableInputs}
+                                    className={styles.noteInput}
+                                    value={this.state.noteText}
+                                />
+                            </NoteInputEditorBox>
+                        </>
+                    )}
                 </ScrollContainer>
             </Container>
         )
@@ -184,7 +211,15 @@ const NoteInputEditor = styled(NoteInput)`
     height: 100%;
 `
 
-const ScrollContainer = styled.View<{ highlightText: string }>`
+const SpaceBar = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: scroll;
+`
+
+const ScrollContainer = styled.View<{ highlightText: string | null }>`
     height: 100%;
     display: flex;
     padding-top: ${(props) => (props.highlightText ? '0px' : '10px')};

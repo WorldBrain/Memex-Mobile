@@ -7,10 +7,15 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 export interface Props {
     onPress: (e: GestureResponderEvent) => void
     spaceCount?: number
+    mini?: boolean
 }
 
-const AddToSpacesBtn: React.SFC<Props> = ({ spaceCount = 0, onPress }) => (
-    <AddSpacesContainer onPress={onPress}>
+const AddToSpacesBtn: React.SFC<Props> = ({
+    spaceCount = 0,
+    onPress,
+    mini,
+}) => (
+    <AddSpacesContainer onPress={onPress} mini={mini}>
         {spaceCount === 0 ? (
             <Icon
                 icon={PlusIcon}
@@ -23,7 +28,7 @@ const AddToSpacesBtn: React.SFC<Props> = ({ spaceCount = 0, onPress }) => (
                 <SpacesCounterText>{spaceCount}</SpacesCounterText>
             </SpacesCounterPill>
         )}
-        <AddSpacesText>Add to Spaces</AddSpacesText>
+        {!mini && <AddSpacesText>Add to Spaces</AddSpacesText>}
     </AddSpacesContainer>
 )
 
@@ -32,13 +37,13 @@ export default React.memo(
     (prevProps, nextProps) => prevProps.spaceCount != nextProps.spaceCount,
 )
 
-const AddSpacesContainer = styled.TouchableOpacity`
+const AddSpacesContainer = styled.TouchableOpacity<{ mini?: boolean }>`
     border-width: 2px;
     border-style: dotted;
     border-color: ${(props) => props.theme.colors.lightgrey}
     display: flex;
     justify-content: space-between;
-    width: 124px;
+    width: ${(props) => (props.mini ? 'auto' : '124px')};
     align-items: center;
     flex-direction: row;
     text-align-vertical: center;
