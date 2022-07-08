@@ -32,7 +32,11 @@ export type MainNavigatorParamList = {
         highlightText?: string
     } & (
         | { mode: 'create'; pageUrl: string }
-        | { mode: 'update'; noteUrl: string; listIds: number[] }
+        | {
+              mode: 'update'
+              noteUrl: string
+              spaces: Array<{ id: number; name: string }>
+          }
     )
     Reader: {
         url: string

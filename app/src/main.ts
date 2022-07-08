@@ -31,6 +31,7 @@ import { KeychainPackage } from './services/keychain/keychain'
 import { migrateSettings } from 'src/utils/migrate-settings-for-cloud'
 import { createSelfTests } from 'src/tests/self-tests'
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake'
+import type { UIDependencies } from './ui/types'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -132,7 +133,7 @@ export async function main() {
         personalCloudBackend,
     })
 
-    const dependencies = { storage, services }
+    const dependencies: UIDependencies = { storage, services }
 
     await storage.modules.personalCloud.setup()
     await setStorageMiddleware(dependencies)

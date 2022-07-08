@@ -187,7 +187,7 @@ describe('note editor UI logic tests', () => {
         const { element, navigation } = setup(context, {
             mode: 'update',
             noteUrl: testNoteUrl,
-            listIds: [],
+            spaces: [],
         })
 
         expect(navigation.popRequests()).toEqual([])
@@ -227,8 +227,8 @@ describe('note editor UI logic tests', () => {
     it('should be able to add and remove spaces in edit mode', async (context) => {
         const testUrl = 'test.com'
         const testNoteUrl = testUrl + '/#23423'
-        const testListIdA = 123
-        const testListIdB = 124
+        const testListA = { id: 123, name: 'test a' }
+        const testListB = { id: 124, name: 'test b' }
 
         let lastCreatedListEntry:
             | { listId: number; annotationUrl: string }
@@ -251,45 +251,45 @@ describe('note editor UI logic tests', () => {
         const { element } = setup(context as any, {
             mode: 'update',
             noteUrl: testNoteUrl,
-            listIds: [testListIdB],
+            spaces: [testListB],
         })
 
         expect(lastCreatedListEntry).toEqual(undefined)
         expect(lastDeletedListEntry).toEqual(undefined)
-        expect(element.state.spacesToAdd).toEqual([testListIdB])
+        expect(element.state.spacesToAdd).toEqual([testListB])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { id: testListIdA, isChecked: false, name: 'test a' },
+            entry: { ...testListA, isChecked: false },
         })
         expect(lastCreatedListEntry).toEqual({
-            listId: testListIdA,
+            listId: testListA.id,
             annotationUrl: testNoteUrl,
         })
         expect(lastDeletedListEntry).toEqual(undefined)
-        expect(element.state.spacesToAdd).toEqual([testListIdB, testListIdA])
+        expect(element.state.spacesToAdd).toEqual([testListB, testListA])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { id: testListIdA, isChecked: true, name: 'test a' },
+            entry: { ...testListA, isChecked: true },
         })
         expect(lastCreatedListEntry).toEqual({
-            listId: testListIdA,
+            listId: testListA.id,
             annotationUrl: testNoteUrl,
         })
         expect(lastDeletedListEntry).toEqual({
-            listId: testListIdA,
+            listId: testListA.id,
             annotationUrl: testNoteUrl,
         })
-        expect(element.state.spacesToAdd).toEqual([testListIdB])
+        expect(element.state.spacesToAdd).toEqual([testListB])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { id: testListIdB, isChecked: true, name: 'test b' },
+            entry: { ...testListB, isChecked: true },
         })
         expect(lastCreatedListEntry).toEqual({
-            listId: testListIdA,
+            listId: testListA.id,
             annotationUrl: testNoteUrl,
         })
         expect(lastDeletedListEntry).toEqual({
-            listId: testListIdB,
+            listId: testListB.id,
             annotationUrl: testNoteUrl,
         })
         expect(element.state.spacesToAdd).toEqual([])
@@ -297,8 +297,8 @@ describe('note editor UI logic tests', () => {
 
     it('should be able to add and remove spaces in create mode', async (context) => {
         const testUrl = 'test.com'
-        const testListIdA = 123
-        const testListIdB = 124
+        const testListA = { id: 123, name: 'test a' }
+        const testListB = { id: 124, name: 'test b' }
 
         let lastCreatedListEntry:
             | { listId: number; annotationUrl: string }
@@ -328,28 +328,28 @@ describe('note editor UI logic tests', () => {
         expect(element.state.spacesToAdd).toEqual([])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { id: testListIdA, isChecked: false, name: 'test a' },
+            entry: { ...testListA, isChecked: false },
         })
         expect(lastCreatedListEntry).toEqual(undefined)
         expect(lastDeletedListEntry).toEqual(undefined)
-        expect(element.state.spacesToAdd).toEqual([testListIdA])
+        expect(element.state.spacesToAdd).toEqual([testListA])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { id: testListIdB, isChecked: false, name: 'test b' },
+            entry: { ...testListB, isChecked: false },
         })
         expect(lastCreatedListEntry).toEqual(undefined)
         expect(lastDeletedListEntry).toEqual(undefined)
-        expect(element.state.spacesToAdd).toEqual([testListIdA, testListIdB])
+        expect(element.state.spacesToAdd).toEqual([testListA, testListB])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { id: testListIdA, isChecked: true, name: 'test a' },
+            entry: { ...testListA, isChecked: true },
         })
         expect(lastCreatedListEntry).toEqual(undefined)
         expect(lastDeletedListEntry).toEqual(undefined)
-        expect(element.state.spacesToAdd).toEqual([testListIdB])
+        expect(element.state.spacesToAdd).toEqual([testListB])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { id: testListIdB, isChecked: true, name: 'test b' },
+            entry: { ...testListB, isChecked: true },
         })
         expect(lastCreatedListEntry).toEqual(undefined)
         expect(lastDeletedListEntry).toEqual(undefined)

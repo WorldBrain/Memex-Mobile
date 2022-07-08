@@ -53,6 +53,15 @@ describe('page editor UI logic tests', () => {
             createdWhen: new Date(),
             lastEdited: new Date(),
         })
+
+        await context.storage.modules.metaPicker.createInboxListIfAbsent({})
+        await context.storage.modules.metaPicker.createMobileListIfAbsent({})
+        await context.storage.modules.metaPicker.createInboxListEntry({
+            fullPageUrl: DATA.PAGE_1.fullUrl,
+        })
+        await context.storage.modules.metaPicker.createMobileListEntry({
+            fullPageUrl: DATA.PAGE_1.fullUrl,
+        })
         await context.storage.modules.metaPicker.createList({
             __id: 123,
             name: 'test a',

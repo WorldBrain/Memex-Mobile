@@ -417,16 +417,20 @@ export class MetaPickerStorage extends StorageModule {
     async findListIdsByPage({ url }: { url: string }): Promise<number[]> {
         url = this.options.normalizeUrl(url)
         const entries = await this.findPageListEntriesByPage({ url })
-        return [...new Set(entries.map((e) => e.listId))]
+        const listIdsSet = new Set(entries.map((e) => e.listId))
+
+        return this.filterOutSpecialLists(
+            [...listIdsSet].map((id) => ({ id })),
+        ).map((list) => list.id)
     }
 
-    private filterOutSpecialLists = <T extends { name: string }>(
+    private filterOutSpecialLists = <T extends { id: number }>(
         lists: T[],
     ): T[] =>
         lists.filter(
             (list) =>
-                list.name !== SPECIAL_LIST_NAMES.MOBILE &&
-                list.name !== SPECIAL_LIST_NAMES.INBOX,
+                list.id !== SPECIAL_LIST_IDS.MOBILE &&
+                list.id !== SPECIAL_LIST_IDS.INBOX,
         )
 
     async findListSuggestions({

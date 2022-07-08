@@ -1,15 +1,11 @@
 export const areArraysTheSame = (a: any[] = [], b: any[] = []): boolean => {
-    const aSet = new Set(a)
-    const bSet = new Set(b)
-
-    for (const el of a) {
-        if (!bSet.has(el)) {
-            return false
-        }
+    if (a.length !== b.length) {
+        return false
     }
 
-    for (const el of b) {
-        if (!aSet.has(el)) {
+    const bSet = new Set(b)
+    for (const el of a) {
+        if (!bSet.has(el)) {
             return false
         }
     }

@@ -19,8 +19,8 @@ export interface State {
     highlightText: string | null
     highlightTextLines?: number
     showAllText: boolean
-    spacesToAdd: number[]
     saveState: UITaskState
+    spacesToAdd: Array<{ id: number; name: string }>
 }
 
 export type Event = UIEvent<{
@@ -52,7 +52,7 @@ export default class Logic extends UILogic<State, Event> {
     pageTitle?: string
     mode: NoteEditMode
     initNoteText: string
-    initListIds: number[]
+    initSpaces: Array<{ id: number; name: string }>
 
     constructor(private props: Props) {
         super()
@@ -63,7 +63,7 @@ export default class Logic extends UILogic<State, Event> {
         this.pageTitle = params.pageTitle
         this.highlightAnchor = params.anchor
         this.initNoteText = params.noteText ?? ''
-        this.initListIds = params.mode === 'update' ? params.listIds ?? [] : []
+        this.initSpaces = params.mode === 'update' ? params.spaces ?? [] : []
         this.noteUrl = params.mode === 'update' ? params.noteUrl : null
         this.pageUrl = params.mode === 'create' ? params.pageUrl : null
     }
@@ -73,7 +73,7 @@ export default class Logic extends UILogic<State, Event> {
 
         return {
             highlightText: params.highlightText ?? null,
-            spacesToAdd: params.mode === 'update' ? params.listIds ?? [] : [],
+            spacesToAdd: params.mode === 'update' ? params.spaces ?? [] : [],
             noteText: params.noteText ?? '',
             isSpacePickerShown: false,
             saveState: 'pristine',
@@ -134,7 +134,7 @@ export default class Logic extends UILogic<State, Event> {
 
         await metaPicker.setAnnotationLists({
             annotationUrl,
-            listIds: state.spacesToAdd,
+            listIds: state.spacesToAdd.map((space) => space.id),
         })
     }
 
@@ -188,8 +188,9 @@ export default class Logic extends UILogic<State, Event> {
     }) => {
         this.emitMutation({
             spacesToAdd: event.entry.isChecked
-                ? (ids) => ids.filter((id) => id !== event.entry.id)
-                : { $push: [event.entry.id] },
+                ? (spaces) =>
+                      spaces.filter((space) => space.id !== event.entry.id)
+                : { $push: [{ id: event.entry.id, name: event.entry.name }] },
         })
 
         // No need to perform writes yet if we're in create mode

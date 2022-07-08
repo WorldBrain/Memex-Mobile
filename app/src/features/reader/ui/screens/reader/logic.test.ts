@@ -182,7 +182,7 @@ describe('reader screen UI logic tests', () => {
                     highlightText: TEST_ANCHOR_1.quote,
                     anchor: TEST_ANCHOR_1,
                     noteUrl: renderedHighlight!.url,
-                    listIds: [],
+                    spaces: [],
                 },
             },
         ])
@@ -193,7 +193,7 @@ describe('reader screen UI logic tests', () => {
         const { pageEditor, overview, metaPicker } =
             dependencies.storage.modules
 
-        const testListId = 123
+        const testList = { id: 123, name: 'test a' }
         const testNote = {
             pageTitle: 'test title',
             pageUrl: 'test.com',
@@ -209,15 +209,15 @@ describe('reader screen UI logic tests', () => {
             text: '',
         })
         await metaPicker.createList({
-            __id: testListId,
-            name: 'test list',
+            __id: testList.id,
+            name: testList.name,
         })
 
         const { annotationUrl } = await pageEditor.createAnnotation(testNote)
 
         await metaPicker.createAnnotListEntry({
             annotationUrl,
-            listId: testListId,
+            listId: testList.id,
         })
 
         await element.processEvent('editHighlight', {
@@ -235,7 +235,7 @@ describe('reader screen UI logic tests', () => {
                     noteText: testNote.comment,
                     anchor: testNote.selector,
                     pageTitle: TEST_TITLE_1,
-                    listIds: [testListId],
+                    spaces: [testList],
                 },
             },
         ])

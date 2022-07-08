@@ -23,24 +23,17 @@ export default class extends StatefulUIElement<Props, State, Event> {
         return this.state.saveState === 'running'
     }
 
-    private get disableSaveBtn(): boolean {
-        const logic = this.logic as Logic
-        if (
-            logic.mode === 'update' &&
-            logic.initNoteText === this.state.noteText
-        ) {
-            return true
-        }
-
-        if (logic.highlightAnchor == null) {
-            return this.disableInputs || !this.state.noteText?.trim().length
-        }
-
-        return this.disableInputs
-    }
-
     private get showSaveBtn(): boolean {
-        const { initListIds, initNoteText, mode } = this.logic as Logic
+        const {
+            initSpaces: initListIds,
+            initNoteText,
+            mode,
+        } = this.logic as Logic
+
+        if (this.disableInputs) {
+            return false
+        }
+
         const noteInputDirty =
             this.state.noteText.trim() !== initNoteText.trim()
 
@@ -158,7 +151,9 @@ export default class extends StatefulUIElement<Props, State, Event> {
                     {this.state.isSpacePickerShown ? (
                         <MetaPicker
                             storage={this.props.storage}
-                            initSelectedEntries={this.state.spacesToAdd}
+                            initSelectedEntries={this.state.spacesToAdd.map(
+                                (space) => space.id,
+                            )}
                             onEntryPress={(entry) =>
                                 this.processEvent('selectSpacePickerEntry', {
                                     entry,
@@ -177,10 +172,10 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                         )
                                     }
                                 />
-                                {this.state.spacesToAdd.map((id) => (
+                                {this.state.spacesToAdd.map((space) => (
                                     <SpacePill
-                                        key={id}
-                                        name={`FIX THIS: ${id}`}
+                                        key={space.id}
+                                        name={space.name}
                                     />
                                 ))}
                             </SpaceBar>

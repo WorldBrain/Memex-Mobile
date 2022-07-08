@@ -311,7 +311,7 @@ export default class Logic extends UILogic<State, Event> {
             highlightText: event.anchor.quote,
             anchor: event.anchor,
             noteUrl: highlight.url,
-            listIds: [],
+            spaces: [],
         })
     }
 
@@ -335,6 +335,7 @@ export default class Logic extends UILogic<State, Event> {
             annotationUrl: highlightUrl,
         })
         const listIdSet = new Set(listEntries.map((entry) => entry.listId))
+        const lists = await metaPicker.findListsByIds({ ids: [...listIdSet] })
 
         navigation.navigate('NoteEditor', {
             mode: 'update',
@@ -343,7 +344,7 @@ export default class Logic extends UILogic<State, Event> {
             noteText: note.comment,
             anchor: note.selector,
             pageTitle: previousState.title,
-            listIds: [...listIdSet],
+            spaces: lists.map((list) => ({ id: list.id, name: list.name })),
         })
     }
 

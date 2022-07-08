@@ -1,12 +1,12 @@
-import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
-import { StackNavigationProp } from '@react-navigation/stack'
-import { RouteProp } from '@react-navigation/native'
-import { UILogic } from 'ui-logic-core'
 import { UIElement } from 'ui-logic-react'
+import type { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
+import type { StackNavigationProp } from '@react-navigation/stack'
+import type { RouteProp } from '@react-navigation/native'
+import type { UILogic } from 'ui-logic-core'
 
-import { Storage } from 'src/storage/types'
-import { Services } from 'src/services/types'
-import {
+import type { Storage } from 'src/storage/types'
+import type { Services } from 'src/services/types'
+import type {
     MainNavigatorParamList,
     MainNavigatorRoutes,
     ShareNavigatorRoutes,
