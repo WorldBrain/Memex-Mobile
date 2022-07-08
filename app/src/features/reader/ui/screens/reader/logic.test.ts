@@ -190,8 +190,10 @@ describe('reader screen UI logic tests', () => {
 
     it('should be able to click-to-edit highlights', async (dependencies) => {
         const { element, navigation } = await setup(dependencies)
-        const { pageEditor, overview } = dependencies.storage.modules
+        const { pageEditor, overview, metaPicker } =
+            dependencies.storage.modules
 
+        const testListId = 123
         const testNote = {
             pageTitle: 'test title',
             pageUrl: 'test.com',
@@ -206,8 +208,17 @@ describe('reader screen UI logic tests', () => {
             fullTitle: testNote.pageTitle,
             text: '',
         })
+        await metaPicker.createList({
+            __id: testListId,
+            name: 'test list',
+        })
 
         const { annotationUrl } = await pageEditor.createAnnotation(testNote)
+
+        await metaPicker.createAnnotListEntry({
+            annotationUrl,
+            listId: testListId,
+        })
 
         await element.processEvent('editHighlight', {
             highlightUrl: annotationUrl,
@@ -224,7 +235,7 @@ describe('reader screen UI logic tests', () => {
                     noteText: testNote.comment,
                     anchor: testNote.selector,
                     pageTitle: TEST_TITLE_1,
-                    listIds: [1111111], // TODO: fix this
+                    listIds: [testListId],
                 },
             },
         ])

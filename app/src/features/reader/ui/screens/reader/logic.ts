@@ -319,15 +319,22 @@ export default class Logic extends UILogic<State, Event> {
         event: { highlightUrl },
         previousState,
     }) => {
-        const { navigation, storage } = this.props
+        const {
+            navigation,
+            storage: {
+                modules: { pageEditor, metaPicker },
+            },
+        } = this.props
 
-        const note = await storage.modules.pageEditor.findNote({
-            url: highlightUrl,
-        })
-
+        const note = await pageEditor.findNote({ url: highlightUrl })
         if (!note) {
             throw new Error('Clicked highlight that is not tracked in DB.')
         }
+
+        const listEntries = await metaPicker.findAnnotListEntriesByAnnot({
+            annotationUrl: highlightUrl,
+        })
+        const listIdSet = new Set(listEntries.map((entry) => entry.listId))
 
         navigation.navigate('NoteEditor', {
             mode: 'update',
@@ -336,7 +343,7 @@ export default class Logic extends UILogic<State, Event> {
             noteText: note.comment,
             anchor: note.selector,
             pageTitle: previousState.title,
-            listIds: [], // TODO: implement
+            listIds: [...listIdSet],
         })
     }
 
