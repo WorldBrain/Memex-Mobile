@@ -282,8 +282,8 @@ export class MetaPickerStorage extends StorageModule {
         annotationUrl: string
         listId: number
         createdAt?: Date
-    }): Promise<{ id: number }> {
-        const { object } = await this.operation('createAnnotListEntry', {
+    }): Promise<void> {
+        await this.operation('createAnnotListEntry', {
             createdAt: entry.createdAt ?? new Date(),
             listId: entry.listId,
             url: entry.annotationUrl,
@@ -296,12 +296,13 @@ export class MetaPickerStorage extends StorageModule {
         ) {
             await this.updateListSuggestionsCache({ added: entry.listId })
         }
-
-        return object
     }
 
-    async createPageListEntry(entry: { fullPageUrl: string; listId: number }) {
-        const result = await this.operation('createListEntry', {
+    async createPageListEntry(entry: {
+        fullPageUrl: string
+        listId: number
+    }): Promise<void> {
+        await this.operation('createListEntry', {
             createdAt: new Date(),
             listId: entry.listId,
             pageUrl: this.options.normalizeUrl(entry.fullPageUrl),
@@ -315,8 +316,6 @@ export class MetaPickerStorage extends StorageModule {
         ) {
             await this.updateListSuggestionsCache({ added: entry.listId })
         }
-
-        return result
     }
 
     findRecentListEntries(
@@ -648,23 +647,37 @@ export class MetaPickerStorage extends StorageModule {
         await this.updateListSuggestionsCache({ removed: listId })
     }
 
-    deleteAnnotListEntriesByList({ listId }: { listId: number }) {
-        return this.operation('deleteAnnotEntriesForList', { listId })
+    async deleteAnnotListEntriesByList({
+        listId,
+    }: {
+        listId: number
+    }): Promise<void> {
+        await this.operation('deleteAnnotEntriesForList', { listId })
     }
 
-    deletePageListEntriesByList({ listId }: { listId: number }) {
-        return this.operation('deleteEntriesForList', { listId })
+    async deletePageListEntriesByList({
+        listId,
+    }: {
+        listId: number
+    }): Promise<void> {
+        await this.operation('deleteEntriesForList', { listId })
     }
 
-    deleteAnnotEntryFromList(entry: { listId: number; annotationUrl: string }) {
-        return this.operation('deleteAnnotFromList', {
+    async deleteAnnotEntryFromList(entry: {
+        listId: number
+        annotationUrl: string
+    }): Promise<void> {
+        await this.operation('deleteAnnotFromList', {
             listId: entry.listId,
             url: entry.annotationUrl,
         })
     }
 
-    deletePageEntryFromList(entry: { listId: number; url: string }) {
-        return this.operation('deletePageFromList', {
+    async deletePageEntryFromList(entry: {
+        listId: number
+        url: string
+    }): Promise<void> {
+        await this.operation('deletePageFromList', {
             listId: entry.listId,
             url: entry.url,
         })
