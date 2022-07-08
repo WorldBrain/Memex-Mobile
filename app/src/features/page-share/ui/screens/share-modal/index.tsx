@@ -19,6 +19,7 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 import LoadingIndicator from 'src/ui/components/loading-balls'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
 
 export default class ShareModalScreen extends StatefulUIElement<
     Props,
@@ -31,26 +32,13 @@ export default class ShareModalScreen extends StatefulUIElement<
         super(props, new Logic(props))
     }
 
-    private static arraysAreSame = (a: any[] = [], b: any[] = []): boolean => {
-        for (const el of a) {
-            if (!b.includes(el)) {
-                return false
-            }
-        }
-
-        return true
-    }
-
     private get isInputDirty(): boolean {
         const { initValues } = this.logic as Logic
 
         return (
             this.state.noteText.trim().length > 0 ||
             this.state.isStarred !== initValues.isStarred ||
-            !ShareModalScreen.arraysAreSame(
-                this.state.spacesToAdd,
-                initValues.spacesToAdd,
-            )
+            !areArraysTheSame(this.state.spacesToAdd, initValues.spacesToAdd)
         )
     }
 

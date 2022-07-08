@@ -12,6 +12,7 @@ import styled from 'styled-components/native'
 import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import SpacePill from 'src/ui/components/space-pill'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
+import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
 
 export default class extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
@@ -36,6 +37,21 @@ export default class extends StatefulUIElement<Props, State, Event> {
         }
 
         return this.disableInputs
+    }
+
+    private get showSaveBtn(): boolean {
+        const { initListIds, initNoteText, mode } = this.logic as Logic
+        const noteInputDirty =
+            this.state.noteText.trim() !== initNoteText.trim()
+
+        if (mode === 'update') {
+            return noteInputDirty && this.state.noteText.trim().length !== 0
+        }
+        return (
+            this.state.noteText.trim().length !== 0 &&
+            (noteInputDirty ||
+                !areArraysTheSame(this.state.spacesToAdd, initListIds))
+        )
     }
 
     private get titleText(): string {
@@ -112,13 +128,9 @@ export default class extends StatefulUIElement<Props, State, Event> {
                     leftBtnPress={this.handleBackBtnPress}
                     leftIconSize={'30px'}
                     leftIconStrokeWidth={'8px'}
-                    rightIcon={
-                        this.state.noteText.length > 0 && icons.CheckMark
-                    }
+                    rightIcon={this.showSaveBtn && icons.CheckMark}
                     rightBtnPress={
-                        this.state.noteText.length > 0
-                            ? this.handleSaveBtnPress
-                            : undefined
+                        this.showSaveBtn ? this.handleSaveBtnPress : undefined
                     }
                     rightIconColor={'purple'}
                     rightIconSize={'24px'}

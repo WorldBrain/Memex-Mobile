@@ -52,6 +52,7 @@ export default class Logic extends UILogic<State, Event> {
     pageTitle?: string
     mode: NoteEditMode
     initNoteText: string
+    initListIds: number[]
 
     constructor(private props: Props) {
         super()
@@ -62,6 +63,7 @@ export default class Logic extends UILogic<State, Event> {
         this.pageTitle = params.pageTitle
         this.highlightAnchor = params.anchor
         this.initNoteText = params.noteText ?? ''
+        this.initListIds = params.mode === 'update' ? params.listIds ?? [] : []
         this.noteUrl = params.mode === 'update' ? params.noteUrl : null
         this.pageUrl = params.mode === 'create' ? params.pageUrl : null
     }
