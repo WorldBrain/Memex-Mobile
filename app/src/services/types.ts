@@ -1,14 +1,15 @@
 import type { CloudSyncAPI } from './cloud-sync/types'
-import { MemexGoAuthService } from './auth'
-import { KeychainService } from './keychain'
-import { ShareExtService } from './share-ext'
-import { ReadabilityService } from './readability'
-import { StorageService } from './settings-storage'
-import { ErrorTrackingService } from './error-tracking'
-import { BackgroundProcessService } from './background-processing'
-import { ResourceLoaderService } from './resource-loader'
-import { PageFetcherService } from './page-fetcher'
+import type { MemexGoAuthService } from './auth'
+import type { KeychainService } from './keychain'
+import type { ShareExtService } from './share-ext'
+import type { ReadabilityService } from './readability'
+import type { StorageService } from './settings-storage'
+import type { ErrorTrackingService } from './error-tracking'
+import type { BackgroundProcessService } from './background-processing'
+import type { ResourceLoaderService } from './resource-loader'
+import type { PageFetcherService } from './page-fetcher'
 import type { KeepAwakeService } from './keep-awake'
+import type { AnnotationSharingServiceInterface } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 
 export interface Services {
     auth: MemexGoAuthService
@@ -23,6 +24,7 @@ export interface Services {
     errorTracker: ErrorTrackingService
     resourceLoader: ResourceLoaderService
     backgroundProcess: BackgroundProcessService
+    annotationSharing: AnnotationSharingServiceInterface
 }
 
 export type ServiceStarter<ServiceNames extends keyof Services> = (args: {

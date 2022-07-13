@@ -166,6 +166,14 @@ export class MetaPickerStorage extends StorageModule {
                     url: { $in: '$annotationUrls:string[]' },
                 },
             },
+            findAnnotEntry: {
+                operation: 'findObject',
+                collection: ANNOT_COLL_NAMES.listEntry,
+                args: {
+                    url: '$url:string',
+                    listId: '$listId:number',
+                },
+            },
             findAnnotEntriesByList: {
                 operation: 'findObjects',
                 collection: ANNOT_COLL_NAMES.listEntry,
@@ -243,7 +251,7 @@ export class MetaPickerStorage extends StorageModule {
         })
     }
 
-    private async updateListSuggestionsCache(args: {
+    async updateListSuggestionsCache(args: {
         added?: number
         removed?: number
     }) {
@@ -295,6 +303,23 @@ export class MetaPickerStorage extends StorageModule {
             )
         ) {
             await this.updateListSuggestionsCache({ added: entry.listId })
+        }
+    }
+
+    async ensureAnnotationInList(entry: {
+        annotationUrl: string
+        listId: number
+    }): Promise<void> {
+        const existing = await this.operation('findAnnotEntry', {
+            url: entry.annotationUrl,
+            listId: entry.listId,
+        })
+        if (existing == null) {
+            await this.operation('createAnnotListEntry', {
+                createdAt: new Date(),
+                listId: entry.listId,
+                url: entry.annotationUrl,
+            })
         }
     }
 
@@ -367,13 +392,13 @@ export class MetaPickerStorage extends StorageModule {
         return this.operation('findEntriesByPage', { url })
     }
 
-    async findAnnotListIdsByAnnots({
+    async findAnnotListEntriesByAnnots({
         annotationUrls,
     }: {
         annotationUrls: string[]
-    }): Promise<{ [annotationUrl: string]: number[] }> {
+    }): Promise<{ [annotationUrl: string]: AnnotListEntry[] }> {
         const result = annotationUrls.reduce<{
-            [annotationUrl: string]: number[]
+            [annotationUrl: string]: AnnotListEntry[]
         }>((acc, url) => ({ ...acc, [url]: [] }), {})
 
         const annotListEntries: AnnotListEntry[] = await this.operation(
@@ -382,7 +407,26 @@ export class MetaPickerStorage extends StorageModule {
         )
 
         for (const entry of annotListEntries) {
-            result[entry.url].push(entry.listId)
+            result[entry.url].push(entry)
+        }
+
+        return result
+    }
+
+    async findAnnotListIdsByAnnots({
+        annotationUrls,
+    }: {
+        annotationUrls: string[]
+    }): Promise<{ [annotationUrl: string]: number[] }> {
+        const entriesByAnnots = await this.findAnnotListEntriesByAnnots({
+            annotationUrls,
+        })
+        const result = annotationUrls.reduce<{
+            [annotationUrl: string]: number[]
+        }>((acc, url) => ({ ...acc, [url]: [] }), {})
+
+        for (const url in entriesByAnnots) {
+            result[url] = entriesByAnnots[url].map((entry) => entry.listId)
         }
 
         return result

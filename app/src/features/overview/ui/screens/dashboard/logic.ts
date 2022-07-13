@@ -380,7 +380,7 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const lists = await metaPicker.findListsByPage({ url })
-        const notes = await pageEditor.findNotes({ url })
+        const notes = await pageEditor.findNotesByPage({ url })
 
         // Add any new lists data to state
         this.emitMutation({
@@ -460,10 +460,11 @@ export default class Logic extends UILogic<State, Event> {
 
         const mutation: UIMutation<State> = {}
         if (listIdsToTrack.length > 0) {
-            const lists =
-                await this.props.storage.modules.metaPicker.findListsByIds({
+            const lists = await this.props.storage.modules.metaPicker.findListsByIds(
+                {
                     ids: listIdsToTrack,
-                })
+                },
+            )
             mutation.listsData = {
                 $apply: (existing) => ({
                     ...existing,

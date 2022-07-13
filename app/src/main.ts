@@ -51,6 +51,8 @@ export async function main() {
         await connectToEmulator()
     }
     const firebase = getFirebase()
+    const generateServerId = (collectionName: string) =>
+        getFirebase().firestore().collection(collectionName).doc().id
 
     let personalCloudBackend: FirestorePersonalCloudBackend
 
@@ -67,8 +69,8 @@ export async function main() {
             database: 'memex',
         },
         createDeviceId: async (userId) => {
-            const device =
-                await serverStorage.modules.personalCloud.createDeviceInfo({
+            const device = await serverStorage.modules.personalCloud.createDeviceInfo(
+                {
                     device: {
                         os:
                             Platform.OS === 'android'
@@ -79,7 +81,8 @@ export async function main() {
                         browser: 'NULL', // TODO: Remove this once staging is updated
                     },
                     userId,
-                })
+                },
+            )
             return device.id
         },
     })
@@ -131,6 +134,7 @@ export async function main() {
         firebase,
         storage,
         personalCloudBackend,
+        generateServerId,
     })
 
     const dependencies: UIDependencies = { storage, services }

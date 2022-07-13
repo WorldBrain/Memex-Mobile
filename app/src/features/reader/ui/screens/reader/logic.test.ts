@@ -111,7 +111,9 @@ describe('reader screen UI logic tests', () => {
             renderedHighlight = h
         }
 
-        expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([])
+        expect(await pageEditor.findNotesByPage({ url: TEST_URL_1 })).toEqual(
+            [],
+        )
         expect(element.state.hasNotes).toBe(false)
         expect(element.state.highlights).toEqual([])
 
@@ -125,7 +127,7 @@ describe('reader screen UI logic tests', () => {
             anchor: TEST_ANCHOR_1,
             url: expect.any(String),
         })
-        expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([
+        expect(await pageEditor.findNotesByPage({ url: TEST_URL_1 })).toEqual([
             expect.objectContaining({
                 pageUrl: TEST_URL_1,
                 pageTitle: TEST_TITLE_1,
@@ -159,7 +161,7 @@ describe('reader screen UI logic tests', () => {
             anchor: TEST_ANCHOR_1,
             url: expect.any(String),
         })
-        expect(await pageEditor.findNotes({ url: TEST_URL_1 })).toEqual([
+        expect(await pageEditor.findNotesByPage({ url: TEST_URL_1 })).toEqual([
             expect.objectContaining({
                 pageUrl: TEST_URL_1,
                 pageTitle: TEST_TITLE_1,
@@ -190,8 +192,11 @@ describe('reader screen UI logic tests', () => {
 
     it('should be able to click-to-edit highlights', async (dependencies) => {
         const { element, navigation } = await setup(dependencies)
-        const { pageEditor, overview, metaPicker } =
-            dependencies.storage.modules
+        const {
+            pageEditor,
+            overview,
+            metaPicker,
+        } = dependencies.storage.modules
 
         const testList = { id: 123, name: 'test a' }
         const testNote = {

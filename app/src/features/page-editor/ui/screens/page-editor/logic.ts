@@ -98,7 +98,7 @@ export default class Logic extends UILogic<State, Event> {
             throw new Error('No page found in DB for given route.')
         }
 
-        const notes = await pageEditor.findNotes({ url })
+        const notes = await pageEditor.findNotesByPage({ url })
         const listIdsByNotes = await metaPicker.findAnnotListIdsByAnnots({
             annotationUrls: notes.map((note) => note.url),
         })

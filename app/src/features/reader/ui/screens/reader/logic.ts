@@ -145,8 +145,10 @@ export default class Logic extends UILogic<State, Event> {
         pageTitle: string,
         createdWhen = new Date(),
     ) {
-        const { reader: readerStorage, overview: overviewStorage } =
-            this.props.storage.modules
+        const {
+            reader: readerStorage,
+            overview: overviewStorage,
+        } = this.props.storage.modules
 
         // Update page title with what was found in readability parsing - most pages saved on Memex Go will lack titles
         if (Logic.formUrl(pageTitle) === url) {
@@ -206,7 +208,7 @@ export default class Logic extends UILogic<State, Event> {
 
         const isBookmarked = await overviewStorage.isPageStarred({ url })
         const lists = await metaPicker.findListsByPage({ url })
-        const notes = await pageEditor.findNotes({ url })
+        const notes = await pageEditor.findNotesByPage({ url })
 
         this.emitMutation({
             isBookmarked: { $set: isBookmarked },
