@@ -10,6 +10,7 @@ import type {
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
+import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
 
 export interface State {
     loadState: UITaskState
@@ -54,9 +55,9 @@ export interface Props extends ShareNavProps<'ShareModal'> {
         | 'cloudSync'
         | 'shareExt'
         | 'errorTracker'
-        | 'localStorage'
-        | 'syncStorage'
         | 'pageFetcher'
+        | 'localStorage'
+        | 'annotationSharing'
     >
     storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
 }
@@ -195,10 +196,11 @@ export default class Logic extends UILogic<State, Event> {
             'bookmarkState',
             async () => {
                 try {
-                    const isStarred =
-                        await storage.modules.overview.isPageStarred({
+                    const isStarred = await storage.modules.overview.isPageStarred(
+                        {
                             url,
-                        })
+                        },
+                    )
 
                     this.emitMutation({ isStarred: { $set: isStarred } })
                     this.initValues.isStarred = isStarred
@@ -214,10 +216,11 @@ export default class Logic extends UILogic<State, Event> {
             'spacesState',
             async () => {
                 try {
-                    const spaces =
-                        await storage.modules.metaPicker.findListsByPage({
+                    const spaces = await storage.modules.metaPicker.findListsByPage(
+                        {
                             url,
-                        })
+                        },
+                    )
                     const spacesToAdd = spaces.map((c) => c.id)
 
                     this.emitMutation({
@@ -396,6 +399,7 @@ export default class Logic extends UILogic<State, Event> {
 
     private async storePageFinal(state: State, customTimestamp?: number) {
         const { overview, metaPicker, pageEditor } = this.props.storage.modules
+        const { annotationSharing } = this.props.services
 
         await overview.setPageStar({
             url: state.pageUrl,
@@ -414,20 +418,22 @@ export default class Logic extends UILogic<State, Event> {
             )
 
             if (state.spacesToAdd.length) {
-                await metaPicker.setAnnotationLists({
+                await annotationSharing.addAnnotationToLists({
                     annotationUrl,
                     listIds: state.spacesToAdd,
                 })
             }
+        } else if (
+            !areArraysTheSame(state.spacesToAdd, this.initValues.spacesToAdd)
+        ) {
+            await metaPicker.setPageLists({
+                fullPageUrl: state.pageUrl,
+                listIds: [
+                    ...(hasNote ? [] : state.spacesToAdd), // If there is a note, don't add page to the set spaces
+                    SPECIAL_LIST_IDS.MOBILE,
+                    SPECIAL_LIST_IDS.INBOX,
+                ],
+            })
         }
-
-        await metaPicker.setPageLists({
-            fullPageUrl: state.pageUrl,
-            listIds: [
-                ...(hasNote ? [] : state.spacesToAdd), // If there is a note, don't add page to the set spaces
-                SPECIAL_LIST_IDS.MOBILE,
-                SPECIAL_LIST_IDS.INBOX,
-            ],
-        })
     }
 }

@@ -67,7 +67,9 @@ export interface Props extends MainNavProps<'Reader'> {
     storage: UIStorageModules<
         'reader' | 'overview' | 'pageEditor' | 'metaPicker'
     >
-    services: UIServices<'readability' | 'resourceLoader' | 'errorTracker'>
+    services: UIServices<
+        'readability' | 'resourceLoader' | 'errorTracker' | 'annotationSharing'
+    >
     loadContentScript: ContentScriptLoader
 }
 
@@ -326,6 +328,7 @@ export default class Logic extends UILogic<State, Event> {
             storage: {
                 modules: { pageEditor, metaPicker },
             },
+            services: { annotationSharing },
         } = this.props
 
         const note = await pageEditor.findNote({ url: highlightUrl })
@@ -333,10 +336,13 @@ export default class Logic extends UILogic<State, Event> {
             throw new Error('Clicked highlight that is not tracked in DB.')
         }
 
-        const listEntries = await metaPicker.findAnnotListEntriesByAnnot({
+        const sharingState = await annotationSharing.getAnnotationSharingState({
             annotationUrl: highlightUrl,
         })
-        const listIdSet = new Set(listEntries.map((entry) => entry.listId))
+        const listIdSet = new Set([
+            ...sharingState.privateListIds,
+            ...sharingState.sharedListIds,
+        ])
         const lists = await metaPicker.findListsByIds({ ids: [...listIdSet] })
 
         navigation.navigate('NoteEditor', {

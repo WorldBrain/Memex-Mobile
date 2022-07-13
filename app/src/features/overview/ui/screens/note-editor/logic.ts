@@ -8,7 +8,12 @@ import {
     UIEventHandler,
 } from 'ui-logic-core'
 import { executeUITask } from 'src/ui/utils'
-import type { MainNavProps, UIStorageModules, UITaskState } from 'src/ui/types'
+import type {
+    MainNavProps,
+    UIStorageModules,
+    UITaskState,
+    UIServices,
+} from 'src/ui/types'
 import type { NoteEditMode } from './types'
 import type { Anchor } from 'src/content-script/types'
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
@@ -40,7 +45,8 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export interface Props extends MainNavProps<'NoteEditor'> {
-    storage: UIStorageModules<'metaPicker' | 'pageEditor'>
+    storage: UIStorageModules<'pageEditor'>
+    services: UIServices<'annotationSharing'>
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -111,7 +117,8 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async handleCreation(state: State) {
-        const { pageEditor, metaPicker } = this.props.storage.modules
+        const { pageEditor } = this.props.storage.modules
+        const { annotationSharing } = this.props.services
 
         let annotationUrl: string
         if (this.highlightAnchor != null) {
@@ -132,7 +139,7 @@ export default class Logic extends UILogic<State, Event> {
             annotationUrl = result.annotationUrl
         }
 
-        await metaPicker.setAnnotationLists({
+        await annotationSharing.addAnnotationToLists({
             annotationUrl,
             listIds: state.spacesToAdd.map((space) => space.id),
         })
@@ -198,15 +205,15 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        const { metaPicker } = this.props.storage.modules
+        const { annotationSharing } = this.props.services
         if (event.entry.isChecked) {
-            await metaPicker.deleteAnnotEntryFromList({
+            await annotationSharing.removeAnnotationFromList({
                 listId: event.entry.id,
                 annotationUrl: this.noteUrl!,
             })
         } else {
-            await metaPicker.createAnnotListEntry({
-                listId: event.entry.id,
+            await annotationSharing.addAnnotationToLists({
+                listIds: [event.entry.id],
                 annotationUrl: this.noteUrl!,
             })
         }

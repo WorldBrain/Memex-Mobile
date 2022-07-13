@@ -22,6 +22,7 @@ import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 import type { MainNavigatorParamList } from 'src/ui/navigation/types'
 import type { List } from 'src/features/meta-picker/types'
+import type { AnnotationSharingState } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 
 type Page = Omit<_Page, 'notes'> & { noteIds: string[] }
 
@@ -52,7 +53,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export interface Props extends MainNavProps<'PageEditor'> {
-    services: UIServices<'syncStorage'>
+    services: UIServices<'annotationSharing'>
     storage: UIStorageModules<'metaPicker' | 'pageEditor' | 'overview'>
 }
 
@@ -92,6 +93,7 @@ export default class Logic extends UILogic<State, Event> {
 
     private async loadPageData(url: string): Promise<Page> {
         const { overview, pageEditor, metaPicker } = this.props.storage.modules
+        const { annotationSharing } = this.props.services
         const storedPage = await overview.findPage({ url })
 
         if (!storedPage) {
@@ -99,12 +101,34 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const notes = await pageEditor.findNotesByPage({ url })
-        const listIdsByNotes = await metaPicker.findAnnotListIdsByAnnots({
-            annotationUrls: notes.map((note) => note.url),
-        })
+        const annotationUrls = notes.map((note) => note.url)
+        const annotationSharingStates = await annotationSharing.getAnnotationSharingStates(
+            {
+                annotationUrls,
+            },
+        )
+
+        const getListIdsForSharingState = (
+            state: AnnotationSharingState,
+        ): number[] =>
+            state == null
+                ? []
+                : [
+                      ...new Set([
+                          ...state.privateListIds,
+                          ...state.sharedListIds,
+                      ]),
+                  ]
+
+        const noteListIds = new Set<number>()
+        for (const id of annotationUrls) {
+            const listIds = getListIdsForSharingState(
+                annotationSharingStates[id],
+            )
+            listIds.forEach((listId) => noteListIds.add(listId))
+        }
 
         const pageListIds = await metaPicker.findListIdsByPage({ url })
-        const noteListIds = new Set(Object.values(listIdsByNotes).flat())
         const listData = await metaPicker.findListsByIds({
             ids: [...noteListIds, ...pageListIds],
         })
@@ -129,7 +153,9 @@ export default class Logic extends UILogic<State, Event> {
                             noteText: note.body,
                             isNotePressed: false,
                             tags: [],
-                            listIds: listIdsByNotes[note.url],
+                            listIds: getListIdsForSharingState(
+                                annotationSharingStates[note.url],
+                            ),
                             isEdited:
                                 note.lastEdited?.getTime() !==
                                 note.createdWhen!.getTime(),
@@ -180,6 +206,7 @@ export default class Logic extends UILogic<State, Event> {
         previousState,
     }) => {
         const { metaPicker } = this.props.storage.modules
+        const { annotationSharing } = this.props.services
 
         if (
             previousState.mode === 'annotation-spaces' &&
@@ -192,7 +219,7 @@ export default class Logic extends UILogic<State, Event> {
                     },
                 },
             })
-            await metaPicker.deleteAnnotEntryFromList({
+            await annotationSharing.removeAnnotationFromList({
                 annotationUrl: previousState.annotationUrlToEdit,
                 listId,
             })
@@ -214,6 +241,7 @@ export default class Logic extends UILogic<State, Event> {
         previousState,
     }) => {
         const { metaPicker } = this.props.storage.modules
+        const { annotationSharing } = this.props.services
 
         if (
             previousState.mode === 'annotation-spaces' &&
@@ -226,9 +254,9 @@ export default class Logic extends UILogic<State, Event> {
                     },
                 },
             })
-            await metaPicker.createAnnotListEntry({
+            await annotationSharing.addAnnotationToLists({
                 annotationUrl: previousState.annotationUrlToEdit,
-                listId,
+                listIds: [listId],
             })
         } else {
             this.emitMutation({ page: { listIds: { $unshift: [listId] } } })
