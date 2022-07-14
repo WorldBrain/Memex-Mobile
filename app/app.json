@@ -10,6 +10,7 @@
     "storageKeys": {
         "mostRecentUser": "@MemexApp_most-recent-user",
         "syncKey": "@MemexApp_sync-key",
+        "retroSyncFlag": "@MemexApp_retrosync-completed",
         "deviceId": "@MemexApp_device-id",
         "showOnboarding": "@MemexApp_show-onboarding",
         "lastSeenUpdateTime": "@MemexApp_last-seen-update-time",

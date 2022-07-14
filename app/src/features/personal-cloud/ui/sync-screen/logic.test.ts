@@ -44,18 +44,26 @@ describe('cloud sync UI logic tests', () => {
     }
 
     it(
-        'should trigger sync on init, setting sync key when done',
+        'should trigger sync on init, setting init+retro sync flags when done',
         { skipSyncTests: true },
         async (context) => {
-            let isSynced = false
+            let initSyncDone = false
+            let retroSyncDone = false
+            context.services.cloudSync.restrospectiveSync = async () => {
+                retroSyncDone = true
+            }
             context.services.cloudSync.syncStream = async () => {
-                isSynced = true
+                initSyncDone = true
             }
             const { element } = setup(context)
             const { localStorage, keepAwake } = context.services
 
             expect(await localStorage.get(storageKeys.syncKey)).toEqual(null)
-            expect(isSynced).toBe(false)
+            expect(await localStorage.get(storageKeys.retroSyncFlag)).toEqual(
+                null,
+            )
+            expect(initSyncDone).toBe(false)
+            expect(retroSyncDone).toBe(false)
 
             expect(keepAwake.isActive).toBe(false)
             expect(element.state.syncState).toEqual('pristine')
@@ -67,9 +75,55 @@ describe('cloud sync UI logic tests', () => {
 
             expect(keepAwake.isActive).toBe(false)
             expect(element.state.syncState).toEqual('done')
-            expect(isSynced).toBe(true)
+            expect(initSyncDone).toBe(true)
+            expect(retroSyncDone).toBe(false)
 
             expect(await localStorage.get(storageKeys.syncKey)).toEqual(true)
+            expect(await localStorage.get(storageKeys.retroSyncFlag)).toEqual(
+                true,
+            )
+        },
+    )
+
+    it(
+        'should trigger retrospective sync on init, if route flag set, setting retrospective sync flag when done, leaving init sync flag',
+        { skipSyncTests: true },
+        async (context) => {
+            context.route = new FakeRoute({
+                shouldRetrospectiveSync: true,
+            }) as any
+            let initSyncDone = false
+            let retroSyncDone = false
+            context.services.cloudSync.restrospectiveSync = async () => {
+                retroSyncDone = true
+            }
+            context.services.cloudSync.syncStream = async () => {
+                initSyncDone = true
+            }
+            const { element } = setup(context)
+            const { localStorage, keepAwake } = context.services
+
+            expect(await localStorage.get(storageKeys.syncKey)).toEqual(null)
+            expect(initSyncDone).toBe(false)
+            expect(retroSyncDone).toBe(false)
+
+            expect(keepAwake.isActive).toBe(false)
+            expect(element.state.syncState).toEqual('pristine')
+            const syncP = element.init()
+            expect(keepAwake.isActive).toBe(true)
+            expect(element.state.syncState).toEqual('running')
+
+            await syncP
+
+            expect(keepAwake.isActive).toBe(false)
+            expect(element.state.syncState).toEqual('done')
+            expect(initSyncDone).toBe(false)
+            expect(retroSyncDone).toBe(true)
+
+            expect(await localStorage.get(storageKeys.syncKey)).toEqual(null)
+            expect(await localStorage.get(storageKeys.retroSyncFlag)).toEqual(
+                true,
+            )
         },
     )
 

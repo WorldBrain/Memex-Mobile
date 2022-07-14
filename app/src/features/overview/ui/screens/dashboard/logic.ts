@@ -106,17 +106,28 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
-        const {
-            navigation,
-            services: { localStorage },
-        } = this.props
+        const { services, navigation } = this.props
 
         // Nav to onboarding early if local storage flag is set
-        const showOnboarding = await localStorage.get(
+        const showOnboarding = await services.localStorage.get(
             storageKeys.showOnboarding,
         )
         if (showOnboarding) {
             navigation.navigate('Onboarding')
+            return
+        }
+
+        // Nav to sync to do reprospective sync if needed (annotation spaces support feature)
+        // NOTE: retro sync flag should be set post-init sync, so this will only trigger for
+        //   existing users who did init-sync in earlier versions (where it didn't set that flag)
+        const initSyncDone = await services.localStorage.get(
+            storageKeys.syncKey,
+        )
+        const retrospectiveSyncDone = await services.localStorage.get(
+            storageKeys.retroSyncFlag,
+        )
+        if (initSyncDone && !retrospectiveSyncDone) {
+            navigation.navigate('CloudSync', { shouldRetrospectiveSync: true })
             return
         }
 

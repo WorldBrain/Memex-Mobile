@@ -46,6 +46,33 @@ export default class CloudSyncScreen extends StatefulUIElement<
         )
     }
 
+    private renderStats() {
+        if (this.props.route.params?.shouldRetrospectiveSync) {
+            return null
+        }
+
+        return (
+            <>
+                <SecondaryText>
+                    Total remote changes: {this.state.totalDownloads ?? '...'}
+                </SecondaryText>
+                <SecondaryText>
+                    Pending remote changes:{' '}
+                    {this.state.totalDownloads == null
+                        ? '...'
+                        : this.state.pendingDownloads}
+                </SecondaryText>
+                <SecondaryText>
+                    Progress:{' '}
+                    {this.state.totalDownloads == null
+                        ? '...'
+                        : calcPercComplete(this.state)}
+                    %
+                </SecondaryText>
+            </>
+        )
+    }
+
     private renderSyncingScreen() {
         return (
             <Container>
@@ -56,23 +83,7 @@ export default class CloudSyncScreen extends StatefulUIElement<
                         This can take a while. Please leave your app open and
                         your device on charge.
                     </SecondaryText>
-                    <SecondaryText>
-                        Total remote changes:{' '}
-                        {this.state.totalDownloads ?? '...'}
-                    </SecondaryText>
-                    <SecondaryText>
-                        Pending remote changes:{' '}
-                        {this.state.totalDownloads == null
-                            ? '...'
-                            : this.state.pendingDownloads}
-                    </SecondaryText>
-                    <SecondaryText>
-                        Progress:{' '}
-                        {this.state.totalDownloads == null
-                            ? '...'
-                            : calcPercComplete(this.state)}
-                        %
-                    </SecondaryText>
+                    {this.renderStats()}
                 </InnerContainer>
             </Container>
         )
@@ -119,11 +130,13 @@ export default class CloudSyncScreen extends StatefulUIElement<
                     <HeadingText>Sync successful</HeadingText>
                 </View>
                 <View>
-                    <SecondaryText>
-                        If you see no data in the dashboard, make sure you
-                        synced on at least one of your other devices first then
-                        restart the app.
-                    </SecondaryText>
+                    {!this.props.route.params?.shouldRetrospectiveSync && (
+                        <SecondaryText>
+                            If you see no data in the dashboard, make sure you
+                            synced on at least one of your other devices first
+                            then restart the app.
+                        </SecondaryText>
+                    )}
                 </View>
                 <PrimaryAction
                     label="Go to Dashboard"

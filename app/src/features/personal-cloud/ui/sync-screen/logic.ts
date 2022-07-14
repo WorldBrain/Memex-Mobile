@@ -86,8 +86,14 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
     }
 
     private handleSyncSuccess = async () => {
+        const { services, route } = this.props
         this.syncHasFinished = true
-        await this.props.services.localStorage.set(storageKeys.syncKey, true)
+
+        // NOTE: This needs to be set here so the dashboard doesn't redirect here on load after init sync
+        await services.localStorage.set(storageKeys.retroSyncFlag, true)
+        if (!route.params?.shouldRetrospectiveSync) {
+            await services.localStorage.set(storageKeys.syncKey, true)
+        }
     }
 
     private handleSyncError = (err: Error) => {
@@ -120,7 +126,11 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
         }
 
         try {
-            await services.cloudSync.syncStream()
+            if (route.params?.shouldRetrospectiveSync) {
+                await services.cloudSync.restrospectiveSync()
+            } else {
+                await services.cloudSync.syncStream()
+            }
         } catch (err) {
             if (!(err instanceof SyncStreamInterruptError)) {
                 this.handleSyncError(err)

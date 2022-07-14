@@ -56,6 +56,7 @@ describe('dashboard screen UI logic tests', () => {
         },
     ) {
         await options.services.localStorage.set(storageKeys.syncKey, true)
+        await options.services.localStorage.set(storageKeys.retroSyncFlag, true)
         await options.storage.modules.metaPicker.createInboxListIfAbsent({})
         await options.storage.modules.metaPicker.createMobileListIfAbsent({})
 
@@ -98,6 +99,38 @@ describe('dashboard screen UI logic tests', () => {
 
             expect(dependencies.navigation.popRequests()).toEqual([
                 { type: 'navigate', target: 'Onboarding' },
+            ])
+        },
+    )
+
+    it(
+        'should nav away to do retrospective sync if not yet done (but init sync already done)',
+        { skipSyncTests: true },
+        async (dependencies) => {
+            const { element, logic } = await setup(dependencies)
+
+            await dependencies.services.localStorage.set(
+                storageKeys.retroSyncFlag,
+                false,
+            )
+            await dependencies.services.localStorage.set(
+                storageKeys.syncKey,
+                false,
+            )
+            await element.init()
+            expect(dependencies.navigation.popRequests()).toEqual([]) // Init sync flag not yet set; shouldn't nav away
+
+            await dependencies.services.localStorage.set(
+                storageKeys.syncKey,
+                true,
+            )
+            await element.init()
+            expect(dependencies.navigation.popRequests()).toEqual([
+                {
+                    type: 'navigate',
+                    target: 'CloudSync',
+                    params: { shouldRetrospectiveSync: true },
+                },
             ])
         },
     )
