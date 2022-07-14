@@ -25,7 +25,7 @@ describe('share modal UI logic tests', () => {
             syncError?: () => string | undefined
         },
     ) {
-        await options.services.localStorage.set(storageKeys.syncKey, true)
+        await options.services.localStorage.set(storageKeys.initSyncFlag, true)
         const pageFetcher = options.getPageTitle
             ? ({ fetchPageTitle: options.getPageTitle } as any)
             : options.services.pageFetcher

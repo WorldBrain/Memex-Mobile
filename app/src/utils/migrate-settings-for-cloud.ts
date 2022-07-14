@@ -22,10 +22,10 @@ export async function migrateSettings({
     }
 
     // Move to local settings
-    const syncFlag = await syncStorage.get(storageKeys.syncKey)
+    const syncFlag = await syncStorage.get(storageKeys.initSyncFlag)
     if (syncFlag != null) {
-        await syncStorage.clear(storageKeys.syncKey)
-        await localStorage.set(storageKeys.syncKey, syncFlag)
+        await syncStorage.clear(storageKeys.initSyncFlag)
+        await localStorage.set(storageKeys.initSyncFlag, syncFlag)
     }
 
     // No longer used settings - qnd migrations + old sync

@@ -121,7 +121,7 @@ export default class Logic extends UILogic<State, Event> {
         // NOTE: retro sync flag should be set post-init sync, so this will only trigger for
         //   existing users who did init-sync in earlier versions (where it didn't set that flag)
         const initSyncDone = await services.localStorage.get(
-            storageKeys.syncKey,
+            storageKeys.initSyncFlag,
         )
         const retrospectiveSyncDone = await services.localStorage.get(
             storageKeys.retroSyncFlag,

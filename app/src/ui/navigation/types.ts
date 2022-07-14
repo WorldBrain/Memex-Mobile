@@ -8,7 +8,12 @@ export type MainNavigatorParamList = {
     DebugConsole: undefined
     SettingsMenu: undefined
     Pairing: undefined
-    CloudSync: { shouldWipeDBFirst?: boolean } | undefined
+    CloudSync:
+        | {
+              shouldWipeDBFirst?: boolean
+              shouldRetrospectiveSync?: boolean
+          }
+        | undefined
     Onboarding: { redoOnboarding?: boolean } | undefined
     Login:
         | {

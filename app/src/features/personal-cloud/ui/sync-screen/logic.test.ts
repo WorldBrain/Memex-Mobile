@@ -58,7 +58,9 @@ describe('cloud sync UI logic tests', () => {
             const { element } = setup(context)
             const { localStorage, keepAwake } = context.services
 
-            expect(await localStorage.get(storageKeys.syncKey)).toEqual(null)
+            expect(await localStorage.get(storageKeys.initSyncFlag)).toEqual(
+                null,
+            )
             expect(await localStorage.get(storageKeys.retroSyncFlag)).toEqual(
                 null,
             )
@@ -78,7 +80,9 @@ describe('cloud sync UI logic tests', () => {
             expect(initSyncDone).toBe(true)
             expect(retroSyncDone).toBe(false)
 
-            expect(await localStorage.get(storageKeys.syncKey)).toEqual(true)
+            expect(await localStorage.get(storageKeys.initSyncFlag)).toEqual(
+                true,
+            )
             expect(await localStorage.get(storageKeys.retroSyncFlag)).toEqual(
                 true,
             )
@@ -103,7 +107,9 @@ describe('cloud sync UI logic tests', () => {
             const { element } = setup(context)
             const { localStorage, keepAwake } = context.services
 
-            expect(await localStorage.get(storageKeys.syncKey)).toEqual(null)
+            expect(await localStorage.get(storageKeys.initSyncFlag)).toEqual(
+                null,
+            )
             expect(initSyncDone).toBe(false)
             expect(retroSyncDone).toBe(false)
 
@@ -120,7 +126,9 @@ describe('cloud sync UI logic tests', () => {
             expect(initSyncDone).toBe(false)
             expect(retroSyncDone).toBe(true)
 
-            expect(await localStorage.get(storageKeys.syncKey)).toEqual(null)
+            expect(await localStorage.get(storageKeys.initSyncFlag)).toEqual(
+                null,
+            )
             expect(await localStorage.get(storageKeys.retroSyncFlag)).toEqual(
                 true,
             )

@@ -50,7 +50,7 @@ describe('settings menu UI logic tests', () => {
         const localStorage = new StorageService({
             settingsStorage: new MockSettingsStorage(),
         })
-        await localStorage.set(storageKeys.syncKey, true)
+        await localStorage.set(storageKeys.initSyncFlag, true)
 
         const { element: element1 } = await setup({
             ...context,
@@ -67,7 +67,7 @@ describe('settings menu UI logic tests', () => {
         expect(element1.state.isLoggedIn).toBe(false)
         expect(element1.state.isSynced).toBe(true)
 
-        await localStorage.set(storageKeys.syncKey, false)
+        await localStorage.set(storageKeys.initSyncFlag, false)
         const { element: element2 } = await setup({
             ...context,
             services: {

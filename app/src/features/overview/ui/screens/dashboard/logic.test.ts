@@ -55,7 +55,7 @@ describe('dashboard screen UI logic tests', () => {
             navigation: FakeNavigation
         },
     ) {
-        await options.services.localStorage.set(storageKeys.syncKey, true)
+        await options.services.localStorage.set(storageKeys.initSyncFlag, true)
         await options.services.localStorage.set(storageKeys.retroSyncFlag, true)
         await options.storage.modules.metaPicker.createInboxListIfAbsent({})
         await options.storage.modules.metaPicker.createMobileListIfAbsent({})
@@ -114,14 +114,14 @@ describe('dashboard screen UI logic tests', () => {
                 false,
             )
             await dependencies.services.localStorage.set(
-                storageKeys.syncKey,
+                storageKeys.initSyncFlag,
                 false,
             )
             await element.init()
             expect(dependencies.navigation.popRequests()).toEqual([]) // Init sync flag not yet set; shouldn't nav away
 
             await dependencies.services.localStorage.set(
-                storageKeys.syncKey,
+                storageKeys.initSyncFlag,
                 true,
             )
             await element.init()

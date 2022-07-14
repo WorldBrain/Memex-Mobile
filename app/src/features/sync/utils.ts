@@ -6,7 +6,9 @@ import { storageKeys } from '../../../app.json'
 export const isSyncEnabled = async ({
     localStorage,
 }: UIServices<'localStorage'>): Promise<boolean> => {
-    const syncEnabled = await localStorage.get<boolean>(storageKeys.syncKey)
+    const syncEnabled = await localStorage.get<boolean>(
+        storageKeys.initSyncFlag,
+    )
 
     return Boolean(syncEnabled)
 }

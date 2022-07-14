@@ -9,7 +9,7 @@
     "sentryDsn": "https://efff674e8a664772b5c1b8689522e475@o138129.ingest.sentry.io/4461865",
     "storageKeys": {
         "mostRecentUser": "@MemexApp_most-recent-user",
-        "syncKey": "@MemexApp_sync-key",
+        "initSyncFlag": "@MemexApp_sync-key",
         "retroSyncFlag": "@MemexApp_retrosync-completed",
         "deviceId": "@MemexApp_device-id",
         "showOnboarding": "@MemexApp_show-onboarding",

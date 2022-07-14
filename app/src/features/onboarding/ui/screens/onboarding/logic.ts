@@ -41,7 +41,7 @@ export default class OnboardingScreenLogic extends UILogic<State, Event> {
         const { route, services, navigation } = this.options
 
         const isSyncEnabled = await services.localStorage.get(
-            storageKeys.syncKey,
+            storageKeys.initSyncFlag,
         )
 
         if (isSyncEnabled) {

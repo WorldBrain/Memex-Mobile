@@ -80,7 +80,7 @@ describe('onboarding UI logic tests', () => {
             // Onboarding key should be `true` from initial migration code
             await localStorage.set(storageKeys.showOnboarding, true)
             // Set the sync key so that onboarding detects an existing user
-            await localStorage.set(storageKeys.syncKey, true)
+            await localStorage.set(storageKeys.initSyncFlag, true)
 
             await logicContainer.processEvent('init', undefined)
 
@@ -117,7 +117,7 @@ describe('onboarding UI logic tests', () => {
 
             // Onboarding key should be `false` from last time onboarding
             await localStorage.set(storageKeys.showOnboarding, false)
-            await localStorage.set(storageKeys.syncKey, true)
+            await localStorage.set(storageKeys.initSyncFlag, true)
 
             await logicContainer.processEvent('init', undefined)
 
@@ -154,7 +154,7 @@ describe('onboarding UI logic tests', () => {
 
             // Onboarding key should be `false` from last time onboarding
             await localStorage.set(storageKeys.showOnboarding, false)
-            await localStorage.set(storageKeys.syncKey, true)
+            await localStorage.set(storageKeys.initSyncFlag, true)
 
             await logicContainer.processEvent('init', undefined)
             expect(navigation.popRequests()).toEqual([

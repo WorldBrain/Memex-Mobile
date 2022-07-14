@@ -11,7 +11,7 @@ interface Props extends MainNavProps<'Pairing'> {
 
 export default class RePairScreen extends React.PureComponent<Props> {
     private handleRePairConfirmation = async () => {
-        await this.props.services.localStorage.clear(storageKeys.syncKey)
+        await this.props.services.localStorage.clear(storageKeys.initSyncFlag)
         this.props.navigation.navigate('CloudSync')
     }
 

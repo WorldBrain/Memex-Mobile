@@ -92,7 +92,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
         // NOTE: This needs to be set here so the dashboard doesn't redirect here on load after init sync
         await services.localStorage.set(storageKeys.retroSyncFlag, true)
         if (!route.params?.shouldRetrospectiveSync) {
-            await services.localStorage.set(storageKeys.syncKey, true)
+            await services.localStorage.set(storageKeys.initSyncFlag, true)
         }
     }
 
