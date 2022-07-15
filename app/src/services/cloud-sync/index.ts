@@ -6,13 +6,16 @@ import type { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import type { PersonalCloudBackend } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import type { CloudSyncAPI, SyncStats } from './types'
 import type { ErrorTrackingService } from '../error-tracking'
+import { COLLECTION_NAMES as ANNOTATIONS_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/storage/modules/annotations/constants'
+import { COLLECTION_NAMES as CONTENT_SHARING_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 
 export interface Props {
     backend: PersonalCloudBackend
     storage: PersonalCloudStorage
     storageManager: StorageManager
     errorTrackingService: ErrorTrackingService
-    setLastUpdateProcessedTime(time: number): Promise<void>
+    setSyncLastProcessedTime(time: number): Promise<void>
+    setRetroSyncLastProcessedTime(time: number): Promise<void>
 }
 
 export class SyncStreamInterruptError extends Error {
@@ -57,7 +60,7 @@ export class CloudSyncService implements CloudSyncAPI {
 
     ____wipeDBForSync: CloudSyncAPI['____wipeDBForSync'] = async () => {
         this.resetSyncStats()
-        await this.props.setLastUpdateProcessedTime(0)
+        await this.props.setSyncLastProcessedTime(0)
         await dangerousPleaseBeSureDeleteAndRecreateDatabase(
             this.props.storageManager,
         )
@@ -71,24 +74,34 @@ export class CloudSyncService implements CloudSyncAPI {
     }
 
     sync: CloudSyncAPI['sync'] = async () => {
-        const { storage, backend, setLastUpdateProcessedTime } = this.props
+        const { storage, backend, setSyncLastProcessedTime } = this.props
 
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
 
         const { batch, lastSeen } = await backend.bulkDownloadUpdates()
         const { updatesIntegrated } = await storage.integrateUpdates(batch)
-        await setLastUpdateProcessedTime(lastSeen)
+        await setSyncLastProcessedTime(lastSeen)
         return { totalChanges: updatesIntegrated }
     }
 
+    private maybeInterruptSyncStream() {
+        if (this.shouldInterruptStream) {
+            this.shouldInterruptStream = false
+            throw new SyncStreamInterruptError()
+        }
+    }
+
+    private handleSyncStreamError(err: Error) {
+        if (err instanceof SyncStreamInterruptError) {
+            throw err
+        }
+        this.props.errorTrackingService.track(err)
+        throw err
+    }
+
     syncStream: CloudSyncAPI['syncStream'] = async () => {
-        const {
-            storage,
-            backend,
-            errorTrackingService,
-            setLastUpdateProcessedTime,
-        } = this.props
+        const { storage, backend, setSyncLastProcessedTime } = this.props
 
         const { releaseMutex } = await this.syncStreamMutex.lock()
 
@@ -96,27 +109,47 @@ export class CloudSyncService implements CloudSyncAPI {
         await storage.pushAllQueuedUpdates()
 
         try {
-            const maybeInterruptStream = () => {
-                if (this.shouldInterruptStream) {
-                    this.shouldInterruptStream = false
-                    throw new SyncStreamInterruptError()
-                }
-            }
-
             for await (const { batch, lastSeen } of backend.streamUpdates({
                 skipUserChangeListening: true,
             })) {
-                maybeInterruptStream()
+                this.maybeInterruptSyncStream()
                 await storage.integrateUpdates(batch)
-                await setLastUpdateProcessedTime(lastSeen)
-                maybeInterruptStream()
+                await setSyncLastProcessedTime(lastSeen)
+                this.maybeInterruptSyncStream()
             }
         } catch (err) {
-            if (err instanceof SyncStreamInterruptError) {
-                throw err
+            this.handleSyncStreamError(err)
+        } finally {
+            releaseMutex()
+        }
+    }
+
+    retrospectiveSync: CloudSyncAPI['retrospectiveSync'] = async () => {
+        const { storage, backend, setRetroSyncLastProcessedTime } = this.props
+
+        const collectionsToRetroSync = [
+            ANNOTATIONS_COLLECTION_NAMES.listEntry,
+            CONTENT_SHARING_COLLECTION_NAMES.listMetadata,
+            CONTENT_SHARING_COLLECTION_NAMES.annotationPrivacy,
+            CONTENT_SHARING_COLLECTION_NAMES.annotationMetadata,
+        ]
+        const { releaseMutex } = await this.syncStreamMutex.lock()
+        await storage.loadDeviceId()
+
+        try {
+            for await (const {
+                batch,
+                lastSeen,
+            } of backend.streamCollectionData({
+                collectionNames: collectionsToRetroSync,
+            })) {
+                this.maybeInterruptSyncStream()
+                await storage.integrateUpdates(batch)
+                await setRetroSyncLastProcessedTime(lastSeen)
+                this.maybeInterruptSyncStream()
             }
-            errorTrackingService.track(err)
-            throw err
+        } catch (err) {
+            this.handleSyncStreamError(err)
         } finally {
             releaseMutex()
         }
