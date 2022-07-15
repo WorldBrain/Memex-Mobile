@@ -21,18 +21,15 @@ export interface NoteOpArgs {
 
 export interface Props extends StorageModuleConstructorArgs {
     normalizeUrl: URLNormalizer
+    createDefaultAnnotPrivacyLevel: (annotationUrl: string) => Promise<void>
 }
 
 export class PageEditorStorage extends StorageModule {
     static NOTE_COLL = COLLECTION_NAMES.annotation
     static BOOKMARK_COLL = COLLECTION_NAMES.bookmark
 
-    private normalizeUrl: URLNormalizer
-
-    constructor({ normalizeUrl, ...args }: Props) {
-        super(args)
-
-        this.normalizeUrl = normalizeUrl
+    constructor(private deps: Props) {
+        super(deps)
     }
 
     getConfig = (): StorageModuleConfig => {
@@ -123,7 +120,7 @@ export class PageEditorStorage extends StorageModule {
         note: NoteCreate,
         customTimestamp = Date.now(),
     ): Promise<{ annotationUrl: string }> {
-        const pageUrl = this.normalizeUrl(note.pageUrl)
+        const pageUrl = this.deps.normalizeUrl(note.pageUrl)
         const annotationUrl = this.createAnnotationUrl({
             pageUrl,
             timestamp: customTimestamp,
@@ -137,6 +134,8 @@ export class PageEditorStorage extends StorageModule {
             pageUrl,
             url: annotationUrl,
         })
+
+        await this.deps.createDefaultAnnotPrivacyLevel(annotationUrl)
         return { annotationUrl }
     }
 
@@ -144,7 +143,7 @@ export class PageEditorStorage extends StorageModule {
         annotation: RequiredBy<NoteCreate, 'selector' | 'body'>,
         customTimestamp = Date.now(),
     ): Promise<{ annotationUrl: string }> {
-        const pageUrl = this.normalizeUrl(annotation.pageUrl)
+        const pageUrl = this.deps.normalizeUrl(annotation.pageUrl)
         const annotationUrl = this.createAnnotationUrl({
             pageUrl,
             timestamp: customTimestamp,
@@ -159,11 +158,13 @@ export class PageEditorStorage extends StorageModule {
             pageUrl,
             url: annotationUrl,
         })
+
+        await this.deps.createDefaultAnnotPrivacyLevel(annotationUrl)
         return { annotationUrl }
     }
 
     async deleteNotesForPage({ url }: { url: string }) {
-        const pageUrl = this.normalizeUrl(url)
+        const pageUrl = this.deps.normalizeUrl(url)
 
         return this.operation('deleteNotesForPage', { url: pageUrl })
     }
@@ -196,7 +197,7 @@ export class PageEditorStorage extends StorageModule {
     }
 
     async findNotesByPage({ url }: NoteOpArgs): Promise<Note[]> {
-        url = this.normalizeUrl(url)
+        url = this.deps.normalizeUrl(url)
 
         const notes = await this.operation('findNotesForPage', { url })
 

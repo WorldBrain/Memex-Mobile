@@ -41,6 +41,7 @@ import type { AuthService } from '@worldbrain/memex-common/lib/authentication/ty
 import ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
 import ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export interface CreateStorageOptions {
     authService: AuthService
@@ -89,10 +90,12 @@ export async function createStorage({
         collectionName: SettingsStorage.LOCAL_SETTINGS_COLL_NAME,
         collectionVersion: new Date('2021-08-03'),
     })
+    const contentSharing = new ContentSharingClientStorage({ storageManager })
 
     const modules: Storage['modules'] = {
         syncSettings,
         localSettings,
+        contentSharing,
         overview: new OverviewStorage({
             storageManager,
             normalizeUrl,
@@ -114,12 +117,19 @@ export async function createStorage({
                 })
             },
         }),
-        pageEditor: new PageEditorStorage({ storageManager, normalizeUrl }),
         copyPaster: new CopyPasterStorage({ storageManager }),
         clientSyncLog: new MemexClientSyncLogStorage({ storageManager }),
         syncInfo: new MemexSyncInfoStorage({ storageManager }),
         reader: new ReaderStorage({ storageManager, normalizeUrl }),
-        contentSharing: new ContentSharingClientStorage({ storageManager }),
+        pageEditor: new PageEditorStorage({
+            storageManager,
+            normalizeUrl,
+            createDefaultAnnotPrivacyLevel: (annotation) =>
+                contentSharing.setAnnotationPrivacyLevel({
+                    annotation,
+                    privacyLevel: AnnotationPrivacyLevels.PRIVATE,
+                }),
+        }),
         personalCloud: new PersonalCloudStorage({
             uploadClientUpdates,
             storageManager,

@@ -4,6 +4,7 @@ import { normalizeUrl } from '@worldbrain/memex-url-utils'
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
 import { Note } from '../types'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 const it = makeStorageTestFactory()
 
@@ -47,6 +48,7 @@ describe('page editor StorageModule', () => {
     it('should be able to create new notes', async ({
         storage: {
             modules: { pageEditor, overview },
+            manager,
         },
     }) => {
         for (const page of data.pages) {
@@ -58,18 +60,36 @@ describe('page editor StorageModule', () => {
                 continue
             }
 
+            expect(
+                await manager
+                    .collection('annotationPrivacyLevels')
+                    .findOneObject({ annotation: note.url }),
+            ).toEqual(null)
+
             // Timestamp gets appended to URL ID; here we just grab it from test datum's URL
             const urlTimestamp = +note.url.split('#')[1]
 
             await pageEditor.createNote(note as any, urlTimestamp)
             const foundNote = await pageEditor.findNote(note)
             testNoteEquality(foundNote!, note)
+
+            expect(
+                await manager
+                    .collection('annotationPrivacyLevels')
+                    .findOneObject({ annotation: note.url }),
+            ).toEqual({
+                id: expect.any(Number),
+                annotation: note.url,
+                createdWhen: expect.any(Date),
+                privacyLevel: AnnotationPrivacyLevels.PRIVATE,
+            })
         }
     })
 
     it('should be able to create new annotations', async ({
         storage: {
             modules: { pageEditor, overview },
+            manager,
         },
     }) => {
         for (const page of data.pages) {
@@ -81,12 +101,29 @@ describe('page editor StorageModule', () => {
                 continue
             }
 
+            expect(
+                await manager
+                    .collection('annotationPrivacyLevels')
+                    .findOneObject({ annotation: note.url }),
+            ).toEqual(null)
+
             // Timestamp gets appended to URL ID; here we just grab it from test datum's URL
             const urlTimestamp = +note.url.split('#')[1]
 
             await pageEditor.createAnnotation(note as any, urlTimestamp)
             const foundNote = await pageEditor.findNote(note)
             testNoteEquality(foundNote!, note)
+
+            expect(
+                await manager
+                    .collection('annotationPrivacyLevels')
+                    .findOneObject({ annotation: note.url }),
+            ).toEqual({
+                id: expect.any(Number),
+                annotation: note.url,
+                createdWhen: expect.any(Date),
+                privacyLevel: AnnotationPrivacyLevels.PRIVATE,
+            })
         }
     })
 
