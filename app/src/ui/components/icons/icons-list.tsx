@@ -25,6 +25,7 @@ export { default as HeartIcon } from 'src/ui/img/heart.svg'
 export { default as Reload } from 'src/ui/img/reload.svg'
 export { default as Highlighter } from 'src/ui/img/Highlighter.svg'
 export { default as AddNote } from 'src/ui/img/AddNote.svg'
+export { default as Shared } from 'src/ui/img/shared.svg'
 
 // export const logoSmall = browser.extension.getURL(
 //     '/img/worldbrain-logo-narrow-bw-48.png',
