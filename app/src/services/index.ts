@@ -51,9 +51,14 @@ export async function createServices(
             storageManager: options.storage.manager,
             storage: storageModules.personalCloud,
             errorTrackingService: options.errorTracker,
-            setLastUpdateProcessedTime: (value) =>
+            setRetroSyncLastProcessedTime: (value) =>
                 storageModules.localSettings.setSetting({
-                    key: storageKeys.lastSeenUpdateTime,
+                    key: storageKeys.retroSyncLastProcessedTime,
+                    value,
+                }),
+            setSyncLastProcessedTime: (value) =>
+                storageModules.localSettings.setSetting({
+                    key: storageKeys.syncLastProcessedTime,
                     value,
                 }),
         }),

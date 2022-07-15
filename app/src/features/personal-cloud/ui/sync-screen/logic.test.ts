@@ -49,7 +49,7 @@ describe('cloud sync UI logic tests', () => {
         async (context) => {
             let initSyncDone = false
             let retroSyncDone = false
-            context.services.cloudSync.restrospectiveSync = async () => {
+            context.services.cloudSync.retrospectiveSync = async () => {
                 retroSyncDone = true
             }
             context.services.cloudSync.syncStream = async () => {
@@ -98,7 +98,7 @@ describe('cloud sync UI logic tests', () => {
             }) as any
             let initSyncDone = false
             let retroSyncDone = false
-            context.services.cloudSync.restrospectiveSync = async () => {
+            context.services.cloudSync.retrospectiveSync = async () => {
                 retroSyncDone = true
             }
             context.services.cloudSync.syncStream = async () => {
@@ -170,7 +170,7 @@ describe('cloud sync UI logic tests', () => {
             context.route = new FakeRoute({ shouldWipeDBFirst: true }) as any
             const { element } = setup(context)
             await context.storage.modules.localSettings.setSetting({
-                key: storageKeys.lastSeenUpdateTime,
+                key: storageKeys.syncLastProcessedTime,
                 value: 4352,
             })
             const cloudSyncService = context.services
@@ -184,7 +184,7 @@ describe('cloud sync UI logic tests', () => {
             await assertTestData(context.storage.manager, { exists: true })
             expect(
                 await context.storage.modules.localSettings.getSetting({
-                    key: storageKeys.lastSeenUpdateTime,
+                    key: storageKeys.syncLastProcessedTime,
                 }),
             ).not.toEqual(0)
             expect(cloudSyncService['stats']).toEqual({
@@ -197,7 +197,7 @@ describe('cloud sync UI logic tests', () => {
             await assertTestData(context.storage.manager, { exists: false })
             expect(
                 await context.storage.modules.localSettings.getSetting({
-                    key: storageKeys.lastSeenUpdateTime,
+                    key: storageKeys.syncLastProcessedTime,
                 }),
             ).toEqual(0)
             expect(cloudSyncService['stats']).toEqual({

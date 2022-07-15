@@ -112,7 +112,11 @@ export async function main() {
         },
         getLastUpdateProcessedTime: () =>
             storage.modules.localSettings.getSetting({
-                key: storageKeys.lastSeenUpdateTime,
+                key: storageKeys.syncLastProcessedTime,
+            }),
+        getLastCollectionDataProcessedTime: () =>
+            storage.modules.localSettings.getSetting({
+                key: storageKeys.retroSyncLastProcessedTime,
             }),
         getClientDeviceType: () => PersonalDeviceType.Mobile,
         getDeviceId: () =>

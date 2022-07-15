@@ -127,7 +127,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
 
         try {
             if (route.params?.shouldRetrospectiveSync) {
-                await services.cloudSync.restrospectiveSync()
+                await services.cloudSync.retrospectiveSync()
             } else {
                 await services.cloudSync.syncStream()
             }
