@@ -5,7 +5,7 @@ import type PersonalCloudServerStorage from '@worldbrain/memex-common/lib/person
 import type { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import type { OverviewStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/overview/storage'
 import type { MetaPickerStorage } from '../features/meta-picker/storage'
-import type { PageEditorStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/page-editor/storage'
+import type { PageEditorStorage } from 'src/features/page-editor/storage'
 import type {
     MemexClientSyncLogStorage,
     MemexSyncInfoStorage,
