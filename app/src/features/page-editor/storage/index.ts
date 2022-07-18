@@ -119,6 +119,7 @@ export class PageEditorStorage extends StorageModule {
     async createNote(
         note: NoteCreate,
         customTimestamp = Date.now(),
+        opts?: { skipPrivacyLevelCreation?: boolean },
     ): Promise<{ annotationUrl: string }> {
         const pageUrl = this.deps.normalizeUrl(note.pageUrl)
         const annotationUrl = this.createAnnotationUrl({
@@ -135,7 +136,9 @@ export class PageEditorStorage extends StorageModule {
             url: annotationUrl,
         })
 
-        await this.deps.createDefaultAnnotPrivacyLevel(annotationUrl)
+        if (!opts?.skipPrivacyLevelCreation) {
+            await this.deps.createDefaultAnnotPrivacyLevel(annotationUrl)
+        }
         return { annotationUrl }
     }
 

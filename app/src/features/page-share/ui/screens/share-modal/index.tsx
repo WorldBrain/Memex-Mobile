@@ -18,9 +18,10 @@ import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 import LoadingIndicator from 'src/ui/components/loading-balls'
-import EStyleSheet from 'react-native-extended-stylesheet'
 import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
 import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
+import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export default class ShareModalScreen extends StatefulUIElement<
     Props,
@@ -79,6 +80,9 @@ export default class ShareModalScreen extends StatefulUIElement<
     private handleNoteTextChange = (value: string) => {
         this.processEvent('setNoteText', { value })
     }
+
+    private handlePrivacyLevelSet = (value: AnnotationPrivacyLevels) => () =>
+        this.processEvent('setPrivacyLevel', { value })
 
     private handleSyncErrorReport = () => {
         const subject = `SYNC ERROR: Share modal`
@@ -217,15 +221,23 @@ export default class ShareModalScreen extends StatefulUIElement<
                             <LoadingIndicator size={15} />
                         </LoadingIndicatorBox>
                     ) : (
-                        <AddToSpacesBtn
-                            mainText={`Add ${
-                                this.state.noteText.trim().length
-                                    ? 'Note'
-                                    : 'Page'
-                            } to Spaces`}
-                            onPress={this.setSpacePickerShown(true)}
-                            spaceCount={this.state.spacesToAdd.length}
-                        />
+                        <>
+                            <AnnotationPrivacyBtn
+                                level={this.state.privacyLevel}
+                                onPrivacyLevelChoice={
+                                    this.handlePrivacyLevelSet
+                                }
+                            />
+                            <AddToSpacesBtn
+                                mainText={`Add ${
+                                    this.state.noteText.trim().length
+                                        ? 'Note'
+                                        : 'Page'
+                                } to Spaces`}
+                                onPress={this.setSpacePickerShown(true)}
+                                spaceCount={this.state.spacesToAdd.length}
+                            />
+                        </>
                     )}
                 </ActionBarContainer>
             </>

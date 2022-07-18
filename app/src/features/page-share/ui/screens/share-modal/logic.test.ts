@@ -13,6 +13,7 @@ import {
     SPECIAL_LIST_IDS,
 } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import type { Note } from 'src/features/page-editor/types'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -919,8 +920,8 @@ describe('share modal UI logic tests', () => {
         ])
     })
 
-    it('should be able to store a page with a note', async (context) => {
-        const { logic, initialState: state } = await setup(context)
+    it('should be able to store a page with a note, with a non-default privacy level set', async (context) => {
+        const { logic, element } = await setup(context)
         const TEST_DATA = new DATA.TestData({
             url: DATA.PAGE_URL_1,
             title: DATA.PAGE_TITLE_1,
@@ -928,9 +929,32 @@ describe('share modal UI logic tests', () => {
             noteText: DATA.NOTE_1_TEXT,
         })
 
+        expect(
+            await context.storage.manager.collection('pages').findObjects({}),
+        ).toEqual([])
+        expect(
+            await context.storage.manager
+                .collection('annotations')
+                .findObjects({}),
+        ).toEqual([])
+        expect(
+            await context.storage.manager
+                .collection('annotationPrivacyLevels')
+                .findObjects({}),
+        ).toEqual([])
+        expect(element.state.privacyLevel).toBe(AnnotationPrivacyLevels.PRIVATE)
+
+        await element.processEvent('setPrivacyLevel', {
+            value: AnnotationPrivacyLevels.PROTECTED,
+        })
+
+        expect(element.state.privacyLevel).toBe(
+            AnnotationPrivacyLevels.PROTECTED,
+        )
+
         await logic['storePage'](
             {
-                ...state,
+                ...element.state,
                 pageTitle: DATA.PAGE_TITLE_1,
                 pageUrl: DATA.PAGE_URL_1,
                 noteText: DATA.NOTE_1_TEXT,
@@ -941,12 +965,23 @@ describe('share modal UI logic tests', () => {
         expect(
             await context.storage.manager.collection('pages').findObjects({}),
         ).toEqual([TEST_DATA.PAGE])
-
         expect(
             await context.storage.manager
                 .collection('annotations')
                 .findObjects({}),
         ).toEqual([TEST_DATA.NOTE])
+        expect(
+            await context.storage.manager
+                .collection('annotationPrivacyLevels')
+                .findObjects({}),
+        ).toEqual([
+            {
+                id: expect.any(Number),
+                annotation: TEST_DATA.NOTE!.url,
+                privacyLevel: AnnotationPrivacyLevels.PROTECTED,
+                createdWhen: expect.any(Date),
+            },
+        ])
     })
 
     it('should be able to store a page with a note on a URL with hash fragment', async (context) => {

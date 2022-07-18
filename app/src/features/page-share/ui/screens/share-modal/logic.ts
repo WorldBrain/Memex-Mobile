@@ -1,4 +1,10 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import {
+    UILogic,
+    UIEvent,
+    IncomingUIEvent,
+    UIEventHandler,
+    UIMutation,
+} from 'ui-logic-core'
 
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import type {
@@ -11,6 +17,7 @@ import { loadInitial, executeUITask } from 'src/ui/utils'
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export interface State {
     loadState: UITaskState
@@ -29,6 +36,7 @@ export interface State {
     showSavingPage: boolean
     isSpacePickerShown: boolean
     isUnsupportedApplication: boolean
+    privacyLevel: AnnotationPrivacyLevels
 }
 
 export type Event = UIEvent<{
@@ -47,6 +55,7 @@ export type Event = UIEvent<{
     setPageStar: { value: boolean }
     setStatusText: { value: string }
     setSpacesToAdd: { values: number[] }
+    setPrivacyLevel: { value: AnnotationPrivacyLevels }
     clearSyncError: null
 }>
 
@@ -59,8 +68,16 @@ export interface Props extends ShareNavProps<'ShareModal'> {
         | 'localStorage'
         | 'annotationSharing'
     >
-    storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
+    storage: UIStorageModules<
+        'overview' | 'metaPicker' | 'pageEditor' | 'contentSharing'
+    >
 }
+
+type EventHandler<EventName extends keyof Event> = UIEventHandler<
+    State,
+    Event,
+    EventName
+>
 
 export default class Logic extends UILogic<State, Event> {
     /** If this instance is working with a page that's already indexed, this will be set to the visit time (created in `init`). */
@@ -78,6 +95,7 @@ export default class Logic extends UILogic<State, Event> {
 
     getInitialState(): State {
         return {
+            privacyLevel: AnnotationPrivacyLevels.PRIVATE,
             isUnsupportedApplication: false,
             syncRetryState: 'pristine',
             bookmarkState: 'pristine',
@@ -288,6 +306,10 @@ export default class Logic extends UILogic<State, Event> {
         return { spacesToAdd: { $set: incoming.event.values } }
     }
 
+    setPrivacyLevel: EventHandler<'setPrivacyLevel'> = ({ event }) => {
+        this.emitMutation({ privacyLevel: { $set: event.value } })
+    }
+
     toggleSpace(
         incoming: IncomingUIEvent<State, Event, 'toggleSpace'>,
     ): UIMutation<State> {
@@ -398,7 +420,12 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async storePageFinal(state: State, customTimestamp?: number) {
-        const { overview, metaPicker, pageEditor } = this.props.storage.modules
+        const {
+            overview,
+            metaPicker,
+            pageEditor,
+            contentSharing,
+        } = this.props.storage.modules
         const { annotationSharing } = this.props.services
 
         await overview.setPageStar({
@@ -415,7 +442,12 @@ export default class Logic extends UILogic<State, Event> {
                     pageTitle: state.pageTitle,
                 },
                 customTimestamp,
+                { skipPrivacyLevelCreation: true },
             )
+            await contentSharing.setAnnotationPrivacyLevel({
+                annotation: annotationUrl,
+                privacyLevel: state.privacyLevel,
+            })
 
             if (state.spacesToAdd.length) {
                 await annotationSharing.addAnnotationToLists({

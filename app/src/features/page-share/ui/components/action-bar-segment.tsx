@@ -46,7 +46,7 @@ const ActionBar: React.StatelessComponent<Props> = ({
             <ButtonContainer>
                 {props.onLeftBtnPress ? (
                     <ButtonBox onPress={props.onLeftBtnPress}>
-                        {leftBtnText}
+                        <Text>{leftBtnText}</Text>
                     </ButtonBox>
                 ) : (
                     <Text style={styles.placeholderBtn}>Back</Text>
@@ -63,7 +63,7 @@ const ActionBar: React.StatelessComponent<Props> = ({
                         </TouchableOpacity>
                     ) : (
                         <ButtonBox onPress={props.onRightBtnPress}>
-                            {rightBtnText}
+                            <Text>{rightBtnText}</Text>
                         </ButtonBox>
                     )
                 ) : null}
