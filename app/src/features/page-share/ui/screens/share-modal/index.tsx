@@ -20,6 +20,7 @@ import styled from 'styled-components/native'
 import LoadingIndicator from 'src/ui/components/loading-balls'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
+import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 
 export default class ShareModalScreen extends StatefulUIElement<
     Props,
@@ -211,35 +212,21 @@ export default class ShareModalScreen extends StatefulUIElement<
                         )
                     }
                 >
-                    <AddSpacesContainer
-                        onPress={this.setSpacePickerShown(true)}
-                    >
-                        {this.state.spacesState === 'running' ? (
-                            <LoadingIndicatorBox>
-                                <LoadingIndicator size={15} />
-                            </LoadingIndicatorBox>
-                        ) : this.state.spacesToAdd.length === 0 ? (
-                            <Icon
-                                icon={icons.Plus}
-                                heightAndWidth={'14px'}
-                                color={'purple'}
-                                strokeWidth={'2px'}
-                            />
-                        ) : (
-                            <SpacesCounterPill>
-                                <SpacesCounterText>
-                                    {this.state.spacesToAdd.length}
-                                </SpacesCounterText>
-                            </SpacesCounterPill>
-                        )}
-                        <AddSpacesText>
-                            Add{' '}
-                            {this.state.noteText.trim().length
-                                ? 'Note'
-                                : 'Page'}{' '}
-                            to Spaces
-                        </AddSpacesText>
-                    </AddSpacesContainer>
+                    {this.state.spacesState === 'running' ? (
+                        <LoadingIndicatorBox>
+                            <LoadingIndicator size={15} />
+                        </LoadingIndicatorBox>
+                    ) : (
+                        <AddToSpacesBtn
+                            mainText={`Add ${
+                                this.state.noteText.trim().length
+                                    ? 'Note'
+                                    : 'Page'
+                            } to Spaces`}
+                            onPress={this.setSpacePickerShown(true)}
+                            spaceCount={this.state.spacesToAdd.length}
+                        />
+                    )}
                 </ActionBarContainer>
             </>
         )
@@ -304,46 +291,6 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 }
 
-const styledScrollView = EStyleSheet.create({
-    Container: {
-        justifyContent: 'flex-start',
-        height: 40,
-        alignItems: 'center',
-    },
-})
-
-const SpaceBar = styled.View`
-    height: 40px;
-`
-
-const SpacesContainer = styled.ScrollView`
-    border-style: solid;
-    border-top-width: 1px;
-    border-color: ${(props) => props.theme.colors.lightgrey};
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    padding: 0 15px;
-`
-
-const SpacePills = styled.View`
-    background: ${(props) => props.theme.colors.purple}
-    padding: 2px 8px;
-    margin-right: 3px;
-    border-radius: 4px;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-`
-
-const SpacePillsText = styled.Text`
-    font-size: 14px;
-    font-weight: 500;
-    color: white;
-`
-
 const ActionBarContainer = styled(ActionBar)`
     display: flex;
     flex-direction: row;
@@ -354,49 +301,6 @@ const ActionBarContainer = styled(ActionBar)`
 
 const LoadingIndicatorBox = styled.View`
     margin-right: 5px;
-`
-
-const SpacesCounterPill = styled.View`
-    padding: 1px 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    background: ${(props) => props.theme.colors.purple}
-    border-radius: 50px;
-    margin-right: 5px;
-`
-
-const SpacesCounterText = styled.Text`
-    color: white;
-    font-weight: 600;
-    text-align: center;
-    font-size: 12px;
-`
-
-const AddSpacesContainer = styled.TouchableOpacity`
-    border-width: 2px;
-    border-style: dotted;
-    border-color: ${(props) => props.theme.colors.lightgrey}
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: row;
-    text-align-vertical: center;
-    height: 30px;
-    padding: 2px 8px;
-`
-
-const AddSpacesText = styled.Text`
-    color: ${(props) => props.theme.colors.purple};
-    font-size: 12px;
-    display: flex;
-    align-items flex-end;
-    flex-direction: row;
-    justify-content: flex-end;
-    text-align-vertical: bottom;
-    width: 120px;
-    text-align: right;
 `
 
 const TitleText = styled.Text`

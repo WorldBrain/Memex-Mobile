@@ -7,15 +7,17 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 export interface Props {
     onPress: (e: GestureResponderEvent) => void
     spaceCount?: number
+    mainText?: string
     mini?: boolean
 }
 
 const AddToSpacesBtn: React.SFC<Props> = ({
     spaceCount = 0,
+    mainText = 'Add to Spaces',
     onPress,
     mini,
 }) => (
-    <AddSpacesContainer onPress={onPress} mini={mini}>
+    <AddSpacesContainer onPress={onPress}>
         {spaceCount === 0 ? (
             <Icon
                 icon={PlusIcon}
@@ -28,7 +30,7 @@ const AddToSpacesBtn: React.SFC<Props> = ({
                 <SpacesCounterText>{spaceCount}</SpacesCounterText>
             </SpacesCounterPill>
         )}
-        {!mini && <AddSpacesText>Add to Spaces</AddSpacesText>}
+        {!mini && <AddSpacesText> {mainText}</AddSpacesText>}
     </AddSpacesContainer>
 )
 
@@ -37,13 +39,13 @@ export default React.memo(
     (prevProps, nextProps) => prevProps.spaceCount != nextProps.spaceCount,
 )
 
-const AddSpacesContainer = styled.TouchableOpacity<{ mini?: boolean }>`
+const AddSpacesContainer = styled.TouchableOpacity`
     border-width: 2px;
     border-style: dotted;
     border-color: ${(props) => props.theme.colors.lightgrey}
     display: flex;
     justify-content: space-between;
-    width: ${(props) => (props.mini ? 'auto' : '124px')};
+    width: auto;
     align-items: center;
     flex-direction: row;
     text-align-vertical: center;
