@@ -1,5 +1,21 @@
 import { UILogic } from 'ui-logic-core'
 import { UITaskState } from './types'
+import {
+    Lock as LockIcon,
+    Globe as GlobeIcon,
+    Person as PersonIcon,
+    SharedProtected as SharedProtectedIcon,
+} from 'src/ui/components/icons/icons-list'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+
+export const privacyLevelToIcon = (lvl: AnnotationPrivacyLevels) =>
+    lvl === AnnotationPrivacyLevels.PRIVATE
+        ? PersonIcon
+        : lvl === AnnotationPrivacyLevels.PROTECTED
+        ? LockIcon
+        : lvl === AnnotationPrivacyLevels.SHARED
+        ? GlobeIcon
+        : SharedProtectedIcon
 
 export async function loadInitial<State extends { loadState: UITaskState }>(
     logic: UILogic<State, any>,

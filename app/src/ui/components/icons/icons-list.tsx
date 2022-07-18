@@ -26,6 +26,9 @@ export { default as Reload } from 'src/ui/img/reload.svg'
 export { default as Highlighter } from 'src/ui/img/Highlighter.svg'
 export { default as AddNote } from 'src/ui/img/AddNote.svg'
 export { default as Shared } from 'src/ui/img/shared.svg'
+export { default as Person } from 'src/ui/img/personFine.svg'
+export { default as People } from 'src/ui/img/peopleFine.svg'
+export { default as SharedProtected } from 'src/ui/img/sharedprotected.svg'
 
 // export const logoSmall = browser.extension.getURL(
 //     '/img/worldbrain-logo-narrow-bw-48.png',
