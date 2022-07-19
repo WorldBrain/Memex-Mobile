@@ -81,7 +81,7 @@ export default class ShareModalScreen extends StatefulUIElement<
         this.processEvent('setNoteText', { value })
     }
 
-    private handlePrivacyLevelSet = (value: AnnotationPrivacyLevels) => () =>
+    private handlePrivacyLevelSet = (value: AnnotationPrivacyLevels) =>
         this.processEvent('setPrivacyLevel', { value })
 
     private handleSyncErrorReport = () => {
