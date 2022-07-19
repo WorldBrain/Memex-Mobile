@@ -13,6 +13,8 @@ import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import SpacePill from 'src/ui/components/space-pill'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
+import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export default class extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
@@ -24,11 +26,8 @@ export default class extends StatefulUIElement<Props, State, Event> {
     }
 
     private get showSaveBtn(): boolean {
-        const {
-            initSpaces: initListIds,
-            initNoteText,
-            mode,
-        } = this.logic as Logic
+        const { initSpaces: initListIds, initNoteText, mode } = this
+            .logic as Logic
 
         if (this.disableInputs) {
             return false
@@ -162,23 +161,31 @@ export default class extends StatefulUIElement<Props, State, Event> {
                         />
                     ) : (
                         <>
-                            <SpaceBar>
-                                <AddToSpacesBtn
-                                    mini={this.state.spacesToAdd.length > 0}
-                                    onPress={() =>
-                                        this.processEvent(
-                                            'setSpacePickerShown',
-                                            { isShown: true },
-                                        )
+                            <TopBar>
+                                <SpaceBar>
+                                    <AddToSpacesBtn
+                                        mini={this.state.spacesToAdd.length > 0}
+                                        onPress={() =>
+                                            this.processEvent(
+                                                'setSpacePickerShown',
+                                                { isShown: true },
+                                            )
+                                        }
+                                    />
+                                    {this.state.spacesToAdd.map((space) => (
+                                        <SpacePill
+                                            key={space.id}
+                                            name={space.name}
+                                        />
+                                    ))}
+                                </SpaceBar>
+                                <AnnotationPrivacyBtn
+                                    level={AnnotationPrivacyLevels.PRIVATE}
+                                    onPrivacyLevelChoice={(val) =>
+                                        console.log('good choice: ', val)
                                     }
                                 />
-                                {this.state.spacesToAdd.map((space) => (
-                                    <SpacePill
-                                        key={space.id}
-                                        name={space.name}
-                                    />
-                                ))}
-                            </SpaceBar>
+                            </TopBar>
                             {this.renderHighlightText()}
                             <NoteInputEditorBox>
                                 <NoteInputEditor
@@ -216,6 +223,12 @@ const NoteInputEditor = styled(NoteInput)`
     margin: 20px;
     flex: 1;
     height: 100%;
+`
+
+const TopBar = styled.View`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 `
 
 const SpaceBar = styled.View`
