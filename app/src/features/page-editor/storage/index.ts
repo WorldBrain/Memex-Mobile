@@ -10,6 +10,7 @@ import {
 } from '@worldbrain/memex-common/lib/storage/modules/annotations/constants'
 import type { Note } from '../types'
 import omit from 'lodash/omit'
+import type { AnnotationPrivacyLevel } from '@worldbrain/memex-common/lib/content-sharing/client-storage/types'
 
 type RequiredBy<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>
 
@@ -22,6 +23,9 @@ export interface NoteOpArgs {
 export interface Props extends StorageModuleConstructorArgs {
     normalizeUrl: URLNormalizer
     createDefaultAnnotPrivacyLevel: (annotationUrl: string) => Promise<void>
+    findAnnotPrivacyLevels: (
+        annotationUrls: string[],
+    ) => Promise<{ [annotationUrl: string]: AnnotationPrivacyLevel }>
 }
 
 export class PageEditorStorage extends StorageModule {
@@ -145,12 +149,14 @@ export class PageEditorStorage extends StorageModule {
     async createAnnotation(
         annotation: RequiredBy<NoteCreate, 'selector' | 'body'>,
         customTimestamp = Date.now(),
+        opts?: { skipPrivacyLevelCreation?: boolean },
     ): Promise<{ annotationUrl: string }> {
         const pageUrl = this.deps.normalizeUrl(annotation.pageUrl)
         const annotationUrl = this.createAnnotationUrl({
             pageUrl,
             timestamp: customTimestamp,
         })
+
         await this.operation('createNote', {
             createdWhen: new Date(customTimestamp),
             lastEdited: new Date(customTimestamp),
@@ -162,7 +168,9 @@ export class PageEditorStorage extends StorageModule {
             url: annotationUrl,
         })
 
-        await this.deps.createDefaultAnnotPrivacyLevel(annotationUrl)
+        if (!opts?.skipPrivacyLevelCreation) {
+            await this.deps.createDefaultAnnotPrivacyLevel(annotationUrl)
+        }
         return { annotationUrl }
     }
 
@@ -199,13 +207,20 @@ export class PageEditorStorage extends StorageModule {
         return this.operation('findNotes', { urls })
     }
 
-    async findNotesByPage({ url }: NoteOpArgs): Promise<Note[]> {
+    async findNotesByPage({
+        url,
+        withPrivacyLevels,
+    }: NoteOpArgs & { withPrivacyLevels?: boolean }): Promise<Note[]> {
         url = this.deps.normalizeUrl(url)
 
-        const notes = await this.operation('findNotesForPage', { url })
+        const notes: Note[] = await this.operation('findNotesForPage', { url })
+        const privacyLevels = withPrivacyLevels
+            ? await this.deps.findAnnotPrivacyLevels(notes.map((n) => n.url))
+            : {}
 
         for (const note of notes) {
             note.isStarred = false
+            note.privacyLevel = privacyLevels[note.url]?.privacyLevel
         }
 
         return notes

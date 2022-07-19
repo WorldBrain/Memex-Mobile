@@ -7,7 +7,7 @@ import { privacyLevelToIcon } from '../utils'
 
 export interface Props {
     level: AnnotationPrivacyLevels
-    onPrivacyLevelChoice: (level: AnnotationPrivacyLevels) => Promise<void>
+    onPrivacyLevelChoice: (level: AnnotationPrivacyLevels) => void
 }
 
 const AnnotationPrivacyBtn: React.SFC<Props> = ({

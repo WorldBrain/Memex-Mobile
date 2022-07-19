@@ -7,6 +7,8 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import SpacePill from 'src/ui/components/space-pill'
+import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
+import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export interface Props extends BodyProps, InteractionProps {
     isStarred?: boolean
@@ -14,13 +16,15 @@ export interface Props extends BodyProps, InteractionProps {
 }
 
 export interface InteractionProps {
-    clearBackground?: boolean
+    hideFooter?: boolean
     isNotePressed: boolean
-    onDeletePress: TouchEventHandler
+    clearBackground?: boolean
     onEditPress: TouchEventHandler
     onNotePress: TouchEventHandler
+    onDeletePress: TouchEventHandler
     onAddSpacesPress: TouchEventHandler
-    hideFooter?: boolean
+    privacyLevel: AnnotationPrivacyLevels
+    onPrivacyLevelSet: (level: AnnotationPrivacyLevels) => void
 }
 
 const ResultNote: React.StatelessComponent<Props> = (props) => {
@@ -69,6 +73,10 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                     <IconContainer onPress={props.onDeletePress}>
                         <Icon icon={icons.Trash} heightAndWidth={'16px'} />
                     </IconContainer>
+                    <AnnotationPrivacyBtn
+                        level={props.privacyLevel}
+                        onPrivacyLevelChoice={props.onPrivacyLevelSet}
+                    />
                 </ActionBar>
             </Section>
         </NoteContainer>

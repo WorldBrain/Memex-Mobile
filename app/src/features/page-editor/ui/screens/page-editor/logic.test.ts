@@ -7,6 +7,7 @@ import * as DATA from './logic.test.data'
 import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 import { StorageService } from 'src/services/settings-storage'
 import type { TestDevice } from 'src/types.tests'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 const testText = 'this is a test'
 const testPage = {
@@ -52,6 +53,12 @@ describe('page editor UI logic tests', () => {
             ...DATA.NOTE_1,
             createdWhen: new Date(),
             lastEdited: new Date(),
+        })
+        await manager.collection('annotationPrivacyLevels').createObject({
+            id: 1,
+            annotation: DATA.NOTE_1.url,
+            privacyLevel: AnnotationPrivacyLevels.SHARED,
+            createdWhen: new Date(),
         })
 
         await context.storage.modules.metaPicker.createInboxListIfAbsent({})
@@ -108,6 +115,7 @@ describe('page editor UI logic tests', () => {
                 isStarred: false,
                 commentText: DATA.NOTE_1.comment,
                 listIds: [123, 124],
+                privacyLevel: AnnotationPrivacyLevels.SHARED,
             }),
         })
         expect(element.state.listData).toEqual({
@@ -192,8 +200,9 @@ describe('page editor UI logic tests', () => {
 
         const testListIds = []
         for (const name of testLists) {
-            const { object } =
-                await context.storage.modules.metaPicker.createList({ name })
+            const {
+                object,
+            } = await context.storage.modules.metaPicker.createList({ name })
             testListIds.push(object.id)
         }
 
@@ -218,27 +227,28 @@ describe('page editor UI logic tests', () => {
     })
 
     it('should be able to add/remove annotations to/from a list', async (context) => {
-        let createListEntryValue: any
-        let deleteListEntryValue: any
         const testLists = ['a', 'b', 'c']
 
-        const { logicContainer } = setup({
-            ...context,
-            storage: {
-                ...context.storage,
-                modules: {
-                    ...context.storage.modules,
-                    metaPicker: {
-                        createAnnotListEntry: async (args: any) =>
-                            (createListEntryValue = args),
-                        deleteAnnotEntryFromList: async (args: any) =>
-                            (deleteListEntryValue = args),
-                    },
-                },
-            } as any,
+        await context.storage.manager
+            .collection('pages')
+            .createObject(DATA.PAGE_1)
+        await context.storage.manager.collection('annotations').createObject({
+            ...DATA.NOTE_1,
+            createdWhen: new Date(),
+            lastEdited: new Date(),
         })
+        await context.storage.manager
+            .collection('annotationPrivacyLevels')
+            .createObject({
+                id: 1,
+                annotation: DATA.NOTE_1.url,
+                privacyLevel: AnnotationPrivacyLevels.SHARED,
+                createdWhen: new Date(),
+            })
 
-        const TEST_NOTE_ID = 'test.com/#1234'
+        const { logicContainer } = setup(context)
+
+        const TEST_NOTE_ID = DATA.NOTE_1.url
 
         logicContainer.logic.emitMutation({
             noteData: {
@@ -252,21 +262,35 @@ describe('page editor UI logic tests', () => {
         })
 
         expect(logicContainer.state.noteData[TEST_NOTE_ID].listIds).toEqual([])
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findAllObjects({}),
+        ).toEqual([])
 
         const testListIds = []
         for (const name of testLists) {
-            const { object } =
-                await context.storage.modules.metaPicker.createList({ name })
+            const {
+                object,
+            } = await context.storage.modules.metaPicker.createList({ name })
             testListIds.push(object.id)
         }
 
         for (const listId of testListIds) {
             await logicContainer.processEvent('createEntry', { listId })
-            expect(createListEntryValue).toEqual({
-                annotationUrl: TEST_NOTE_ID,
-                listId,
-            })
         }
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findAllObjects({}),
+        ).toEqual(
+            testListIds.map((listId) =>
+                expect.objectContaining({
+                    listId,
+                    url: TEST_NOTE_ID,
+                }),
+            ),
+        )
 
         expect(logicContainer.state.noteData[TEST_NOTE_ID].listIds).toEqual(
             [...testListIds].reverse(),
@@ -274,11 +298,13 @@ describe('page editor UI logic tests', () => {
 
         for (const listId of testListIds) {
             await logicContainer.processEvent('removeEntry', { listId })
-            expect(deleteListEntryValue).toEqual({
-                annotationUrl: TEST_NOTE_ID,
-                listId,
-            })
         }
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findAllObjects({}),
+        ).toEqual([])
+
         expect(logicContainer.state.noteData[TEST_NOTE_ID].listIds).toEqual([])
     })
 

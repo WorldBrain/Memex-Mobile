@@ -1,3 +1,5 @@
+import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+
 export type EditorMode = 'collections' | 'annotation-spaces' | 'notes'
 
 export interface Note {
@@ -12,6 +14,7 @@ export interface Note {
     lastEdited?: Date
     createdWhen?: Date
     isStarred?: boolean
+    privacyLevel?: AnnotationPrivacyLevels
 }
 
 export interface Bookmark {

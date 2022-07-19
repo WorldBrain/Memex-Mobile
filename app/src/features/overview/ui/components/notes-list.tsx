@@ -11,12 +11,16 @@ import Body from './result-page-body'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import SpacePill from 'src/ui/components/space-pill'
 import type { List } from 'src/features/meta-picker/types'
+import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export interface Props {
     notes: UINote[]
     pageData?: Omit<UIPage, 'notes'>
     clearBackground?: boolean
     listData: { [listId: string]: List }
+    initNotePrivacyLevelSet: (
+        note: UINote,
+    ) => (level: AnnotationPrivacyLevels) => void
     initNoteAddSpaces: (note: UINote) => TouchEventHandler
     initNoteDelete: (note: UINote) => TouchEventHandler
     initNotePress: (note: UINote) => TouchEventHandler
@@ -31,8 +35,10 @@ class NotesList extends React.PureComponent<Props> {
             onNotePress={this.props.initNotePress(item)}
             onDeletePress={this.props.initNoteDelete(item)}
             onAddSpacesPress={this.props.initNoteAddSpaces(item)}
+            onPrivacyLevelSet={this.props.initNotePrivacyLevelSet(item)}
             clearBackground={this.props.clearBackground}
             {...item}
+            privacyLevel={item.privacyLevel!}
             isNotePressed={!!item.isNotePressed}
             listNames={item.listIds.map(
                 (listId) =>
@@ -153,7 +159,7 @@ const NoResults = styled.View`
     padding-top: 30px;
 `
 
-const FlatListContainer = styled(FlatList)`
+const FlatListContainer = (styled(FlatList)`
     display: flex;
     border-left-width: 4px;
     border-left-color: ${(props) => props.theme.colors.purple + '80'};
@@ -165,7 +171,7 @@ const FlatListContainer = styled(FlatList)`
     width: 94%;
     max-width: 600px;
     flex: 1;
-` as unknown as typeof FlatList
+` as unknown) as typeof FlatList
 
 const PageResultCard = styled.View`
     display: flex;

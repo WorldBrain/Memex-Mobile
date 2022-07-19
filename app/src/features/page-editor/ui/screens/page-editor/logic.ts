@@ -23,6 +23,7 @@ import { timeFromNow } from 'src/utils/time-helpers'
 import type { MainNavigatorParamList } from 'src/ui/navigation/types'
 import type { List } from 'src/features/meta-picker/types'
 import type { AnnotationSharingState } from '@worldbrain/memex-common/lib/content-sharing/service/types'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 type Page = Omit<_Page, 'notes'> & { noteIds: string[] }
 
@@ -42,6 +43,10 @@ export type Event = UIEvent<{
     removeEntry: { listId: number }
     createEntry: { listId: number }
     confirmNoteDelete: { url: string }
+    setAnnotationPrivacyLevel: {
+        annotationUrl: string
+        level: AnnotationPrivacyLevels
+    }
     focusFromNavigation: MainNavigatorParamList['PageEditor']
     goBack: null
 }>
@@ -100,7 +105,10 @@ export default class Logic extends UILogic<State, Event> {
             throw new Error('No page found in DB for given route.')
         }
 
-        const notes = await pageEditor.findNotesByPage({ url })
+        const notes = await pageEditor.findNotesByPage({
+            url,
+            withPrivacyLevels: true,
+        })
         const annotationUrls = notes.map((note) => note.url)
         const annotationSharingStates = await annotationSharing.getAnnotationSharingStates(
             {
@@ -153,6 +161,7 @@ export default class Logic extends UILogic<State, Event> {
                             noteText: note.body,
                             isNotePressed: false,
                             tags: [],
+                            privacyLevel: note.privacyLevel,
                             listIds: getListIdsForSharingState(
                                 annotationSharingStates[note.url],
                             ),
@@ -265,6 +274,19 @@ export default class Logic extends UILogic<State, Event> {
                 listId,
             })
         }
+    }
+
+    setAnnotationPrivacyLevel: EventHandler<
+        'setAnnotationPrivacyLevel'
+    > = async ({ event }) => {
+        // TODO: Test + set list states on change
+        this.emitMutation({
+            noteData: {
+                [event.annotationUrl]: {
+                    privacyLevel: { $set: event.level },
+                },
+            },
+        })
     }
 
     async confirmNoteDelete({

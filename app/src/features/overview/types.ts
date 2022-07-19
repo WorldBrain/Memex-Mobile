@@ -1,4 +1,4 @@
-import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
+import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export type ResultType = 'special' | 'pages' | 'notes'
 
@@ -37,6 +37,7 @@ export interface UINote extends UIResult {
     isEdited?: boolean
     commentText?: string
     isNotePressed?: boolean
+    privacyLevel?: AnnotationPrivacyLevels
     tags: string[]
     listIds: number[]
 }

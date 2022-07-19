@@ -129,6 +129,8 @@ export async function createStorage({
                     annotation,
                     privacyLevel: AnnotationPrivacyLevels.PRIVATE,
                 }),
+            findAnnotPrivacyLevels: (annotations) =>
+                contentSharing.getPrivacyLevelsByAnnotation({ annotations }),
         }),
         personalCloud: new PersonalCloudStorage({
             uploadClientUpdates,
