@@ -176,25 +176,9 @@ describe('note editor UI logic tests', () => {
     it('should be able to save a new annot with spaces, if set', async (context) => {
         const testText = 'test'
         const testUrl = 'test.com'
-        const testNoteUrl = 'test.com/#123'
         const testAnchor = { quote: testText } as any
         const testListIdA = 123
         const testListIdB = 124
-
-        let storedAnnotation: any
-        let listsToSetForAnnot:
-            | { annotationUrl: string; listIds: number[] }
-            | undefined
-
-        context.storage.modules.pageEditor.createAnnotation = async (annot) => {
-            storedAnnotation = annot
-            return { annotationUrl: testNoteUrl }
-        }
-        context.storage.modules.metaPicker.setAnnotationLists = async (
-            args,
-        ) => {
-            listsToSetForAnnot = args
-        }
 
         const { element, navigation } = setup(context, {
             mode: 'create',
@@ -204,8 +188,21 @@ describe('note editor UI logic tests', () => {
         })
 
         expect(navigation.popRequests()).toEqual([])
-        expect(storedAnnotation).toBeUndefined()
-        expect(listsToSetForAnnot).toBeUndefined()
+        expect(
+            await context.storage.manager
+                .collection('annotations')
+                .findAllObjects({}),
+        ).toEqual([])
+        expect(
+            await context.storage.manager
+                .collection('annotationPrivacyLevels')
+                .findAllObjects({}),
+        ).toEqual([])
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findAllObjects({}),
+        ).toEqual([])
 
         await element.processEvent('selectSpacePickerEntry', {
             entry: { id: testListIdA, isChecked: false, name: 'test a' },
@@ -213,20 +210,40 @@ describe('note editor UI logic tests', () => {
         await element.processEvent('selectSpacePickerEntry', {
             entry: { id: testListIdB, isChecked: false, name: 'test b' },
         })
+        await element.processEvent('changeNoteText', { value: testText })
         await element.processEvent('saveNote', null)
 
         expect(navigation.popRequests()).toEqual([{ type: 'goBack' }])
-        expect(storedAnnotation).toEqual({
-            pageUrl: testUrl,
-            selector: testAnchor,
-            body: testText,
-            pageTitle: '',
-            comment: '',
-        })
-        expect(listsToSetForAnnot).toEqual({
-            annotationUrl: testNoteUrl,
-            listIds: [testListIdA, testListIdB],
-        })
+        const savedAnnots: any[] = await context.storage.manager
+            .collection('annotations')
+            .findAllObjects({})
+        expect(savedAnnots).toEqual([
+            expect.objectContaining({ comment: testText, pageUrl: testUrl }),
+        ])
+        expect(
+            await context.storage.manager
+                .collection('annotationPrivacyLevels')
+                .findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                annotation: savedAnnots[0]?.url,
+                privacyLevel: AnnotationPrivacyLevels.PRIVATE,
+            }),
+        ])
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                url: savedAnnots[0]?.url,
+                listId: testListIdA,
+            }),
+            expect.objectContaining({
+                url: savedAnnots[0]?.url,
+                listId: testListIdB,
+            }),
+        ])
     })
 
     it('should be able to edit an existing note', async (context) => {
@@ -324,73 +341,85 @@ describe('note editor UI logic tests', () => {
 
     it('should be able to add and remove spaces in edit mode', async (context) => {
         const testUrl = 'test.com'
-        const testNoteUrl = testUrl + '/#23423'
+        const testText = 'test'
         const testListA = { id: 123, name: 'test a' }
         const testListB = { id: 124, name: 'test b' }
 
-        let lastCreatedListEntry:
-            | { listId: number; annotationUrl: string }
-            | undefined
-        let lastDeletedListEntry:
-            | { listId: number; annotationUrl: string }
-            | undefined
-
-        context.storage.modules.metaPicker.createAnnotListEntry = async (
-            entry,
-        ) => {
-            lastCreatedListEntry = entry
-        }
-        context.storage.modules.metaPicker.deleteAnnotEntryFromList = async (
-            entry,
-        ) => {
-            lastDeletedListEntry = entry
-        }
+        const {
+            annotationUrl,
+        } = await context.storage.modules.pageEditor.createNote({
+            pageTitle: 'test title',
+            pageUrl: testUrl,
+            comment: testText,
+        })
+        await context.services.annotationSharing.addAnnotationToLists({
+            annotationUrl,
+            listIds: [testListB.id],
+        })
 
         const { element } = setup(context as any, {
             mode: 'update',
-            noteUrl: testNoteUrl,
+            noteUrl: annotationUrl,
             spaces: [testListB],
         })
 
-        expect(lastCreatedListEntry).toEqual(undefined)
-        expect(lastDeletedListEntry).toEqual(undefined)
         expect(element.state.spacesToAdd).toEqual([testListB])
-
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                url: annotationUrl,
+                listId: testListB.id,
+            }),
+        ])
         await element.processEvent('selectSpacePickerEntry', {
             entry: { ...testListA, isChecked: false },
         })
-        expect(lastCreatedListEntry).toEqual({
-            listId: testListA.id,
-            annotationUrl: testNoteUrl,
-        })
-        expect(lastDeletedListEntry).toEqual(undefined)
+
         expect(element.state.spacesToAdd).toEqual([testListB, testListA])
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                url: annotationUrl,
+                listId: testListB.id,
+            }),
+            expect.objectContaining({
+                url: annotationUrl,
+                listId: testListA.id,
+            }),
+        ])
 
         await element.processEvent('selectSpacePickerEntry', {
             entry: { ...testListA, isChecked: true },
         })
-        expect(lastCreatedListEntry).toEqual({
-            listId: testListA.id,
-            annotationUrl: testNoteUrl,
-        })
-        expect(lastDeletedListEntry).toEqual({
-            listId: testListA.id,
-            annotationUrl: testNoteUrl,
-        })
+
         expect(element.state.spacesToAdd).toEqual([testListB])
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                url: annotationUrl,
+                listId: testListB.id,
+            }),
+        ])
 
         await element.processEvent('selectSpacePickerEntry', {
             entry: { ...testListB, isChecked: true },
         })
-        expect(lastCreatedListEntry).toEqual({
-            listId: testListA.id,
-            annotationUrl: testNoteUrl,
-        })
-        expect(lastDeletedListEntry).toEqual({
-            listId: testListB.id,
-            annotationUrl: testNoteUrl,
-        })
+
         expect(element.state.spacesToAdd).toEqual([])
+        expect(
+            await context.storage.manager
+                .collection('annotListEntries')
+                .findAllObjects({}),
+        ).toEqual([])
     })
 
     it('should be able to add and remove spaces in create mode', async (context) => {
