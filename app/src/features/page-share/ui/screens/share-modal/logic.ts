@@ -237,6 +237,7 @@ export default class Logic extends UILogic<State, Event> {
                     const spaces = await storage.modules.metaPicker.findListsByPage(
                         {
                             url,
+                            includeRemoteIds: true,
                         },
                     )
                     const spacesToAdd = spaces.map((c) => c.id)

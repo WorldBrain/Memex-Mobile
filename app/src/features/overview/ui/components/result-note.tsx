@@ -9,10 +9,11 @@ import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import SpacePill from 'src/ui/components/space-pill'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import type { List } from 'src/features/meta-picker/types'
 
 export interface Props extends BodyProps, InteractionProps {
     isStarred?: boolean
-    listNames: string[]
+    spaces: List[]
 }
 
 export interface InteractionProps {
@@ -51,11 +52,15 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                 </ContentContainer>
                 {/* </TouchableWithoutFeedback> */}
             </TopArea>
-            {props.listNames.length > 0 && (
+            {props.spaces.length > 0 && (
                 <Section>
                     <SpaceList>
-                        {props.listNames.map((name, i) => (
-                            <SpacePill key={`${name}-${i}`} name={name} />
+                        {props.spaces.map((space) => (
+                            <SpacePill
+                                key={space.id}
+                                name={space.name}
+                                isShared={space.remoteId != null}
+                            />
                         ))}
                     </SpaceList>
                 </Section>

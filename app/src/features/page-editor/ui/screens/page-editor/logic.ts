@@ -139,6 +139,7 @@ export default class Logic extends UILogic<State, Event> {
         const pageListIds = await metaPicker.findListIdsByPage({ url })
         const listData = await metaPicker.findListsByIds({
             ids: [...noteListIds, ...pageListIds],
+            includeRemoteIds: true,
         })
 
         this.emitMutation({

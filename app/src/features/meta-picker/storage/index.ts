@@ -47,6 +47,9 @@ export class MetaPickerStorage extends StorageModule {
             normalizeUrl: URLNormalizer
             getSpaceSuggestionsCache: () => Promise<number[]>
             setSpaceSuggestionsCache: (spaceIds: number[]) => Promise<void>
+            getSpaceRemoteIds: (
+                spaceIds: number[],
+            ) => Promise<{ [spaceId: number]: string }>
         },
     ) {
         super(options)
@@ -376,8 +379,22 @@ export class MetaPickerStorage extends StorageModule {
         return this.operation('findListById', { listId: id }) ?? null
     }
 
-    findListsByIds({ ids }: { ids: number[] }): Promise<List[]> {
-        return this.operation('findListsByIds', { listIds: ids })
+    async findListsByIds({
+        ids,
+        includeRemoteIds,
+    }: {
+        ids: number[]
+        includeRemoteIds?: boolean
+    }): Promise<List[]> {
+        const lists: List[] = await this.operation('findListsByIds', {
+            listIds: ids,
+        })
+        if (!includeRemoteIds) {
+            return lists
+        }
+
+        const remoteIds = await this.options.getSpaceRemoteIds(ids)
+        return lists.map((l) => ({ ...l, remoteId: remoteIds[l.id] }))
     }
 
     findListByName({ name }: { name: string }): Promise<List | null> {
@@ -443,18 +460,20 @@ export class MetaPickerStorage extends StorageModule {
     async findListsByPage({
         url,
         extraListIds,
+        includeRemoteIds,
     }: {
         url: string
         extraListIds?: number[]
+        includeRemoteIds?: boolean
     }): Promise<List[]> {
         const listIds = await this.findListIdsByPage({ url })
         if (extraListIds) {
             listIds.push(...extraListIds)
         }
-        const storedLists: List[] = await this.operation('findListsByIds', {
-            listIds,
+        const storedLists = await this.findListsByIds({
+            ids: listIds,
+            includeRemoteIds,
         })
-
         return this.filterOutSpecialLists(storedLists)
     }
 
@@ -488,12 +507,16 @@ export class MetaPickerStorage extends StorageModule {
             id: space.id,
             name: space.name,
             isChecked: false,
+            remoteId: space.remoteId,
         })
 
         // Try to use the cache first
         const suggestionIds = await this.options.getSpaceSuggestionsCache()
         if (suggestionIds?.length) {
-            const spaces = await this.findListsByIds({ ids: suggestionIds })
+            const spaces = await this.findListsByIds({
+                ids: suggestionIds,
+                includeRemoteIds: true,
+            })
 
             if (includeSpecialLists) {
                 spaces.unshift({

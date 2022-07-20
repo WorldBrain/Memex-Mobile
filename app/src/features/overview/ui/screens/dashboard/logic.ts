@@ -37,7 +37,7 @@ export interface State {
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
-    listsData: { [listId: number]: List }
+    listData: { [listId: number]: List }
 }
 
 export type Event = UIEvent<{
@@ -101,7 +101,7 @@ export default class Logic extends UILogic<State, Event> {
             actionFinishedAt: 0,
             pages: initNormalizedState(),
             selectedListId,
-            listsData: {},
+            listData: {},
         }
     }
 
@@ -390,12 +390,15 @@ export default class Logic extends UILogic<State, Event> {
             throw Error('No page found for entry')
         }
 
-        const lists = await metaPicker.findListsByPage({ url })
+        const lists = await metaPicker.findListsByPage({
+            url,
+            includeRemoteIds: true,
+        })
         const notes = await pageEditor.findNotesByPage({ url })
 
         // Add any new lists data to state
         this.emitMutation({
-            listsData: {
+            listData: {
                 $apply: (existing) => ({
                     ...existing,
                     ...lists.reduce(
@@ -458,7 +461,7 @@ export default class Logic extends UILogic<State, Event> {
         event: { page: next },
     }: IncomingUIEvent<State, Event, 'updatePage'>) {
         const trackedListIds = new Set(
-            Object.keys(previousState.listsData).map(Number),
+            Object.keys(previousState.listData).map(Number),
         )
         let listIdsToTrack: number[] = []
         for (const incomingListId of next.listIds) {
@@ -474,9 +477,10 @@ export default class Logic extends UILogic<State, Event> {
             const lists = await this.props.storage.modules.metaPicker.findListsByIds(
                 {
                     ids: listIdsToTrack,
+                    includeRemoteIds: true,
                 },
             )
-            mutation.listsData = {
+            mutation.listData = {
                 $apply: (existing) => ({
                     ...existing,
                     ...lists.reduce(

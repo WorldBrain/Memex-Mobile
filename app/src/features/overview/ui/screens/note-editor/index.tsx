@@ -181,6 +181,7 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                         <SpacePill
                                             key={space.id}
                                             name={space.name}
+                                            isShared={space.remoteId != null}
                                         />
                                     ))}
                                 </SpaceBar>
@@ -235,7 +236,9 @@ const NoteInputEditor = styled(NoteInput)`
 const TopBar = styled.View`
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     align-items: center;
+    width: 100%;
 `
 
 const SpaceBar = styled.View`

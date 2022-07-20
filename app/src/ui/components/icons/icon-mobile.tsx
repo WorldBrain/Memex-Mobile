@@ -13,10 +13,8 @@ export type IconProps = {
     width?: string
     heightAndWidth?: string
     color?: ColorThemeKeys
-    onClick?: any
     rotate?: string
     hoverOff?: boolean
-    padding?: string
     strokeWidth?: string
     fill?: boolean
 }

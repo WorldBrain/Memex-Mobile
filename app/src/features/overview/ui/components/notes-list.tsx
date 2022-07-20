@@ -40,9 +40,12 @@ class NotesList extends React.PureComponent<Props> {
             {...item}
             privacyLevel={item.privacyLevel!}
             isNotePressed={!!item.isNotePressed}
-            listNames={item.listIds.map(
-                (listId) =>
-                    this.props.listData[listId]?.name ?? 'Missing Space',
+            spaces={item.listIds.map(
+                (listId, i) =>
+                    this.props.listData[listId] ?? {
+                        id: i,
+                        name: 'Missing Space',
+                    },
             )}
         />
     )
@@ -58,6 +61,7 @@ class NotesList extends React.PureComponent<Props> {
                             <SpacePill
                                 key={listId}
                                 name={listData[listId]?.name}
+                                isShared={listData[listId]?.remoteId != null}
                             />
                         ))}
                     </SpacesArea>

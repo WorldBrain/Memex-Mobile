@@ -1,6 +1,7 @@
 export interface SpacePickerEntry {
     id: number
     name: string
+    remoteId?: string
     isChecked: boolean
 }
 
@@ -12,6 +13,7 @@ export interface Tag {
 export interface List {
     id: number
     name: string
+    remoteId?: string
     isDeletable?: boolean
     isNestable?: boolean
     createdAt: Date

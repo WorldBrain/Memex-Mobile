@@ -104,6 +104,8 @@ export async function createStorage({
         metaPicker: new MetaPickerStorage({
             storageManager,
             normalizeUrl,
+            getSpaceRemoteIds: (localIds) =>
+                contentSharing.getRemoteListIds({ localIds }),
             getSpaceSuggestionsCache: async () => {
                 const spaceIds = await localSettings.getSetting<number[]>({
                     key: storageKeys.spaceSuggestionsCache,

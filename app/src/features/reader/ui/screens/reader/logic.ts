@@ -209,7 +209,10 @@ export default class Logic extends UILogic<State, Event> {
         } = this.props.storage.modules
 
         const isBookmarked = await overviewStorage.isPageStarred({ url })
-        const lists = await metaPicker.findListsByPage({ url })
+        const lists = await metaPicker.findListsByPage({
+            url,
+            includeRemoteIds: true,
+        })
         const notes = await pageEditor.findNotesByPage({ url })
 
         this.emitMutation({
@@ -343,7 +346,10 @@ export default class Logic extends UILogic<State, Event> {
             ...sharingState.privateListIds,
             ...sharingState.sharedListIds,
         ])
-        const lists = await metaPicker.findListsByIds({ ids: [...listIdSet] })
+        const lists = await metaPicker.findListsByIds({
+            ids: [...listIdSet],
+            includeRemoteIds: true,
+        })
 
         navigation.navigate('NoteEditor', {
             mode: 'update',
@@ -352,7 +358,11 @@ export default class Logic extends UILogic<State, Event> {
             noteText: note.comment,
             anchor: note.selector,
             pageTitle: previousState.title,
-            spaces: lists.map((list) => ({ id: list.id, name: list.name })),
+            spaces: lists.map((list) => ({
+                id: list.id,
+                name: list.name,
+                remoteId: list.remoteId,
+            })),
         })
     }
 

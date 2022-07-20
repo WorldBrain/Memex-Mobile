@@ -27,7 +27,7 @@ export interface State {
     showAllText: boolean
     saveState: UITaskState
     privacyLevel: AnnotationPrivacyLevels
-    spacesToAdd: Array<{ id: number; name: string }>
+    spacesToAdd: Array<{ id: number; name: string; remoteId?: string }>
 }
 
 export type Event = UIEvent<{
@@ -48,7 +48,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export interface Props extends MainNavProps<'NoteEditor'> {
-    storage: UIStorageModules<'pageEditor' | 'contentSharing'>
+    storage: UIStorageModules<'pageEditor' | 'contentSharing' | 'metaPicker'>
     services: UIServices<'annotationSharing'>
 }
 
@@ -62,7 +62,7 @@ export default class Logic extends UILogic<State, Event> {
     mode: NoteEditMode
     initNoteText: string
     initPrivacyLevel: AnnotationPrivacyLevels
-    initSpaces: Array<{ id: number; name: string }>
+    initSpaces: Array<{ id: number; name: string; remoteId?: string }>
 
     constructor(private props: Props) {
         super()

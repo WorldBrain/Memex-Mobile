@@ -41,7 +41,7 @@ export type MainNavigatorParamList = {
         | {
               mode: 'update'
               noteUrl: string
-              spaces: Array<{ id: number; name: string }>
+              spaces: Array<{ id: number; name: string; remoteId?: string }>
           }
     )
     Reader: {
