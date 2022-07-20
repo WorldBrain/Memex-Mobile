@@ -288,4 +288,5 @@ const SpacesArea = styled.View`
     flex-direction: row;
     margin-top: 10px;
     flex-wrap: wrap;
+    margin-bottom: -5px;
 `

@@ -28,11 +28,17 @@ const MetaPickerEntry: React.StatelessComponent<Props> = (props) => (
                 <EntryTextBox>
                     <EntryText>{props.name}</EntryText>
                 </EntryTextBox>
+                {props.remoteId != null && (
+                    <Icon
+                        icon={icons.Shared}
+                        fill={true}
+                        color="darkerBlue"
+                        strokeWidth="2px"
+                        heightAndWidth="12px"
+                    />
+                )}
             </TextContainer>
             <CheckMarkContainer>
-                {props.remoteId != null && (
-                    <Icon icon={icons.Shared} color="black" />
-                )}
                 {props.isChecked ? (
                     <Icon icon={icons.CheckedRound} color="blue" />
                 ) : (
@@ -58,7 +64,9 @@ const NewText = styled.Text`
     margin-right: 15px;
 `
 
-const EntryTextBox = styled.View``
+const EntryTextBox = styled.View`
+    margin-right: 10px;
+`
 
 const TextContainer = styled.View`
     display: flex;

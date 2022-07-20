@@ -133,6 +133,7 @@ const ResultItem = styled.View`
 
 const TopArea = styled.TouchableOpacity`
     padding: 15px 15px 5px 15px;
+    margin-bottom: 5px;
 `
 
 const Footer = styled.View`

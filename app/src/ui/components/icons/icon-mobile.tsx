@@ -47,7 +47,7 @@ export const Icon: React.StatelessComponent<IconProps> = (props) => {
     )
 }
 
-const IconContainer = styled.View<{ rotate?: string }>`
+const IconContainer = styled.View<{ rotate?: string; color?: string }>`
     display: flex;
     align-items: center;
     justify-content: center;
