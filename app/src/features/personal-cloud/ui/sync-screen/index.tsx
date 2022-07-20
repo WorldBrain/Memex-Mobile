@@ -52,24 +52,26 @@ export default class CloudSyncScreen extends StatefulUIElement<
         }
 
         return (
-            <>
-                <SecondaryText>
-                    Total remote changes: {this.state.totalDownloads ?? '...'}
-                </SecondaryText>
-                <SecondaryText>
-                    Pending remote changes:{' '}
-                    {this.state.totalDownloads == null
-                        ? '...'
-                        : this.state.pendingDownloads}
-                </SecondaryText>
-                <SecondaryText>
-                    Progress:{' '}
+            <SyncInfoContainer>
+                <InfoTextProgress>
                     {this.state.totalDownloads == null
                         ? '...'
                         : calcPercComplete(this.state)}
                     %
+                </InfoTextProgress>
+                <SecondaryText>
+                    Total Changes:{' '}
+                    <InfoText>{this.state.totalDownloads ?? '...'}</InfoText>
                 </SecondaryText>
-            </>
+                <SecondaryText>
+                    Pending changes:{' '}
+                    <InfoText>
+                        {this.state.totalDownloads == null
+                            ? '...'
+                            : this.state.pendingDownloads}
+                    </InfoText>
+                </SecondaryText>
+            </SyncInfoContainer>
         )
     }
 
@@ -183,7 +185,7 @@ const HeadingText = styled.Text`
 
 const SecondaryText = styled.Text`
     color: ${(props) => props.theme.colors.lighterText};
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 400;
     text-align: center;
     margin-bottom: 10px;
@@ -226,4 +228,21 @@ const InnerContainer = styled.View`
 const MemexLogo = styled.Image`
     height: 60px;
     display: flex;
+`
+
+const InfoText = styled.Text`
+    font-weight: bold;
+    color: ${(props) => props.theme.colors.purple};
+`
+
+const InfoTextProgress = styled.Text`
+    font-weight: bold;
+    color: ${(props) => props.theme.colors.purple};
+    font-size: 22px;
+`
+
+const SyncInfoContainer = styled.View`
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `
