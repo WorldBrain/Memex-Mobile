@@ -66,12 +66,13 @@ export default EStyleSheet.create({
     },
     emptyRowText: {
         width: '100%',
-        fontSize: '1.4rem',
+        fontSize: 20,
         color: '$textColor',
-        textAlign: 'left',
+        textAlign: 'center',
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
+        marginTop: 20,
     },
     canAdd: {
         marginLeft: 10,

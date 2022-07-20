@@ -68,7 +68,7 @@ class ActionBar extends React.PureComponent<Props> {
         }
 
         return (
-            <ActionBox>
+            <ActionBox isLandscape={this.props.rotation === 'landscape'}>
                 <IconContainer onPress={this.props.onCommentBtnPress}>
                     {this.props.hasNotes ? (
                         <Icon
@@ -128,11 +128,12 @@ const Container = styled.View<{ isLandscape?: boolean }>`
     position: absolute;
     bottom: ${(props) => (props.isLandscape ? '-105%' : '-100%')};
     width: 100%;
-    height: 60px;
-    padding: 0px 5%;
+    height: ${(props) => (props.isLandscape ? '60px' : '32px')};
+    padding: ${(props) => (props.isLandscape ? '0px 5%' : '0px 10%')};
+    padding-top: ${(props) => (props.isLandscape ? '5px' : '10px')};
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: ${(props) => (props.isLandscape ? 'flex-start' : 'center')};
     flex-direction: row;
     background-color: #fff;
     border-style: solid;
@@ -149,7 +150,7 @@ const RightBtns = styled.View`
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    align-items: center;
+    align-items: flex-start;
 `
 
 const LeftBtns = styled.View`
@@ -161,22 +162,24 @@ const LeftBtns = styled.View`
 `
 
 const IconContainer = styled.TouchableOpacity`
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
 `
 
-const ActionBox = styled.View`
+const ActionBox = styled.View<{ isLandscape?: boolean }>`
     height: 50px;
     display: flex;
     justify-content: flex-end;
-    align-items: center;
+    align-items: ${(props) => (props.isLandscape ? 'flex-start' : 'center')};
     flex-direction: row;
 `
 
-const CenterButton = styled.View``
+const CenterButton = styled.View`
+    margin-top: 5px;
+`
 
 const LoadingIndicatorBox = styled.View`
     margin-right: 5px;

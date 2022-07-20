@@ -164,9 +164,9 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     leftIconStrokeWidth="5px"
                     titleText={'Annotate this page'}
                     rightBtnPress={() => Linking.openURL(this.state.url)}
-                    rightIcon={icons.Globe}
+                    rightIcon={icons.ExternalLink}
                     rightIconSize="20px"
-                    rightIconStrokeWidth="5px"
+                    rightIconStrokeWidth="2px"
                 />
                 {this.renderWebView()}
                 <ActionBar
@@ -200,4 +200,5 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 const Container = styled.SafeAreaView`
     height: 50%;
     display: flex;
+    align-items: center;
 `

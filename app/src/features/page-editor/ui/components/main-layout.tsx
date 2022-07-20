@@ -54,11 +54,11 @@ const MainLayoutContainer = styled.View`
     display: flex;
     flex-direction column;
     z-index: 1;
-    width: 620px;
-    max-width: 100%;
     justify-content: center;
     align-items: center;
     height: 100%;
+    width: 100%;
+    max-width: 400px;
 `
 
 export default MainLayout

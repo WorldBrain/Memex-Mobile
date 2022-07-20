@@ -21,5 +21,6 @@ export default EStyleSheet.create({
     webView: {
         height: Dimensions.get('window').height - actionBarHeight - 90,
         paddingTop: height > 1000 ? 20 : 40,
+        width: '100%',
     },
 })

@@ -247,6 +247,7 @@ const SpaceBar = styled.View`
     justify-content: flex-start;
     align-items: center;
     overflow: scroll;
+    padding-top: 10px;
 `
 
 const ScrollContainer = styled.View<{ highlightText: string | null }>`

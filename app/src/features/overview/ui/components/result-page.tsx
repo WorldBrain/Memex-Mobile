@@ -69,9 +69,9 @@ class ResultPage extends React.PureComponent<Props> {
                                         onPress={this.props.onVisitPress}
                                     >
                                         <Icon
-                                            icon={icons.Globe}
-                                            strokeWidth="3"
-                                            heightAndWidth="16px"
+                                            icon={icons.ExternalLink}
+                                            strokeWidth="2"
+                                            heightAndWidth="18px"
                                         />
                                     </IconContainer>
                                 </MoreButtons>

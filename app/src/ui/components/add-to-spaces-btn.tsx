@@ -51,6 +51,7 @@ const AddSpacesContainer = styled.TouchableOpacity`
     text-align-vertical: center;
     height: 30px;
     padding: 2px 8px;
+    margin-right: 10px;
 `
 
 const AddSpacesText = styled.Text`

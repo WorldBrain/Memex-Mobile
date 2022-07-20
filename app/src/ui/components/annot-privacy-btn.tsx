@@ -25,7 +25,7 @@ const AnnotationPrivacyBtn: React.SFC<Props> = ({
             icon={privacyLevelToIcon(level)}
             color="white"
             strokeWidth="2px"
-            heightAndWidth="14px"
+            heightAndWidth="16px"
         />
     </Btn>
 )
@@ -33,5 +33,5 @@ const AnnotationPrivacyBtn: React.SFC<Props> = ({
 export default AnnotationPrivacyBtn
 
 const Btn = styled.TouchableOpacity`
-    margin: 0 10px;
+    margin: 0 10px 0 15px;
 `

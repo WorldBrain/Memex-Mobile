@@ -31,7 +31,7 @@ export interface InteractionProps {
 const ResultNote: React.StatelessComponent<Props> = (props) => {
     return (
         <NoteContainer>
-            <TopArea>
+            <TopArea onPress={props.onEditPress}>
                 {/* <TouchableWithoutFeedback onPress={props.onNotePress}> */}
                 <ContentContainer>
                     {props.noteText && (
@@ -116,6 +116,8 @@ const AnnotationNote = styled.Text`
 
 const DateBox = styled.Text`
     color: ${(props) => props.theme.colors.lighterText};
+    font-size: 12px;
+    margin: -5px 0px;
 `
 
 const ActionBar = styled.View`
@@ -161,7 +163,7 @@ const Section = styled.View`
     border-top-width: 1px;
     border-top-color: #f0f0f0;
     border-style: solid;
-    padding: 0 15px;
+    padding: 0 10px 0 15px;
 `
 
 export default ResultNote

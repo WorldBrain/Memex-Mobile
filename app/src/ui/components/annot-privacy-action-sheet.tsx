@@ -23,18 +23,30 @@ const AnnotationPrivacyActionSheet: React.SFC<SheetProps> = ({ sheetId }) => {
                 onPrivacyLevelChoice = data.onPrivacyLevelChoice
             }}
         >
+            <TitleBox>
+                <TitleText>Change Privacy of Note</TitleText>
+            </TitleBox>
+            <Separator />
             <ChoiceList>
                 <Choice onPress={handleChoice(AnnotationPrivacyLevels.SHARED)}>
                     <Text>Public</Text>
+                    <SubText>
+                        Added to all Shared Spaces you put the page in
+                    </SubText>
                 </Choice>
+                <Separator />
                 <Choice onPress={handleChoice(AnnotationPrivacyLevels.PRIVATE)}>
                     <Text>Private</Text>
+                    <SubText>Only visible to you</SubText>
                 </Choice>
+                <Separator />
                 <Choice
                     onPress={handleChoice(AnnotationPrivacyLevels.PROTECTED)}
                 >
                     <Text>Protected</Text>
+                    <SubText>Does not change privacy in bulk changes</SubText>
                 </Choice>
+                <Separator />
                 <Choice onPress={handleChoice()}>
                     <Text>Cancel</Text>
                 </Choice>
@@ -49,10 +61,41 @@ export default AnnotationPrivacyActionSheet
 
 const ChoiceList = styled.View``
 
+const TitleBox = styled.View`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+`
+
+const TitleText = styled.Text`
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: ${(props) => props.theme.colors.darkerText};
+`
+
 const Choice = styled.TouchableOpacity`
-    height: 26px;
+    height: 60px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`
+const Separator = styled.View`
+    border-bottom-width: 1px;
+    border-bottom-color: #e0e0e0;
 `
 
 const Text = styled.Text`
-    text-align: center;
+    text-align: left;
+    font-weight: bold;
+    font-size: 14px;
+    color: ${(props) => props.theme.colors.purple};
+`
+
+const SubText = styled.Text`
+    text-align: left;
+    font-size: 14px;
+    color: ${(props) => props.theme.colors.lighterText};
 `
