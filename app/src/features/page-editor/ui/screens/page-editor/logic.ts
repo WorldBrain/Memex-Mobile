@@ -218,6 +218,9 @@ export default class Logic extends UILogic<State, Event> {
         const { metaPicker } = this.props.storage.modules
         const { annotationSharing } = this.props.services
 
+        const removeListMutation = (ids: number[]) =>
+            ids.filter((id) => id !== listId)
+
         if (
             previousState.mode === 'annotation-spaces' &&
             previousState.annotationUrlToEdit != null
@@ -225,20 +228,58 @@ export default class Logic extends UILogic<State, Event> {
             this.emitMutation({
                 noteData: {
                     [previousState.annotationUrlToEdit]: {
-                        listIds: (ids) => ids.filter((id) => id != listId),
+                        listIds: removeListMutation,
                     },
                 },
             })
-            await annotationSharing.removeAnnotationFromList({
-                annotationUrl: previousState.annotationUrlToEdit,
-                listId,
-            })
-        } else {
-            this.emitMutation({
-                page: {
-                    listIds: (ids) => ids.filter((id) => id != listId),
+            const sharingState = await annotationSharing.removeAnnotationFromList(
+                {
+                    annotationUrl: previousState.annotationUrlToEdit,
+                    listId,
                 },
-            })
+            )
+
+            // Update privacy level if it changed
+            if (
+                sharingState.privacyLevel !==
+                previousState.noteData[previousState.annotationUrlToEdit]
+                    .privacyLevel
+            ) {
+                this.emitMutation({
+                    noteData: {
+                        [previousState.annotationUrlToEdit]: {
+                            privacyLevel: { $set: sharingState.privacyLevel },
+                        },
+                    },
+                })
+            }
+        } else {
+            const mutation: UIMutation<State> = {
+                page: { listIds: removeListMutation },
+                noteData: {},
+            }
+
+            // If list is shared, remove from public annots
+            if (previousState.listData[listId]?.remoteId != null) {
+                const publicNoteIds = Object.values(previousState.noteData)
+                    .filter(
+                        (note) =>
+                            note.url !== previousState.annotationUrlToEdit &&
+                            [
+                                AnnotationPrivacyLevels.SHARED,
+                                AnnotationPrivacyLevels.SHARED_PROTECTED,
+                            ].includes(note.privacyLevel!),
+                    )
+                    .map((note) => note.url)
+                publicNoteIds.forEach((noteId) => {
+                    ;(mutation.noteData as any)[noteId] = {
+                        listIds: removeListMutation,
+                    }
+                })
+            }
+
+            this.emitMutation(mutation)
+
             await metaPicker.deletePageEntryFromList({
                 url: previousState.page.url,
                 listId,
@@ -253,23 +294,86 @@ export default class Logic extends UILogic<State, Event> {
         const { metaPicker } = this.props.storage.modules
         const { annotationSharing } = this.props.services
 
+        const addListIfMissingMutation = (ids: number[]) =>
+            ids.includes(listId) ? ids : [listId, ...ids]
+
         if (
             previousState.mode === 'annotation-spaces' &&
             previousState.annotationUrlToEdit != null
         ) {
-            this.emitMutation({
+            const mutation: UIMutation<State> = {
                 noteData: {
                     [previousState.annotationUrlToEdit]: {
                         listIds: { $unshift: [listId] },
                     },
                 },
-            })
-            await annotationSharing.addAnnotationToLists({
+            }
+
+            // If list is shared, add to page + other public annots
+            if (previousState.listData[listId]?.remoteId != null) {
+                mutation.page = { listIds: addListIfMissingMutation }
+                const publicNoteIds = Object.values(previousState.noteData)
+                    .filter(
+                        (note) =>
+                            note.url !== previousState.annotationUrlToEdit &&
+                            [
+                                AnnotationPrivacyLevels.SHARED,
+                                AnnotationPrivacyLevels.SHARED_PROTECTED,
+                            ].includes(note.privacyLevel!),
+                    )
+                    .map((note) => note.url)
+                publicNoteIds.forEach((noteId) => {
+                    ;(mutation.noteData as any)[noteId] = {
+                        listIds: addListIfMissingMutation,
+                    }
+                })
+            }
+            this.emitMutation(mutation)
+
+            const sharingState = await annotationSharing.addAnnotationToLists({
                 annotationUrl: previousState.annotationUrlToEdit,
                 listIds: [listId],
+                protectAnnotation: true,
             })
+
+            // Update privacy level if it changed
+            if (
+                sharingState.privacyLevel !==
+                previousState.noteData[previousState.annotationUrlToEdit]
+                    .privacyLevel
+            ) {
+                this.emitMutation({
+                    noteData: {
+                        [previousState.annotationUrlToEdit]: {
+                            privacyLevel: { $set: sharingState.privacyLevel },
+                        },
+                    },
+                })
+            }
         } else {
-            this.emitMutation({ page: { listIds: { $unshift: [listId] } } })
+            const mutation: UIMutation<State> = {
+                page: { listIds: { $unshift: [listId] } },
+                noteData: {},
+            }
+
+            // If list is shared, add to public annots
+            if (previousState.listData[listId]?.remoteId != null) {
+                const publicNoteIds = Object.values(previousState.noteData)
+                    .filter((note) =>
+                        [
+                            AnnotationPrivacyLevels.SHARED,
+                            AnnotationPrivacyLevels.SHARED_PROTECTED,
+                        ].includes(note.privacyLevel!),
+                    )
+                    .map((note) => note.url)
+                publicNoteIds.forEach((noteId) => {
+                    ;(mutation.noteData as any)[noteId] = {
+                        listIds: addListIfMissingMutation,
+                    }
+                })
+            }
+
+            this.emitMutation(mutation)
             await metaPicker.createPageListEntry({
                 fullPageUrl: previousState.page.url,
                 listId,

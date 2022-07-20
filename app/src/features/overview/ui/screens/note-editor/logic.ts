@@ -18,6 +18,7 @@ import type { NoteEditMode } from './types'
 import type { Anchor } from 'src/content-script/types'
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import { AnnotationSharingState } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 
 export interface State {
     noteText: string
@@ -156,6 +157,7 @@ export default class Logic extends UILogic<State, Event> {
         await annotationSharing.addAnnotationToLists({
             annotationUrl,
             listIds: state.spacesToAdd.map((space) => space.id),
+            protectAnnotation: true,
         })
     }
 
@@ -226,7 +228,15 @@ export default class Logic extends UILogic<State, Event> {
             spacesToAdd: event.entry.isChecked
                 ? (spaces) =>
                       spaces.filter((space) => space.id !== event.entry.id)
-                : { $push: [{ id: event.entry.id, name: event.entry.name }] },
+                : {
+                      $push: [
+                          {
+                              id: event.entry.id,
+                              name: event.entry.name,
+                              remoteId: event.entry.remoteId,
+                          },
+                      ],
+                  },
         })
 
         // No need to perform writes yet if we're in create mode
@@ -235,15 +245,24 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const { annotationSharing } = this.props.services
+        let sharingState: AnnotationSharingState
         if (event.entry.isChecked) {
-            await annotationSharing.removeAnnotationFromList({
+            sharingState = await annotationSharing.removeAnnotationFromList({
                 listId: event.entry.id,
                 annotationUrl: this.noteUrl!,
             })
         } else {
-            await annotationSharing.addAnnotationToLists({
+            sharingState = await annotationSharing.addAnnotationToLists({
                 listIds: [event.entry.id],
                 annotationUrl: this.noteUrl!,
+                protectAnnotation: true,
+            })
+        }
+
+        // Privacy level might have changed in certain cases (e.g., public annot added to shared list)
+        if (sharingState.privacyLevel !== previousState.privacyLevel) {
+            this.emitMutation({
+                privacyLevel: { $set: sharingState.privacyLevel },
             })
         }
     }

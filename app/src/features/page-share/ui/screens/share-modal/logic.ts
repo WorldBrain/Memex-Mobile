@@ -454,6 +454,7 @@ export default class Logic extends UILogic<State, Event> {
                 await annotationSharing.addAnnotationToLists({
                     annotationUrl,
                     listIds: state.spacesToAdd,
+                    protectAnnotation: true,
                 })
             }
         } else if (
