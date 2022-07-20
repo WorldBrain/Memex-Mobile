@@ -24,6 +24,7 @@ import type { MainNavigatorParamList } from 'src/ui/navigation/types'
 import type { List } from 'src/features/meta-picker/types'
 import type { AnnotationSharingState } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
 
 type Page = Omit<_Page, 'notes'> & { noteIds: string[] }
 
@@ -383,8 +384,7 @@ export default class Logic extends UILogic<State, Event> {
 
     setAnnotationPrivacyLevel: EventHandler<
         'setAnnotationPrivacyLevel'
-    > = async ({ event }) => {
-        // TODO: Test + set list states on change
+    > = async ({ event, previousState }) => {
         this.emitMutation({
             noteData: {
                 [event.annotationUrl]: {
@@ -392,6 +392,34 @@ export default class Logic extends UILogic<State, Event> {
                 },
             },
         })
+
+        const sharingState = await this.props.services.annotationSharing.setAnnotationPrivacyLevel(
+            {
+                annotationUrl: event.annotationUrl,
+                privacyLevel: event.level,
+                keepListsIfUnsharing: true,
+            },
+        )
+
+        if (
+            !areArraysTheSame(
+                previousState.noteData[event.annotationUrl].listIds,
+                [...sharingState.privateListIds, ...sharingState.sharedListIds],
+            )
+        ) {
+            this.emitMutation({
+                noteData: {
+                    [event.annotationUrl]: {
+                        listIds: {
+                            $set: [
+                                ...sharingState.privateListIds,
+                                ...sharingState.sharedListIds,
+                            ],
+                        },
+                    },
+                },
+            })
+        }
     }
 
     async confirmNoteDelete({

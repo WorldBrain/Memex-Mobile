@@ -68,9 +68,7 @@ export interface Props extends ShareNavProps<'ShareModal'> {
         | 'localStorage'
         | 'annotationSharing'
     >
-    storage: UIStorageModules<
-        'overview' | 'metaPicker' | 'pageEditor' | 'contentSharing'
-    >
+    storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
 }
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -421,12 +419,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async storePageFinal(state: State, customTimestamp?: number) {
-        const {
-            overview,
-            metaPicker,
-            pageEditor,
-            contentSharing,
-        } = this.props.storage.modules
+        const { overview, metaPicker, pageEditor } = this.props.storage.modules
         const { annotationSharing } = this.props.services
 
         await overview.setPageStar({
@@ -445,8 +438,8 @@ export default class Logic extends UILogic<State, Event> {
                 customTimestamp,
                 { skipPrivacyLevelCreation: true },
             )
-            await contentSharing.setAnnotationPrivacyLevel({
-                annotation: annotationUrl,
+            await annotationSharing.setAnnotationPrivacyLevel({
+                annotationUrl,
                 privacyLevel: state.privacyLevel,
             })
 

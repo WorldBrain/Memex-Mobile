@@ -49,7 +49,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export interface Props extends MainNavProps<'NoteEditor'> {
-    storage: UIStorageModules<'pageEditor' | 'contentSharing' | 'metaPicker'>
+    storage: UIStorageModules<'pageEditor' | 'metaPicker'>
     services: UIServices<'annotationSharing'>
 }
 
@@ -125,7 +125,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async handleCreation(state: State) {
-        const { pageEditor, contentSharing } = this.props.storage.modules
+        const { pageEditor } = this.props.storage.modules
         const { annotationSharing } = this.props.services
 
         let annotationUrl: string
@@ -148,8 +148,8 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         if (state.privacyLevel !== this.getInitialState().privacyLevel) {
-            await contentSharing.setAnnotationPrivacyLevel({
-                annotation: annotationUrl,
+            await annotationSharing.setAnnotationPrivacyLevel({
+                annotationUrl,
                 privacyLevel: state.privacyLevel,
             })
         }
@@ -162,7 +162,8 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     saveNote: EventHandler<'saveNote'> = async ({ previousState }) => {
-        const { pageEditor, contentSharing } = this.props.storage.modules
+        const { pageEditor } = this.props.storage.modules
+        const { annotationSharing } = this.props.services
 
         await executeUITask<State, 'saveState', void>(
             this,
@@ -177,11 +178,11 @@ export default class Logic extends UILogic<State, Event> {
                     previousState.privacyLevel !==
                     this.getInitialState().privacyLevel
                 ) {
-                    const extracted = contentSharing.setAnnotationPrivacyLevel({
-                        annotation: this.noteUrl!,
+                    await annotationSharing.setAnnotationPrivacyLevel({
+                        annotationUrl: this.noteUrl!,
                         privacyLevel: previousState.privacyLevel,
+                        keepListsIfUnsharing: true,
                     })
-                    await extracted
                 }
 
                 await pageEditor.updateNoteText({
