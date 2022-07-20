@@ -26,7 +26,7 @@ export default class extends StatefulUIElement<Props, State, Event> {
     }
 
     private get showSaveBtn(): boolean {
-        const { initSpaces: initListIds, initNoteText, mode } = this
+        const { initSpaces, initNoteText, initPrivacyLevel, mode } = this
             .logic as Logic
 
         if (this.disableInputs) {
@@ -36,13 +36,18 @@ export default class extends StatefulUIElement<Props, State, Event> {
         const noteInputDirty =
             this.state.noteText.trim() !== initNoteText.trim()
 
+        const privacyLevelDirty = this.state.privacyLevel !== initPrivacyLevel
+
         if (mode === 'update') {
-            return noteInputDirty && this.state.noteText.trim().length !== 0
+            return (
+                this.state.noteText.trim().length !== 0 &&
+                (noteInputDirty || privacyLevelDirty)
+            )
         }
         return (
             this.state.noteText.trim().length !== 0 &&
             (noteInputDirty ||
-                !areArraysTheSame(this.state.spacesToAdd, initListIds))
+                !areArraysTheSame(this.state.spacesToAdd, initSpaces))
         )
     }
 
@@ -180,9 +185,11 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                     ))}
                                 </SpaceBar>
                                 <AnnotationPrivacyBtn
-                                    level={AnnotationPrivacyLevels.PRIVATE}
-                                    onPrivacyLevelChoice={(val) =>
-                                        console.log('good choice: ', val)
+                                    level={this.state.privacyLevel}
+                                    onPrivacyLevelChoice={(value) =>
+                                        this.processEvent('setPrivacyLevel', {
+                                            value,
+                                        })
                                     }
                                 />
                             </TopBar>

@@ -1,7 +1,7 @@
-import { NoteEditMode } from 'src/features/overview/ui/screens/note-editor/types'
-import { EditorMode } from 'src/features/page-editor/types'
-import { Anchor } from 'src/content-script/types'
-import { UIPageWithNotes } from 'src/features/overview/types'
+import type { EditorMode } from 'src/features/page-editor/types'
+import type { Anchor } from 'src/content-script/types'
+import type { UIPageWithNotes } from 'src/features/overview/types'
+import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export type MainNavigatorRoutes = keyof MainNavigatorParamList
 export type MainNavigatorParamList = {
@@ -34,6 +34,7 @@ export type MainNavigatorParamList = {
         pageTitle?: string
         anchor?: Anchor
         noteText?: string
+        privacyLevel?: AnnotationPrivacyLevels
         highlightText?: string
     } & (
         | { mode: 'create'; pageUrl: string }

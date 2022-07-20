@@ -17,6 +17,7 @@ import type {
 import type { NoteEditMode } from './types'
 import type { Anchor } from 'src/content-script/types'
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export interface State {
     noteText: string
@@ -25,6 +26,7 @@ export interface State {
     highlightTextLines?: number
     showAllText: boolean
     saveState: UITaskState
+    privacyLevel: AnnotationPrivacyLevels
     spacesToAdd: Array<{ id: number; name: string }>
 }
 
@@ -33,6 +35,7 @@ export type Event = UIEvent<{
     saveNote: null
     changeNoteText: { value: string }
     setShowAllText: { show: boolean }
+    setPrivacyLevel: { value: AnnotationPrivacyLevels }
     setHighlightTextLines: { lines: number }
     setSpacePickerShown: { isShown: boolean }
     selectSpacePickerEntry: { entry: SpacePickerEntry }
@@ -45,7 +48,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export interface Props extends MainNavProps<'NoteEditor'> {
-    storage: UIStorageModules<'pageEditor'>
+    storage: UIStorageModules<'pageEditor' | 'contentSharing'>
     services: UIServices<'annotationSharing'>
 }
 
@@ -58,6 +61,7 @@ export default class Logic extends UILogic<State, Event> {
     pageTitle?: string
     mode: NoteEditMode
     initNoteText: string
+    initPrivacyLevel: AnnotationPrivacyLevels
     initSpaces: Array<{ id: number; name: string }>
 
     constructor(private props: Props) {
@@ -70,6 +74,8 @@ export default class Logic extends UILogic<State, Event> {
         this.highlightAnchor = params.anchor
         this.initNoteText = params.noteText ?? ''
         this.initSpaces = params.mode === 'update' ? params.spaces ?? [] : []
+        this.initPrivacyLevel =
+            params.privacyLevel ?? AnnotationPrivacyLevels.PRIVATE
         this.noteUrl = params.mode === 'update' ? params.noteUrl : null
         this.pageUrl = params.mode === 'create' ? params.pageUrl : null
     }
@@ -79,8 +85,9 @@ export default class Logic extends UILogic<State, Event> {
 
         return {
             highlightText: params.highlightText ?? null,
-            spacesToAdd: params.mode === 'update' ? params.spaces ?? [] : [],
-            noteText: params.noteText ?? '',
+            privacyLevel: this.initPrivacyLevel,
+            spacesToAdd: this.initSpaces,
+            noteText: this.initNoteText,
             isSpacePickerShown: false,
             saveState: 'pristine',
             showAllText: false,
@@ -117,7 +124,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async handleCreation(state: State) {
-        const { pageEditor } = this.props.storage.modules
+        const { pageEditor, contentSharing } = this.props.storage.modules
         const { annotationSharing } = this.props.services
 
         let annotationUrl: string
@@ -139,6 +146,13 @@ export default class Logic extends UILogic<State, Event> {
             annotationUrl = result.annotationUrl
         }
 
+        if (state.privacyLevel !== this.getInitialState().privacyLevel) {
+            await contentSharing.setAnnotationPrivacyLevel({
+                annotation: annotationUrl,
+                privacyLevel: state.privacyLevel,
+            })
+        }
+
         await annotationSharing.addAnnotationToLists({
             annotationUrl,
             listIds: state.spacesToAdd.map((space) => space.id),
@@ -146,7 +160,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     saveNote: EventHandler<'saveNote'> = async ({ previousState }) => {
-        const { pageEditor } = this.props.storage.modules
+        const { pageEditor, contentSharing } = this.props.storage.modules
 
         await executeUITask<State, 'saveState', void>(
             this,
@@ -155,6 +169,17 @@ export default class Logic extends UILogic<State, Event> {
                 if (this.mode === 'create') {
                     await this.handleCreation(previousState)
                     return
+                }
+
+                if (
+                    previousState.privacyLevel !==
+                    this.getInitialState().privacyLevel
+                ) {
+                    const extracted = contentSharing.setAnnotationPrivacyLevel({
+                        annotation: this.noteUrl!,
+                        privacyLevel: previousState.privacyLevel,
+                    })
+                    await extracted
                 }
 
                 await pageEditor.updateNoteText({
@@ -183,6 +208,10 @@ export default class Logic extends UILogic<State, Event> {
                 $set: incoming.event.show,
             },
         }
+    }
+
+    setPrivacyLevel: EventHandler<'setPrivacyLevel'> = async ({ event }) => {
+        this.emitMutation({ privacyLevel: { $set: event.value } })
     }
 
     setSpacePickerShown: EventHandler<'setSpacePickerShown'> = ({ event }) => {

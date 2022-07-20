@@ -85,6 +85,7 @@ export default class PageEditorScreen extends StatefulUIElement<
                                 this.state.listData[id]?.name ??
                                 'Missing Space',
                         })),
+                        privacyLevel: note.privacyLevel,
                         highlightText: note.noteText,
                         noteText: note.commentText,
                         noteUrl: note.url,

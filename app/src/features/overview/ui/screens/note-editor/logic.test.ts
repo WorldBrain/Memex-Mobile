@@ -4,6 +4,7 @@ import { FakeStatefulUIElement } from 'src/ui/index.tests'
 import { FakeNavigation, FakeRoute } from 'src/tests/navigation'
 import { MainNavigatorParamList } from 'src/ui/navigation/types'
 import { TestDevice } from 'src/types.tests'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 function setup(
     deps: TestDevice,
@@ -56,6 +57,60 @@ describe('note editor UI logic tests', () => {
         expect(element.state.showAllText).toBe(true)
         await element.processEvent('setShowAllText', { show: false })
         expect(element.state.showAllText).toBe(false)
+    })
+
+    it('should be able to save a new note, with non-default privacy level set', async (context) => {
+        const testText = 'test'
+        const testUrl = 'test.com'
+
+        const { element, navigation } = setup(context, {
+            mode: 'create',
+            pageUrl: testUrl,
+        })
+
+        expect(navigation.popRequests()).toEqual([])
+
+        expect(
+            await context.storage.manager
+                .collection('annotations')
+                .findAllObjects({}),
+        ).toEqual([])
+        expect(
+            await context.storage.manager
+                .collection('annotationPrivacyLevels')
+                .findAllObjects({}),
+        ).toEqual([])
+
+        await element.processEvent('changeNoteText', { value: testText })
+        expect(element.state.privacyLevel).toEqual(
+            AnnotationPrivacyLevels.PRIVATE,
+        )
+        await element.processEvent('setPrivacyLevel', {
+            value: AnnotationPrivacyLevels.SHARED_PROTECTED,
+        })
+        expect(element.state.privacyLevel).toEqual(
+            AnnotationPrivacyLevels.SHARED_PROTECTED,
+        )
+        await element.processEvent('saveNote', null)
+
+        expect(
+            await context.storage.manager
+                .collection('annotations')
+                .findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({ comment: testText, pageUrl: testUrl }),
+        ])
+        expect(
+            await context.storage.manager
+                .collection('annotationPrivacyLevels')
+                .findAllObjects({}),
+        ).toEqual([
+            expect.objectContaining({
+                privacyLevel: AnnotationPrivacyLevels.SHARED_PROTECTED,
+            }),
+        ])
+
+        expect(navigation.popRequests()).toEqual([{ type: 'goBack' }])
     })
 
     it('should be able to save a new note, if highlight anchor absent', async (context) => {
@@ -118,7 +173,7 @@ describe('note editor UI logic tests', () => {
         })
     })
 
-    it('should be able to save a new anot with spaces, if set', async (context) => {
+    it('should be able to save a new annot with spaces, if set', async (context) => {
         const testText = 'test'
         const testUrl = 'test.com'
         const testNoteUrl = 'test.com/#123'
@@ -175,30 +230,73 @@ describe('note editor UI logic tests', () => {
     })
 
     it('should be able to edit an existing note', async (context) => {
-        const testText = 'test'
+        const testTextA = 'test'
+        const testTextB = 'test updated'
         const testUrl = 'test.com'
-        const testNoteUrl = testUrl + '/#23423'
 
-        let storedNote: any
-        context.storage.modules.pageEditor.updateNoteText = async (note) => {
-            storedNote = note
-        }
+        const {
+            annotationUrl,
+        } = await context.storage.modules.pageEditor.createNote({
+            pageTitle: 'test title',
+            comment: testTextA,
+            pageUrl: testUrl,
+        })
 
         const { element, navigation } = setup(context, {
             mode: 'update',
-            noteUrl: testNoteUrl,
+            noteUrl: annotationUrl,
             spaces: [],
         })
 
         expect(navigation.popRequests()).toEqual([])
-        expect(storedNote).toBeUndefined()
-        await element.processEvent('changeNoteText', { value: testText })
-        await element.processEvent('saveNote', null)
-        expect(navigation.popRequests()).toEqual([{ type: 'goBack' }])
-        expect(storedNote).toEqual({
-            url: testNoteUrl,
-            text: testText,
+        expect(
+            await context.storage.manager
+                .collection('annotations')
+                .findOneObject({ url: annotationUrl }),
+        ).toEqual(
+            expect.objectContaining({
+                url: annotationUrl,
+                comment: testTextA,
+            }),
+        )
+        expect(
+            await context.storage.manager
+                .collection('annotationPrivacyLevels')
+                .findOneObject({ annotation: annotationUrl }),
+        ).toEqual(
+            expect.objectContaining({
+                annotation: annotationUrl,
+                privacyLevel: AnnotationPrivacyLevels.PRIVATE,
+            }),
+        )
+
+        await element.processEvent('changeNoteText', { value: testTextB })
+        await element.processEvent('setPrivacyLevel', {
+            value: AnnotationPrivacyLevels.SHARED,
         })
+        await element.processEvent('saveNote', null)
+
+        expect(navigation.popRequests()).toEqual([{ type: 'goBack' }])
+        expect(
+            await context.storage.manager
+                .collection('annotations')
+                .findOneObject({ url: annotationUrl }),
+        ).toEqual(
+            expect.objectContaining({
+                url: annotationUrl,
+                comment: testTextB,
+            }),
+        )
+        expect(
+            await context.storage.manager
+                .collection('annotationPrivacyLevels')
+                .findOneObject({ annotation: annotationUrl }),
+        ).toEqual(
+            expect.objectContaining({
+                annotation: annotationUrl,
+                privacyLevel: AnnotationPrivacyLevels.SHARED,
+            }),
+        )
     })
 
     it('should nav back to set previous route', async (context) => {

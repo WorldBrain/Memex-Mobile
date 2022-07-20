@@ -16,7 +16,7 @@ import {
 import { loadInitial } from 'src/ui/utils'
 import { ReadabilityArticle } from 'src/services/readability/types'
 import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
-import { Anchor, Highlight } from 'src/content-script/types'
+import type { Anchor, Highlight } from 'src/content-script/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import { UIPageWithNotes } from 'src/features/overview/types'
 import type { List } from 'src/features/meta-picker/types'
@@ -281,7 +281,7 @@ export default class Logic extends UILogic<State, Event> {
             body: anchor.quote,
         })
 
-        const newHighlight = { url: annotationUrl, anchor }
+        const newHighlight: Highlight = { url: annotationUrl, anchor }
         renderHighlight(newHighlight)
 
         this.emitMutation({
