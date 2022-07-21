@@ -48,13 +48,10 @@ export default class PageEditorScreen extends StatefulUIElement<
         return this.state.page.listIds
     }
 
-    private handleEntryPress = (entry: SpacePickerEntry) => {
-        if (entry.isChecked) {
-            return this.processEvent('removeEntry', { listId: entry.id })
-        } else {
-            return this.processEvent('createEntry', { listId: entry.id })
-        }
-    }
+    private handleEntryPress = (entry: SpacePickerEntry) =>
+        this.processEvent(entry.isChecked ? 'unselectEntry' : 'selectEntry', {
+            entry,
+        })
 
     private initHandleAddNotePress = () => {
         if (this.state.mode !== 'notes') {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { AppRegistry, Dimensions } from 'react-native'
+import { AppRegistry, Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
 import { theme } from 'src/ui/components/theme/theme'
@@ -15,6 +15,7 @@ import {
 import type { UIDependencies, CoreUIState } from './types'
 import type { Services } from 'src/services/types'
 import LoadingScreen from './components/loading-screen'
+import { SheetProvider } from 'react-native-actions-sheet'
 
 export class UI {
     private setupResolve!: (dependencies: UIDependencies) => void
@@ -35,6 +36,7 @@ export class UI {
 
         const setupContainerComponent = (
             containerCreator: NavigationContainerFactory,
+            componentName: string,
         ) => () =>
             class extends Component<{}, CoreUIState> {
                 state: CoreUIState = {
@@ -55,6 +57,25 @@ export class UI {
                     }
                 }
 
+                private renderActionSheetProvider() {
+                    // Share ext on Android is essentially just another screen of the main app, thus
+                    //  doesn't need another SheetProvider (else weird double-rendering stuff happens)
+                    if (
+                        Platform.OS === 'android' &&
+                        componentName === shareExtName
+                    ) {
+                        return null
+                    }
+
+                    // Note this isn't the intended way to use this component, but wrapping the app conflicted
+                    //  with React Navigation's provider comps and still seems to work fine like this
+                    return (
+                        <SheetProvider>
+                            <></>
+                        </SheetProvider>
+                    )
+                }
+
                 render() {
                     if (!this.state.dependencies) {
                         return <LoadingScreen />
@@ -63,6 +84,7 @@ export class UI {
                     return (
                         <ThemeProvider theme={theme}>
                             {containerCreator(this.state)}
+                            {this.renderActionSheetProvider()}
                         </ThemeProvider>
                     )
                 }
@@ -70,12 +92,12 @@ export class UI {
 
         AppRegistry.registerComponent(
             appName,
-            setupContainerComponent(createMainNavigator),
+            setupContainerComponent(createMainNavigator, appName),
         )
 
         AppRegistry.registerComponent(
             shareExtName,
-            setupContainerComponent(createShareNavigator),
+            setupContainerComponent(createShareNavigator, shareExtName),
         )
     }
 

@@ -187,6 +187,9 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                 </SpaceBar>
                                 <AnnotationPrivacyBtn
                                     level={this.state.privacyLevel}
+                                    hasSharedLists={this.state.spacesToAdd.some(
+                                        (space) => space.remoteId != null,
+                                    )}
                                     onPrivacyLevelChoice={(value) =>
                                         this.processEvent('setPrivacyLevel', {
                                             value,

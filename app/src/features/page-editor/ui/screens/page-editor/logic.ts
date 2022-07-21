@@ -21,7 +21,7 @@ import type {
 import { loadInitial } from 'src/ui/utils'
 import { timeFromNow } from 'src/utils/time-helpers'
 import type { MainNavigatorParamList } from 'src/ui/navigation/types'
-import type { List } from 'src/features/meta-picker/types'
+import type { List, SpacePickerEntry } from 'src/features/meta-picker/types'
 import type { AnnotationSharingState } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
@@ -41,8 +41,8 @@ export interface State {
 export type Event = UIEvent<{
     setAnnotationToEdit: { annotationUrl: string }
     toggleNotePress: { url: string }
-    removeEntry: { listId: number }
-    createEntry: { listId: number }
+    unselectEntry: { entry: SpacePickerEntry }
+    selectEntry: { entry: SpacePickerEntry }
     confirmNoteDelete: { url: string }
     setAnnotationPrivacyLevel: {
         annotationUrl: string
@@ -212,15 +212,15 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    removeEntry: EventHandler<'removeEntry'> = async ({
-        event: { listId },
+    unselectEntry: EventHandler<'unselectEntry'> = async ({
+        event: { entry },
         previousState,
     }) => {
         const { metaPicker } = this.props.storage.modules
         const { annotationSharing } = this.props.services
 
         const removeListMutation = (ids: number[]) =>
-            ids.filter((id) => id !== listId)
+            ids.filter((id) => id !== entry.id)
 
         if (
             previousState.mode === 'annotation-spaces' &&
@@ -236,7 +236,7 @@ export default class Logic extends UILogic<State, Event> {
             const sharingState = await annotationSharing.removeAnnotationFromList(
                 {
                     annotationUrl: previousState.annotationUrlToEdit,
-                    listId,
+                    listId: entry.id,
                 },
             )
 
@@ -261,7 +261,7 @@ export default class Logic extends UILogic<State, Event> {
             }
 
             // If list is shared, remove from public annots
-            if (previousState.listData[listId]?.remoteId != null) {
+            if (entry.remoteId != null) {
                 const publicNoteIds = Object.values(previousState.noteData)
                     .filter(
                         (note) =>
@@ -283,20 +283,36 @@ export default class Logic extends UILogic<State, Event> {
 
             await metaPicker.deletePageEntryFromList({
                 url: previousState.page.url,
-                listId,
+                listId: entry.id,
             })
         }
     }
 
-    createEntry: EventHandler<'createEntry'> = async ({
-        event: { listId },
+    selectEntry: EventHandler<'selectEntry'> = async ({
+        event: { entry },
         previousState,
     }) => {
         const { metaPicker } = this.props.storage.modules
         const { annotationSharing } = this.props.services
 
+        // Add data to lists state if list not-yet-tracked
+        if (previousState.listData[entry.id] == null) {
+            this.emitMutation({
+                listData: {
+                    [entry.id]: {
+                        $set: {
+                            id: entry.id,
+                            name: entry.name,
+                            remoteId: entry.remoteId,
+                            createdAt: new Date(), // TODO: This isn't used. Prob needs to be cleaned up from types here
+                        },
+                    },
+                },
+            })
+        }
+
         const addListIfMissingMutation = (ids: number[]) =>
-            ids.includes(listId) ? ids : [listId, ...ids]
+            ids.includes(entry.id) ? ids : [entry.id, ...ids]
 
         if (
             previousState.mode === 'annotation-spaces' &&
@@ -305,13 +321,13 @@ export default class Logic extends UILogic<State, Event> {
             const mutation: UIMutation<State> = {
                 noteData: {
                     [previousState.annotationUrlToEdit]: {
-                        listIds: { $unshift: [listId] },
+                        listIds: { $unshift: [entry.id] },
                     },
                 },
             }
 
-            // If list is shared, add to page + other public annots
-            if (previousState.listData[listId]?.remoteId != null) {
+            // If list is shared, add to parent page + other public annots
+            if (entry.remoteId != null) {
                 mutation.page = { listIds: addListIfMissingMutation }
                 const publicNoteIds = Object.values(previousState.noteData)
                     .filter(
@@ -329,11 +345,12 @@ export default class Logic extends UILogic<State, Event> {
                     }
                 })
             }
+
             this.emitMutation(mutation)
 
             const sharingState = await annotationSharing.addAnnotationToLists({
                 annotationUrl: previousState.annotationUrlToEdit,
-                listIds: [listId],
+                listIds: [entry.id],
                 protectAnnotation: true,
             })
 
@@ -353,12 +370,12 @@ export default class Logic extends UILogic<State, Event> {
             }
         } else {
             const mutation: UIMutation<State> = {
-                page: { listIds: { $unshift: [listId] } },
+                page: { listIds: { $unshift: [entry.id] } },
                 noteData: {},
             }
 
             // If list is shared, add to public annots
-            if (previousState.listData[listId]?.remoteId != null) {
+            if (entry.remoteId != null) {
                 const publicNoteIds = Object.values(previousState.noteData)
                     .filter((note) =>
                         [
@@ -377,7 +394,7 @@ export default class Logic extends UILogic<State, Event> {
             this.emitMutation(mutation)
             await metaPicker.createPageListEntry({
                 fullPageUrl: previousState.page.url,
-                listId,
+                listId: entry.id,
             })
         }
     }

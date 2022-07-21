@@ -1,8 +1,7 @@
 import React from 'react'
-import { AppState, Platform } from 'react-native'
+import { AppState } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
-import { SheetProvider } from 'react-native-actions-sheet'
 
 import { loadContentScript } from 'src/features/reader/utils/load-content-script'
 import { CoreUIState } from '../types'
@@ -81,13 +80,11 @@ export const createMainNavigator: NavigationContainerFactory = ({
     ]
 
     return (
-        <SheetProvider>
-            <NavigationContainer theme={lightTheme}>
-                <MainStack.Navigator headerMode="none">
-                    {isLoggedIn ? protectedRoutes : publicRoutes}
-                </MainStack.Navigator>
-            </NavigationContainer>
-        </SheetProvider>
+        <NavigationContainer theme={lightTheme}>
+            <MainStack.Navigator headerMode="none">
+                {isLoggedIn ? protectedRoutes : publicRoutes}
+            </MainStack.Navigator>
+        </NavigationContainer>
     )
 }
 
@@ -95,24 +92,19 @@ export const createShareNavigator: NavigationContainerFactory = ({
     dependencies: deps,
     isLoggedIn,
 }) => {
-    // Share ext on Android is essentially just another screen of the main app, thus doesn't need another SheetProvider (else weird stuff happens)
-    const OuterContainer =
-        Platform.OS === 'ios' ? SheetProvider : React.Fragment
     return (
-        <OuterContainer>
-            <NavigationContainer theme={lightTheme}>
-                <ShareStack.Navigator headerMode="none">
-                    {isLoggedIn ? (
-                        <ShareStack.Screen name="ShareModal">
-                            {(props) => <ShareModal {...props} {...deps} />}
-                        </ShareStack.Screen>
-                    ) : (
-                        <ShareStack.Screen name="Login">
-                            {(props) => <Login {...props} {...deps} />}
-                        </ShareStack.Screen>
-                    )}
-                </ShareStack.Navigator>
-            </NavigationContainer>
-        </OuterContainer>
+        <NavigationContainer theme={lightTheme}>
+            <ShareStack.Navigator headerMode="none">
+                {isLoggedIn ? (
+                    <ShareStack.Screen name="ShareModal">
+                        {(props) => <ShareModal {...props} {...deps} />}
+                    </ShareStack.Screen>
+                ) : (
+                    <ShareStack.Screen name="Login">
+                        {(props) => <Login {...props} {...deps} />}
+                    </ShareStack.Screen>
+                )}
+            </ShareStack.Navigator>
+        </NavigationContainer>
     )
 }

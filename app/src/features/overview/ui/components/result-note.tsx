@@ -19,6 +19,7 @@ export interface Props extends BodyProps, InteractionProps {
 export interface InteractionProps {
     hideFooter?: boolean
     isNotePressed: boolean
+    hasSharedLists: boolean
     clearBackground?: boolean
     onEditPress: TouchEventHandler
     onNotePress: TouchEventHandler
@@ -80,6 +81,7 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                     </IconContainer>
                     <AnnotationPrivacyBtn
                         level={props.privacyLevel}
+                        hasSharedLists={props.hasSharedLists}
                         onPrivacyLevelChoice={props.onPrivacyLevelSet}
                     />
                 </ActionBar>

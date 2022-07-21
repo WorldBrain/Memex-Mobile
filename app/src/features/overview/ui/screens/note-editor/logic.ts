@@ -154,11 +154,13 @@ export default class Logic extends UILogic<State, Event> {
             })
         }
 
-        await annotationSharing.addAnnotationToLists({
-            annotationUrl,
-            listIds: state.spacesToAdd.map((space) => space.id),
-            protectAnnotation: true,
-        })
+        if (state.spacesToAdd.length) {
+            await annotationSharing.addAnnotationToLists({
+                annotationUrl,
+                listIds: state.spacesToAdd.map((space) => space.id),
+                protectAnnotation: true,
+            })
+        }
     }
 
     saveNote: EventHandler<'saveNote'> = async ({ previousState }) => {
