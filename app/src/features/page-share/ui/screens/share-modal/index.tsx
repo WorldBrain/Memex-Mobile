@@ -222,12 +222,16 @@ export default class ShareModalScreen extends StatefulUIElement<
                         </LoadingIndicatorBox>
                     ) : (
                         <>
-                            <AnnotationPrivacyBtn
-                                level={this.state.privacyLevel}
-                                onPrivacyLevelChoice={
-                                    this.handlePrivacyLevelSet
-                                }
-                            />
+                            {this.state.noteText ? (
+                                <AnnotationPrivacyBtn
+                                    level={this.state.privacyLevel}
+                                    onPrivacyLevelChoice={
+                                        this.handlePrivacyLevelSet
+                                    }
+                                />
+                            ) : (
+                                <></>
+                            )}
                             <AddToSpacesBtn
                                 mainText={`Add ${
                                     this.state.noteText.trim().length
