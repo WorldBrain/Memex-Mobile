@@ -8,6 +8,7 @@ import { MockSettingsStorage } from 'src/features/settings/storage/mock-storage'
 import { StorageService } from 'src/services/settings-storage'
 import type { TestDevice } from 'src/types.tests'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import { SpacePickerEntry } from 'src/features/meta-picker/types'
 
 const testText = 'this is a test'
 const testPage = {
@@ -198,31 +199,53 @@ describe('page editor UI logic tests', () => {
 
         expect(logicContainer.state.page.listIds.length).toBe(0)
 
-        const testListIds = []
+        const testListEntries: SpacePickerEntry[] = []
         for (const name of testLists) {
             const {
                 object,
             } = await context.storage.modules.metaPicker.createList({ name })
-            testListIds.push(object.id)
+            testListEntries.push({ id: object.id, name, isChecked: false })
         }
 
-        for (const listId of testListIds) {
-            await logicContainer.processEvent('createEntry', { listId })
+        expect(logicContainer.state.listData).toEqual({})
+
+        const expectedListData = testListEntries.reduce(
+            (acc, curr) => ({
+                ...acc,
+                [curr.id]: {
+                    id: curr.id,
+                    name: curr.name,
+                    createdAt: expect.any(Date),
+                },
+            }),
+            {},
+        )
+
+        for (const entry of testListEntries) {
+            await logicContainer.processEvent('selectEntry', { entry })
             expect(createListEntryValue).toEqual({
                 fullPageUrl: testPage.url,
-                listId,
+                listId: entry.id,
             })
         }
 
+        expect(logicContainer.state.listData).toEqual(expectedListData)
         expect(logicContainer.state.page.listIds.length).toBe(
-            testListIds.length,
+            testListEntries.length,
         )
-        expect(logicContainer.state.page.listIds).toEqual(testListIds.reverse())
+        expect(logicContainer.state.page.listIds).toEqual(
+            testListEntries.reverse().map((e) => e.id),
+        )
 
-        for (const listId of testListIds) {
-            await logicContainer.processEvent('removeEntry', { listId })
-            expect(deleteListEntryValue).toEqual({ url: testPage.url, listId })
+        for (const entry of testListEntries) {
+            await logicContainer.processEvent('unselectEntry', { entry })
+            expect(deleteListEntryValue).toEqual({
+                url: testPage.url,
+                listId: entry.id,
+            })
         }
+
+        expect(logicContainer.state.listData).toEqual(expectedListData)
         expect(logicContainer.state.page.listIds.length).toBe(0)
     })
 
@@ -268,37 +291,52 @@ describe('page editor UI logic tests', () => {
                 .findAllObjects({}),
         ).toEqual([])
 
-        const testListIds = []
+        const testListEntries: SpacePickerEntry[] = []
         for (const name of testLists) {
             const {
                 object,
             } = await context.storage.modules.metaPicker.createList({ name })
-            testListIds.push(object.id)
+            testListEntries.push({ id: object.id, name, isChecked: false })
         }
+        expect(logicContainer.state.listData).toEqual({})
 
-        for (const listId of testListIds) {
-            await logicContainer.processEvent('createEntry', { listId })
+        const expectedListData = testListEntries.reduce(
+            (acc, curr) => ({
+                ...acc,
+                [curr.id]: {
+                    id: curr.id,
+                    name: curr.name,
+                    createdAt: expect.any(Date),
+                },
+            }),
+            {},
+        )
+
+        for (const entry of testListEntries) {
+            await logicContainer.processEvent('selectEntry', { entry })
         }
+        expect(logicContainer.state.listData).toEqual(expectedListData)
         expect(
             await context.storage.manager
                 .collection('annotListEntries')
                 .findAllObjects({}),
         ).toEqual(
-            testListIds.map((listId) =>
+            testListEntries.map((entry) =>
                 expect.objectContaining({
-                    listId,
+                    listId: entry.id,
                     url: TEST_NOTE_ID,
                 }),
             ),
         )
 
         expect(logicContainer.state.noteData[TEST_NOTE_ID].listIds).toEqual(
-            [...testListIds].reverse(),
+            [...testListEntries].reverse().map((e) => e.id),
         )
 
-        for (const listId of testListIds) {
-            await logicContainer.processEvent('removeEntry', { listId })
+        for (const entry of testListEntries) {
+            await logicContainer.processEvent('unselectEntry', { entry })
         }
+        expect(logicContainer.state.listData).toEqual(expectedListData)
         expect(
             await context.storage.manager
                 .collection('annotListEntries')
@@ -344,8 +382,8 @@ describe('page editor UI logic tests', () => {
         expect(logicContainer.state.page.noteIds.length).toBe(1)
 
         logicContainer.logic.emitMutation({ mode: { $set: 'collections' } })
-        await logicContainer.processEvent('createEntry', {
-            listId: TEST_LIST_1_ID,
+        await logicContainer.processEvent('selectEntry', {
+            entry: { id: TEST_LIST_1_ID, name: 'test', isChecked: false },
         })
 
         expect(updatedPage).toBeUndefined()
