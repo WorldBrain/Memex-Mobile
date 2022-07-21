@@ -40,6 +40,9 @@ class NotesList extends React.PureComponent<Props> {
             {...item}
             privacyLevel={item.privacyLevel!}
             isNotePressed={!!item.isNotePressed}
+            hasSharedLists={item.listIds.some(
+                (listId) => this.props.listData[listId]?.remoteId != null,
+            )}
             spaces={item.listIds.map(
                 (listId, i) =>
                     this.props.listData[listId] ?? {

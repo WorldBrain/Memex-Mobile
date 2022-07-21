@@ -4,17 +4,23 @@ import {
     Lock as LockIcon,
     Globe as GlobeIcon,
     Person as PersonIcon,
+    People as PeopleIcon,
     SharedProtected as SharedProtectedIcon,
 } from 'src/ui/components/icons/icons-list'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
-export const privacyLevelToIcon = (lvl: AnnotationPrivacyLevels) =>
-    lvl === AnnotationPrivacyLevels.PRIVATE
-        ? PersonIcon
-        : lvl === AnnotationPrivacyLevels.PROTECTED
-        ? LockIcon
-        : lvl === AnnotationPrivacyLevels.SHARED
+export const privacyLevelToIcon = (
+    lvl: AnnotationPrivacyLevels,
+    hasSharedLists: boolean,
+) =>
+    lvl === AnnotationPrivacyLevels.SHARED
         ? GlobeIcon
+        : lvl === AnnotationPrivacyLevels.PRIVATE
+        ? PersonIcon
+        : lvl === AnnotationPrivacyLevels.PROTECTED && hasSharedLists
+        ? PeopleIcon
+        : lvl === AnnotationPrivacyLevels.PROTECTED && !hasSharedLists
+        ? LockIcon
         : SharedProtectedIcon
 
 export async function loadInitial<State extends { loadState: UITaskState }>(

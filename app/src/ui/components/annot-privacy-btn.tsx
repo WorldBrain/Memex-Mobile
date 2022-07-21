@@ -2,16 +2,18 @@ import React from 'react'
 import styled from 'styled-components/native'
 import { SheetManager } from 'react-native-actions-sheet'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
-import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import { privacyLevelToIcon } from '../utils'
 
 export interface Props {
+    hasSharedLists?: boolean
     level: AnnotationPrivacyLevels
     onPrivacyLevelChoice: (level: AnnotationPrivacyLevels) => void
 }
 
 const AnnotationPrivacyBtn: React.SFC<Props> = ({
     level,
+    hasSharedLists,
     onPrivacyLevelChoice,
 }) => (
     <Btn
@@ -22,7 +24,7 @@ const AnnotationPrivacyBtn: React.SFC<Props> = ({
         }}
     >
         <Icon
-            icon={privacyLevelToIcon(level)}
+            icon={privacyLevelToIcon(level, hasSharedLists ?? false)}
             color="white"
             strokeWidth="2px"
             heightAndWidth="16px"
