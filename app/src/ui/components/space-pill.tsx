@@ -11,15 +11,18 @@ export interface Props {
 const SpacePill: React.SFC<Props> = ({ name, isShared }) => (
     <SpacePillContainer>
         {isShared && (
-            <Icon
-                icon={SharedIcon}
-                color={'white'}
-                fill={true}
-                strokeWidth="2px"
-                heightAndWidth="12px"
-            />
+            <>
+                <Icon
+                    icon={SharedIcon}
+                    color={'white'}
+                    fill={true}
+                    strokeWidth="2px"
+                    heightAndWidth="12px"
+                />
+                <Spacer />
+            </>
         )}
-        <SpacePillText>
+        <SpacePillText is>
             {(isShared ? ' ' : '') + (name ?? 'Missing Space')}
         </SpacePillText>
     </SpacePillContainer>
@@ -40,10 +43,13 @@ const SpacePillContainer = styled.View`
     margin-bottom: 5px;
 `
 
-const SpacePillText = styled.Text`
+const Spacer = styled.View`
+    width: 5px;
+`
+
+const SpacePillText = styled.Text<{ isShared: boolean }>`
     color: white;
     display: flex;
     text-align-vertical: center;
     font-size: 12px;
-    margin-left: 5px;
 `
