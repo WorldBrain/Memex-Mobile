@@ -194,106 +194,107 @@ export function registerSingleDeviceSyncTests(
     })
 }
 
-const initCreateTestDevice =
-    ({
-        getServerStorage = () =>
-            createServerStorage(
-                process.env['USE_FIREBASE_EMULATOR']
-                    ? 'firebase-emulator'
-                    : 'memory',
-            ),
-    }: {
-        getServerStorage?: () => Promise<ServerStorage>
-    }): TestDeviceFactory =>
-    async (options) => {
-        const serverStorage = await getServerStorage()
-        const typeORMConnectionOpts: ConnectionOptions | undefined =
-            options.backend === 'dexie'
-                ? undefined
-                : {
-                      type: 'sqlite',
-                      database: ':memory:',
-                      name: `connection-${connIterator++}`,
-                      logging: !!(options && options.debugSql),
-                  }
+const initCreateTestDevice = ({
+    getServerStorage = () =>
+        createServerStorage(
+            process.env['USE_FIREBASE_EMULATOR']
+                ? 'firebase-emulator'
+                : 'memory',
+        ),
+}: {
+    getServerStorage?: () => Promise<ServerStorage>
+}): TestDeviceFactory => async (options) => {
+    const serverStorage = await getServerStorage()
+    const typeORMConnectionOpts: ConnectionOptions | undefined =
+        options.backend === 'dexie'
+            ? undefined
+            : {
+                  type: 'sqlite',
+                  database: ':memory:',
+                  name: `connection-${connIterator++}`,
+                  logging: !!(options && options.debugSql),
+              }
 
-        const route = new FakeRoute()
-        const navigation = new FakeNavigation()
-        const cloudHub = new PersonalCloudHub()
-        const authService = new MemoryAuthService()
-        const errorTracker = new ErrorTrackingService(new MockSentry() as any, {
-            dsn: 'test.com',
-        })
+    const route = new FakeRoute()
+    const navigation = new FakeNavigation()
+    const cloudHub = new PersonalCloudHub()
+    const authService = new MemoryAuthService()
+    const errorTracker = new ErrorTrackingService(new MockSentry() as any, {
+        dsn: 'test.com',
+    })
 
-        let now = 555
-        const getNow = () => now++
-        const getUserId = async () => {
-            const user = await authService.getCurrentUser()
-            return user?.id ?? null
-        }
-
-        const serverServices = await createServerServices({
-            getServerStorage: async () => serverStorage,
-        })
-
-        let personalCloudBackend: StorexPersonalCloudBackend
-
-        const storage = await createStorage({
-            typeORMConnectionOpts,
-            authService,
-            uploadClientUpdates: async (updates) => {
-                await personalCloudBackend?.pushUpdates(updates)
-            },
-            createDeviceId: async (userId) => {
-                const device =
-                    await serverStorage.modules.personalCloud.createDeviceInfo({
-                        userId,
-                        device: options.deviceInfo,
-                    })
-                return device.id
-            },
-        })
-
-        personalCloudBackend = new StorexPersonalCloudBackend({
-            storageManager: serverStorage.manager,
-            storageModules: serverStorage.modules,
-            services: serverServices,
-            clientSchemaVersion: getCurrentSchemaVersion(storage.manager),
-            view: cloudHub.getView(),
-            getDeviceId: () =>
-                storage.modules.localSettings.getSetting({
-                    key: storageKeys.deviceId,
-                })!,
-            getUserId,
-            getNow,
-            clientDeviceType: PersonalDeviceType.Mobile,
-            useDownloadTranslationLayer: true,
-        })
-
-        const services = await createServices({
-            keychain: new MockKeychainPackage(),
-            personalCloudBackend,
-            auth: authService,
-            normalizeUrl,
-            errorTracker,
-            storage,
-        })
-
-        await authService.setUser(TEST_USER)
-        await storage.modules.personalCloud.setup()
-        await setStorageMiddleware({
-            storage,
-            extraPostChangeWatcher: options.extraPostChangeWatcher,
-        })
-
-        return {
-            storage,
-            services,
-            auth: authService,
-            navigation,
-            route: route as RouteProp<any, any>,
-        }
+    let now = 555
+    const getNow = () => now++
+    const getUserId = async () => {
+        const user = await authService.getCurrentUser()
+        return user?.id ?? null
     }
+
+    const serverServices = await createServerServices({
+        getServerStorage: async () => serverStorage,
+    })
+
+    let personalCloudBackend: StorexPersonalCloudBackend
+
+    const storage = await createStorage({
+        typeORMConnectionOpts,
+        authService,
+        uploadClientUpdates: async (updates) => {
+            await personalCloudBackend?.pushUpdates(updates)
+        },
+        createDeviceId: async (userId) => {
+            const device = await serverStorage.modules.personalCloud.createDeviceInfo(
+                {
+                    userId,
+                    device: options.deviceInfo,
+                },
+            )
+            return device.id
+        },
+    })
+
+    let nextServerId = 1337
+    personalCloudBackend = new StorexPersonalCloudBackend({
+        storageManager: serverStorage.manager,
+        storageModules: serverStorage.modules,
+        services: serverServices,
+        clientSchemaVersion: getCurrentSchemaVersion(storage.manager),
+        view: cloudHub.getView(),
+        getDeviceId: () =>
+            storage.modules.localSettings.getSetting({
+                key: storageKeys.deviceId,
+            })!,
+        getUserId,
+        getNow,
+        clientDeviceType: PersonalDeviceType.Mobile,
+        useDownloadTranslationLayer: true,
+    })
+
+    const services = await createServices({
+        keychain: new MockKeychainPackage(),
+        personalCloudBackend,
+        auth: authService,
+        normalizeUrl,
+        errorTracker,
+        storage,
+        generateServerId: () => nextServerId++,
+    })
+
+    await authService.setUser(TEST_USER)
+    await storage.modules.personalCloud.setup()
+    await setStorageMiddleware({
+        storage,
+        extraPostChangeWatcher: options.extraPostChangeWatcher,
+    })
+
+    return {
+        storage,
+        services,
+        auth: authService,
+        navigation,
+        route: route as RouteProp<any, any>,
+    }
+}
 
 const delTextFields = ({
     pages = [],
