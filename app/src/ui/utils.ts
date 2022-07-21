@@ -21,7 +21,7 @@ export const privacyLevelToIcon = (
         ? PeopleIcon
         : lvl === AnnotationPrivacyLevels.PROTECTED && !hasSharedLists
         ? LockIcon
-        : SharedProtectedIcon
+        : LockIcon
 
 export async function loadInitial<State extends { loadState: UITaskState }>(
     logic: UILogic<State, any>,

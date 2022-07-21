@@ -25,7 +25,6 @@ const AnnotationPrivacyBtn: React.SFC<Props> = ({
     >
         <Icon
             icon={privacyLevelToIcon(level, hasSharedLists ?? false)}
-            color="white"
             strokeWidth="2px"
             heightAndWidth="16px"
         />

@@ -154,10 +154,11 @@ const SpaceList = styled.View`
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
 `
 
 const Section = styled.View`
-    height: 40px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -165,7 +166,7 @@ const Section = styled.View`
     border-top-width: 1px;
     border-top-color: #f0f0f0;
     border-style: solid;
-    padding: 0 10px 0 15px;
+    padding: 5px 10px 5px 15px;
 `
 
 export default ResultNote

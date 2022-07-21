@@ -47,32 +47,37 @@ export default class CloudSyncScreen extends StatefulUIElement<
     }
 
     private renderStats() {
-        if (this.props.route.params?.shouldRetrospectiveSync) {
-            return null
-        }
+        // if (this.props.route.params?.shouldRetrospectiveSync) {
+        //     return null
+        // }
 
-        return (
-            <SyncInfoContainer>
-                <InfoTextProgress>
-                    {this.state.totalDownloads == null
-                        ? '...'
-                        : calcPercComplete(this.state)}
-                    %
-                </InfoTextProgress>
-                <SecondaryText>
-                    Total Changes:{' '}
-                    <InfoText>{this.state.totalDownloads ?? '...'}</InfoText>
-                </SecondaryText>
-                <SecondaryText>
-                    Pending changes:{' '}
-                    <InfoText>
+        if (this.state.totalDownloads) {
+            return (
+                <SyncInfoContainer>
+                    <InfoTextProgress>
                         {this.state.totalDownloads == null
                             ? '...'
-                            : this.state.pendingDownloads}
-                    </InfoText>
-                </SecondaryText>
-            </SyncInfoContainer>
-        )
+                            : calcPercComplete(this.state)}
+                        %
+                    </InfoTextProgress>
+                    <SecondaryText>
+                        Changes left to Sync: {'\n'}
+                        <InfoText>
+                            {this.state.totalDownloads == null
+                                ? '...'
+                                : this.state.pendingDownloads}{' '}
+                            <SecondaryText>of</SecondaryText>{' '}
+                            {this.state.totalDownloads ?? '...'}
+                        </InfoText>
+                    </SecondaryText>
+                    <SecondaryText>
+                        Sync only runs with the app open.
+                    </SecondaryText>
+                </SyncInfoContainer>
+            )
+        } else {
+            return <SyncInfoContainer />
+        }
     }
 
     private renderSyncingScreen() {
@@ -80,11 +85,11 @@ export default class CloudSyncScreen extends StatefulUIElement<
             <Container>
                 <InnerContainer>
                     <LoadingBalls size={40} />
-                    <HeadingText>Syncing your data</HeadingText>
-                    <SecondaryText>
-                        This can take a while. Please leave your app open and
-                        your device on charge.
-                    </SecondaryText>
+                    {this.state.totalDownloads === null ? (
+                        <HeadingText>Preparing Sync</HeadingText>
+                    ) : (
+                        <HeadingText>Sync in Progress</HeadingText>
+                    )}
                     {this.renderStats()}
                 </InnerContainer>
             </Container>
@@ -179,8 +184,8 @@ const HeadingText = styled.Text`
     font-size: 24px;
     font-weight: 800;
     text-align: center;
-    margin-top: 40px;
     margin-bottom: 20px;
+    margin-top: 20px;
 `
 
 const SecondaryText = styled.Text`
@@ -211,18 +216,17 @@ const SectionCircle = styled.View`
 const Container = styled.SafeAreaView`
     display: flex;
     height: 100%;
-    flex: 1;
     width: 100%;
-    padding: 100px 30px;
     justify-content: center;
     align-items: center;
 `
 
 const InnerContainer = styled.View`
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
-    max-height: 500px;
+    height: 60%;
+    width: 100%;
 `
 
 const MemexLogo = styled.Image`
@@ -239,10 +243,13 @@ const InfoTextProgress = styled.Text`
     font-weight: bold;
     color: ${(props) => props.theme.colors.purple};
     font-size: 22px;
+    margin: -10px 0 10px 0%;
 `
 
 const SyncInfoContainer = styled.View`
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    margin-bottom: 50px;
+    height: 150px;
 `
