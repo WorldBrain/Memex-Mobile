@@ -60,6 +60,7 @@ export default class CloudSyncScreen extends StatefulUIElement<
                             : calcPercComplete(this.state)}
                         %
                     </InfoTextProgress>
+                    <Spacer />
                     <SecondaryText>
                         Changes left to Sync: {'\n'}
                         <InfoText>
@@ -252,4 +253,8 @@ const SyncInfoContainer = styled.View`
     justify-content: flex-start;
     margin-bottom: 50px;
     height: 150px;
+`
+
+const Spacer = styled.View`
+    height: 15px;
 `

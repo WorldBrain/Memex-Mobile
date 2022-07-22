@@ -48,22 +48,22 @@ class ActionBar extends React.PureComponent<Props> {
 
         if (this.props.selectedText != null) {
             return (
-                <>
+                <ActionBox isLandscape={this.props.rotation === 'landscape'}>
                     <IconContainer onPress={this.props.onHighlightBtnPress}>
                         <Icon
                             icon={icons.Highlighter}
                             strokeWidth="3"
-                            heightAndWidth="24px"
+                            heightAndWidth="20px"
                         />
                     </IconContainer>
                     <IconContainer onPress={this.props.onAnnotateBtnPress}>
                         <Icon
                             icon={icons.AddNote}
                             strokeWidth="3"
-                            heightAndWidth="24px"
+                            heightAndWidth="20px"
                         />
                     </IconContainer>
-                </>
+                </ActionBox>
             )
         }
 
@@ -125,7 +125,7 @@ class ActionBar extends React.PureComponent<Props> {
 export default ActionBar
 
 export const heightLandscape = 60
-export const heightPortrait = 32
+export const heightPortrait = 45
 
 const Container = styled.View<{ isLandscape?: boolean }>`
     position: absolute;
@@ -133,8 +133,8 @@ const Container = styled.View<{ isLandscape?: boolean }>`
     width: 100%;
     height: ${(props) =>
         props.isLandscape ? heightLandscape : heightPortrait}px;
-    padding: ${(props) => (props.isLandscape ? '0px 5%' : '0px 10%')};
-    padding-top: ${(props) => (props.isLandscape ? '5px' : '10px')};
+    padding: ${(props) => (props.isLandscape ? '0px 5%' : '0px 5%')};
+    padding-top: ${(props) => (props.isLandscape ? '5px' : '5px')};
     display: flex;
     justify-content: space-between;
     align-items: ${(props) => (props.isLandscape ? 'flex-start' : 'center')};
@@ -167,10 +167,11 @@ const LeftBtns = styled.View`
 
 const IconContainer = styled.TouchableOpacity`
     height: 40px;
-    width: 4px;
+    width: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: 5px;
 `
 
 const ActionBox = styled.View<{ isLandscape?: boolean }>`
@@ -179,6 +180,7 @@ const ActionBox = styled.View<{ isLandscape?: boolean }>`
     justify-content: flex-end;
     align-items: ${(props) => (props.isLandscape ? 'flex-start' : 'center')};
     flex-direction: row;
+    width: 100px;
 `
 
 const CenterButton = styled.View`
