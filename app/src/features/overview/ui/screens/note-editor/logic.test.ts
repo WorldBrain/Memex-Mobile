@@ -6,18 +6,57 @@ import { MainNavigatorParamList } from 'src/ui/navigation/types'
 import { TestDevice } from 'src/types.tests'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
-function setup(
-    deps: TestDevice,
-    navParams: MainNavigatorParamList['NoteEditor'] = {
-        mode: 'create',
-        pageUrl: 'test.com',
+const TEST_PAGE_A = {
+    url: 'test.com',
+    fullUrl: 'https://test.com',
+    fullTitle: 'test title',
+    text: 'some test text paragraph and',
+}
+
+const TEST_LISTS = [
+    {
+        id: 1,
+        name: 'test a',
     },
+    {
+        id: 2,
+        name: 'test b',
+    },
+]
+
+async function insertTestData(deps: TestDevice) {
+    await deps.storage.modules.overview.createPage(TEST_PAGE_A)
+    for (const list of TEST_LISTS) {
+        await deps.storage.modules.metaPicker.createList({
+            __id: list.id,
+            name: list.name,
+        })
+    }
+}
+
+async function setup(
+    deps: TestDevice,
+    navParams: Partial<MainNavigatorParamList['NoteEditor']> = {
+        mode: 'create',
+        pageUrl: TEST_PAGE_A.url,
+        pageTitle: TEST_PAGE_A.fullTitle,
+    },
+    opts?: { skipTestData?: boolean },
 ) {
     const navigation = new FakeNavigation({ navParams })
+
+    if (!opts?.skipTestData) {
+        await insertTestData(deps)
+    }
+
     const logic = new Logic({
         ...deps,
         navigation: navigation as any,
-        route: new FakeRoute(navParams) as any,
+        route: new FakeRoute({
+            pageUrl: TEST_PAGE_A.url,
+            pageTitle: TEST_PAGE_A.fullTitle,
+            ...navParams,
+        }) as any,
     })
     const element = new FakeStatefulUIElement<State, Event>(logic)
 
@@ -28,7 +67,7 @@ describe('note editor UI logic tests', () => {
     const it = makeStorageTestFactory()
 
     it('should be able to update note text value', async (context) => {
-        const { element } = setup(context)
+        const { element } = await setup(context)
 
         const testText = 'test'
 
@@ -42,7 +81,7 @@ describe('note editor UI logic tests', () => {
     })
 
     it('should be able to set highlighted text lines', async (context) => {
-        const { element } = setup(context)
+        const { element } = await setup(context)
 
         expect(element.state.highlightTextLines).toEqual(undefined)
         await element.processEvent('setHighlightTextLines', { lines: 10 })
@@ -50,7 +89,7 @@ describe('note editor UI logic tests', () => {
     })
 
     it('should be able to set "show more" state', async (context) => {
-        const { element } = setup(context)
+        const { element } = await setup(context)
 
         expect(element.state.showAllText).toBe(false)
         await element.processEvent('setShowAllText', { show: true })
@@ -61,12 +100,8 @@ describe('note editor UI logic tests', () => {
 
     it('should be able to save a new note, with non-default privacy level set', async (context) => {
         const testText = 'test'
-        const testUrl = 'test.com'
 
-        const { element, navigation } = setup(context, {
-            mode: 'create',
-            pageUrl: testUrl,
-        })
+        const { element, navigation } = await setup(context, { mode: 'create' })
 
         expect(navigation.popRequests()).toEqual([])
 
@@ -98,7 +133,10 @@ describe('note editor UI logic tests', () => {
                 .collection('annotations')
                 .findAllObjects({}),
         ).toEqual([
-            expect.objectContaining({ comment: testText, pageUrl: testUrl }),
+            expect.objectContaining({
+                comment: testText,
+                pageUrl: TEST_PAGE_A.url,
+            }),
         ])
         expect(
             await context.storage.manager
@@ -115,17 +153,15 @@ describe('note editor UI logic tests', () => {
 
     it('should be able to save a new note, if highlight anchor absent', async (context) => {
         const testText = 'test'
-        const testUrl = 'test.com'
-        const testNoteUrl = 'test.com/#123'
+        const testNoteUrl = TEST_PAGE_A.url + '/#123'
 
         context.storage.modules.pageEditor.createNote = async (note) => {
             storedNote = note
             return { annotationUrl: testNoteUrl }
         }
         let storedNote: any
-        const { element, navigation } = setup(context, {
+        const { element, navigation } = await setup(context, {
             mode: 'create',
-            pageUrl: testUrl,
         })
 
         expect(navigation.popRequests()).toEqual([])
@@ -134,16 +170,15 @@ describe('note editor UI logic tests', () => {
         await element.processEvent('saveNote', null)
         expect(navigation.popRequests()).toEqual([{ type: 'goBack' }])
         expect(storedNote).toEqual({
-            pageUrl: testUrl,
+            pageUrl: TEST_PAGE_A.url,
             comment: testText,
-            pageTitle: '',
+            pageTitle: TEST_PAGE_A.fullTitle,
         })
     })
 
     it('should be able to save a new anot, if highlight anchor provided', async (context) => {
         const testText = 'test'
-        const testUrl = 'test.com'
-        const testNoteUrl = 'test.com/#123'
+        const testNoteUrl = TEST_PAGE_A.url + '/#123'
         const testAnchor = { quote: testText } as any
 
         let storedAnnotation: any
@@ -153,9 +188,8 @@ describe('note editor UI logic tests', () => {
             return { annotationUrl: testNoteUrl }
         }
 
-        const { element, navigation } = setup(context, {
+        const { element, navigation } = await setup(context, {
             mode: 'create',
-            pageUrl: testUrl,
             anchor: testAnchor,
             highlightText: testText,
         })
@@ -165,24 +199,20 @@ describe('note editor UI logic tests', () => {
         await element.processEvent('saveNote', null)
         expect(navigation.popRequests()).toEqual([{ type: 'goBack' }])
         expect(storedAnnotation).toEqual({
-            pageUrl: testUrl,
+            pageUrl: TEST_PAGE_A.url,
             selector: testAnchor,
             body: testText,
-            pageTitle: '',
+            pageTitle: TEST_PAGE_A.fullTitle,
             comment: '',
         })
     })
 
     it('should be able to save a new annot with spaces, if set', async (context) => {
         const testText = 'test'
-        const testUrl = 'test.com'
         const testAnchor = { quote: testText } as any
-        const testListIdA = 123
-        const testListIdB = 124
 
-        const { element, navigation } = setup(context, {
+        const { element, navigation } = await setup(context, {
             mode: 'create',
-            pageUrl: testUrl,
             anchor: testAnchor,
             highlightText: testText,
         })
@@ -205,10 +235,10 @@ describe('note editor UI logic tests', () => {
         ).toEqual([])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { id: testListIdA, isChecked: false, name: 'test a' },
+            entry: { ...TEST_LISTS[0], isChecked: false },
         })
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { id: testListIdB, isChecked: false, name: 'test b' },
+            entry: { ...TEST_LISTS[1], isChecked: false },
         })
         await element.processEvent('changeNoteText', { value: testText })
         await element.processEvent('saveNote', null)
@@ -218,7 +248,10 @@ describe('note editor UI logic tests', () => {
             .collection('annotations')
             .findAllObjects({})
         expect(savedAnnots).toEqual([
-            expect.objectContaining({ comment: testText, pageUrl: testUrl }),
+            expect.objectContaining({
+                comment: testText,
+                pageUrl: TEST_PAGE_A.url,
+            }),
         ])
         expect(
             await context.storage.manager
@@ -237,11 +270,11 @@ describe('note editor UI logic tests', () => {
         ).toEqual([
             expect.objectContaining({
                 url: savedAnnots[0]?.url,
-                listId: testListIdA,
+                listId: TEST_LISTS[0].id,
             }),
             expect.objectContaining({
                 url: savedAnnots[0]?.url,
-                listId: testListIdB,
+                listId: TEST_LISTS[1].id,
             }),
         ])
     })
@@ -249,21 +282,25 @@ describe('note editor UI logic tests', () => {
     it('should be able to edit an existing note', async (context) => {
         const testTextA = 'test'
         const testTextB = 'test updated'
-        const testUrl = 'test.com'
 
+        await insertTestData(context)
         const {
             annotationUrl,
         } = await context.storage.modules.pageEditor.createNote({
-            pageTitle: 'test title',
+            pageTitle: TEST_PAGE_A.fullTitle,
             comment: testTextA,
-            pageUrl: testUrl,
+            pageUrl: TEST_PAGE_A.url,
         })
 
-        const { element, navigation } = setup(context, {
-            mode: 'update',
-            noteUrl: annotationUrl,
-            spaces: [],
-        })
+        const { element, navigation } = await setup(
+            context,
+            {
+                mode: 'update',
+                noteUrl: annotationUrl,
+                spaces: [],
+            },
+            { skipTestData: true },
+        )
 
         expect(navigation.popRequests()).toEqual([])
         expect(
@@ -320,7 +357,7 @@ describe('note editor UI logic tests', () => {
         const testTitle = 'test'
         const testUrl = 'test.com'
 
-        const { element: elA, navigation: navA } = setup(context, {
+        const { element: elA, navigation: navA } = await setup(context, {
             mode: 'create',
             pageUrl: testUrl,
         })
@@ -329,7 +366,7 @@ describe('note editor UI logic tests', () => {
 
         expect(navA.popRequests()).toEqual([{ type: 'goBack' }])
 
-        const { element: elB, navigation: navB } = setup(context, {
+        const { element: elB, navigation: navB } = await setup(context, {
             mode: 'create',
             pageUrl: testUrl,
             pageTitle: testTitle,
@@ -340,30 +377,32 @@ describe('note editor UI logic tests', () => {
     })
 
     it('should be able to add and remove spaces in edit mode', async (context) => {
-        const testUrl = 'test.com'
         const testText = 'test'
-        const testListA = { id: 123, name: 'test a' }
-        const testListB = { id: 124, name: 'test b' }
 
+        await insertTestData(context)
         const {
             annotationUrl,
         } = await context.storage.modules.pageEditor.createNote({
             pageTitle: 'test title',
-            pageUrl: testUrl,
+            pageUrl: TEST_PAGE_A.url,
             comment: testText,
         })
         await context.services.annotationSharing.addAnnotationToLists({
             annotationUrl,
-            listIds: [testListB.id],
+            listIds: [TEST_LISTS[1].id],
         })
 
-        const { element } = setup(context as any, {
-            mode: 'update',
-            noteUrl: annotationUrl,
-            spaces: [testListB],
-        })
+        const { element } = await setup(
+            context as any,
+            {
+                mode: 'update',
+                noteUrl: annotationUrl,
+                spaces: [TEST_LISTS[1]],
+            },
+            { skipTestData: true },
+        )
 
-        expect(element.state.spacesToAdd).toEqual([testListB])
+        expect(element.state.spacesToAdd).toEqual([TEST_LISTS[1]])
         expect(
             await context.storage.manager
                 .collection('annotListEntries')
@@ -371,14 +410,17 @@ describe('note editor UI logic tests', () => {
         ).toEqual([
             expect.objectContaining({
                 url: annotationUrl,
-                listId: testListB.id,
+                listId: TEST_LISTS[1].id,
             }),
         ])
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { ...testListA, isChecked: false },
+            entry: { ...TEST_LISTS[0], isChecked: false },
         })
 
-        expect(element.state.spacesToAdd).toEqual([testListB, testListA])
+        expect(element.state.spacesToAdd).toEqual([
+            TEST_LISTS[1],
+            TEST_LISTS[0],
+        ])
         expect(
             await context.storage.manager
                 .collection('annotListEntries')
@@ -386,19 +428,19 @@ describe('note editor UI logic tests', () => {
         ).toEqual([
             expect.objectContaining({
                 url: annotationUrl,
-                listId: testListB.id,
+                listId: TEST_LISTS[1].id,
             }),
             expect.objectContaining({
                 url: annotationUrl,
-                listId: testListA.id,
+                listId: TEST_LISTS[0].id,
             }),
         ])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { ...testListA, isChecked: true },
+            entry: { ...TEST_LISTS[0], isChecked: true },
         })
 
-        expect(element.state.spacesToAdd).toEqual([testListB])
+        expect(element.state.spacesToAdd).toEqual([TEST_LISTS[1]])
         expect(
             await context.storage.manager
                 .collection('annotListEntries')
@@ -406,12 +448,12 @@ describe('note editor UI logic tests', () => {
         ).toEqual([
             expect.objectContaining({
                 url: annotationUrl,
-                listId: testListB.id,
+                listId: TEST_LISTS[1].id,
             }),
         ])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { ...testListB, isChecked: true },
+            entry: { ...TEST_LISTS[1], isChecked: true },
         })
 
         expect(element.state.spacesToAdd).toEqual([])
@@ -423,10 +465,6 @@ describe('note editor UI logic tests', () => {
     })
 
     it('should be able to add and remove spaces in create mode', async (context) => {
-        const testUrl = 'test.com'
-        const testListA = { id: 123, name: 'test a' }
-        const testListB = { id: 124, name: 'test b' }
-
         let lastCreatedListEntry:
             | { listId: number; annotationUrl: string }
             | undefined
@@ -445,9 +483,8 @@ describe('note editor UI logic tests', () => {
             lastDeletedListEntry = entry
         }
 
-        const { element } = setup(context as any, {
+        const { element } = await setup(context as any, {
             mode: 'create',
-            pageUrl: testUrl,
         })
 
         expect(lastCreatedListEntry).toEqual(undefined)
@@ -455,28 +492,31 @@ describe('note editor UI logic tests', () => {
         expect(element.state.spacesToAdd).toEqual([])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { ...testListA, isChecked: false },
+            entry: { ...TEST_LISTS[0], isChecked: false },
         })
         expect(lastCreatedListEntry).toEqual(undefined)
         expect(lastDeletedListEntry).toEqual(undefined)
-        expect(element.state.spacesToAdd).toEqual([testListA])
+        expect(element.state.spacesToAdd).toEqual([TEST_LISTS[0]])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { ...testListB, isChecked: false },
+            entry: { ...TEST_LISTS[1], isChecked: false },
         })
         expect(lastCreatedListEntry).toEqual(undefined)
         expect(lastDeletedListEntry).toEqual(undefined)
-        expect(element.state.spacesToAdd).toEqual([testListA, testListB])
+        expect(element.state.spacesToAdd).toEqual([
+            TEST_LISTS[0],
+            TEST_LISTS[1],
+        ])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { ...testListA, isChecked: true },
+            entry: { ...TEST_LISTS[0], isChecked: true },
         })
         expect(lastCreatedListEntry).toEqual(undefined)
         expect(lastDeletedListEntry).toEqual(undefined)
-        expect(element.state.spacesToAdd).toEqual([testListB])
+        expect(element.state.spacesToAdd).toEqual([TEST_LISTS[1]])
 
         await element.processEvent('selectSpacePickerEntry', {
-            entry: { ...testListB, isChecked: true },
+            entry: { ...TEST_LISTS[1], isChecked: true },
         })
         expect(lastCreatedListEntry).toEqual(undefined)
         expect(lastDeletedListEntry).toEqual(undefined)
