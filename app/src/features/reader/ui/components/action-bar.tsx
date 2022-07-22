@@ -124,11 +124,15 @@ class ActionBar extends React.PureComponent<Props> {
 
 export default ActionBar
 
+export const heightLandscape = 60
+export const heightPortrait = 32
+
 const Container = styled.View<{ isLandscape?: boolean }>`
     position: absolute;
     bottom: ${(props) => (props.isLandscape ? '-105%' : '-100%')};
     width: 100%;
-    height: ${(props) => (props.isLandscape ? '60px' : '32px')};
+    height: ${(props) =>
+        props.isLandscape ? heightLandscape : heightPortrait}px;
     padding: ${(props) => (props.isLandscape ? '0px 5%' : '0px 10%')};
     padding-top: ${(props) => (props.isLandscape ? '5px' : '10px')};
     display: flex;

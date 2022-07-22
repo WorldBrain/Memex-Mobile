@@ -45,7 +45,7 @@ class ErrorView extends React.PureComponent<Props> {
 
     render() {
         return (
-            <View style={this.mainClass}>
+            <View style={styles.container}>
                 <Text style={styles.details}>{this.props.url}</Text>
                 <Text>
                     This URL has failed to be loaded in the annotation viewer

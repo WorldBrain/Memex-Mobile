@@ -50,13 +50,15 @@ const Navigation: React.StatelessComponent<Props> = (props) => (
     </Container>
 )
 
+export const height = 100
+
 const Container = styled.View`
     width: 100%;
     display: flex;
     justify-content: center;
     flex-direction: row;
     align-items: center;
-    height: 100px;
+    height: ${height}px;
     border-bottom-color: ${(props) => props.theme.colors.lightgrey};
     border-bottom-width: 1px;
     background: ${(props) => props.theme.colors.white};

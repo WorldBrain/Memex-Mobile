@@ -3,9 +3,6 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 import conditionalStyles from 'src/utils/device-size-helper'
 
 const { height, width } = Dimensions.get('window')
-const aspectRatio = height / width
-
-export const actionBarHeight = 80
 
 export default EStyleSheet.create({
     container: {

@@ -1,17 +1,20 @@
 import React from 'react'
-import { View, Linking } from 'react-native'
+import { Linking, Dimensions } from 'react-native'
 import { WebView, WebViewNavigation } from 'react-native-webview'
 
 import Logic, { State, Event, Props } from './logic'
 import { StatefulUIElement } from 'src/ui/types'
-import ActionBar from '../../components/action-bar'
-import ReaderWebView from '../../components/web-view'
+import ActionBar, {
+    heightLandscape as actionBarHeightLandscape,
+    heightPortrait as actionBarHeightPortrait,
+} from '../../components/action-bar'
 import ErrorView from '../../components/error-view'
-import styles from './styles'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import { RemoteFnName } from 'src/features/reader/utils/remote-functions'
-import { Message as WebViewMessage, Anchor } from 'src/content-script/types'
-import Navigation from 'src/features/overview/ui/components/navigation'
+import { Message as WebViewMessage } from 'src/content-script/types'
+import Navigation, {
+    height as navigationBarHeight,
+} from 'src/features/overview/ui/components/navigation'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
 
@@ -108,9 +111,12 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
     }
 
     private renderLoading = () => (
-        <View style={[styles.webView, styles.webViewLoader]}>
+        <WebViewContainer
+            isLandscape={this.state.rotation === 'landscape'}
+            isLoading
+        >
             <LoadingBalls />
-        </View>
+        </WebViewContainer>
     )
 
     private renderWebView() {
@@ -124,33 +130,52 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     url={this.state.url}
                     message={this.state.error.message}
                     alreadyReported={this.state.isErrorReported}
-                    className={[styles.webView, styles.container]}
                     onErrorReport={() => this.processEvent('reportError', null)}
                 />
             )
         }
 
+        // TODO: sort out the type error here :S
         return (
-            <ReaderWebView
-                url={this.state.url}
-                setRef={(ref) => (this.webView = ref)}
-                className={styles.webView}
-                onMessage={this.handleWebViewMessageReceived}
-                htmlSource={this.state.htmlSource!}
-                injectedJavaScript={this.generateInitialJSToInject()}
-                onNavigationStateChange={this.handleNavStateChange}
-                startInLoadingState
-                renderLoading={this.renderLoading}
-                // This flag needs to be set to afford text selection on iOS.
-                //   https://github.com/react-native-community/react-native-webview/issues/1275
-                allowsLinkPreview
-                onHighlightBtnPress={() =>
-                    this.runFnInWebView('createHighlight')
-                }
-                onAnnotateBtnPress={() =>
-                    this.runFnInWebView('createAnnotation')
-                }
-            />
+            <WebViewContainer isLandscape={this.state.rotation === 'landscape'}>
+                <WebView
+                    source={{
+                        uri: this.state.url,
+                        // html: this.props.htmlSource,
+                        // baseUrl: this.props.url,
+                    }}
+                    htmlSource={this.state.htmlSource!}
+                    injectedJavaScript={this.generateInitialJSToInject()}
+                    onNavigationStateChange={this.handleNavStateChange}
+                    startInLoadingState
+                    // This flag needs to be set to afford text selection on iOS.
+                    //   https://github.com/react-native-community/react-native-webview/issues/1275
+                    allowsLinkPreview
+                    renderLoading={this.renderLoading}
+                    mediaPlaybackRequiresUserAction
+                    ref={(ref) => (this.webView = ref!)}
+                    onMessage={({ nativeEvent }) => {
+                        this.handleWebViewMessageReceived(nativeEvent.data)
+                    }}
+                    menuItems={[
+                        { label: 'Highlight', key: 'highlight' },
+                        { label: 'Add Note', key: 'annotate' },
+                    ]}
+                    onCustomMenuSelection={(webViewEvent) => {
+                        if (
+                            (webViewEvent.nativeEvent as any).key ===
+                            'highlight'
+                        ) {
+                            this.runFnInWebView('createHighlight')
+                        }
+                        if (
+                            (webViewEvent.nativeEvent as any).key === 'annotate'
+                        ) {
+                            this.runFnInWebView('createAnnotation')
+                        }
+                    }}
+                />
+            </WebViewContainer>
         )
     }
 
@@ -201,4 +226,26 @@ const Container = styled.SafeAreaView`
     height: 50%;
     display: flex;
     align-items: center;
+`
+
+const WebViewContainer = styled.SafeAreaView<{
+    isLandscape?: boolean
+    isLoading?: boolean
+}>`
+    width: 100%;
+    height: ${(props) =>
+        Dimensions.get('window').height -
+        navigationBarHeight -
+        (props.isLandscape
+            ? actionBarHeightLandscape - 60
+            : actionBarHeightPortrait)}px;
+    ${(props) =>
+        props.isLoading
+            ? `
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    `
+            : ''}
 `
