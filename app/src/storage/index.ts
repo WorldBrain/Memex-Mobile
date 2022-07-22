@@ -131,6 +131,10 @@ export async function createStorage({
                     annotation,
                     privacyLevel: AnnotationPrivacyLevels.PRIVATE,
                 }),
+            deleteAnnotPrivacyLevel: (annotation) =>
+                contentSharing.deleteAnnotationPrivacyLevel({
+                    annotation,
+                }),
             findAnnotPrivacyLevels: (annotations) =>
                 contentSharing.getPrivacyLevelsByAnnotation({ annotations }),
         }),

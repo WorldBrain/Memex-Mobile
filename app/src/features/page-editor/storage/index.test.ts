@@ -55,31 +55,28 @@ describe('page editor StorageModule', () => {
             await overview.createPage(page)
         }
 
-        for (const note of data.notes) {
-            if (!note.comment?.length) {
+        for (const noteData of data.notes) {
+            if (!noteData.comment?.length) {
                 continue
             }
 
             expect(
                 await manager
                     .collection('annotationPrivacyLevels')
-                    .findOneObject({ annotation: note.url }),
+                    .findOneObject({ annotation: noteData.url }),
             ).toEqual(null)
 
-            // Timestamp gets appended to URL ID; here we just grab it from test datum's URL
-            const urlTimestamp = +note.url.split('#')[1]
-
-            await pageEditor.createNote(note as any, urlTimestamp)
-            const foundNote = await pageEditor.findNote(note)
-            testNoteEquality(foundNote!, note)
+            const { annotationUrl } = await pageEditor.createNote(noteData)
+            const foundNote = await pageEditor.findNote({ url: annotationUrl })
+            testNoteEquality(foundNote!, { ...noteData, url: annotationUrl })
 
             expect(
                 await manager
                     .collection('annotationPrivacyLevels')
-                    .findOneObject({ annotation: note.url }),
+                    .findOneObject({ annotation: annotationUrl }),
             ).toEqual({
                 id: expect.any(Number),
-                annotation: note.url,
+                annotation: annotationUrl,
                 createdWhen: expect.any(Date),
                 privacyLevel: AnnotationPrivacyLevels.PRIVATE,
             })
@@ -96,31 +93,30 @@ describe('page editor StorageModule', () => {
             await overview.createPage(page)
         }
 
-        for (const note of data.notes) {
-            if (!note.body?.length) {
+        for (const noteData of data.notes) {
+            if (!noteData.body?.length) {
                 continue
             }
 
             expect(
                 await manager
                     .collection('annotationPrivacyLevels')
-                    .findOneObject({ annotation: note.url }),
+                    .findOneObject({ annotation: noteData.url }),
             ).toEqual(null)
 
-            // Timestamp gets appended to URL ID; here we just grab it from test datum's URL
-            const urlTimestamp = +note.url.split('#')[1]
-
-            await pageEditor.createAnnotation(note as any, urlTimestamp)
-            const foundNote = await pageEditor.findNote(note)
-            testNoteEquality(foundNote!, note)
+            const { annotationUrl } = await pageEditor.createAnnotation(
+                noteData as any,
+            )
+            const foundNote = await pageEditor.findNote({ url: annotationUrl })
+            testNoteEquality(foundNote!, { ...noteData, url: annotationUrl })
 
             expect(
                 await manager
                     .collection('annotationPrivacyLevels')
-                    .findOneObject({ annotation: note.url }),
+                    .findOneObject({ annotation: annotationUrl }),
             ).toEqual({
                 id: expect.any(Number),
-                annotation: note.url,
+                annotation: annotationUrl,
                 createdWhen: expect.any(Date),
                 privacyLevel: AnnotationPrivacyLevels.PRIVATE,
             })
@@ -159,8 +155,8 @@ describe('page editor StorageModule', () => {
             await overview.createPage(page)
         }
 
-        for (const note of data.notes) {
-            await pageEditor.createAnnotation(note as any)
+        for (const noteData of data.notes) {
+            await pageEditor.createNote(noteData)
         }
 
         const before = await pageEditor.findNotesByPage({

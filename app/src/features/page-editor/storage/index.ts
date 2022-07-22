@@ -23,6 +23,7 @@ export interface NoteOpArgs {
 export interface Props extends StorageModuleConstructorArgs {
     normalizeUrl: URLNormalizer
     createDefaultAnnotPrivacyLevel: (annotationUrl: string) => Promise<void>
+    deleteAnnotPrivacyLevel: (annotationUrl: string) => Promise<void>
     findAnnotPrivacyLevels: (
         annotationUrls: string[],
     ) => Promise<{ [annotationUrl: string]: AnnotationPrivacyLevel }>
@@ -177,6 +178,11 @@ export class PageEditorStorage extends StorageModule {
     async deleteNotesForPage({ url }: { url: string }) {
         const pageUrl = this.deps.normalizeUrl(url)
 
+        const notes = await this.findNotesByPage({ url })
+        for (const { url } of notes) {
+            await this.deps.deleteAnnotPrivacyLevel(url)
+        }
+
         return this.operation('deleteNotesForPage', { url: pageUrl })
     }
 
@@ -248,6 +254,7 @@ export class PageEditorStorage extends StorageModule {
     }
 
     async deleteNoteByUrl({ url }: NoteOpArgs): Promise<void> {
-        return this.operation('deleteNote', { url })
+        await this.deps.deleteAnnotPrivacyLevel(url)
+        await this.operation('deleteNote', { url })
     }
 }

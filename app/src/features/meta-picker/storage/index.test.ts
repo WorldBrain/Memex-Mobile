@@ -238,13 +238,15 @@ describe('meta picker StorageModule', () => {
             }
         }
 
+        const annotationUrls: string[] = []
         // For each test page, create entries in all lists
         for (const note of noteData) {
-            await pageEditor.createNote(note)
+            const { annotationUrl } = await pageEditor.createNote(note)
+            annotationUrls.push(annotationUrl)
 
             for (const listId of listIds) {
                 await metaPicker.createAnnotListEntry({
-                    annotationUrl: note.url,
+                    annotationUrl,
                     listId,
                 })
             }
@@ -274,8 +276,8 @@ describe('meta picker StorageModule', () => {
                 }),
             ).toEqual(
                 expect.arrayContaining(
-                    noteData.map((a) =>
-                        expect.objectContaining({ listId, url: a.url }),
+                    annotationUrls.map((url) =>
+                        expect.objectContaining({ listId, url }),
                     ),
                 ),
             )
@@ -701,7 +703,7 @@ describe('meta picker StorageModule', () => {
         },
     }) => {
         await overview.createPage(pageData.pages[0])
-        await pageEditor.createNote(noteData[0])
+        const { annotationUrl } = await pageEditor.createNote(noteData[0])
 
         const listIds: number[] = []
 
@@ -713,18 +715,16 @@ describe('meta picker StorageModule', () => {
         expect(listIds.length).toBe(data.lists.length)
 
         await metaPicker.createAnnotListEntry({
-            annotationUrl: noteData[0].url,
+            annotationUrl,
             listId: listIds[0],
         })
         await metaPicker.createAnnotListEntry({
-            annotationUrl: noteData[0].url,
+            annotationUrl,
             listId: listIds[1],
         })
 
         const annotEntriesBefore = await metaPicker.findAnnotListEntriesByAnnot(
-            {
-                annotationUrl: noteData[0].url,
-            },
+            { annotationUrl },
         )
         expect(annotEntriesBefore.map((e) => e.listId)).toEqual(
             expect.arrayContaining([listIds[0], listIds[1]]),
@@ -732,11 +732,11 @@ describe('meta picker StorageModule', () => {
 
         await metaPicker.setAnnotationLists({
             listIds: [listIds[1], listIds[2]],
-            annotationUrl: noteData[0].url,
+            annotationUrl,
         })
 
         const annotEntriesAfter = await metaPicker.findAnnotListEntriesByAnnot({
-            annotationUrl: noteData[0].url,
+            annotationUrl,
         })
         expect(annotEntriesAfter.map((e) => e.listId)).not.toEqual(
             expect.arrayContaining([listIds[0], listIds[1]]),
