@@ -78,7 +78,6 @@ export async function main() {
                                 : PersonalDeviceOs.IOS,
                         type: PersonalDeviceType.Mobile,
                         product: PersonalDeviceProduct.MobileApp,
-                        browser: 'NULL', // TODO: Remove this once staging is updated
                     },
                     userId,
                 },
