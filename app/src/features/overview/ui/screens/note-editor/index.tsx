@@ -186,6 +186,9 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                     ))}
                                 </SpaceBar>
                                 <AnnotationPrivacyBtn
+                                    actionSheetService={
+                                        this.props.services.actionSheet
+                                    }
                                     level={this.state.privacyLevel}
                                     hasSharedLists={this.state.spacesToAdd.some(
                                         (space) => space.remoteId != null,

@@ -68,6 +68,7 @@ export default class PageEditorScreen extends StatefulUIElement<
     private renderNotes() {
         return (
             <NotesList
+                actionSheetService={this.props.services.actionSheet}
                 initNoteAddSpaces={(note) => () =>
                     this.processEvent('setAnnotationToEdit', {
                         annotationUrl: note.url,

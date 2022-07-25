@@ -1,3 +1,3 @@
-import './annot-privacy-action-sheet'
+import './generic-action-sheet'
 
 export {}

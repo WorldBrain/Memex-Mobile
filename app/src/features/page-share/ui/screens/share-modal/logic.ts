@@ -66,6 +66,7 @@ export interface Props extends ShareNavProps<'ShareModal'> {
         | 'errorTracker'
         | 'pageFetcher'
         | 'localStorage'
+        | 'actionSheet'
         | 'annotationSharing'
     >
     storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>

@@ -10,6 +10,7 @@ import SpacePill from 'src/ui/components/space-pill'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import type { List } from 'src/features/meta-picker/types'
+import type { ActionSheetServiceInterface } from 'src/services/action-sheet/types'
 
 export interface Props extends BodyProps, InteractionProps {
     isStarred?: boolean
@@ -26,6 +27,7 @@ export interface InteractionProps {
     onDeletePress: TouchEventHandler
     onAddSpacesPress: TouchEventHandler
     privacyLevel: AnnotationPrivacyLevels
+    actionSheetService: ActionSheetServiceInterface
     onPrivacyLevelSet: (level: AnnotationPrivacyLevels) => void
 }
 
@@ -83,6 +85,7 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                         level={props.privacyLevel}
                         hasSharedLists={props.hasSharedLists}
                         onPrivacyLevelChoice={props.onPrivacyLevelSet}
+                        actionSheetService={props.actionSheetService}
                     />
                 </ActionBar>
             </Section>

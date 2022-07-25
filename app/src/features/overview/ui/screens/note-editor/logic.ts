@@ -50,7 +50,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 
 export interface Props extends MainNavProps<'NoteEditor'> {
     storage: UIStorageModules<'pageEditor' | 'metaPicker'>
-    services: UIServices<'annotationSharing'>
+    services: UIServices<'annotationSharing' | 'actionSheet'>
 }
 
 export default class Logic extends UILogic<State, Event> {

@@ -12,9 +12,11 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 import SpacePill from 'src/ui/components/space-pill'
 import type { List } from 'src/features/meta-picker/types'
 import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import type { ActionSheetServiceInterface } from 'src/services/action-sheet/types'
 
 export interface Props {
     notes: UINote[]
+    actionSheetService: ActionSheetServiceInterface
     pageData?: Omit<UIPage, 'notes'>
     clearBackground?: boolean
     listData: { [listId: string]: List }
@@ -31,6 +33,7 @@ class NotesList extends React.PureComponent<Props> {
     private renderNote: ListRenderItem<UINote> = ({ item }) => (
         <ResultNote
             hideFooter
+            actionSheetService={this.props.actionSheetService}
             onEditPress={this.props.initNoteEdit(item)}
             onNotePress={this.props.initNotePress(item)}
             onDeletePress={this.props.initNoteDelete(item)}

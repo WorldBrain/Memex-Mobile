@@ -224,6 +224,9 @@ export default class ShareModalScreen extends StatefulUIElement<
                         <>
                             {this.state.noteText ? (
                                 <AnnotationPrivacyBtn
+                                    actionSheetService={
+                                        this.props.services.actionSheet
+                                    }
                                     level={this.state.privacyLevel}
                                     onPrivacyLevelChoice={
                                         this.handlePrivacyLevelSet

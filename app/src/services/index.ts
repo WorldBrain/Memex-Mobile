@@ -20,6 +20,7 @@ import type { Storage } from 'src/storage/types'
 import type { PersonalCloudBackend } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import AnnotationSharingService from '@worldbrain/memex-common/lib/content-sharing/service/annotation-sharing'
 import type { GenerateServerID } from '@worldbrain/memex-common/lib/content-sharing/service/types'
+import { ActionSheetService } from './action-sheet'
 
 export interface CreateServicesOptions {
     auth?: AuthService
@@ -45,6 +46,7 @@ export async function createServices(
     return {
         auth,
         pageFetcher,
+        actionSheet: new ActionSheetService(),
         keepAwake: new KeepAwakeService({ keepAwakeLib: options.keepAwakeLib }),
         cloudSync: new CloudSyncService({
             backend: options.personalCloudBackend,

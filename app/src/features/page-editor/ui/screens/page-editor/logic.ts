@@ -59,7 +59,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 >
 
 export interface Props extends MainNavProps<'PageEditor'> {
-    services: UIServices<'annotationSharing'>
+    services: UIServices<'annotationSharing' | 'actionSheet'>
     storage: UIStorageModules<'metaPicker' | 'pageEditor' | 'overview'>
 }
 

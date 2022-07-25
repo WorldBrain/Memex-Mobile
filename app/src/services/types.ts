@@ -8,6 +8,7 @@ import type { ErrorTrackingService } from './error-tracking'
 import type { BackgroundProcessService } from './background-processing'
 import type { ResourceLoaderService } from './resource-loader'
 import type { PageFetcherService } from './page-fetcher'
+import type { ActionSheetService } from './action-sheet'
 import type { KeepAwakeService } from './keep-awake'
 import type { AnnotationSharingServiceInterface } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 
@@ -17,6 +18,7 @@ export interface Services {
     shareExt: ShareExtService
     keychain: KeychainService
     keepAwake: KeepAwakeService
+    actionSheet: ActionSheetService
     readability: ReadabilityService
     pageFetcher: PageFetcherService
     syncStorage: StorageService

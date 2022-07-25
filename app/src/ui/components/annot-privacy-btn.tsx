@@ -1,35 +1,62 @@
 import React from 'react'
 import styled from 'styled-components/native'
-import { SheetManager } from 'react-native-actions-sheet'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
-import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import { privacyLevelToIcon } from '../utils'
+import type { ActionSheetServiceInterface } from 'src/services/action-sheet/types'
 
 export interface Props {
     hasSharedLists?: boolean
     level: AnnotationPrivacyLevels
+    actionSheetService: ActionSheetServiceInterface
     onPrivacyLevelChoice: (level: AnnotationPrivacyLevels) => void
 }
 
 const AnnotationPrivacyBtn: React.SFC<Props> = ({
     level,
     hasSharedLists,
+    actionSheetService,
     onPrivacyLevelChoice,
-}) => (
-    <Btn
-        onPress={() => {
-            SheetManager.show('annotation-privacy-sheet', {
-                onPrivacyLevelChoice,
-            })
-        }}
-    >
-        <Icon
-            icon={privacyLevelToIcon(level, hasSharedLists ?? false)}
-            strokeWidth="2px"
-            heightAndWidth="16px"
-        />
-    </Btn>
-)
+}) => {
+    const onShowSheet = () =>
+        actionSheetService.show({
+            title: 'Change Privacy of Note',
+            hideOnSelection: true,
+            actions: [
+                {
+                    key: 'public',
+                    title: 'Public',
+                    subtitle: 'Added to all Shared Spaces you put the page in',
+                    onPress: () =>
+                        onPrivacyLevelChoice(AnnotationPrivacyLevels.SHARED),
+                },
+                {
+                    key: 'private',
+                    title: 'Private',
+                    subtitle: 'Only visible to you',
+                    onPress: () =>
+                        onPrivacyLevelChoice(AnnotationPrivacyLevels.PRIVATE),
+                },
+                {
+                    key: 'protected',
+                    title: 'Protected',
+                    subtitle: 'Does not change privacy in bulk changes',
+                    onPress: () =>
+                        onPrivacyLevelChoice(AnnotationPrivacyLevels.PROTECTED),
+                },
+            ],
+        })
+
+    return (
+        <Btn onPress={onShowSheet}>
+            <Icon
+                icon={privacyLevelToIcon(level, hasSharedLists ?? false)}
+                strokeWidth="2px"
+                heightAndWidth="16px"
+            />
+        </Btn>
+    )
+}
 
 export default AnnotationPrivacyBtn
 
