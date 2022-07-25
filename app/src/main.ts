@@ -138,6 +138,7 @@ export async function main() {
         storage,
         personalCloudBackend,
         generateServerId,
+        contentSharingServerStorage: serverStorage.modules.contentSharing,
     })
 
     const dependencies: UIDependencies = { storage, services }
