@@ -5,7 +5,7 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 
 export interface Props {
-    titleText?: string | React.ReactNode
+    titleText?: React.ReactNode
     renderLeftIcon?: () => JSX.Element
     renderRightIcon?: () => JSX.Element | undefined
     leftBtnPress?: () => void

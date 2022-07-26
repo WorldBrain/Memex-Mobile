@@ -633,7 +633,7 @@ export class MetaPickerStorage extends StorageModule {
         normalizedPageUrls: string[]
     }): Promise<ListEntry[]> {
         const pageListEntries: ListEntry[] = await this.operation(
-            'findListEntriesByUrls',
+            'findPageListEntriesByUrls',
             { urls: normalizedPageUrls, listId },
         )
         return pageListEntries

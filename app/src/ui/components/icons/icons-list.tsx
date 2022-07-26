@@ -30,6 +30,7 @@ export { default as Person } from 'src/ui/img/personFine.svg'
 export { default as People } from 'src/ui/img/peopleFine.svg'
 export { default as SharedProtected } from 'src/ui/img/sharedprotected.svg'
 export { default as ExternalLink } from 'src/ui/img/external-link.svg'
+export { default as Link } from 'src/ui/img/link.svg'
 
 // export const logoSmall = browser.extension.getURL(
 //     '/img/worldbrain-logo-narrow-bw-48.png',

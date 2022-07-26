@@ -23,6 +23,8 @@ import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
 import { normalizedStateToArray } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
 import SpacePill from 'src/ui/components/space-pill'
+import ListShareBtn from 'src/features/list-share-btn'
+import { ALL_SAVED_FILTER_ID } from './constants'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -222,7 +224,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         )
     }
 
-    private renderNavTitle(): string | JSX.Element {
+    private renderNavTitle(): React.ReactNode {
         if (this.state.shouldShowSyncRibbon) {
             return (
                 <SyncRibbon
@@ -231,7 +233,32 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                 />
             )
         }
-        return this.state.listData[this.state.selectedListId]?.name ?? ''
+
+        const listData = this.state.listData[this.state.selectedListId]
+        if (listData == null) {
+            return ''
+        }
+
+        if (
+            [
+                ALL_SAVED_FILTER_ID,
+                SPECIAL_LIST_IDS.INBOX,
+                SPECIAL_LIST_IDS.INBOX,
+            ].includes(this.state.selectedListId)
+        ) {
+            return listData.name
+        }
+
+        return (
+            <NavTitleContainer>
+                <NavTitleText numberOfLines={1}>{listData.name}</NavTitleText>
+                <ListShareBtn
+                    localListId={listData.id}
+                    remoteListId={listData.remoteId ?? null}
+                    services={this.props.services}
+                />
+            </NavTitleContainer>
+        )
     }
 
     render() {
@@ -289,4 +316,19 @@ const SpacesArea = styled.View`
     margin-top: 10px;
     flex-wrap: wrap;
     margin-bottom: -5px;
+`
+
+const NavTitleContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+`
+
+const NavTitleText = styled.Text`
+    font-size: 16px;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    font-weight: 800;
+    text-align-vertical: bottom;
+    color: ${(props) => props.theme.colors.darkerText};
 `
