@@ -21,8 +21,9 @@ import type { PersonalCloudBackend } from '@worldbrain/memex-common/lib/personal
 import AnnotationSharingService from '@worldbrain/memex-common/lib/content-sharing/service/annotation-sharing'
 import type { GenerateServerID } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 import { ActionSheetService } from './action-sheet'
-import ListSharingService from './content-sharing/list-sharing'
 import type ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
+import ListKeysService from './content-sharing/list-sharing'
+import ListSharingService from '@worldbrain/memex-common/lib/content-sharing/service/list-sharing'
 
 export interface CreateServicesOptions {
     auth?: AuthService
@@ -45,14 +46,74 @@ export async function createServices(
         (options.auth as MemexGoAuthService) ??
         new MemexGoAuthService(options.firebase)
     const pageFetcher = new PageFetcherService()
+    const annotationSharing = new AnnotationSharingService({
+        addToListSuggestions: (listId) =>
+            storageModules.metaPicker.updateListSuggestionsCache({
+                added: listId,
+            }),
+        generateServerId: options.generateServerId,
+        storage: storageModules.contentSharing,
+        listStorage: {
+            insertPageToList: (entry) =>
+                storageModules.metaPicker.createPageListEntry(entry),
+            getEntriesForPage: (url) =>
+                storageModules.metaPicker.findPageListEntriesByPage({
+                    url,
+                }),
+        },
+        annotationStorage: {
+            getAnnotation: (url) => storageModules.pageEditor.findNote({ url }),
+            getAnnotations: (urls) =>
+                storageModules.pageEditor.findNotes({ urls }),
+            getEntriesForAnnotation: (annotationUrl) =>
+                storageModules.metaPicker.findAnnotListEntriesByAnnot({
+                    annotationUrl,
+                }),
+            getEntriesForAnnotations: (annotationUrls) =>
+                storageModules.metaPicker.findAnnotListEntriesByAnnots({
+                    annotationUrls,
+                }),
+            ensureAnnotationInList: (entry) =>
+                storageModules.metaPicker.ensureAnnotationInList(entry),
+            insertAnnotationToList: (entry) =>
+                storageModules.metaPicker.createAnnotListEntry(entry),
+            removeAnnotationFromList: (entry) =>
+                storageModules.metaPicker.deleteAnnotEntryFromList(entry),
+        },
+    })
 
     return {
         auth,
         pageFetcher,
+        annotationSharing,
         actionSheet: new ActionSheetService(),
         keepAwake: new KeepAwakeService({ keepAwakeLib: options.keepAwakeLib }),
-        listSharing: new ListSharingService({
+        listKeys: new ListKeysService({
             serverStorage: options.contentSharingServerStorage,
+        }),
+        listSharing: new ListSharingService({
+            generateServerId: options.generateServerId,
+            annotationSharingService: annotationSharing,
+            storage: storageModules.contentSharing,
+            listStorage: {
+                getList: (id) => storageModules.metaPicker.findListById({ id }),
+                getListEntriesForPages: (e) =>
+                    storageModules.metaPicker.fetchListPageEntriesByUrls(e),
+                insertPageToList: (e) =>
+                    storageModules.metaPicker.createPageListEntry(e),
+            },
+            annotationStorage: {
+                getAnnotations: (urls) =>
+                    storageModules.pageEditor.findNotes({ urls }),
+                getEntriesByList: (listId) =>
+                    storageModules.metaPicker.findAnnotListEntriesByList({
+                        listId,
+                    }),
+                insertAnnotationToList: (entry) =>
+                    storageModules.metaPicker.createAnnotListEntry(entry),
+                removeAnnotationFromList: (entry) =>
+                    storageModules.metaPicker.deleteAnnotEntryFromList(entry),
+            },
         }),
         cloudSync: new CloudSyncService({
             backend: options.personalCloudBackend,
@@ -82,41 +143,5 @@ export async function createServices(
         errorTracker: options.errorTracker,
         readability: new ReadabilityService({ pageFetcher }),
         resourceLoader: new ResourceLoaderService({}),
-        annotationSharing: new AnnotationSharingService({
-            addToListSuggestions: (listId) =>
-                storageModules.metaPicker.updateListSuggestionsCache({
-                    added: listId,
-                }),
-            generateServerId: options.generateServerId,
-            storage: storageModules.contentSharing,
-            listStorage: {
-                insertPageToList: (entry) =>
-                    storageModules.metaPicker.createPageListEntry(entry),
-                getEntriesForPage: (url) =>
-                    storageModules.metaPicker.findPageListEntriesByPage({
-                        url,
-                    }),
-            },
-            annotationStorage: {
-                getAnnotation: (url) =>
-                    storageModules.pageEditor.findNote({ url }),
-                getAnnotations: (urls) =>
-                    storageModules.pageEditor.findNotes({ urls }),
-                getEntriesForAnnotation: (annotationUrl) =>
-                    storageModules.metaPicker.findAnnotListEntriesByAnnot({
-                        annotationUrl,
-                    }),
-                getEntriesForAnnotations: (annotationUrls) =>
-                    storageModules.metaPicker.findAnnotListEntriesByAnnots({
-                        annotationUrls,
-                    }),
-                ensureAnnotationInList: (entry) =>
-                    storageModules.metaPicker.ensureAnnotationInList(entry),
-                insertAnnotationToList: (entry) =>
-                    storageModules.metaPicker.createAnnotListEntry(entry),
-                removeAnnotationFromList: (entry) =>
-                    storageModules.metaPicker.deleteAnnotEntryFromList(entry),
-            },
-        }),
     }
 }

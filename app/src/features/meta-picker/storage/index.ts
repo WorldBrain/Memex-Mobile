@@ -143,6 +143,14 @@ export class MetaPickerStorage extends StorageModule {
                     listId: '$listId:number',
                 },
             },
+            findPageListEntriesByUrls: {
+                operation: 'findObjects',
+                collection: MetaPickerStorage.LIST_ENTRY_COLL,
+                args: {
+                    listId: '$listId:number',
+                    pageUrl: { $in: '$urls:string' },
+                },
+            },
             findRecentEntriesByList: {
                 operation: 'findObjects',
                 collection: MetaPickerStorage.LIST_ENTRY_COLL,
@@ -615,6 +623,20 @@ export class MetaPickerStorage extends StorageModule {
         listId: number
     }): Promise<ListEntry[]> {
         return this.operation('findEntriesByList', { listId })
+    }
+
+    async fetchListPageEntriesByUrls({
+        listId,
+        normalizedPageUrls,
+    }: {
+        listId: number
+        normalizedPageUrls: string[]
+    }): Promise<ListEntry[]> {
+        const pageListEntries: ListEntry[] = await this.operation(
+            'findListEntriesByUrls',
+            { urls: normalizedPageUrls, listId },
+        )
+        return pageListEntries
     }
 
     findAnnotListEntriesByList({

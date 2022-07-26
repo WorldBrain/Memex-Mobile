@@ -11,7 +11,10 @@ import type { PageFetcherService } from './page-fetcher'
 import type { ActionSheetService } from './action-sheet'
 import type { KeepAwakeService } from './keep-awake'
 import type { AnnotationSharingServiceInterface } from '@worldbrain/memex-common/lib/content-sharing/service/types'
-import type { ListSharingServiceInterface } from '@worldbrain/memex-common/lib/content-sharing/service/types'
+import type {
+    ListSharingServiceInterface,
+    ListKeysServiceInterface,
+} from '@worldbrain/memex-common/lib/content-sharing/service/types'
 export interface Services {
     auth: MemexGoAuthService
     cloudSync: CloudSyncAPI
@@ -25,6 +28,7 @@ export interface Services {
     localStorage: StorageService
     errorTracker: ErrorTrackingService
     resourceLoader: ResourceLoaderService
+    listKeys: ListKeysServiceInterface
     listSharing: ListSharingServiceInterface
     backgroundProcess: BackgroundProcessService
     annotationSharing: AnnotationSharingServiceInterface
