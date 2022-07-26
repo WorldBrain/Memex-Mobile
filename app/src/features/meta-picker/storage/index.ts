@@ -375,8 +375,22 @@ export class MetaPickerStorage extends StorageModule {
         return this.operation('findTagsByName', { name })
     }
 
-    findListById({ id }: { id: number }): Promise<List | null> {
-        return this.operation('findListById', { listId: id }) ?? null
+    async findListById({
+        id,
+        includeRemoteIds,
+    }: {
+        id: number
+        includeRemoteIds?: boolean
+    }): Promise<List | null> {
+        const list: List | null =
+            (await this.operation('findListById', { listId: id })) ?? null
+
+        if (!includeRemoteIds || list == null) {
+            return list
+        }
+
+        const remoteIds = await this.options.getSpaceRemoteIds([id])
+        return { ...list, remoteId: remoteIds[id] }
     }
 
     async findListsByIds({

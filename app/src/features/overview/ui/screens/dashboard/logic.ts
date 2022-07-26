@@ -33,7 +33,6 @@ export interface State {
     shouldShowSyncRibbon: boolean
     pages: NormalizedState<UIPage>
     selectedListId: number
-    selectedListName: string
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
@@ -57,7 +56,12 @@ export interface Props extends MainNavProps<'Dashboard'> {
     appState: AppStateStatic
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
     services: UIServices<
-        'cloudSync' | 'localStorage' | 'syncStorage' | 'errorTracker'
+        | 'cloudSync'
+        | 'localStorage'
+        | 'syncStorage'
+        | 'errorTracker'
+        | 'actionSheet'
+        | 'listSharing'
     >
     getNow?: () => number
     pageSize?: number
@@ -95,7 +99,6 @@ export default class Logic extends UILogic<State, Event> {
             loadMoreState: 'pristine',
             listNameLoadState: 'pristine',
             couldHaveMore: true,
-            selectedListName: ALL_SAVED_FILTER_NAME,
             actionState: 'pristine',
             shouldShowSyncRibbon: false,
             actionFinishedAt: 0,
@@ -224,21 +227,32 @@ export default class Logic extends UILogic<State, Event> {
         await this.fetchAndSetListName(incoming.event.id)
     }
 
-    async fetchAndSetListName(listId: number) {
+    private async fetchAndSetListName(listId: number) {
         const { metaPicker } = this.props.storage.modules
+
         await executeUITask<State, 'listNameLoadState', void>(
             this,
             'listNameLoadState',
             async () => {
                 const selectedList =
                     listId === ALL_SAVED_FILTER_ID
-                        ? { name: ALL_SAVED_FILTER_NAME }
+                        ? ({
+                              name: ALL_SAVED_FILTER_NAME,
+                              id: ALL_SAVED_FILTER_ID,
+                              createdAt: new Date(),
+                          } as List)
                         : await metaPicker.findListById({
                               id: listId,
+                              includeRemoteIds: true,
                           })
+
+                if (selectedList == null) {
+                    throw new Error('Selected list cannot be found')
+                }
+
                 this.emitMutation({
-                    selectedListName: { $set: selectedList?.name ?? '' },
                     selectedListId: { $set: listId },
+                    listData: { [listId]: { $set: selectedList } },
                 })
             },
         )
@@ -328,16 +342,8 @@ export default class Logic extends UILogic<State, Event> {
     ) => {
         const { metaPicker } = this.props.storage.modules
 
-        const selectedList = await metaPicker.findListById({
-            id: prevState.selectedListId,
-        })
-
-        if (!selectedList) {
-            throw new Error('Selected list cannot be found')
-        }
-
         let listEntries: ListEntry[] = await metaPicker.findRecentListEntries(
-            selectedList.id,
+            prevState.selectedListId,
             {
                 skip: prevState.pages.allIds.length,
                 limit: this.pageSize,

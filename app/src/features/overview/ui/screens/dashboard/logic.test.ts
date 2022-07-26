@@ -107,7 +107,7 @@ describe('dashboard screen UI logic tests', () => {
         'should nav away to do retrospective sync if not yet done (but init sync already done)',
         { skipSyncTests: true },
         async (dependencies) => {
-            const { element, logic } = await setup(dependencies)
+            const { element } = await setup(dependencies)
 
             await dependencies.services.localStorage.set(
                 storageKeys.retroSyncFlag,
@@ -147,7 +147,6 @@ describe('dashboard screen UI logic tests', () => {
                 reloadState: 'pristine',
                 loadMoreState: 'pristine',
                 selectedListId: ALL_SAVED_FILTER_ID,
-                selectedListName: ALL_SAVED_FILTER_NAME,
                 couldHaveMore: false,
                 actionState: 'pristine',
                 actionFinishedAt: 0,
@@ -179,7 +178,6 @@ describe('dashboard screen UI logic tests', () => {
                 actionState: 'pristine',
                 actionFinishedAt: 0,
                 selectedListId: ALL_SAVED_FILTER_ID,
-                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: {
                     allIds: ['test.com'],
                     byId: {
@@ -230,7 +228,6 @@ describe('dashboard screen UI logic tests', () => {
                 actionState: 'pristine',
                 actionFinishedAt: 0,
                 selectedListId: ALL_SAVED_FILTER_ID,
-                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: {
                     allIds: [UI_PAGE_2.url],
                     byId: {
@@ -252,7 +249,6 @@ describe('dashboard screen UI logic tests', () => {
                 actionState: 'pristine',
                 actionFinishedAt: 0,
                 selectedListId: ALL_SAVED_FILTER_ID,
-                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: {
                     allIds: [UI_PAGE_2.url, UI_PAGE_1.url],
                     byId: {
@@ -275,7 +271,6 @@ describe('dashboard screen UI logic tests', () => {
                 actionState: 'pristine',
                 actionFinishedAt: 0,
                 selectedListId: ALL_SAVED_FILTER_ID,
-                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: {
                     allIds: [UI_PAGE_2.url, UI_PAGE_1.url],
                     byId: {
@@ -298,7 +293,6 @@ describe('dashboard screen UI logic tests', () => {
                 actionState: 'pristine',
                 actionFinishedAt: 0,
                 selectedListId: ALL_SAVED_FILTER_ID,
-                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: {
                     allIds: [UI_PAGE_2.url],
                     byId: {
@@ -336,7 +330,6 @@ describe('dashboard screen UI logic tests', () => {
                 actionState: 'done',
                 actionFinishedAt: expect.any(Number),
                 selectedListId: ALL_SAVED_FILTER_ID,
-                selectedListName: ALL_SAVED_FILTER_NAME,
                 pages: initNormalizedState(),
             }),
         )

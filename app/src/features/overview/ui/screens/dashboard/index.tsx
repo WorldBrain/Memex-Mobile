@@ -231,7 +231,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                 />
             )
         }
-        return this.state.selectedListName ?? ''
+        return this.state.listData[this.state.selectedListId]?.name ?? ''
     }
 
     render() {
