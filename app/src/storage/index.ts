@@ -1,4 +1,5 @@
 import { ConnectionOptions } from 'typeorm'
+import type { ReactNativeFirebase } from '@react-native-firebase/app'
 import StorageManager from '@worldbrain/storex'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
 import {
@@ -201,13 +202,12 @@ export async function setStorageMiddleware(options: {
 }
 
 export async function createServerStorage(
-    backendType: 'memory' | 'firebase' | 'firebase-emulator',
+    firebase?: ReactNativeFirebase.Module,
 ): Promise<ServerStorage> {
     let manager: StorageManager
 
-    if (backendType === 'firebase') {
-        const { getFirebase } = require('../firebase')
-        manager = createServerStorageManager(getFirebase())
+    if (firebase != null) {
+        manager = createServerStorageManager(firebase)
         // } else if (backendType === 'firebase-emulator') {
         //     const firebaseTesting = require('@firebase/testing')
         //     const projectId = Date.now().toString()

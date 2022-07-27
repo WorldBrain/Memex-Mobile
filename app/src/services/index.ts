@@ -1,6 +1,7 @@
 import type { URLNormalizer } from '@worldbrain/memex-url-utils'
 import type { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import { storageKeys } from '../../app.json'
+import type { ReactNativeFirebase } from '@react-native-firebase/app'
 
 import type { Services } from './types'
 import { ShareExtService } from './share-ext'
@@ -27,7 +28,7 @@ import ListSharingService from '@worldbrain/memex-common/lib/content-sharing/ser
 
 export interface CreateServicesOptions {
     auth?: AuthService
-    firebase?: any
+    firebase: ReactNativeFirebase.Module
     storage: Storage
     keychain: KeychainAPI
     keepAwakeLib?: KeepAwakeAPI
@@ -44,7 +45,7 @@ export async function createServices(
     const { modules: storageModules } = options.storage
     const auth =
         (options.auth as MemexGoAuthService) ??
-        new MemexGoAuthService(options.firebase)
+        new MemexGoAuthService(options.firebase as any)
     const pageFetcher = new PageFetcherService()
     const listKeys = new ListKeysService({
         serverStorage: options.contentSharingServerStorage,

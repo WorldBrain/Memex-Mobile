@@ -104,11 +104,8 @@ export function makeMultiDeviceTestFactory() {
             ;(it as any).todo(description)
             return
         }
-        const serverStorageP = createServerStorage(
-            process.env['USE_FIREBASE_EMULATOR']
-                ? 'firebase-emulator'
-                : 'memory',
-        )
+        // TODO: Get this working with FB emulator
+        const serverStorageP = createServerStorage()
 
         it(description, async function (this: any) {
             const createDevice = initCreateTestDevice({
@@ -195,12 +192,8 @@ export function registerSingleDeviceSyncTests(
 }
 
 const initCreateTestDevice = ({
-    getServerStorage = () =>
-        createServerStorage(
-            process.env['USE_FIREBASE_EMULATOR']
-                ? 'firebase-emulator'
-                : 'memory',
-        ),
+    // TODO: Get this working with FB emulator
+    getServerStorage = () => createServerStorage(),
 }: {
     getServerStorage?: () => Promise<ServerStorage>
 }): TestDeviceFactory => async (options) => {

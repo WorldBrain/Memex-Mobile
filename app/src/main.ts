@@ -57,7 +57,7 @@ export async function main() {
     let personalCloudBackend: FirestorePersonalCloudBackend
 
     const authService = new MemexGoAuthService(firebase as any)
-    const serverStorage = await createServerStorage('firebase')
+    const serverStorage = await createServerStorage(firebase)
     const storage = await createStorage({
         authService,
         uploadClientUpdates: async (updates) => {
