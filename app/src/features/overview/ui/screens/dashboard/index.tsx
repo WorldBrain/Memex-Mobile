@@ -234,8 +234,8 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             )
         }
 
-        const listData = this.state.listData[this.state.selectedListId]
-        if (listData == null) {
+        const selectedListData = this.state.listData[this.state.selectedListId]
+        if (selectedListData == null) {
             return ''
         }
 
@@ -246,16 +246,21 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                 SPECIAL_LIST_IDS.INBOX,
             ].includes(this.state.selectedListId)
         ) {
-            return listData.name
+            return selectedListData.name
         }
 
         return (
             <NavTitleContainer>
-                <NavTitleText numberOfLines={1}>{listData.name}</NavTitleText>
+                <NavTitleText numberOfLines={1}>
+                    {selectedListData.name}
+                </NavTitleText>
                 <ListShareBtn
-                    localListId={listData.id}
-                    remoteListId={listData.remoteId ?? null}
+                    localListId={selectedListData.id}
+                    remoteListId={selectedListData.remoteId ?? null}
                     services={this.props.services}
+                    onListShare={(remoteListId) =>
+                        this.processEvent('shareSelectedList', { remoteListId })
+                    }
                 />
             </NavTitleContainer>
         )

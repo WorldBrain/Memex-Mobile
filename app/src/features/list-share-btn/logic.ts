@@ -25,6 +25,7 @@ export interface Dependencies {
     localListId: number
     remoteListId?: string | null
     services: UIServices<'actionSheet' | 'listSharing' | 'listKeys'>
+    onListShare?: (remoteListId: string) => Promise<void>
 }
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -99,6 +100,8 @@ export default class Logic extends UILogic<State, Event> {
                 } = await this.deps.services.listSharing.shareList({
                     localListId: previousState.localListId,
                 })
+
+                this.deps.onListShare?.(remoteListId)
 
                 const mutation: UIMutation<State> = {
                     remoteListId: { $set: remoteListId },

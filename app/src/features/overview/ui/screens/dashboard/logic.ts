@@ -1,4 +1,10 @@
-import { UILogic, UIEvent, IncomingUIEvent, UIMutation } from 'ui-logic-core'
+import {
+    UILogic,
+    UIEvent,
+    IncomingUIEvent,
+    UIMutation,
+    UIEventHandler,
+} from 'ui-logic-core'
 import { AppStateStatic, AppStateStatus } from 'react-native'
 
 import { storageKeys } from '../../../../../../app.json'
@@ -49,8 +55,15 @@ export type Event = UIEvent<{
     togglePageStar: { url: string }
     toggleResultPress: { url: string }
     setFilteredListId: { id: number }
+    shareSelectedList: { remoteListId: string }
     focusFromNavigation: MainNavigatorParamList['Dashboard']
 }>
+
+type EventHandler<EventName extends keyof Event> = UIEventHandler<
+    State,
+    Event,
+    EventName
+>
 
 export interface Props extends MainNavProps<'Dashboard'> {
     appState: AppStateStatic
@@ -598,6 +611,23 @@ export default class Logic extends UILogic<State, Event> {
             //     })
             // },
         }
+    }
+
+    shareSelectedList: EventHandler<'shareSelectedList'> = ({
+        previousState,
+        event,
+    }) => {
+        if (previousState.selectedListId == null) {
+            throw new Error('No list selected to share')
+        }
+
+        this.emitMutation({
+            listData: {
+                [previousState.selectedListId]: {
+                    remoteId: { $set: event.remoteListId },
+                },
+            },
+        })
     }
 }
 
