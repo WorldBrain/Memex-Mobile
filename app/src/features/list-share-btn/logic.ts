@@ -1,8 +1,8 @@
 import { UILogic, UIEvent, UIEventHandler } from 'ui-logic-core'
 import { Share, Platform } from 'react-native'
-import type { UIServices, UITaskState, UIStorageModules } from 'src/ui/types'
+import type { UIServices, UITaskState } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
-import { SharedListRoleID } from '@worldbrain/memex-common/lib/content-sharing/types'
+import { UIMutation } from '@worldbrain/memex-common/lib/main-ui/classes/logic'
 
 export interface State {
     localListId: number
@@ -64,7 +64,7 @@ export default class Logic extends UILogic<State, Event> {
 
         await loadInitial<State>(this, async () => {
             const {
-                links,
+                links: [commenterLink, contributorLink],
             } = await this.deps.services.listKeys.getExistingKeyLinksForList({
                 listReference: {
                     id: remoteListId,
@@ -73,18 +73,8 @@ export default class Logic extends UILogic<State, Event> {
             })
 
             this.emitMutation({
-                commenterLink: {
-                    $set:
-                        links.find(
-                            (l) => l.roleID === SharedListRoleID.Commenter,
-                        )?.link ?? null,
-                },
-                contributorLink: {
-                    $set:
-                        links.find(
-                            (l) => l.roleID === SharedListRoleID.ReadWrite,
-                        )?.link ?? null,
-                },
+                commenterLink: { $set: commenterLink?.link ?? null },
+                contributorLink: { $set: contributorLink?.link ?? null },
             })
         })
     }
@@ -97,43 +87,34 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    shareList: EventHandler<'shareList'> = async ({ previousState }) => {
-        const { listSharing, listKeys } = this.deps.services
-        let remoteListId = previousState.remoteListId
-
+    shareList: EventHandler<'shareList'> = async ({ event, previousState }) => {
+        let nextState: State
         await executeUITask<State, 'listShareState'>(
             this,
             'listShareState',
             async () => {
-                if (remoteListId == null) {
-                    const shareResult = await listSharing.shareList({
-                        localListId: this.deps.localListId,
-                    })
-                    remoteListId = shareResult.remoteListId
-                }
+                const {
+                    links: [commenterLink, contributorLink],
+                    remoteListId,
+                } = await this.deps.services.listSharing.shareList({
+                    localListId: this.deps.localListId,
+                })
 
-                const [commenterLink, contributorLink] = await Promise.all(
-                    [
-                        SharedListRoleID.Commenter,
-                        SharedListRoleID.ReadWrite,
-                    ].map((roleID) =>
-                        listKeys.generateKeyLink({
-                            key: { roleID },
-                            listReference: {
-                                id: remoteListId!,
-                                type: 'shared-list-reference',
-                            },
-                        }),
-                    ),
-                )
-
-                this.emitMutation({
+                const mutation: UIMutation<State> = {
                     remoteListId: { $set: remoteListId },
                     commenterLink: { $set: commenterLink.link },
                     contributorLink: { $set: contributorLink.link },
-                })
+                }
+                this.emitMutation(mutation)
+                nextState = this.withMutation(previousState, mutation)
             },
         )
+
+        // Auto-display action sheet post-share
+        await this.processUIEvent('pressBtn', {
+            event,
+            previousState: nextState!,
+        })
     }
 
     private async shareLink(link: string | null, type: string) {
@@ -159,7 +140,7 @@ export default class Logic extends UILogic<State, Event> {
         await this.shareLink(previousState.contributorLink, 'Contributor')
     }
 
-    pressBtn: EventHandler<'pressBtn'> = async ({ event, previousState }) => {
+    pressBtn: EventHandler<'pressBtn'> = async ({ previousState }) => {
         this.deps.services.actionSheet.show({
             hideOnSelection: true,
             title:
@@ -173,7 +154,7 @@ export default class Logic extends UILogic<State, Event> {
                               key: 'create-invite-links',
                               title: 'Create invite links',
                               onPress: async () => {
-                                  await this.processUIEvent('shareList', {
+                                  this.processUIEvent('shareList', {
                                       previousState,
                                       event: null,
                                   })

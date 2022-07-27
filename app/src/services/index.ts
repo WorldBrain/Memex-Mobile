@@ -46,6 +46,10 @@ export async function createServices(
         (options.auth as MemexGoAuthService) ??
         new MemexGoAuthService(options.firebase)
     const pageFetcher = new PageFetcherService()
+    const listKeys = new ListKeysService({
+        serverStorage: options.contentSharingServerStorage,
+    })
+
     const annotationSharing = new AnnotationSharingService({
         addToListSuggestions: (listId) =>
             storageModules.metaPicker.updateListSuggestionsCache({
@@ -84,16 +88,15 @@ export async function createServices(
 
     return {
         auth,
+        listKeys,
         pageFetcher,
         annotationSharing,
         actionSheet: new ActionSheetService(),
         keepAwake: new KeepAwakeService({ keepAwakeLib: options.keepAwakeLib }),
-        listKeys: new ListKeysService({
-            serverStorage: options.contentSharingServerStorage,
-        }),
         listSharing: new ListSharingService({
-            generateServerId: options.generateServerId,
+            listKeysService: listKeys,
             annotationSharingService: annotationSharing,
+            generateServerId: options.generateServerId,
             storage: storageModules.contentSharing,
             listStorage: {
                 getList: (id) => storageModules.metaPicker.findListById({ id }),
