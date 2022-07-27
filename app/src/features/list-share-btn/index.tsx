@@ -19,7 +19,10 @@ export default class ListShareBtn extends StatefulUIElement<
     }
 
     async componentDidUpdate(prevProps: Props) {
-        if (prevProps.localListId !== this.props.localListId) {
+        if (
+            prevProps.localListId !== this.props.localListId &&
+            this.props.localListId != null
+        ) {
             await this.processEvent('resetListIds', {
                 localListId: this.props.localListId,
                 remoteListId: this.props.remoteListId ?? null,

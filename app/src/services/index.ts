@@ -95,6 +95,8 @@ export async function createServices(
         actionSheet: new ActionSheetService(),
         keepAwake: new KeepAwakeService({ keepAwakeLib: options.keepAwakeLib }),
         listSharing: new ListSharingService({
+            waitForSync: () =>
+                storageModules.personalCloud.pushAllQueuedUpdates(),
             listKeysService: listKeys,
             annotationSharingService: annotationSharing,
             generateServerId: options.generateServerId,

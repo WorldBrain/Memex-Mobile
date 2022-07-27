@@ -97,7 +97,7 @@ export default class Logic extends UILogic<State, Event> {
                     links: [commenterLink, contributorLink],
                     remoteListId,
                 } = await this.deps.services.listSharing.shareList({
-                    localListId: this.deps.localListId,
+                    localListId: previousState.localListId,
                 })
 
                 const mutation: UIMutation<State> = {
