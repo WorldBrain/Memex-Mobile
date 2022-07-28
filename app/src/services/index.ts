@@ -17,38 +17,40 @@ import { PageFetcherService } from './page-fetcher'
 import { StorageService } from './settings-storage'
 import { CloudSyncService } from './cloud-sync'
 import { KeepAwakeService, KeepAwakeAPI } from './keep-awake'
-import type { Storage } from 'src/storage/types'
+import type { Storage, ServerStorage } from 'src/storage/types'
 import type { PersonalCloudBackend } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import AnnotationSharingService from '@worldbrain/memex-common/lib/content-sharing/service/annotation-sharing'
 import type { GenerateServerID } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 import { ActionSheetService } from './action-sheet'
-import type ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
 import ListKeysService from './content-sharing/list-sharing'
 import ListSharingService from '@worldbrain/memex-common/lib/content-sharing/service/list-sharing'
+import FirebaseFunctionsActivityStreamsService from '@worldbrain/memex-common/lib/activity-streams/services/firebase-functions/client'
+import MemoryStreamsService from '@worldbrain/memex-common/lib/activity-streams/services/memory'
 
 export interface CreateServicesOptions {
     auth?: AuthService
-    firebase: ReactNativeFirebase.Module
+    firebase?: ReactNativeFirebase.Module
     storage: Storage
+    serverStorage: ServerStorage
     keychain: KeychainAPI
     keepAwakeLib?: KeepAwakeAPI
     errorTracker: ErrorTrackingService
     normalizeUrl: URLNormalizer
     generateServerId: GenerateServerID
     personalCloudBackend: PersonalCloudBackend
-    contentSharingServerStorage: ContentSharingStorage
 }
 
 export async function createServices(
     options: CreateServicesOptions,
 ): Promise<Services> {
     const { modules: storageModules } = options.storage
+    const { modules: serverStorageModules } = options.serverStorage
     const auth =
         (options.auth as MemexGoAuthService) ??
         new MemexGoAuthService(options.firebase as any)
     const pageFetcher = new PageFetcherService()
     const listKeys = new ListKeysService({
-        serverStorage: options.contentSharingServerStorage,
+        serverStorage: serverStorageModules.contentSharing,
     })
 
     const annotationSharing = new AnnotationSharingService({
@@ -93,6 +95,27 @@ export async function createServices(
         pageFetcher,
         annotationSharing,
         actionSheet: new ActionSheetService(),
+        activityStreams:
+            options.firebase != null
+                ? new FirebaseFunctionsActivityStreamsService({
+                      executeCall: async (name, params) => {
+                          const functions = options.firebase!.functions()
+                          const result = await functions.httpsCallable(name)(
+                              params,
+                          )
+                          return result.data
+                      },
+                  })
+                : new MemoryStreamsService({
+                      storage: {
+                          contentConversations:
+                              serverStorageModules.contentConversations,
+                          contentSharing: serverStorageModules.contentSharing,
+                          users: serverStorageModules.userManagement,
+                      },
+                      getCurrentUserId: async () =>
+                          (await auth.getCurrentUser())?.id ?? null,
+                  }),
         keepAwake: new KeepAwakeService({ keepAwakeLib: options.keepAwakeLib }),
         listSharing: new ListSharingService({
             waitForSync: () =>

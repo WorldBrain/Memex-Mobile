@@ -136,9 +136,9 @@ export async function main() {
         errorTracker: errorTrackingService,
         firebase,
         storage,
+        serverStorage,
         personalCloudBackend,
         generateServerId,
-        contentSharingServerStorage: serverStorage.modules.contentSharing,
     })
 
     const dependencies: UIDependencies = { storage, services }

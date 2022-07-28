@@ -16,6 +16,7 @@ import type { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import type { CopyPasterStorage } from 'src/features/copy-paster/storage'
 import type ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
 import type ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
+import type { ActivityStreamsStorage } from '@worldbrain/memex-common/lib/activity-streams/storage/types'
 
 export interface Storage {
     manager: StorageManager
@@ -42,8 +43,9 @@ export interface ServerStorage {
 }
 
 export interface ServerStorageModules {
-    contentConversations: ContentConversationStorage
     personalCloud: PersonalCloudServerStorage
     contentSharing: ContentSharingStorage
     userManagement: UserStorage
+    activityStreams: ActivityStreamsStorage
+    contentConversations: ContentConversationStorage
 }

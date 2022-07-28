@@ -43,6 +43,7 @@ import ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/
 import ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import ActivityStreamsStorage from '@worldbrain/memex-common/lib/activity-streams/storage'
 
 export interface CreateStorageOptions {
     authService: AuthService
@@ -254,13 +255,17 @@ export async function createServerStorage(
         autoPkType: 'string',
         contentSharing,
     })
+    const activityStreams = new ActivityStreamsStorage({
+        storageManager: manager,
+    })
 
     const serverStorage = {
         manager,
         modules: {
-            userManagement,
             personalCloud,
+            userManagement,
             contentSharing,
+            activityStreams,
             contentConversations,
         },
     }

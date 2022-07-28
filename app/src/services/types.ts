@@ -15,6 +15,7 @@ import type {
     ListSharingServiceInterface,
     ListKeysServiceInterface,
 } from '@worldbrain/memex-common/lib/content-sharing/service/types'
+import type { ActivityStreamsService } from '@worldbrain/memex-common/lib/activity-streams/types'
 export interface Services {
     auth: MemexGoAuthService
     cloudSync: CloudSyncAPI
@@ -27,8 +28,9 @@ export interface Services {
     syncStorage: StorageService
     localStorage: StorageService
     errorTracker: ErrorTrackingService
-    resourceLoader: ResourceLoaderService
     listKeys: ListKeysServiceInterface
+    resourceLoader: ResourceLoaderService
+    activityStreams: ActivityStreamsService
     listSharing: ListSharingServiceInterface
     backgroundProcess: BackgroundProcessService
     annotationSharing: AnnotationSharingServiceInterface

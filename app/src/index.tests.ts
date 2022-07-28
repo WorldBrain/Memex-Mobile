@@ -264,13 +264,13 @@ const initCreateTestDevice = ({
     })
 
     const services = await createServices({
-        contentSharingServerStorage: serverStorage.modules.contentSharing,
         keychain: new MockKeychainPackage(),
         personalCloudBackend,
         auth: authService,
         normalizeUrl,
         errorTracker,
         storage,
+        serverStorage,
         generateServerId: () => nextServerId++,
     })
 
