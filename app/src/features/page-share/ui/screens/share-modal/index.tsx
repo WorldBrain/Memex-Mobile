@@ -22,6 +22,7 @@ import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
 import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import FeedActivityIndicator from 'src/features/activity-indicator'
 
 export default class ShareModalScreen extends StatefulUIElement<
     Props,
@@ -215,6 +216,9 @@ export default class ShareModalScreen extends StatefulUIElement<
                             />
                         )
                     }
+                    renderIndicator={() => (
+                        <FeedActivityIndicator services={this.props.services} />
+                    )}
                 >
                     {this.state.spacesState === 'running' ? (
                         <LoadingIndicatorBox>

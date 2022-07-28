@@ -12,6 +12,7 @@ export interface Props {
     leftIcon?: React.FC<SvgProps>
     leftIconSize?: string
     leftIconStrokeWidth?: string
+    renderIndicator?: () => JSX.Element
     rightBtnPress?: () => Promise<void> | void
     rightIcon?: React.FC<SvgProps> | undefined
     rightIconColor?: ColorThemeKeys
@@ -30,6 +31,7 @@ const Navigation: React.StatelessComponent<Props> = (props) => (
                         icon={props.leftIcon}
                     />
                 )}
+                {props.renderIndicator?.()}
             </LeftBtnContainer>
             {typeof props.titleText === 'string' ? (
                 <TextArea numberOfLines={1}>{props.titleText}</TextArea>
@@ -79,6 +81,7 @@ const LeftBtnContainer = styled.TouchableOpacity`
     height: 30px;
     width: 30px;
     display: flex;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
 `

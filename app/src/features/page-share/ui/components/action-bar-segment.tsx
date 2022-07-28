@@ -13,12 +13,12 @@ import styled from 'styled-components/native'
 import styles from './action-bar-segment.styles'
 
 export interface Props {
-    isConfirming?: boolean
     showBanner?: boolean
+    leftBtnText?: React.ReactNode
+    rightBtnText?: React.ReactNode
+    renderIndicator?: () => JSX.Element
     onLeftBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
     onRightBtnPress?: (e: NativeSyntheticEvent<NativeTouchEvent>) => void
-    leftBtnText?: React.ReactElement | string
-    rightBtnText?: React.ReactElement | string
 }
 
 const ActionBar: React.StatelessComponent<Props> = ({
@@ -54,18 +54,11 @@ const ActionBar: React.StatelessComponent<Props> = ({
             </ButtonContainer>
             <View style={styles.mainContent}>{props.children}</View>
             <ButtonContainer>
+                {props.renderIndicator?.()}
                 {props.onRightBtnPress ? (
-                    props.isConfirming ? (
-                        <TouchableOpacity disabled>
-                            <Text style={styles.buttonTextDisabled}>
-                                Saving...
-                            </Text>
-                        </TouchableOpacity>
-                    ) : (
-                        <ButtonBox onPress={props.onRightBtnPress}>
-                            {rightBtnText}
-                        </ButtonBox>
-                    )
+                    <ButtonBox onPress={props.onRightBtnPress}>
+                        {rightBtnText}
+                    </ButtonBox>
                 ) : null}
             </ButtonContainer>
         </Container>
@@ -96,6 +89,8 @@ const Container = styled.View`
 `
 
 const ButtonContainer = styled.View`
+    display: flex;
+    flex-direction: row;
     height: 30px;
     width: 30px;
     display: flex;

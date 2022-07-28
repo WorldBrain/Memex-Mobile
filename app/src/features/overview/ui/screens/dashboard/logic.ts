@@ -76,6 +76,7 @@ export interface Props extends MainNavProps<'Dashboard'> {
         | 'actionSheet'
         | 'listSharing'
         | 'listKeys'
+        | 'activityIndicator'
     >
     getNow?: () => number
     pageSize?: number

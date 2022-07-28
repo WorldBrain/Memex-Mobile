@@ -25,6 +25,7 @@ import { normalizedStateToArray } from '@worldbrain/memex-common/lib/common-ui/u
 import SpacePill from 'src/ui/components/space-pill'
 import ListShareBtn from 'src/features/list-share-btn'
 import { ALL_SAVED_FILTER_ID } from './constants'
+import FeedActivityIndicator from 'src/features/activity-indicator'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -278,6 +279,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         this.props.navigation.navigate('SettingsMenu')
                     }
                     titleText={this.renderNavTitle()}
+                    renderIndicator={() => (
+                        <FeedActivityIndicator services={this.props.services} />
+                    )}
                 />
                 <ResultsContainer>{this.renderList()}</ResultsContainer>
             </Container>
