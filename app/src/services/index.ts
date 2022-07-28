@@ -22,7 +22,7 @@ import type { PersonalCloudBackend } from '@worldbrain/memex-common/lib/personal
 import AnnotationSharingService from '@worldbrain/memex-common/lib/content-sharing/service/annotation-sharing'
 import type { GenerateServerID } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 import { ActionSheetService } from './action-sheet'
-import ListKeysService from './content-sharing/list-sharing'
+import ListKeysService from './content-sharing/list-keys'
 import ListSharingService from '@worldbrain/memex-common/lib/content-sharing/service/list-sharing'
 import FirebaseFunctionsActivityStreamsService from '@worldbrain/memex-common/lib/activity-streams/services/firebase-functions/client'
 import MemoryStreamsService from '@worldbrain/memex-common/lib/activity-streams/services/memory'
