@@ -26,6 +26,7 @@ import ListKeysService from './content-sharing/list-sharing'
 import ListSharingService from '@worldbrain/memex-common/lib/content-sharing/service/list-sharing'
 import FirebaseFunctionsActivityStreamsService from '@worldbrain/memex-common/lib/activity-streams/services/firebase-functions/client'
 import MemoryStreamsService from '@worldbrain/memex-common/lib/activity-streams/services/memory'
+import ActivityIndicatorService from '@worldbrain/memex-common/lib/activity-streams/services/activity-indicator'
 
 export interface CreateServicesOptions {
     auth?: AuthService
@@ -89,33 +90,51 @@ export async function createServices(
         },
     })
 
+    const activityStreams =
+        options.firebase != null
+            ? new FirebaseFunctionsActivityStreamsService({
+                  executeCall: async (name, params) => {
+                      const functions = options.firebase!.functions()
+                      const result = await functions.httpsCallable(name)(params)
+                      return result.data
+                  },
+              })
+            : new MemoryStreamsService({
+                  storage: {
+                      contentConversations:
+                          serverStorageModules.contentConversations,
+                      contentSharing: serverStorageModules.contentSharing,
+                      users: serverStorageModules.userManagement,
+                  },
+                  getCurrentUserId: async () =>
+                      (await auth.getCurrentUser())?.id ?? null,
+              })
+
+    const activityIndicator = new ActivityIndicatorService({
+        authService: auth,
+        activityStreamsService: activityStreams,
+        captureError: (err) => options.errorTracker.track(err),
+        getActivityStreamsStorage: async () =>
+            serverStorageModules.activityStreams,
+        getStatusCacheFlag: async () =>
+            (await storageModules.syncSettings.getSetting<boolean>({
+                key: '@ActivityIndicator-feedHasActivity',
+            })) ?? false,
+        setStatusCacheFlag: (value) =>
+            storageModules.syncSettings.setSetting({
+                key: '@ActivityIndicator-feedHasActivity',
+                value,
+            }),
+    })
+
     return {
         auth,
         listKeys,
         pageFetcher,
+        activityStreams,
+        activityIndicator,
         annotationSharing,
         actionSheet: new ActionSheetService(),
-        activityStreams:
-            options.firebase != null
-                ? new FirebaseFunctionsActivityStreamsService({
-                      executeCall: async (name, params) => {
-                          const functions = options.firebase!.functions()
-                          const result = await functions.httpsCallable(name)(
-                              params,
-                          )
-                          return result.data
-                      },
-                  })
-                : new MemoryStreamsService({
-                      storage: {
-                          contentConversations:
-                              serverStorageModules.contentConversations,
-                          contentSharing: serverStorageModules.contentSharing,
-                          users: serverStorageModules.userManagement,
-                      },
-                      getCurrentUserId: async () =>
-                          (await auth.getCurrentUser())?.id ?? null,
-                  }),
         keepAwake: new KeepAwakeService({ keepAwakeLib: options.keepAwakeLib }),
         listSharing: new ListSharingService({
             waitForSync: () =>

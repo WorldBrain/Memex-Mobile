@@ -16,9 +16,11 @@ import type {
     ListKeysServiceInterface,
 } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 import type { ActivityStreamsService } from '@worldbrain/memex-common/lib/activity-streams/types'
+import type { ActivityIndicatorServiceInterface } from '@worldbrain/memex-common/lib/activity-streams/services/activity-indicator'
 export interface Services {
     auth: MemexGoAuthService
     cloudSync: CloudSyncAPI
+    activityIndicator: ActivityIndicatorServiceInterface
     shareExt: ShareExtService
     keychain: KeychainService
     keepAwake: KeepAwakeService
