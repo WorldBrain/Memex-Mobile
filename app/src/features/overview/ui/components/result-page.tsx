@@ -1,5 +1,5 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, Platform, Share } from 'react-native'
 
 import Body, { Props as BodyProps } from './result-page-body'
 import type { TouchEventHandler } from 'src/ui/types'
@@ -12,7 +12,7 @@ import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 export interface Props
     extends BodyProps,
         InteractionProps,
-        Pick<UIPage, 'isResultPressed' | 'notes'> {
+        Pick<UIPage, 'isResultPressed' | 'notes' | 'fullUrl'> {
     spacePills?: JSX.Element
 }
 
@@ -63,6 +63,23 @@ class ResultPage extends React.PureComponent<Props> {
                                             icon={icons.Trash}
                                             strokeWidth="3"
                                             heightAndWidth="16px"
+                                        />
+                                    </IconContainer>
+                                    <IconContainer
+                                        onPress={async () => {
+                                            await Share.share({
+                                                url: this.props.fullUrl,
+                                                message:
+                                                    Platform.OS === 'ios'
+                                                        ? undefined
+                                                        : this.props.fullUrl,
+                                            })
+                                        }}
+                                    >
+                                        <Icon
+                                            icon={icons.Copy}
+                                            strokeWidth="2"
+                                            heightAndWidth="18px"
                                         />
                                     </IconContainer>
                                     <IconContainer
