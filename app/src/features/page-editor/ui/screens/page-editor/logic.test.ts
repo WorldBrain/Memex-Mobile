@@ -45,6 +45,7 @@ describe('page editor UI logic tests', () => {
             route: new FakeRoute({ pageUrl: DATA.PAGE_1.url }) as any,
         })
         const { manager } = context.storage
+        const annotRemoteId = 'test-remote-annot-id-1'
 
         await manager.collection('pages').createObject(DATA.PAGE_1)
         await manager
@@ -60,6 +61,11 @@ describe('page editor UI logic tests', () => {
             annotation: DATA.NOTE_1.url,
             privacyLevel: AnnotationPrivacyLevels.SHARED,
             createdWhen: new Date(),
+        })
+        await manager.collection('sharedAnnotationMetadata').createObject({
+            localId: DATA.NOTE_1.url,
+            remoteId: annotRemoteId,
+            excludeFromLists: false,
         })
 
         await context.storage.modules.metaPicker.createInboxListIfAbsent({})
@@ -116,6 +122,7 @@ describe('page editor UI logic tests', () => {
                 isStarred: false,
                 commentText: DATA.NOTE_1.comment,
                 listIds: [123, 124],
+                remoteId: annotRemoteId,
                 privacyLevel: AnnotationPrivacyLevels.SHARED,
             }),
         })

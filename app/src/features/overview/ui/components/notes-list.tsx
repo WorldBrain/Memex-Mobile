@@ -46,6 +46,7 @@ class NotesList extends React.PureComponent<Props> {
             hasSharedLists={item.listIds.some(
                 (listId) => this.props.listData[listId]?.remoteId != null,
             )}
+            remoteId={item.remoteId}
             spaces={item.listIds.map(
                 (listId, i) =>
                     this.props.listData[listId] ?? {

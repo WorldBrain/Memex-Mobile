@@ -18,7 +18,7 @@ import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 import LoadingIndicator from 'src/ui/components/loading-balls'
-import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
+import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
@@ -41,7 +41,10 @@ export default class ShareModalScreen extends StatefulUIElement<
         return (
             this.state.noteText.trim().length > 0 ||
             this.state.isStarred !== initValues.isStarred ||
-            !areArraysTheSame(this.state.spacesToAdd, initValues.spacesToAdd)
+            !areArrayContentsEqual(
+                this.state.spacesToAdd,
+                initValues.spacesToAdd,
+            )
         )
     }
 

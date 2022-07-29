@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { Share, Platform } from 'react-native'
 import type { Props as BodyProps } from './result-note-body'
 import { TouchEventHandler } from 'src/ui/types'
 import * as icons from 'src/ui/components/icons/icons-list'
@@ -11,9 +11,12 @@ import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import type { List } from 'src/features/meta-picker/types'
 import type { ActionSheetServiceInterface } from 'src/services/action-sheet/types'
+import type { AutoPk } from '@worldbrain/memex-common/lib/storage/types'
+import { getNoteShareUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
 
 export interface Props extends BodyProps, InteractionProps {
     isStarred?: boolean
+    remoteId?: AutoPk
     spaces: List[]
 }
 
@@ -71,6 +74,28 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
             <Section>
                 <AddToSpacesBtn onPress={props.onAddSpacesPress} />
                 <ActionBar>
+                    {props.remoteId != null && (
+                        <IconContainer
+                            onPress={async () => {
+                                const remoteUrl = getNoteShareUrl({
+                                    remoteAnnotationId: props.remoteId!.toString(),
+                                })
+                                await Share.share({
+                                    url: remoteUrl,
+                                    message:
+                                        Platform.OS === 'ios'
+                                            ? undefined
+                                            : remoteUrl,
+                                })
+                            }}
+                        >
+                            <Icon
+                                icon={icons.Copy}
+                                strokeWidth={'2px'}
+                                heightAndWidth={'16px'}
+                            />
+                        </IconContainer>
+                    )}
                     <IconContainer onPress={props.onEditPress}>
                         <Icon
                             icon={icons.Edit}

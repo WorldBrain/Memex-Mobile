@@ -16,7 +16,7 @@ import type {
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
-import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
+import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export interface State {
@@ -453,7 +453,10 @@ export default class Logic extends UILogic<State, Event> {
                 })
             }
         } else if (
-            !areArraysTheSame(state.spacesToAdd, this.initValues.spacesToAdd)
+            !areArrayContentsEqual(
+                state.spacesToAdd,
+                this.initValues.spacesToAdd,
+            )
         ) {
             await metaPicker.setPageLists({
                 fullPageUrl: state.pageUrl,

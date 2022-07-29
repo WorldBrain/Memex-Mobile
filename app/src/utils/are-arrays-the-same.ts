@@ -1,4 +1,4 @@
-export const areArraysTheSame = (a: any[] = [], b: any[] = []): boolean => {
+export const areArrayContentsEqual = <T>(a: T[] = [], b: T[] = []): boolean => {
     if (a.length !== b.length) {
         return false
     }

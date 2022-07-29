@@ -24,7 +24,7 @@ import type { MainNavigatorParamList } from 'src/ui/navigation/types'
 import type { List, SpacePickerEntry } from 'src/features/meta-picker/types'
 import type { AnnotationSharingState } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
-import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
+import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 
 type Page = Omit<_Page, 'notes'> & { noteIds: string[] }
 
@@ -167,6 +167,8 @@ export default class Logic extends UILogic<State, Event> {
                             listIds: getListIdsForSharingState(
                                 annotationSharingStates[note.url],
                             ),
+                            remoteId:
+                                annotationSharingStates[note.url]?.remoteId,
                             isEdited:
                                 note.lastEdited?.getTime() !==
                                 note.createdWhen!.getTime(),
@@ -250,6 +252,7 @@ export default class Logic extends UILogic<State, Event> {
                     noteData: {
                         [previousState.annotationUrlToEdit]: {
                             privacyLevel: { $set: sharingState.privacyLevel },
+                            remoteId: { $set: sharingState.remoteId },
                         },
                     },
                 })
@@ -364,6 +367,7 @@ export default class Logic extends UILogic<State, Event> {
                     noteData: {
                         [previousState.annotationUrlToEdit]: {
                             privacyLevel: { $set: sharingState.privacyLevel },
+                            remoteId: { $set: sharingState.remoteId },
                         },
                     },
                 })
@@ -417,26 +421,25 @@ export default class Logic extends UILogic<State, Event> {
                 keepListsIfUnsharing: true,
             },
         )
+        const incomingListIds = [
+            ...sharingState.privateListIds,
+            ...sharingState.sharedListIds,
+        ]
 
-        if (
-            !areArraysTheSame(
-                previousState.noteData[event.annotationUrl].listIds,
-                [...sharingState.privateListIds, ...sharingState.sharedListIds],
-            )
-        ) {
-            this.emitMutation({
-                noteData: {
-                    [event.annotationUrl]: {
-                        listIds: {
-                            $set: [
-                                ...sharingState.privateListIds,
-                                ...sharingState.sharedListIds,
-                            ],
-                        },
-                    },
+        this.emitMutation({
+            noteData: {
+                [event.annotationUrl]: {
+                    remoteId: { $set: sharingState.remoteId },
+                    listIds: (listIds) =>
+                        !areArrayContentsEqual(
+                            previousState.noteData[event.annotationUrl].listIds,
+                            incomingListIds,
+                        )
+                            ? incomingListIds
+                            : listIds,
                 },
-            })
-        }
+            },
+        })
     }
 
     async confirmNoteDelete({

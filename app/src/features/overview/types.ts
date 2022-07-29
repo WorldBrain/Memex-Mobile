@@ -1,4 +1,5 @@
 import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import type { AutoPk } from '@worldbrain/memex-common/lib/storage/types'
 
 export type ResultType = 'special' | 'pages' | 'notes'
 
@@ -40,6 +41,7 @@ export interface UINote extends UIResult {
     privacyLevel?: AnnotationPrivacyLevels
     tags: string[]
     listIds: number[]
+    remoteId?: AutoPk
 }
 
 export interface Page {

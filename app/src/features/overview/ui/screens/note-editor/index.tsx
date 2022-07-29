@@ -12,7 +12,7 @@ import styled from 'styled-components/native'
 import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import SpacePill from 'src/ui/components/space-pill'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
-import { areArraysTheSame } from 'src/utils/are-arrays-the-same'
+import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
@@ -47,7 +47,7 @@ export default class extends StatefulUIElement<Props, State, Event> {
         return (
             this.state.noteText.trim().length !== 0 &&
             (noteInputDirty ||
-                !areArraysTheSame(this.state.spacesToAdd, initSpaces))
+                !areArrayContentsEqual(this.state.spacesToAdd, initSpaces))
         )
     }
 
