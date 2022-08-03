@@ -39,7 +39,7 @@ export default class ListShareBtn extends StatefulUIElement<
         ) {
             return (
                 <LoadingContainer>
-                    <LoadingBalls />
+                    <LoadingBalls size={16} />
                 </LoadingContainer>
             )
         }
@@ -52,8 +52,10 @@ export default class ListShareBtn extends StatefulUIElement<
     }
 }
 
-const LoadingContainer = styled.View``
+const LoadingContainer = styled.View`
+    margin-left: 10px;
+`
 
 const Btn = styled.TouchableOpacity`
-    margin: 0 10px 0 15px;
+    margin: 0 15px 0 15px;
 `

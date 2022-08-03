@@ -17,15 +17,22 @@ export default class FeedActivityIndicator extends StatefulUIElement<
 
     render() {
         return (
-            <Dot
-                unread={this.state.hasActivity}
-                onPress={() => this.processEvent('pressBtn', null)}
-            />
+            <DotBox onPress={() => this.processEvent('pressBtn', null)}>
+                <Dot unread={this.state.hasActivity} />
+            </DotBox>
         )
     }
 }
 
-const Dot = styled.TouchableOpacity<{ unread: boolean }>`
+const DotBox = styled.TouchableOpacity`
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+const Dot = styled.View<{ unread: boolean }>`
     border-radius: 10px;
     width: 14px;
     height: 14px;

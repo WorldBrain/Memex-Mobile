@@ -55,6 +55,7 @@ const ActionBar: React.StatelessComponent<Props> = ({
             <View style={styles.mainContent}>{props.children}</View>
             <ButtonContainer>
                 {props.renderIndicator?.()}
+                <Spacer10 />
                 {props.onRightBtnPress ? (
                     <ButtonBox onPress={props.onRightBtnPress}>
                         {rightBtnText}
@@ -73,6 +74,10 @@ const ButtonBox = styled.TouchableOpacity`
     display: flex;
     align-items: center;
     justify-content: center;
+`
+
+const Spacer10 = styled.View`
+    width: 10px;
 `
 
 const Container = styled.View`
@@ -95,5 +100,5 @@ const ButtonContainer = styled.View`
     width: 30px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
 `

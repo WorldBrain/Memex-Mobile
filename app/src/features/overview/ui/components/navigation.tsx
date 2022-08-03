@@ -23,14 +23,17 @@ export interface Props {
 const Navigation: React.StatelessComponent<Props> = (props) => (
     <Container>
         <ContainerBox>
-            <LeftBtnContainer onPress={props.leftBtnPress}>
+            <LeftBtnContainer>
                 {props.leftIcon && (
-                    <Icon
-                        heightAndWidth={props.leftIconSize}
-                        strokeWidth={props.leftIconStrokeWidth}
-                        icon={props.leftIcon}
-                    />
+                    <IconBox onPress={props.leftBtnPress}>
+                        <Icon
+                            heightAndWidth={props.leftIconSize}
+                            strokeWidth={props.leftIconStrokeWidth}
+                            icon={props.leftIcon}
+                        />
+                    </IconBox>
                 )}
+                <Spacer10 />
                 {props.renderIndicator?.()}
             </LeftBtnContainer>
             {typeof props.titleText === 'string' ? (
@@ -77,18 +80,30 @@ const ContainerBox = styled.View`
     margin-bottom: -50px;
 `
 
-const LeftBtnContainer = styled.TouchableOpacity`
+const Spacer10 = styled.View`
+    width: 20px;
+`
+
+const LeftBtnContainer = styled.View`
+    height: 30px;
+    width: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+`
+
+const IconBox = styled.TouchableOpacity`
     height: 30px;
     width: 30px;
     display: flex;
-    flex-direction: row;
     justify-content: center;
     align-items: center;
 `
 
 const RightBtnContainer = styled.TouchableOpacity`
     height: 30px;
-    width: 30px;
+    width: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
