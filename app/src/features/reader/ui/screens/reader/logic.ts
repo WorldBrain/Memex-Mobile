@@ -75,7 +75,7 @@ export interface Props extends MainNavProps<'Reader'> {
 
 export default class Logic extends UILogic<State, Event> {
     static formUrl = (url: string) => {
-        if (url.startsWith('http')) {
+        if (url.startsWith('http://') || url.startsWith('https://')) {
             return url
         }
 

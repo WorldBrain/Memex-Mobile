@@ -23,6 +23,7 @@ import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import FeedActivityIndicator from 'src/features/activity-indicator'
+import { FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
 
 export default class ShareModalScreen extends StatefulUIElement<
     Props,
@@ -220,7 +221,14 @@ export default class ShareModalScreen extends StatefulUIElement<
                         )
                     }
                     renderIndicator={() => (
-                        <FeedActivityIndicator services={this.props.services} />
+                        <FeedActivityIndicator
+                            services={this.props.services}
+                            customFeedOpener={async () =>
+                                this.props.services.shareExt.openAppLink(
+                                    FEED_OPEN_URL,
+                                )
+                            }
+                        />
                     )}
                 >
                     {this.state.spacesState === 'running' ? (

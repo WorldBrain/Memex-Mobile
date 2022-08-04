@@ -26,6 +26,7 @@ import SpacePill from 'src/ui/components/space-pill'
 import ListShareBtn from 'src/features/list-share-btn'
 import { ALL_SAVED_FILTER_ID } from './constants'
 import FeedActivityIndicator from 'src/features/activity-indicator'
+import { DEEP_LINK_PREFIX, FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -37,6 +38,12 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
     componentDidMount() {
         super.componentDidMount()
+
+        Linking.addEventListener('url', async ({ url }) => {
+            if (url === DEEP_LINK_PREFIX + FEED_OPEN_URL) {
+                await this.processEvent('maybeOpenFeed', null)
+            }
+        })
         this.unsubNavFocus = this.props.navigation.addListener('focus', () =>
             this.processEvent('focusFromNavigation', this.props.route.params),
         )

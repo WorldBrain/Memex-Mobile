@@ -23,7 +23,7 @@ export type MainNavigatorParamList = {
     ListsFilter: {
         selectedListId: number
     }
-    Dashboard: { selectedListId: number } | undefined
+    Dashboard: { selectedListId?: number; openFeed?: boolean } | undefined
     PageEditor: {
         pageUrl: string
         mode: EditorMode

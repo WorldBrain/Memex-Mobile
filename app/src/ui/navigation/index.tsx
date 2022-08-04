@@ -1,7 +1,7 @@
 import React from 'react'
 import { AppState } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, LinkingOptions } from '@react-navigation/native'
 
 import { loadContentScript } from 'src/features/reader/utils/load-content-script'
 import { CoreUIState } from '../types'
@@ -79,8 +79,23 @@ export const createMainNavigator: NavigationContainerFactory = ({
         ...freeRoutes,
     ]
 
+    const linking: LinkingOptions = {
+        prefixes: ['memex://'],
+        config: {
+            screens: {
+                Dashboard: 'dashboard/:openFeed?',
+                Reader: {
+                    path: 'reader/:url',
+                    parse: {
+                        url: String,
+                    },
+                },
+            },
+        },
+    }
+
     return (
-        <NavigationContainer theme={lightTheme}>
+        <NavigationContainer theme={lightTheme} linking={linking}>
             <MainStack.Navigator headerMode="none">
                 {isLoggedIn ? protectedRoutes : publicRoutes}
             </MainStack.Navigator>

@@ -5,7 +5,7 @@ import {
     UIMutation,
     UIEventHandler,
 } from 'ui-logic-core'
-import { AppStateStatic, AppStateStatus } from 'react-native'
+import { AppStateStatic, AppStateStatus, Linking } from 'react-native'
 
 import { storageKeys } from '../../../../../../app.json'
 import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
@@ -28,6 +28,7 @@ import {
     initNormalizedState,
     normalizedStateToArray,
 } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
+import { getFeedUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
 
 export interface State {
     syncState: UITaskState
@@ -46,6 +47,7 @@ export interface State {
 }
 
 export type Event = UIEvent<{
+    maybeOpenFeed: null
     setSyncRibbonShow: { show: boolean }
     reload: { initListId?: number; triggerSync?: boolean }
     loadMore: {}
@@ -124,7 +126,11 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
-        const { services, navigation } = this.props
+        const { services, navigation, route } = this.props
+
+        if (route.params?.openFeed != null) {
+            await this.openMemexFeed()
+        }
 
         // Nav to onboarding early if local storage flag is set
         const showOnboarding = await services.localStorage.get(
@@ -611,6 +617,16 @@ export default class Logic extends UILogic<State, Event> {
             //         isResultPressed: !page.isResultPressed,
             //     })
             // },
+        }
+    }
+
+    private async openMemexFeed() {
+        await Linking.openURL(getFeedUrl())
+    }
+
+    maybeOpenFeed: EventHandler<'maybeOpenFeed'> = async ({}) => {
+        if (this.props.route.params?.openFeed != null) {
+            await this.openMemexFeed()
         }
     }
 

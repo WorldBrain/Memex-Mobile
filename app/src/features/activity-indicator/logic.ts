@@ -14,6 +14,7 @@ export type Event = UIEvent<{
 }>
 
 export interface Dependencies {
+    customFeedOpener?: () => Promise<void>
     services: UIServices<'activityIndicator'>
 }
 
@@ -49,6 +50,11 @@ export default class Logic extends UILogic<State, Event> {
             this.emitMutation({ hasActivity: { $set: false } })
             await this.deps.services.activityIndicator.markActivitiesAsSeen()
         }
-        await Linking.openURL(getFeedUrl())
+
+        if (this.deps.customFeedOpener) {
+            await this.deps.customFeedOpener()
+        } else {
+            await Linking.openURL(getFeedUrl())
+        }
     }
 }
