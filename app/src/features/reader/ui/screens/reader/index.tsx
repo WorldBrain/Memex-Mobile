@@ -119,6 +119,32 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         </WebViewContainer>
     )
 
+    private renderError = (
+        errorDomain: string | undefined,
+        errorCode: number,
+        errorDesc: string,
+    ) => {
+        // Lack of SSL error case
+        if (errorCode === -1023) {
+            return (
+                <ErrorMessage>
+                    The page could not be loaded because Memex couldn't create a
+                    secure connection
+                </ErrorMessage>
+            )
+        }
+
+        // Default error case
+        return (
+            <ErrorMessage>
+                The page could not be loaded because of an unknown error:{'\n'}
+                {errorCode}
+                {'\n'}
+                {errorDesc}
+            </ErrorMessage>
+        )
+    }
+
     private renderWebView() {
         if (this.state.loadState === 'running') {
             return this.renderLoading()
@@ -151,6 +177,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     // This flag needs to be set to afford text selection on iOS.
                     //   https://github.com/react-native-community/react-native-webview/issues/1275
                     allowsLinkPreview
+                    renderError={this.renderError}
                     renderLoading={this.renderLoading}
                     mediaPlaybackRequiresUserAction
                     ref={(ref) => (this.webView = ref!)}
@@ -249,3 +276,5 @@ const WebViewContainer = styled.SafeAreaView<{
     `
             : ''}
 `
+
+const ErrorMessage = styled.Text``
