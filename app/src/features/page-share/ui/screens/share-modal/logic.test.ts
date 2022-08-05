@@ -14,6 +14,7 @@ import {
 } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import type { Note } from 'src/features/page-editor/types'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import { FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
 
 describe('share modal UI logic tests', () => {
     const it = makeStorageTestFactory()
@@ -23,6 +24,7 @@ describe('share modal UI logic tests', () => {
             getPageTitle?: () => Promise<string>
             getSharedText?: () => string
             getSharedUrl?: () => string
+            openAppLink?: (url: string) => void
             syncError?: () => string | undefined
         },
     ) {
@@ -45,6 +47,7 @@ describe('share modal UI logic tests', () => {
                     getSharedUrl: options.getSharedUrl
                         ? options.getSharedUrl
                         : () => 'http://test.com',
+                    openAppLink: options.openAppLink ?? (() => undefined),
                 } as any,
                 pageFetcher,
                 errorTracker: {
@@ -117,11 +120,13 @@ describe('share modal UI logic tests', () => {
         const fullPageUrl = DATA.PAGE_URL_1
         const normalizedPageUrl = DATA.PAGE_URL_1_NORM
         const testTitle = 'test title'
+        let openedLink: string | null = null
 
         const { element, logic, trackedErrors } = await setup({
             ...context,
             getSharedUrl: () => fullPageUrl,
             getPageTitle: async () => testTitle,
+            openAppLink: (link) => (openedLink = link),
         })
 
         const lookupPage = () =>
@@ -140,8 +145,55 @@ describe('share modal UI logic tests', () => {
             }),
         )
         expect(logic.pageTitleFetchRunning).not.toBe(null)
+        expect(openedLink).toEqual(null)
 
-        await element.processEvent('save', { isInputDirty: false })
+        await element.processEvent('save', {})
+
+        expect(openedLink).toEqual(null)
+        expect(trackedErrors).toEqual([])
+        expect(await lookupPage()).toEqual(
+            expect.objectContaining({
+                url: normalizedPageUrl,
+                fullUrl: fullPageUrl,
+                fullTitle: testTitle,
+                text: '',
+            }),
+        )
+    })
+
+    it('should open app after saving, if flag set', async (context) => {
+        const fullPageUrl = DATA.PAGE_URL_1
+        const normalizedPageUrl = DATA.PAGE_URL_1_NORM
+        const testTitle = 'test title'
+        let openedLink: string | null = null
+
+        const { element, logic, trackedErrors } = await setup({
+            ...context,
+            getSharedUrl: () => fullPageUrl,
+            getPageTitle: async () => testTitle,
+            openAppLink: (link) => (openedLink = link),
+        })
+
+        const lookupPage = () =>
+            context.storage.manager
+                .collection('pages')
+                .findObject({ url: normalizedPageUrl })
+
+        expect(await lookupPage()).toBe(null)
+        expect(logic.pageTitleFetchRunning).toBe(null)
+        await element.init()
+        expect(await lookupPage()).toEqual(
+            expect.objectContaining({
+                url: normalizedPageUrl,
+                fullUrl: fullPageUrl,
+                text: '',
+            }),
+        )
+        expect(logic.pageTitleFetchRunning).not.toBe(null)
+        expect(openedLink).toEqual(null)
+
+        await element.processEvent('save', { thenGoToApp: true })
+        expect(openedLink).toEqual(FEED_OPEN_URL)
         expect(trackedErrors).toEqual([])
         expect(await lookupPage()).toEqual(
             expect.objectContaining({
@@ -183,7 +235,7 @@ describe('share modal UI logic tests', () => {
         )
         expect(logic.pageTitleFetchRunning).not.toBe(null)
 
-        await element.processEvent('save', { isInputDirty: false })
+        await element.processEvent('save', {})
         expect(trackedErrors).toEqual([dummyError])
         expect(await lookupPage()).toEqual(
             expect.objectContaining({
@@ -230,7 +282,7 @@ describe('share modal UI logic tests', () => {
         await element.init()
         expect(logic.pageTitleFetchRunning).toBe(null)
 
-        await element.processEvent('save', { isInputDirty: false })
+        await element.processEvent('save', {})
         expect(logic.pageTitleFetchRunning).toBe(null)
         expect(trackedErrors).toEqual([])
         expect(await lookupPage()).toEqual(

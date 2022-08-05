@@ -1,65 +1,21 @@
 import {
     UILogic,
-    UIEvent,
     IncomingUIEvent,
     UIEventHandler,
     UIMutation,
 } from 'ui-logic-core'
 
-import type { SpacePickerEntry } from 'src/features/meta-picker/types'
-import type {
-    UITaskState,
-    UIServices,
-    UIStorageModules,
-    ShareNavProps,
-} from 'src/ui/types'
+import type { UIServices, UIStorageModules, ShareNavProps } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import type { State, Event } from './types'
+import { isInputDirty, initValues } from './util'
+import { FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
 
-export interface State {
-    loadState: UITaskState
-    spacesState: UITaskState
-    bookmarkState: UITaskState
-    syncRetryState: UITaskState
-
-    pageUrl: string
-    pageTitle: string
-    statusText: string
-    noteText: string
-    spacesToAdd: number[]
-    isStarred: boolean
-    isModalShown: boolean
-    errorMessage?: string
-    showSavingPage: boolean
-    isSpacePickerShown: boolean
-    isUnsupportedApplication: boolean
-    privacyLevel: AnnotationPrivacyLevels
-}
-
-export type Event = UIEvent<{
-    save: { isInputDirty?: boolean }
-    retrySync: null
-
-    undoPageSave: null
-    metaPickerEntryPress: { entry: SpacePickerEntry }
-    setSpacePickerShown: { isShown: boolean }
-    setModalVisible: { shown: boolean }
-    togglePageStar: null
-    setNoteText: { value: string }
-
-    toggleSpace: { id: number }
-    setPageUrl: { url: string }
-    setPageStar: { value: boolean }
-    setStatusText: { value: string }
-    setSpacesToAdd: { values: number[] }
-    setPrivacyLevel: { value: AnnotationPrivacyLevels }
-    clearSyncError: null
-}>
-
-export interface Props extends ShareNavProps<'ShareModal'> {
+export interface Dependencies extends ShareNavProps<'ShareModal'> {
     services: UIServices<
         | 'cloudSync'
         | 'shareExt'
@@ -84,12 +40,9 @@ export default class Logic extends UILogic<State, Event> {
     private existingPageVisitTime: number | null = null
     syncRunning: Promise<void> | null = null
     pageTitleFetchRunning: Promise<void> | null = null
-    initValues: Pick<State, 'isStarred' | 'spacesToAdd'> = {
-        isStarred: false,
-        spacesToAdd: [],
-    }
+    private initValues = { ...initValues }
 
-    constructor(private props: Props) {
+    constructor(private deps: Dependencies) {
         super()
     }
 
@@ -108,13 +61,13 @@ export default class Logic extends UILogic<State, Event> {
             isModalShown: true,
             noteText: '',
             statusText: '',
-            ...this.initValues,
+            ...initValues,
         }
     }
 
     private handleSyncError(error: Error) {
         const { errorHandled } = handleSyncError(error, {
-            ...this.props,
+            ...this.deps,
             handleAppUpdateNeeded: (title, subtitle) =>
                 this.emitMutation({
                     errorMessage: { $set: `${title}\n${subtitle}` },
@@ -127,7 +80,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async _doSync() {
-        const { cloudSync } = this.props.services
+        const { cloudSync } = this.deps.services
 
         try {
             await cloudSync.sync()
@@ -153,7 +106,7 @@ export default class Logic extends UILogic<State, Event> {
             storage: {
                 modules: { overview },
             },
-        } = this.props
+        } = this.deps
 
         try {
             const pageTitle = await pageFetcher.fetchPageTitle(url)
@@ -171,7 +124,7 @@ export default class Logic extends UILogic<State, Event> {
     async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
         this.doSync()
 
-        const { services, storage } = this.props
+        const { services, storage } = this.deps
         let url: string
 
         try {
@@ -338,7 +291,7 @@ export default class Logic extends UILogic<State, Event> {
     async undoPageSave(
         incoming: IncomingUIEvent<State, Event, 'undoPageSave'>,
     ) {
-        const { overview } = this.props.storage.modules
+        const { overview } = this.deps.storage.modules
 
         this.emitMutation({ showSavingPage: { $set: true } })
         await this.pageTitleFetchRunning
@@ -367,13 +320,17 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'save'>) {
         await this.pageTitleFetchRunning
 
-        if (event.isInputDirty) {
+        if (isInputDirty(previousState)) {
             this.emitMutation({ showSavingPage: { $set: true } })
             await this.storePageFinal(previousState)
 
-            if (await isSyncEnabled(this.props.services)) {
+            if (await isSyncEnabled(this.deps.services)) {
                 await this.doSync()
             }
+        }
+
+        if (event.thenGoToApp) {
+            this.deps.services.shareExt.openAppLink(FEED_OPEN_URL)
         }
 
         this.emitMutation({ isModalShown: { $set: false } })
@@ -405,7 +362,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async storePageInit(state: State) {
-        const { overview, metaPicker } = this.props.storage.modules
+        const { overview, metaPicker } = this.deps.storage.modules
 
         await overview.createPage({
             url: state.pageUrl,
@@ -421,8 +378,8 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async storePageFinal(state: State, customTimestamp?: number) {
-        const { overview, metaPicker, pageEditor } = this.props.storage.modules
-        const { annotationSharing } = this.props.services
+        const { overview, metaPicker, pageEditor } = this.deps.storage.modules
+        const { annotationSharing } = this.deps.services
 
         await overview.setPageStar({
             url: state.pageUrl,

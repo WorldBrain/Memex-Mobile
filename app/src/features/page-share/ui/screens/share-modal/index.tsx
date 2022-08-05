@@ -4,7 +4,7 @@ import { Text, Linking } from 'react-native'
 import { supportEmail } from '../../../../../../app.json'
 import { StatefulUIElement } from 'src/ui/types'
 import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
-import Logic, { Props, State, Event } from './logic'
+import Logic, { Dependencies } from './logic'
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import ShareModal from '../../components/share-modal'
 import ActionBar from '../../components/action-bar-segment'
@@ -18,12 +18,14 @@ import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 import LoadingIndicator from 'src/ui/components/loading-balls'
-import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import FeedActivityIndicator from 'src/features/activity-indicator'
-import { FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
+import { isInputDirty } from './util'
+import type { State, Event } from './types'
+
+export interface Props extends Dependencies {}
 
 export default class ShareModalScreen extends StatefulUIElement<
     Props,
@@ -34,19 +36,6 @@ export default class ShareModalScreen extends StatefulUIElement<
 
     constructor(props: Props) {
         super(props, new Logic(props))
-    }
-
-    private get isInputDirty(): boolean {
-        const { initValues } = this.logic as Logic
-
-        return (
-            this.state.noteText.trim().length > 0 ||
-            this.state.isStarred !== initValues.isStarred ||
-            !areArrayContentsEqual(
-                this.state.spacesToAdd,
-                initValues.spacesToAdd,
-            )
-        )
     }
 
     private setSpacePickerShown = (isShown: boolean) => (e: any) => {
@@ -64,7 +53,7 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     private handleSave = async () => {
-        await this.processEvent('save', { isInputDirty: this.isInputDirty })
+        await this.processEvent('save', {})
         // For whatever reason, calling this seems to result in a crash. Though it still closes as expected without calling it...
         // this.props.services.shareExt.close()
     }
@@ -122,7 +111,7 @@ export default class ShareModalScreen extends StatefulUIElement<
             return null
         }
 
-        if (this.isInputDirty) {
+        if (isInputDirty(this.state)) {
             return null
         }
 
@@ -153,7 +142,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                             : this.handleSave
                     }
                     rightBtnText={
-                        this.isInputDirty ? (
+                        isInputDirty(this.state) ? (
                             <Icon
                                 icon={icons.CheckMark}
                                 heightAndWidth={'28px'}
@@ -205,7 +194,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                 <ActionBarContainer
                     onRightBtnPress={this.handleSave}
                     rightBtnText={
-                        this.isInputDirty ? (
+                        isInputDirty(this.state) ? (
                             <Icon
                                 icon={icons.CheckMark}
                                 heightAndWidth={'28px'}
@@ -223,10 +212,8 @@ export default class ShareModalScreen extends StatefulUIElement<
                     renderIndicator={() => (
                         <FeedActivityIndicator
                             services={this.props.services}
-                            customFeedOpener={async () =>
-                                this.props.services.shareExt.openAppLink(
-                                    FEED_OPEN_URL,
-                                )
+                            customFeedOpener={() =>
+                                this.processEvent('save', { thenGoToApp: true })
                             }
                         />
                     )}
