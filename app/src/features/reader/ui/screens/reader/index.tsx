@@ -18,6 +18,7 @@ import Navigation, {
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
+import { url } from 'inspector'
 
 export default class Reader extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
@@ -164,7 +165,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 <Button
                     onPress={() =>
                         Linking.openURL(
-                            `mailto:support@memex.garden?subject=Memex%20Go%3A%20Error%20Opening%20Link&body=Hey%20folks%2C%0D%0A%0D%0AI%20have%20an%20error%20opening%20a%20link%20in%20the%20mobile%20app.%0D%0AThe%20error%20message%20is%20${errorCode}.%0D%0A%0D%0AThanks%20for%20the%20help%0D%0A`,
+                            `mailto:support@memex.garden?subject=Memex%20Go%3A%20Error%20Opening%20Link&body=Hey%20folks%2C%0D%0A%0D%0AI%20have%20an%20error%20opening%20a%20link%20in%20the%20mobile%20app.%0D%0AThe%20error%20message%20is%20${errorCode} and the url is ${this.state.url}.%0D%0A%0D%0AThanks%20for%20the%20help%0D%0A`,
                         )
                     }
                 >
