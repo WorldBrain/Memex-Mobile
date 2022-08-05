@@ -207,6 +207,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     scrollEventThrottle={32}
                     onEndReachedThreshold={0.1}
                     onEndReached={this.handleListEndReached}
+                    showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
                         paddingBottom: 100,
                     }}
