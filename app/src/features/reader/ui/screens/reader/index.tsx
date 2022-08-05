@@ -17,6 +17,7 @@ import Navigation, {
 } from 'src/features/overview/ui/components/navigation'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
+import { Icon } from 'src/ui/components/icons/icon-mobile'
 
 export default class Reader extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
@@ -125,23 +126,51 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         errorDesc: string,
     ) => {
         // Lack of SSL error case
-        if (errorCode === -1023) {
+        if (errorCode === -1023 || errorCode === -1200) {
             return (
-                <ErrorMessage>
-                    The page could not be loaded because Memex couldn't create a
-                    secure connection
-                </ErrorMessage>
+                <ErrorScreen>
+                    <SectionCircle size="60px">
+                        <Icon
+                            icon={icons.Lock}
+                            heightAndWidth="20px"
+                            color="purple"
+                        />
+                    </SectionCircle>
+                    <Header>HTTP pages not supported</Header>
+                    <ErrorMessage>
+                        Please save and open a HTTPS version of this page
+                    </ErrorMessage>
+                </ErrorScreen>
             )
         }
 
         // Default error case
         return (
-            <ErrorMessage>
-                The page could not be loaded because of an unknown error:{'\n'}
-                {errorCode}
-                {'\n'}
-                {errorDesc}
-            </ErrorMessage>
+            <ErrorScreen>
+                <SectionCircle size="60px">
+                    <Icon
+                        icon={icons.Alert}
+                        heightAndWidth="20px"
+                        color="purple"
+                    />
+                </SectionCircle>
+                <Header>Error Loading Page</Header>
+                <ErrorMessage>
+                    The page could not be loaded because of an error:{'\n'}
+                    {errorDesc}
+                    {'\n'}({errorCode})
+                </ErrorMessage>
+                <Spacer10 />
+                <Button
+                    onPress={() =>
+                        Linking.openURL(
+                            `mailto:support@memex.garden?subject=Memex%20Go%3A%20Error%20Opening%20Link&body=Hey%20folks%2C%0D%0A%0D%0AI%20have%20an%20error%20opening%20a%20link%20in%20the%20mobile%20app.%0D%0AThe%20error%20message%20is%20${errorCode}.%0D%0A%0D%0AThanks%20for%20the%20help%0D%0A`,
+                        )
+                    }
+                >
+                    <ButtonText>Report</ButtonText>
+                </Button>
+            </ErrorScreen>
         )
     }
 
@@ -277,4 +306,55 @@ const WebViewContainer = styled.SafeAreaView<{
             : ''}
 `
 
-const ErrorMessage = styled.Text``
+const ErrorScreen = styled.View`
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+`
+
+const ErrorMessage = styled.Text`
+    font-size: 18px;
+    color: ${(props) => props.theme.colors.lighterText};
+    text-align: center;
+    padding: 0px 20px;
+`
+
+const Header = styled.Text`
+    font-size: 22px;
+    font-weight: 800;
+    color: ${(props) => props.theme.colors.darkerText};
+    margin-bottom: 10px;
+`
+const SectionCircle = styled.View<{ size: string }>`
+    background: ${(props) => props.theme.colors.backgroundHighlight};
+    border-radius: 100px;
+    height: ${(props) => (props.size ? props.size : '60px')};
+    width: ${(props) => (props.size ? props.size : '60px')};
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+`
+
+const Spacer10 = styled.View`
+    height: 20px;
+`
+
+const Button = styled.TouchableOpacity`
+    width: 100px;
+    height: 40px;
+    background: ${(props) => props.theme.colors.purple};
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+const ButtonText = styled.Text`
+    font-weight: 500;
+    font-size: 16px;
+    color: white;
+`
