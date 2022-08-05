@@ -18,7 +18,6 @@ import Navigation, {
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
-import { url } from 'inspector'
 
 export default class Reader extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {

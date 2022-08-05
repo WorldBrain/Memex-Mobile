@@ -138,7 +138,13 @@ export default class CloudSyncScreen extends StatefulUIElement<
                     <HeadingText>Sync successful</HeadingText>
                 </View>
                 <View>
-                    {!this.props.route.params?.shouldRetrospectiveSync && (
+                    {this.props.route.params?.shouldRetrospectiveSync ? (
+                        <SecondaryText>
+                            We've added some new features to the app which
+                            require syncing some more data from the extension.
+                            Please stay on this screen momentarily.
+                        </SecondaryText>
+                    ) : (
                         <SecondaryText>
                             If you see no data in the dashboard, make sure you
                             synced on at least one of your other devices first
