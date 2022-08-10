@@ -82,6 +82,18 @@ export default class SettingsMenuScreen extends StatefulUIElement<
                             </SettingsEntryText>
                         </SettingsEntryRowLink>
                     </Link>
+                    <Link
+                        href={
+                            'mailto:support@memex.garden?subject=Delete%20my%20account&body=Please%20delete%20my%20account.'
+                        }
+                    >
+                        <SettingsEntryRowLink>
+                            <Icon icon={icons.Trash} heightAndWidth={'24px'} />
+                            <SettingsEntryText>
+                                Delete Account
+                            </SettingsEntryText>
+                        </SettingsEntryRowLink>
+                    </Link>
                     <SettingsEntryRow
                         onPress={() => this.processEvent('logout', null)}
                     >
