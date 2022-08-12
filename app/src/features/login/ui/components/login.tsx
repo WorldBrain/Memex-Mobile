@@ -50,7 +50,7 @@ const Login: React.StatelessComponent<Props> = (props) => {
     return (
         <LoginSignupContainer>
             <LoginSignupScreen>
-                {props.mode === 'signup' && (
+                {/* {props.mode === 'signup' && (
                     <>
                         <MemexLogo
                             resizeMode="contain"
@@ -70,7 +70,7 @@ const Login: React.StatelessComponent<Props> = (props) => {
                         </SectionCircle>
                         <IntroTitle>Login to Memex</IntroTitle>
                     </>
-                )}
+                )} */}
                 {props.mode === 'requestReset' && (
                     <>
                         <SectionCircle>
