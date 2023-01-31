@@ -17,10 +17,8 @@ import { useDeviceOrientation } from '@react-native-community/hooks'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
-import { SafeAreaView } from 'react-native'
 import { theme } from 'src/ui/components/theme/theme'
 import { PrimaryAction, SecondaryAction } from 'src/ui/utils/ActionButtons'
-import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
 
 const MemexLogoFile = require('src/ui/assets/MemexIcon.png')
 

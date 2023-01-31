@@ -27,9 +27,10 @@ import ListSharingService from '@worldbrain/memex-common/lib/content-sharing/ser
 import FirebaseFunctionsActivityStreamsService from '@worldbrain/memex-common/lib/activity-streams/services/firebase-functions/client'
 import MemoryStreamsService from '@worldbrain/memex-common/lib/activity-streams/services/memory'
 import ActivityIndicatorService from '@worldbrain/memex-common/lib/activity-streams/services/activity-indicator'
+// import { reactNativeFBToAuthFBDeps } from 'src/firebase'
 
 export interface CreateServicesOptions {
-    auth?: AuthService
+    auth: AuthService
     firebase?: ReactNativeFirebase.Module
     storage: Storage
     serverStorage: ServerStorage
@@ -46,9 +47,8 @@ export async function createServices(
 ): Promise<Services> {
     const { modules: storageModules } = options.storage
     const { modules: serverStorageModules } = options.serverStorage
-    const auth =
-        (options.auth as MemexGoAuthService) ??
-        new MemexGoAuthService(options.firebase as any)
+    const auth = options.auth as MemexGoAuthService
+    // new MemexGoAuthService({ firebase: reactNativeFBToAuthFBDeps(options.firebase)})
     const pageFetcher = new PageFetcherService()
     const listKeys = new ListKeysService({
         serverStorage: serverStorageModules.contentSharing,

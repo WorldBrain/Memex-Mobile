@@ -2,8 +2,11 @@ import 'react-native-gesture-handler'
 import { Platform } from 'react-native'
 import * as Sentry from '@sentry/react-native'
 import { normalizeUrl } from '@worldbrain/memex-url-utils'
-import FirestorePersonalCloudBackend from '@worldbrain/memex-common/lib/personal-cloud/backend/firestore'
-import type { PersonalCloudService } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
+import FirebasePersonalCloudBackend from '@worldbrain/memex-common/lib/personal-cloud/backend/firebase'
+import type {
+    PersonalCloudDeviceId,
+    PersonalCloudService,
+} from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
 import { getCurrentSchemaVersion } from '@worldbrain/memex-common/lib/storage/utils'
 import { firebaseService } from '@worldbrain/memex-common/lib/firebase-backend/services/client'
@@ -15,7 +18,12 @@ import {
 
 import './polyfills'
 import { sentryDsn, storageKeys } from '../app.json'
-import { getFirebase, connectToEmulator } from 'src/firebase'
+import {
+    getFirebase,
+    connectToEmulator,
+    reactNativeFBToAuthFBDeps,
+    reactNativeFBToCloudBackendFBDeps,
+} from 'src/firebase'
 import {
     createStorage,
     setStorageMiddleware,
@@ -54,9 +62,11 @@ export async function main() {
     const generateServerId = (collectionName: string) =>
         getFirebase().firestore().collection(collectionName).doc().id
 
-    let personalCloudBackend: FirestorePersonalCloudBackend
+    let personalCloudBackend: FirebasePersonalCloudBackend
 
-    const authService = new MemexGoAuthService(firebase as any)
+    const authService = new MemexGoAuthService({
+        firebase: reactNativeFBToAuthFBDeps(firebase),
+    })
     const serverStorage = await createServerStorage(firebase)
     const storage = await createStorage({
         authService,
@@ -86,7 +96,7 @@ export async function main() {
         },
     })
 
-    personalCloudBackend = new FirestorePersonalCloudBackend({
+    personalCloudBackend = new FirebasePersonalCloudBackend({
         personalCloudService: firebaseService<PersonalCloudService>(
             'personalCloud',
             async (name, ...args) => {
@@ -98,17 +108,6 @@ export async function main() {
         getServerStorageManager: async () => serverStorage.manager,
         getCurrentSchemaVersion: () => getCurrentSchemaVersion(storage.manager),
         userChanges: () => authChanges(authService),
-        getUserChangesReference: async () => {
-            const currentUser = await authService.getCurrentUser()
-            if (!currentUser) {
-                return null
-            }
-            const firestore = firebase.firestore()
-            return firestore
-                .collection('personalDataChange')
-                .doc(currentUser.id)
-                .collection('objects') as any
-        },
         getLastUpdateProcessedTime: () =>
             storage.modules.localSettings.getSetting({
                 key: storageKeys.syncLastProcessedTime,
@@ -121,8 +120,8 @@ export async function main() {
         getDeviceId: () =>
             storage.modules.localSettings.getSetting({
                 key: storageKeys.deviceId,
-            })!,
-        getFirebase: () => firebase as any,
+            })! as Promise<PersonalCloudDeviceId>,
+        firebase: reactNativeFBToCloudBackendFBDeps(firebase),
     })
 
     const services = await createServices({

@@ -1,8 +1,6 @@
 import StorageManager from '@worldbrain/storex'
 import type { StorageModules } from 'src/storage/types'
 import type { Services } from 'src/services/types'
-import { WorldbrainAuthService } from '@worldbrain/memex-common/lib/authentication/worldbrain'
-import { EXTENSION_SETTINGS_NAME } from '@worldbrain/memex-common/lib/extension-settings/constants'
 
 export function createSelfTests(options: {
     storageManager: StorageManager
