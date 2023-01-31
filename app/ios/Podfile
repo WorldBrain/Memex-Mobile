@@ -20,10 +20,10 @@ target 'app' do
   use_flipper!()
 
   pod 'ReactNativeShareExtension', :podspec => '../node_modules/react-native-share-extension/ReactNativeShareExtension.podspec'
-
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '8.4.0'
   pod 'Firebase/Database', '~> 8.4.0'
   pod 'Firebase/Functions'
   pod 'Firebase/Storage'
