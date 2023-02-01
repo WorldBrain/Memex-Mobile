@@ -30,7 +30,7 @@ const MainLayout: React.StatelessComponent<Props> = (props) => (
             titleText={props.titleText}
             rightIcon={props.rightIcon}
             rightBtnPress={props.onRightPress}
-            rightIconColor={'purple'}
+            rightIconColor={'prime1'}
             rightIconStrokeWidth={'1.5px'}
         />
         {/* <View style={styles.pageContainer}>

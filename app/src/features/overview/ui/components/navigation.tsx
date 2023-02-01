@@ -115,7 +115,6 @@ const TextArea = styled.Text`
     align-items: center;
     display: flex;
     font-weight: 800;
-    text-align: bottom;
     color: ${(props) => props.theme.colors.greyScale5};
 `
 

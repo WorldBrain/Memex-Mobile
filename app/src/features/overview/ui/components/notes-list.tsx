@@ -146,7 +146,7 @@ const NoResultsTitle = styled.Text`
 `
 
 const NoResultsSubTitle = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 20px;
     font-weight: 400;
     text-align: center;
@@ -201,7 +201,7 @@ const ResultItem = styled.View`
 const TopArea = styled.View`
     padding: 15px;
     display: flex;
-    flex-direction column;
+    flex-direction: column;
     margin: 5px 10px;
     display: flex;
     justify-content: center;
@@ -215,7 +215,7 @@ const TopArea = styled.View`
 `
 
 const Footer = styled.TouchableOpacity`
-    border-top-color: ${(props) => props.theme.colors.lightgrey};
+    border-top-color: ${(props) => props.theme.colors.greyScale5};
     border-top-width: 1px;
     height: 40px;
     align-items: center;

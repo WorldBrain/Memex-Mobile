@@ -61,7 +61,6 @@ const AddSpacesText = styled.Text`
     align-items: flex-end;
     flex-direction: row;
     justify-content: center;
-    text-align: bottom;
 `
 
 const SpacesCounterPill = styled.View`

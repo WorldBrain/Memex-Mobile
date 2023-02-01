@@ -26,12 +26,12 @@ export const Icon: React.StatelessComponent<IconProps> = (props) => {
                 fill: props.fill
                     ? props.color
                         ? theme.colors[props.color]
-                        : theme.colors['iconColor']
+                        : theme.colors['greyScale4']
                     : 'none',
-                strokeWidth: props.strokeWidth && props.strokeWidth,
+                strokeWidth: props.strokeWidth ? props.strokeWidth : 1.5,
                 stroke: props.color
                     ? theme.colors[props.color]
-                    : theme.colors['iconColor'],
+                    : theme.colors['greyScale4'],
                 width: props.width
                     ? props.width
                     : props.heightAndWidth

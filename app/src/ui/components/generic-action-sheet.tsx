@@ -101,5 +101,5 @@ const Text = styled.Text`
 const SubText = styled.Text`
     text-align: left;
     font-size: 14px;
-    color: ${(props) => props.theme.colors.lighterText};
+    color: ${(props) => props.theme.colors.greyScale5};
 `

@@ -65,7 +65,12 @@ module.exports = {
                 alias: getAliases(),
             },
         ],
+        [
+            'babel-plugin-styled-components',
+            {
+                fileName: false,
+            },
+        ],
         '@babel/plugin-proposal-async-generator-functions',
-        'babel-plugin-styled-components',
     ],
 }
