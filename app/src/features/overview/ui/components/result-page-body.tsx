@@ -40,13 +40,13 @@ const Title = styled.View`
 `
 
 const TitleText = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText}
+    color: ${(props) => props.theme.colors.greyScale5}
     font-weight: 700;
     font-size: 16px;
 `
 
 const DomainText = styled.Text`
-    color: ${(props) => props.theme.colors.normalText}
+    color: ${(props) => props.theme.colors.greyScale5}
     font-weight: 500;
     font-size: 14px;
     margin-right: 10px;
@@ -60,7 +60,7 @@ const BottomBarBox = styled.View`
 `
 
 const DateText = styled.Text`
-    color: ${(props) => props.theme.colors.lighterText}
+    color: ${(props) => props.theme.colors.greyScale5}
     font-weight: 400;
     font-size: 14px;
 `

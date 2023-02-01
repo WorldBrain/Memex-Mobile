@@ -11,7 +11,7 @@ export default EStyleSheet.create({
         alignItems: 'center',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        backgroundColor: theme.colors.backgroundColor,
+        backgroundColor: theme.colors.black,
         paddingVertical: 100,
         height: height - actionBarHeight,
         paddingTop: height > 1000 ? 20 : 40,

@@ -76,7 +76,7 @@ const TitleText = styled.Text`
     text-align: center;
     font-weight: bold;
     font-size: 16px;
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale5};
 `
 
 const Choice = styled.TouchableOpacity`
@@ -95,7 +95,7 @@ const Text = styled.Text`
     text-align: left;
     font-weight: bold;
     font-size: 14px;
-    color: ${(props) => props.theme.colors.purple};
+    color: ${(props) => props.theme.colors.greyScale5};
 `
 
 const SubText = styled.Text`

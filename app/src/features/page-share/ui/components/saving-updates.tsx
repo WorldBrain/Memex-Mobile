@@ -31,7 +31,7 @@ const InnerContainer = styled.View`
 `
 
 const TitleText = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 20px;
     font-weight: 800;
 `

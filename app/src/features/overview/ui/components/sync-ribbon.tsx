@@ -45,7 +45,7 @@ const Container = styled.TouchableOpacity`
     align-items: center;
     border-radius: 30px;
     z-index: 10000;
-    background: ${(props) => props.theme.colors.purple};
+    background: ${(props) => props.theme.colors.prime1};
     width: 180px;
     height: 30px;
     border-radius: 30px;

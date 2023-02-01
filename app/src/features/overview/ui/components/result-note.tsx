@@ -124,7 +124,7 @@ const ContentContainer = styled.View`
 
 const AnnotationContainer = styled.View`
     padding-left: 10px;
-    border-left-color: ${(props) => props.theme.colors.purple + '80'};
+    border-left-color: ${(props) => props.theme.colors.prime1 + '80'};
     border-left-width: 5px;
     border-style: solid;
 `
@@ -134,18 +134,18 @@ const AnnotationSpacing = styled.View`
 `
 
 const AnnotationHighlight = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 14px;
     line-height: 18px;
 `
 
 const AnnotationNote = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 14px;
 `
 
 const DateBox = styled.Text`
-    color: ${(props) => props.theme.colors.lighterText};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 12px;
     margin: -5px 0px;
 `

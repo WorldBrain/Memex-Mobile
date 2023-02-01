@@ -18,7 +18,7 @@ export type Props = {
 }
 
 export const LoadingIndicator: React.StatelessComponent<Props> = (props) => {
-    return <MaterialIndicator size={props.size} color={theme.colors.purple} />
+    return <MaterialIndicator size={props.size} color={theme.colors.prime1} />
 }
 
 export default LoadingIndicator

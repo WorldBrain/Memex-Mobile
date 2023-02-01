@@ -63,7 +63,6 @@ export const SecondaryAction = (props: ActionButtonProps) => {
 const SecondaryActionContainer = styled.TouchableOpacity<ActionButtonProps>`
     width: ${(props) => (props.width ? props.width : '150px')};
     height: ${(props) => (props.height ? props.height : '50px')};
-    // border: 2px solid ${(props) => props.theme.colors.purple};
     display: flex;
     align-items: center;
     justify-content: center;
@@ -72,7 +71,7 @@ const SecondaryActionContainer = styled.TouchableOpacity<ActionButtonProps>`
 
 const SecondaryActionText = styled.Text<ActionButtonProps>`
     font-size: ${(props) => (props.fontSize ? props.fontSize : '16px')};
-    color: ${(props) => props.theme.colors.purple};
+    color: ${(props) => props.theme.colors.prime1};
     font-weight: 500;
     text-align: center;
     flex-wrap: nowrap;

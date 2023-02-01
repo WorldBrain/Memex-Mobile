@@ -142,7 +142,7 @@ const Container = styled.View<{ isLandscape?: boolean }>`
     background-color: #fff;
     border-style: solid;
     border-top-width: 1px;
-    border-color: ${(props) => props.theme.colors.lightgrey};
+    border-color: ${(props) => props.theme.colors.greyScale5};
 `
 
 const IconSpacer = styled.View`

@@ -106,7 +106,7 @@ const Login: React.StatelessComponent<Props> = (props) => {
                                     onChangeText={props.onEmailChange}
                                     placeholder="Email"
                                     placeholderTextColor={
-                                        theme.colors.lighterText
+                                        theme.colors.greyScale5
                                     }
                                     textContentType="emailAddress"
                                     editable={!props.isLoading}
@@ -131,7 +131,7 @@ const Login: React.StatelessComponent<Props> = (props) => {
                                     secureTextEntry
                                     editable={!props.isLoading}
                                     placeholderTextColor={
-                                        theme.colors.lighterText
+                                        theme.colors.greyScale5
                                     }
                                     autoCapitalize="none"
                                 />
@@ -165,7 +165,7 @@ const Login: React.StatelessComponent<Props> = (props) => {
                                             secureTextEntry
                                             editable={!props.isLoading}
                                             placeholderTextColor={
-                                                theme.colors.lighterText
+                                                theme.colors.greyScale5
                                             }
                                             autoCapitalize="none"
                                         />
@@ -387,7 +387,7 @@ const TextInputContainer = styled.View`
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    border: 1px solid ${(props) => props.theme.colors.lineLightGrey};
+    border: 1px solid ${(props) => props.theme.colors.greyScale5};
     height: 50px;
     border-radius: 8px;
     width: 350px;
@@ -398,7 +398,7 @@ const TextInputContainer = styled.View`
 const TextInputBox = styled(TextInput)`
     background: transparent;
     flex: 1;
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale6};
     background: transparent;
     margin-left: 10px;
 `
@@ -413,7 +413,7 @@ const ForgotPasswordBox = styled.TouchableOpacity`
 `
 
 const ForgotPasswordText = styled.Text`
-    color: ${(props) => props.theme.colors.purple};
+    color: ${(props) => props.theme.colors.prime1};
     font-size: 14px;
 `
 

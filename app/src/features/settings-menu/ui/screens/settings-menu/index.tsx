@@ -118,7 +118,7 @@ const SettingsEntryText = styled.Text`
     flex-direction: row;
     align-items: center;
     justify-content: flex-start
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 14px;
     margin-left: 10px;
 `
@@ -131,7 +131,7 @@ const SettingsEntryRow = styled.TouchableOpacity`
     height: 60px;
     border-style: solid;
     border-bottom-width: 1px;
-    border-color: ${(props) => props.theme.colors.lightgrey};
+    border-color: ${(props) => props.theme.colors.greyScale5};
 `
 
 const SettingsEntryRowLink = styled.View`
@@ -142,5 +142,5 @@ const SettingsEntryRowLink = styled.View`
     height: 60px;
     border-style: solid;
     border-bottom-width: 1px;
-    border-color: ${(props) => props.theme.colors.lightgrey};
+    border-color: ${(props) => props.theme.colors.greyScale5};
 `

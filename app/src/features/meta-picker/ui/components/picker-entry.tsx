@@ -52,14 +52,14 @@ const MetaPickerEntry: React.StatelessComponent<Props> = (props) => (
 export default MetaPickerEntry
 
 const EntryText = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale6};
     font-size: 16px;
     font-weight: 400;
 `
 
 const NewText = styled.Text`
     font-size: 16px;
-    color: ${(props) => props.theme.colors.purple};
+    color: ${(props) => props.theme.colors.prime1};
     font-weight: 800;
     margin-right: 15px;
 `
@@ -90,7 +90,7 @@ const Container = styled.View`
     justify-content: space-between;
     border-style: solid;
     border-bottom-width: 1px;
-    border-bottom-color: ${(props) => props.theme.colors.lightgrey};
+    border-bottom-color: ${(props) => props.theme.colors.greyScale5};
 `
 
 const EmptyCircle = styled.View`
@@ -99,5 +99,5 @@ const EmptyCircle = styled.View`
     border-radius: 50px;
     border-style: solid;
     border-width: 2px;
-    border-color: ${(props) => props.theme.colors.lightgrey};
+    border-color: ${(props) => props.theme.colors.greyScale5};
 `

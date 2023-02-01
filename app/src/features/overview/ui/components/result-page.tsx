@@ -140,7 +140,7 @@ const ResultContainer = styled.View`
     max-width: 100%;
     border-style: solid;
     border-width: 1px;
-    border-color: ${(props) => props.theme.colors.lightgrey};
+    border-color: ${(props) => props.theme.colors.greyScale5};
 `
 
 const ResultItem = styled.View`
@@ -154,7 +154,7 @@ const TopArea = styled.TouchableOpacity`
 `
 
 const Footer = styled.View`
-    border-top-color: ${(props) => props.theme.colors.lightgrey};
+    border-top-color: ${(props) => props.theme.colors.greyScale5};
     border-top-width: 1px;
     height: 40px;
     align-items: center;

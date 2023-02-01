@@ -325,7 +325,7 @@ const LoadingIndicatorBox = styled.View`
 `
 
 const TitleText = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 14px;
     font-weight: 700;
 `

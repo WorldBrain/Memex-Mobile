@@ -89,7 +89,7 @@ const Container = styled.View`
     flex-direction: row;
     border-style: solid;
     border-top-width: 1px;
-    border-color: ${(props) => props.theme.colors.lightgrey};
+    border-color: ${(props) => props.theme.colors.greyScale5};
     background: white;
 `
 

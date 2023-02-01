@@ -64,7 +64,7 @@ const Container = styled.View`
     flex-direction: row;
     align-items: center;
     height: ${height}px;
-    border-bottom-color: ${(props) => props.theme.colors.lightgrey};
+    border-bottom-color: ${(props) => props.theme.colors.greyScale5};
     border-bottom-width: 1px;
     background: ${(props) => props.theme.colors.white};
     margin-top: -50px;
@@ -115,8 +115,8 @@ const TextArea = styled.Text`
     align-items: center;
     display: flex;
     font-weight: 800;
-    text-align-vertical: bottom;
-    color: ${(props) => props.theme.colors.darkerText};
+    text-align: bottom;
+    color: ${(props) => props.theme.colors.greyScale5};
 `
 
 export default Navigation
