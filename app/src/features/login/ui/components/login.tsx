@@ -333,14 +333,14 @@ const ActionButtonContainer = styled.View`
 
 const IntroTitle = styled.Text`
     font-size: 20px;
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale6};
     margin-bottom: 20px;
     font-weight: 800;
     margin-top: 30px;
 `
 
 const SectionCircle = styled.View`
-    background: ${(props) => props.theme.colors.backgroundHighlight};
+    background: ${(props) => props.theme.colors.greyScale2};
     border-radius: 100px;
     height: 60px;
     width: 60px;

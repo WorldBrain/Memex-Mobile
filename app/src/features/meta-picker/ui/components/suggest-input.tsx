@@ -42,10 +42,10 @@ const Container = styled.View`
 `
 
 const TextInputContainer = styled.TextInput`
-    background: ${(props) => props.theme.colors.backgroundColorDarker};
+    background: ${(props) => props.theme.colors.greyScale2};
     border-radius: 8px;
     flex: 1;
     height: 100%;
     padding: 0 20px;
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale6};
 `

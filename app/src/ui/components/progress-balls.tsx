@@ -32,8 +32,8 @@ const Ball = styled.View<{
     border-radius: 30px;
     background: ${(props) =>
         props.isSelected
-            ? props.theme.colors.purple + '70'
-            : props.theme.colors.backgroundColorDarker}};
+            ? props.theme.colors.prime1 + '70'
+            : props.theme.colors.greyScale2};
 `
 
 export default ProgressBalls

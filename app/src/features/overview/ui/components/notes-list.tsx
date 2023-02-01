@@ -120,7 +120,7 @@ const EmptyItem = styled.View`
 `
 
 const SectionCircle = styled.View`
-    background: ${(props) => props.theme.colors.backgroundHighlight};
+    background: ${(props) => props.theme.colors.greyScale2};
     border-radius: 100px;
     height: 60px;
     width: 60px;
@@ -130,14 +130,14 @@ const SectionCircle = styled.View`
 `
 
 const Container = styled.View`
-    background: ${(props) => props.theme.colors.backgroundColor};
+    background: ${(props) => props.theme.colors.black};
     width: 100%;
     margin-top: 10px;
     flex: 1;
 `
 
 const NoResultsTitle = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale6};
     font-size: 20px;
     font-weight: 800;
     text-align: center;

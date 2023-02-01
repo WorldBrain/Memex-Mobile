@@ -14,6 +14,6 @@ h1 {
 }
 
 .${HIGHLIGHT_CLASS} {
-    background: ${theme.colors.backgroundHighlight};
+    background: ${theme.colors.greyScale2};
 }
 `

@@ -42,7 +42,7 @@ export default React.memo(
 const AddSpacesContainer = styled.TouchableOpacity`
     border-width: 2px;
     border-style: dotted;
-    border-color: ${(props) => props.theme.colors.lightgrey}
+    border-color: ${(props) => props.theme.colors.greyScale5}
     display: flex;
     justify-content: space-between;
     width: auto;
@@ -55,13 +55,13 @@ const AddSpacesContainer = styled.TouchableOpacity`
 `
 
 const AddSpacesText = styled.Text`
-    color: ${(props) => props.theme.colors.purple};
+    color: ${(props) => props.theme.colors.prime1};
     font-size: 12px;
     display: flex;
-    align-items flex-end;
+    align-items: flex-end;
     flex-direction: row;
     justify-content: center;
-    text-align-vertical: bottom;
+    text-align: bottom;
 `
 
 const SpacesCounterPill = styled.View`
@@ -70,7 +70,7 @@ const SpacesCounterPill = styled.View`
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    background: ${(props) => props.theme.colors.purple}
+    background: ${(props) => props.theme.colors.prime1};
     border-radius: 50px;
     margin-right: 5px;
 `

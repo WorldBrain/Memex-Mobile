@@ -317,7 +317,7 @@ const ErrorScreen = styled.View`
 
 const ErrorMessage = styled.Text`
     font-size: 18px;
-    color: ${(props) => props.theme.colors.lighterText};
+    color: ${(props) => props.theme.colors.greyScale5};
     text-align: center;
     padding: 0px 20px;
 `
@@ -325,11 +325,11 @@ const ErrorMessage = styled.Text`
 const Header = styled.Text`
     font-size: 22px;
     font-weight: 800;
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale6};
     margin-bottom: 10px;
 `
 const SectionCircle = styled.View<{ size: string }>`
-    background: ${(props) => props.theme.colors.backgroundHighlight};
+    background: ${(props) => props.theme.colors.greyScale1};
     border-radius: 100px;
     height: ${(props) => (props.size ? props.size : '60px')};
     width: ${(props) => (props.size ? props.size : '60px')};
@@ -346,7 +346,7 @@ const Spacer10 = styled.View`
 const Button = styled.TouchableOpacity`
     width: 100px;
     height: 40px;
-    background: ${(props) => props.theme.colors.purple};
+    background: ${(props) => props.theme.colors.prime1};
     border-radius: 5px;
     display: flex;
     justify-content: center;

@@ -40,7 +40,7 @@ const Container = styled.View`
 `
 
 const SectionCircle = styled.View`
-    background: ${(props) => props.theme.colors.backgroundHighlight};
+    background: ${(props) => props.theme.colors.greyScale3};
     border-radius: 100px;
     height: 50px;
     width: 50px;
@@ -52,12 +52,12 @@ const SectionCircle = styled.View`
 
 const TitleText = styled.Text`
     font-size: 20px;
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale6};
     font-weight: 800;
     margin-bottom: 10px;
 `
 const SubText = styled.Text`
     font-size: 16px;
-    color: ${(props) => props.theme.colors.lighterText};
+    color: ${(props) => props.theme.colors.greyScale5};
     text-align: center;
 `

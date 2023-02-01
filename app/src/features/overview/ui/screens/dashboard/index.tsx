@@ -305,7 +305,7 @@ const Container = styled.SafeAreaView`
     height: 100%;
     position: absolute;
     width: 100%;
-    background: ${(props) => props.theme.colors.backgroundColor};
+    background: ${(props) => props.theme.colors.black};
     display: flex;
     align-items: center;
     position: absolute;
@@ -322,7 +322,7 @@ const ResultListContainer = styled.View`
 `
 
 const ResultsList = (styled(FlatList)`
-    background: ${(props) => props.theme.colors.backgroundColor};
+    background: ${(props) => props.theme.colors.black};
     display: flex;
     padding: 5px;
 ` as unknown) as typeof FlatList

@@ -218,13 +218,13 @@ export default class extends StatefulUIElement<Props, State, Event> {
 }
 
 const Container = styled.SafeAreaView`
-    background: ${(props) => props.theme.colors.backgroundColor};
+    background: ${(props) => props.theme.colors.black};
 `
 
 const NoteInputEditorBox = styled.View`
     border-style: solid;
     border-width: 1px;
-    border-color: ${(props) => props.theme.colors.lightgrey};
+    border-color: ${(props) => props.theme.colors.greyScale3};
     height: 50%;
     max-height: 400px;
     margin: 0 10px;
@@ -270,7 +270,7 @@ const ScrollContainer = styled.View<{ highlightText: string | null }>`
 
 const AnnotationContainer = styled.View`
     padding-left: 10px;
-    border-left-color: ${(props) => props.theme.colors.purple + '80'};
+    border-left-color: ${(props) => props.theme.colors.prime1 + '80'};
     border-left-width: 5px;
     border-style: solid;
     margin: 20px 0px 20px 20px;
@@ -280,7 +280,7 @@ const AnnotationContainer = styled.View`
 `
 
 const AnnotationHighlight = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale6};
     font-size: 14px;
     line-height: 18px;
 `

@@ -154,7 +154,7 @@ const InnerContainer = styled.View`
 `
 
 const SearchInputContainer = styled(SuggestInput)`
-    background: ${(props) => props.theme.colors.backgroundColorDarker};
+    background: ${(props) => props.theme.colors.greyScale2};
     width: 100%;
 `
 

@@ -187,7 +187,7 @@ const ContactContainer = styled.View`
 `
 
 const HeadingText = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale6};
     font-size: 24px;
     font-weight: 800;
     text-align: center;
@@ -196,7 +196,7 @@ const HeadingText = styled.Text`
 `
 
 const SecondaryText = styled.Text`
-    color: ${(props) => props.theme.colors.lighterText};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 18px;
     font-weight: 400;
     text-align: center;
@@ -207,11 +207,11 @@ const SecondaryText = styled.Text`
 `
 
 const TertiaryText = styled.Text`
-    color: ${(props) => props.theme.colors.purple};
+    color: ${(props) => props.theme.colors.prime1};
 `
 
 const SectionCircle = styled.View`
-    background: ${(props) => props.theme.colors.backgroundHighlight};
+    background: ${(props) => props.theme.colors.greyScale2};
     border-radius: 100px;
     height: 60px;
     width: 60px;
@@ -243,12 +243,12 @@ const MemexLogo = styled.Image`
 
 const InfoText = styled.Text`
     font-weight: bold;
-    color: ${(props) => props.theme.colors.purple};
+    color: ${(props) => props.theme.colors.prime1};
 `
 
 const InfoTextProgress = styled.Text`
     font-weight: bold;
-    color: ${(props) => props.theme.colors.purple};
+    color: ${(props) => props.theme.colors.prime1};
     font-size: 22px;
     margin: -10px 0 10px 0%;
 `

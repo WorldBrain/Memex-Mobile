@@ -37,10 +37,10 @@ const Dot = styled.View<{ unread: boolean }>`
     width: 14px;
     height: 14px;
     background: ${(props) =>
-        props.unread ? props.theme.colors.purple : props.theme.colors.white};
+        props.unread ? props.theme.colors.prime1 : props.theme.colors.white};
     border: 2px solid
         ${(props) =>
             props.unread
-                ? props.theme.colors.purple
-                : props.theme.colors.lineGrey};
+                ? props.theme.colors.prime1
+                : props.theme.colors.greyScale3};
 `

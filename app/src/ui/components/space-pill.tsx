@@ -22,7 +22,7 @@ const SpacePill: React.SFC<Props> = ({ name, isShared }) => (
                 <Spacer />
             </>
         )}
-        <SpacePillText is>
+        <SpacePillText>
             {(isShared ? ' ' : '') + (name ?? 'Missing Space')}
         </SpacePillText>
     </SpacePillContainer>
@@ -34,10 +34,10 @@ const SpacePillContainer = styled.View`
     display: flex;
     flex-direction: row;
     padding: 3px 8px;
-    background: ${(props) => props.theme.colors.purple};
+    background: ${(props) => props.theme.colors.prime1};
     align-items: center;
     display: flex;
-    text-align-vertical: center;
+    text-align: center;
     margin-right: 3px;
     border-radius: 3px;
     margin-bottom: 5px;
@@ -50,6 +50,6 @@ const Spacer = styled.View`
 const SpacePillText = styled.Text<{ isShared: boolean }>`
     color: white;
     display: flex;
-    text-align-vertical: center;
+    text-align: center;
     font-size: 12px;
 `

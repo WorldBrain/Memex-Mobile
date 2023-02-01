@@ -42,7 +42,7 @@ const MainLayout: React.StatelessComponent<Props> = (props) => (
 
 const Container = styled.SafeAreaView`
     height: 100%;
-    background: ${(props) => props.theme.colors.backgroundColor};
+    background: ${(props) => props.theme.colors.black};
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -52,7 +52,7 @@ const Container = styled.SafeAreaView`
 
 const MainLayoutContainer = styled.View`
     display: flex;
-    flex-direction column;
+    flex-direction: column;
     z-index: 1;
     justify-content: center;
     align-items: center;

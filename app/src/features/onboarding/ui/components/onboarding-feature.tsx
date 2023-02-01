@@ -43,11 +43,13 @@ const MainContainer = styled.View`
     align-items: center;
     justify-content: center;
     flex: 1;
-    //padding-top: ${conditionalStyles() === 'tabletLandscape'
-        ? '0rem'
-        : conditionalStyles() === 'tabletPortrait'
-        ? '2rem'
-        : '5rem'}
+    //padding-top: ${
+        conditionalStyles() === 'tabletLandscape'
+            ? '0rem'
+            : conditionalStyles() === 'tabletPortrait'
+            ? '2rem'
+            : '5rem'
+    }
 `
 
 const ImgContainer = styled.View`
@@ -63,7 +65,7 @@ const ImgContainer = styled.View`
 const TitleContainer = styled.View``
 
 const HeadingText = styled.Text`
-    color: ${(props) => props.theme.colors.darkerText};
+    color: ${(props) => props.theme.colors.greyScale6};
     font-size: 24px;
     font-weight: 800;
     text-align: center;
@@ -71,7 +73,7 @@ const HeadingText = styled.Text`
 `
 
 const SecondaryText = styled.Text`
-    color: ${(props) => props.theme.colors.lighterText};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 20px;
     font-weight: 400;
     text-align: center;

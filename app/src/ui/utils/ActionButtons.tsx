@@ -34,7 +34,7 @@ export const PrimaryAction = (props: ActionButtonProps) => {
 const PrimaryActionContainer = styled.TouchableOpacity<ActionButtonProps>`
     width: ${(props) => (props.width ? props.width : '150px')};
     height: ${(props) => (props.height ? props.height : '50px')};
-    background: ${(props) => props.theme.colors.purple};
+    background: ${(props) => props.theme.colors.prime1};
     display: flex;
     align-items: center;
     justify-content: center;
