@@ -11,6 +11,7 @@ import { extractUrlParts, normalizeUrl } from '@worldbrain/memex-url-utils'
 import { createStorexPlugins } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/plugins'
 import UserStorage from '@worldbrain/memex-common/lib/user-management/storage'
 import { OverviewStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/overview/storage'
+import { FollowedListStorage } from 'src/features/followed-lists/storage'
 import { MetaPickerStorage } from 'src/features/meta-picker/storage'
 import { PageEditorStorage } from 'src/features/page-editor/storage'
 import { ContentSharingClientStorage } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
@@ -102,6 +103,9 @@ export async function createStorage({
             storageManager,
             normalizeUrl,
             extractUrlParts,
+        }),
+        followedLists: new FollowedListStorage({
+            storageManager,
         }),
         metaPicker: new MetaPickerStorage({
             storageManager,

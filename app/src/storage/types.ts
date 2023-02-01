@@ -14,6 +14,7 @@ import type { SettingsStorage } from 'src/features/settings/storage'
 import type { ReaderStorage } from 'src/features/reader/storage'
 import type { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import type { CopyPasterStorage } from 'src/features/copy-paster/storage'
+import type { FollowedListStorage } from 'src/features/followed-lists/storage'
 import type ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
 import type ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
 import type { ActivityStreamsStorage } from '@worldbrain/memex-common/lib/activity-streams/storage/types'
@@ -28,6 +29,7 @@ export interface StorageModules {
     metaPicker: MetaPickerStorage
     pageEditor: PageEditorStorage
     copyPaster: CopyPasterStorage
+    followedLists: FollowedListStorage
     clientSyncLog: MemexClientSyncLogStorage
     contentSharing: ContentSharingClientStorage
     personalCloud: PersonalCloudStorage
