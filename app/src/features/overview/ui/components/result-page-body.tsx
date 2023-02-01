@@ -16,17 +16,24 @@ const ResultPageBody: React.StatelessComponent<Props> = (props) => (
                 <TitleText>{props.titleText}</TitleText>
             </Title>
             <BottomBarBox>
-                {props.type !== 'page' && (
-                    <Text style={styles.pdfIcon}>PDF</Text>
-                )}
                 <DomainText numberOfLines={1}>{props.domain}</DomainText>
-                <DateText>{props.date}</DateText>
+                {props.type !== 'page' && <PDFPill>PDF</PDFPill>}
+                {/* <DateText>{props.date}</DateText> */}
             </BottomBarBox>
         </ContentBox>
     </View>
 )
 
 export default ResultPageBody
+
+const PDFPill = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale4};
+    border-radius: 5px;
+    border: 1px solid ${(props) => props.theme.colors.greyScale4};
+    padding: 2px 5px;
+    font-size: 10px;
+    margin-right: 10px;
+`
 
 const ContentBox = styled.View`
     display: flex;
@@ -40,13 +47,14 @@ const Title = styled.View`
 `
 
 const TitleText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5}
-    font-weight: 700;
-    font-size: 16px;
+    color: ${(props) => props.theme.colors.white};
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.3px;
 `
 
 const DomainText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5}
+    color: ${(props) => props.theme.colors.greyScale5};
     font-weight: 500;
     font-size: 14px;
     margin-right: 10px;
@@ -60,7 +68,7 @@ const BottomBarBox = styled.View`
 `
 
 const DateText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5}
+    color: ${(props) => props.theme.colors.greyScale4};
     font-weight: 400;
     font-size: 14px;
 `

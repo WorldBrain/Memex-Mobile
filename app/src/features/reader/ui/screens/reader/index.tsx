@@ -16,7 +16,7 @@ import Navigation, {
     height as navigationBarHeight,
 } from 'src/features/overview/ui/components/navigation'
 import * as icons from 'src/ui/components/icons/icons-list'
-import styled from 'styled-components/native'
+import styled, { css } from 'styled-components/native'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 
 export default class Reader extends StatefulUIElement<Props, State, Event> {
@@ -133,7 +133,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         <Icon
                             icon={icons.Lock}
                             heightAndWidth="20px"
-                            color="purple"
+                            color="prime1"
                         />
                     </SectionCircle>
                     <Header>HTTP pages not supported</Header>
@@ -151,7 +151,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     <Icon
                         icon={icons.Alert}
                         heightAndWidth="20px"
-                        color="purple"
+                        color="prime1"
                     />
                 </SectionCircle>
                 <Header>Error Loading Page</Header>
@@ -191,6 +191,8 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         }
 
         // TODO: sort out the type error here :S
+
+        console.log(this.props)
         return (
             <WebViewContainer isLandscape={this.state.rotation === 'landscape'}>
                 <WebView
@@ -246,40 +248,53 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     titleText={'Annotate this page'}
                     rightBtnPress={() => Linking.openURL(this.state.url)}
                     rightIcon={icons.ExternalLink}
-                    rightIconSize="20px"
-                    rightIconStrokeWidth="2px"
+                    rightIconSize="24px"
+                    rightIconStrokeWidth="0px"
                 />
                 {this.renderWebView()}
-                <ActionBar
-                    isErrorView={this.state.error != null}
-                    {...this.state}
-                    onBackBtnPress={() => this.processEvent('goBack', null)}
-                    onHighlightBtnPress={() =>
-                        this.runFnInWebView('createHighlight')
-                    }
-                    onAnnotateBtnPress={() =>
-                        this.runFnInWebView('createAnnotation')
-                    }
-                    onBookmarkBtnPress={() =>
-                        this.processEvent('toggleBookmark', null)
-                    }
-                    onListBtnPress={() =>
-                        this.processEvent('navToPageEditor', {
-                            mode: 'collections',
-                        })
-                    }
-                    onCommentBtnPress={() =>
-                        this.processEvent('navToPageEditor', { mode: 'notes' })
-                    }
-                    spaceCount={this.state.spaces.length}
-                />
+                <ActionBarContainer>
+                    <ActionBar
+                        isErrorView={this.state.error != null}
+                        {...this.state}
+                        onBackBtnPress={() => this.processEvent('goBack', null)}
+                        onHighlightBtnPress={() =>
+                            this.runFnInWebView('createHighlight')
+                        }
+                        onAnnotateBtnPress={() =>
+                            this.runFnInWebView('createAnnotation')
+                        }
+                        onBookmarkBtnPress={() =>
+                            this.processEvent('toggleBookmark', null)
+                        }
+                        onListBtnPress={() =>
+                            this.processEvent('navToPageEditor', {
+                                mode: 'collections',
+                            })
+                        }
+                        onCommentBtnPress={() =>
+                            this.processEvent('navToPageEditor', {
+                                mode: 'notes',
+                            })
+                        }
+                        spaceCount={this.state.spaces.length}
+                    />
+                </ActionBarContainer>
             </Container>
         )
     }
 }
 
+const ActionBarContainer = styled.View`
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    width: 100%;
+    align-items: center;
+`
+
 const Container = styled.SafeAreaView`
-    height: 50%;
+    height: 100%;
     display: flex;
     align-items: center;
 `
@@ -288,13 +303,10 @@ const WebViewContainer = styled.SafeAreaView<{
     isLandscape?: boolean
     isLoading?: boolean
 }>`
+    background: ${(props) => props.theme.colors.black};
     width: 100%;
     height: ${(props) =>
-        Dimensions.get('window').height -
-        navigationBarHeight -
-        (props.isLandscape
-            ? actionBarHeightLandscape - 60
-            : actionBarHeightPortrait)}px;
+        Dimensions.get('window').height - navigationBarHeight + 20}px;
     ${(props) =>
         props.isLoading
             ? `
@@ -304,6 +316,13 @@ const WebViewContainer = styled.SafeAreaView<{
     align-items: center;
     `
             : ''}
+
+    ${(props) =>
+        props.isLandscape &&
+        css`
+            width: ${(props) => Dimensions.get('window').width}px;
+            height: ${(props) => Dimensions.get('window').height}px;
+        `};
 `
 
 const ErrorScreen = styled.View`

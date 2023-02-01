@@ -2,8 +2,9 @@ import { ColorThemeKeys } from '@worldbrain/memex-common/lib/common-ui/styles/ty
 import React from 'react'
 import { SvgProps } from 'react-native-svg'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
-import styled from 'styled-components/native'
-
+import styled, { css } from 'styled-components/native'
+import { Dimensions, ScaledSize } from 'react-native'
+import { StatefulUIElement } from 'src/ui/types'
 export interface Props {
     titleText?: React.ReactNode
     renderLeftIcon?: () => JSX.Element
@@ -20,64 +21,118 @@ export interface Props {
     rightIconStrokeWidth?: string
 }
 
-const Navigation: React.StatelessComponent<Props> = (props) => (
-    <Container>
-        <ContainerBox>
-            <LeftBtnContainer>
-                {props.leftIcon && (
-                    <IconBox onPress={props.leftBtnPress}>
-                        <Icon
-                            heightAndWidth={props.leftIconSize}
-                            strokeWidth={props.leftIconStrokeWidth}
-                            icon={props.leftIcon}
-                        />
-                    </IconBox>
-                )}
-                <Spacer10 />
-                {props.renderIndicator?.()}
-            </LeftBtnContainer>
-            {typeof props.titleText === 'string' ? (
-                <TextArea numberOfLines={1}>{props.titleText}</TextArea>
-            ) : (
-                <>{props.titleText}</>
-            )}
-            <RightBtnContainer onPress={props.rightBtnPress}>
-                {props.rightIcon && (
-                    <Icon
-                        heightAndWidth={props.rightIconSize}
-                        color={props.rightIconColor}
-                        strokeWidth={props.rightIconStrokeWidth}
-                        icon={props.rightIcon}
-                    />
-                )}
-            </RightBtnContainer>
-        </ContainerBox>
-    </Container>
-)
+export interface State {
+    isLandscape: boolean
+}
+
+export default class Navigation extends React.Component<Props> {
+    state = {
+        isLandscape: false,
+    }
+
+    constructor(props: Props) {
+        super(props)
+    }
+
+    handleOrientationChange = () => {
+        this.setState({
+            isLandscape:
+                Dimensions.get('screen').width > Dimensions.get('screen').height
+                    ? true
+                    : false,
+        })
+    }
+
+    componentDidMount() {
+        this.setState({
+            isLandscape:
+                Dimensions.get('screen').width > Dimensions.get('screen').height
+                    ? true
+                    : false,
+        })
+        Dimensions.addEventListener('change', this.handleOrientationChange)
+    }
+
+    render() {
+        return (
+            <Container isLandscape={this.state.isLandscape}>
+                <ContainerBox isLandscape={this.state.isLandscape}>
+                    {this.props.leftIcon && (
+                        <LeftBtnContainer>
+                            <IconBox onPress={this.props.leftBtnPress}>
+                                <Icon
+                                    heightAndWidth={this.props.leftIconSize}
+                                    strokeWidth={this.props.leftIconStrokeWidth}
+                                    icon={this.props.leftIcon}
+                                />
+                            </IconBox>
+                        </LeftBtnContainer>
+                    )}
+                    {typeof this.props.titleText === 'string' ? (
+                        <TextArea numberOfLines={1}>
+                            {this.props.titleText}
+                        </TextArea>
+                    ) : (
+                        <>{this.props.titleText}</>
+                    )}
+                    <RightBtnContainer onPress={this.props.rightBtnPress}>
+                        {this.props.rightIcon && (
+                            <Icon
+                                heightAndWidth={this.props.rightIconSize}
+                                color={this.props.rightIconColor}
+                                strokeWidth={
+                                    this.props.rightIconStrokeWidth ?? '1.5'
+                                }
+                                icon={this.props.rightIcon}
+                                fill
+                            />
+                        )}
+                    </RightBtnContainer>
+                </ContainerBox>
+            </Container>
+        )
+    }
+}
 
 export const height = 100
 
-const Container = styled.View`
+const Container = styled.View<{
+    isLandscape?: boolean
+}>`
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     flex-direction: row;
     align-items: center;
     height: ${height}px;
-    border-bottom-color: ${(props) => props.theme.colors.greyScale5};
+    border-bottom-color: ${(props) => props.theme.colors.greyScale1};
+    background: ${(props) => props.theme.colors.black};
     border-bottom-width: 1px;
-    background: ${(props) => props.theme.colors.white};
-    margin-top: -50px;
+    margin-top: -55px;
+
+    ${(props) =>
+        props.isLandscape &&
+        css`
+            width: ${(props) => Dimensions.get('window').width}px;
+        `};
 `
 
-const ContainerBox = styled.View`
+const ContainerBox = styled.View<{
+    isLandscape?: boolean
+}>`
     display: flex;
     justify-content: space-between;
     flex-direction: row;
     align-items: center;
     width: 100%;
-    padding: 0 24px 10px;
+    padding: 0 15px 0px;
     margin-bottom: -50px;
+
+    ${(props) =>
+        props.isLandscape &&
+        css`
+            padding: 5px 50px 0px 50px;
+        `};
 `
 
 const Spacer10 = styled.View`
@@ -114,8 +169,6 @@ const TextArea = styled.Text`
     height: 100%;
     align-items: center;
     display: flex;
-    font-weight: 800;
-    color: ${(props) => props.theme.colors.greyScale5};
+    font-weight: 600;
+    color: ${(props) => props.theme.colors.white};
 `
-
-export default Navigation

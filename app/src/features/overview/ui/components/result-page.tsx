@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Platform, Share } from 'react-native'
+import { View, Platform, Share, Modal } from 'react-native'
 
 import Body, { Props as BodyProps } from './result-page-body'
 import type { TouchEventHandler } from 'src/ui/types'
@@ -28,100 +28,136 @@ export interface InteractionProps {
 class ResultPage extends React.PureComponent<Props> {
     render() {
         return (
-            <ResultContainer>
-                <ResultItem>
-                    <TopArea onPress={this.props.onReaderPress}>
-                        <View>
-                            <Body {...this.props} />
-                        </View>
-                        {this.props.spacePills}
-                    </TopArea>
-                    <Footer>
-                        <AddToSpacesBtn onPress={this.props.onListsPress} />
-                        <FooterRightSide>
-                            <IconContainer onPress={this.props.onResultPress}>
-                                {this.props.isResultPressed ? (
-                                    <Icon
-                                        icon={icons.ForwardArrow}
-                                        strokeWidth="6"
-                                        heightAndWidth="22px"
-                                    />
-                                ) : (
+            <ResultItemContainer>
+                <ResultContainer>
+                    <ResultItem>
+                        <TopArea onPress={this.props.onReaderPress}>
+                            <View>
+                                <Body {...this.props} />
+                            </View>
+                            {this.props.spacePills}
+                        </TopArea>
+                        <Footer>
+                            <DateText>{this.props.date}</DateText>
+                            <FooterRightSide>
+                                <IconContainer
+                                    onPress={this.props.onResultPress}
+                                >
                                     <Icon
                                         icon={icons.Dots}
-                                        strokeWidth="4"
+                                        strokeWidth="0"
                                         heightAndWidth="15px"
-                                    />
-                                )}
-                            </IconContainer>
-                            {this.props.isResultPressed && (
-                                <MoreButtons>
-                                    <IconContainer
-                                        onPress={this.props.onDeletePress}
-                                    >
-                                        <Icon
-                                            icon={icons.Trash}
-                                            strokeWidth="3"
-                                            heightAndWidth="16px"
-                                        />
-                                    </IconContainer>
-                                    <IconContainer
-                                        onPress={async () => {
-                                            await Share.share({
-                                                url: this.props.fullUrl,
-                                                message:
-                                                    Platform.OS === 'ios'
-                                                        ? undefined
-                                                        : this.props.fullUrl,
-                                            })
-                                        }}
-                                    >
-                                        <Icon
-                                            icon={icons.Copy}
-                                            strokeWidth="2"
-                                            heightAndWidth="18px"
-                                        />
-                                    </IconContainer>
-                                    <IconContainer
-                                        onPress={this.props.onVisitPress}
-                                    >
-                                        <Icon
-                                            icon={icons.ExternalLink}
-                                            strokeWidth="2"
-                                            heightAndWidth="18px"
-                                        />
-                                    </IconContainer>
-                                </MoreButtons>
-                            )}
-                            <IconContainer onPress={this.props.onCommentPress}>
-                                {this.props.notes.length > 0 ? (
-                                    <Icon
-                                        icon={icons.Comment}
-                                        strokeWidth="3"
+                                        color="greyScale4"
                                         fill
-                                        heightAndWidth="16px"
                                     />
-                                ) : (
+                                </IconContainer>
+
+                                <IconContainer
+                                    onPress={this.props.onListsPress}
+                                >
                                     <Icon
-                                        icon={icons.Comment}
-                                        strokeWidth="3"
+                                        icon={icons.Plus}
+                                        strokeWidth="1"
                                         heightAndWidth="16px"
+                                        color="prime1"
+                                        fill
                                     />
-                                )}
-                            </IconContainer>
-                        </FooterRightSide>
-                    </Footer>
-                </ResultItem>
-            </ResultContainer>
+                                </IconContainer>
+                                <IconContainer
+                                    onPress={this.props.onCommentPress}
+                                >
+                                    {this.props.notes.length > 0 ? (
+                                        <Icon
+                                            icon={icons.CommentFull}
+                                            strokeWidth="0"
+                                            fill
+                                            heightAndWidth="18px"
+                                            color="prime1"
+                                        />
+                                    ) : (
+                                        <Icon
+                                            icon={icons.Comment}
+                                            strokeWidth="0.2"
+                                            heightAndWidth="18px"
+                                            fill
+                                            color="prime1"
+                                        />
+                                    )}
+                                </IconContainer>
+                            </FooterRightSide>
+                        </Footer>
+                    </ResultItem>
+                </ResultContainer>
+                {/* <MoreActionTooltip
+                    animationType="none"
+                    transparent={true}
+                    visible={this.props.isResultPressed}
+                    onRequestClose={() => {
+                        this.props.onResultPress
+                    }}
+                >
+                    <MoreButtons>
+                        <IconContainer onPress={this.props.onDeletePress}>
+                            <Icon
+                                icon={icons.Trash}
+                                strokeWidth="0.5"
+                                fill
+                                heightAndWidth="18px"
+                            />
+                        </IconContainer>
+                        <IconContainer
+                            onPress={async () => {
+                                await Share.share({
+                                    url: this.props.fullUrl,
+                                    message:
+                                        Platform.OS === 'ios'
+                                            ? undefined
+                                            : this.props.fullUrl,
+                                })
+                            }}
+                        >
+                            <Icon
+                                icon={icons.Copy}
+                                strokeWidth="0.5"
+                                fill
+                                heightAndWidth="18px"
+                            />
+                        </IconContainer>
+                        <IconContainer onPress={this.props.onVisitPress}>
+                            <Icon
+                                icon={icons.ExternalLink}
+                                strokeWidth="0.5"
+                                fill
+                                heightAndWidth="18px"
+                            />
+                        </IconContainer>
+                    </MoreButtons>
+                </MoreActionTooltip> */}
+            </ResultItemContainer>
         )
     }
 }
 
 export default ResultPage
 
+const ResultItemContainer = styled.View`
+    position: relative;
+`
+
+const MoreActionTooltip = styled(Modal)`
+    flex-direction: column;
+    border-radius: 8px;
+    background: ${(props) => props.theme.colors.greyScale2};
+    border: 1px solid ${(props) => props.theme.colors.greyScale3};
+    z-index: 1;
+    height: 50px;
+    width: 50px;
+    bottom: 0px;
+`
+
 const MoreButtons = styled.View`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 `
 
 const ResultContainer = styled.View`
@@ -130,17 +166,13 @@ const ResultContainer = styled.View`
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    shadow-opacity: 0.5;
-    shadow-radius: 3px;
-    shadow-color: #e0e0e0;
-    shadow-offset: 0px 2px;
     border-radius: 8px;
-    background: white;
+    background: ${(props) => props.theme.colors.greyScale1};
     width: 600px;
     max-width: 100%;
     border-style: solid;
     border-width: 1px;
-    border-color: ${(props) => props.theme.colors.greyScale5};
+    border: none;
 `
 
 const ResultItem = styled.View`
@@ -154,7 +186,7 @@ const TopArea = styled.TouchableOpacity`
 `
 
 const Footer = styled.View`
-    border-top-color: ${(props) => props.theme.colors.greyScale5};
+    border-top-color: ${(props) => props.theme.colors.greyScale2};
     border-top-width: 1px;
     height: 40px;
     align-items: center;
@@ -178,4 +210,10 @@ const IconContainer = styled.TouchableOpacity`
     display: flex;
     align-items: center;
     justify-content: center;
+`
+
+const DateText = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale4};
+    font-weight: 400;
+    font-size: 14px;
 `

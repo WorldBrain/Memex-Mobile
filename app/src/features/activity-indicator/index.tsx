@@ -25,8 +25,8 @@ export default class FeedActivityIndicator extends StatefulUIElement<
 }
 
 const DotBox = styled.TouchableOpacity`
-    width: 30px;
-    height: 30px;
+    width: 12px;
+    height: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,13 +34,8 @@ const DotBox = styled.TouchableOpacity`
 
 const Dot = styled.View<{ unread: boolean }>`
     border-radius: 10px;
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     background: ${(props) =>
-        props.unread ? props.theme.colors.prime1 : props.theme.colors.white};
-    border: 2px solid
-        ${(props) =>
-            props.unread
-                ? props.theme.colors.prime1
-                : props.theme.colors.greyScale3};
+        props.unread ? props.theme.colors.prime1 : 'transparent'};
 `

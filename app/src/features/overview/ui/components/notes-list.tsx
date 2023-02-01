@@ -173,7 +173,7 @@ const NoResults = styled.View`
 const FlatListContainer = (styled(FlatList)`
     display: flex;
     border-left-width: 4px;
-    border-left-color: ${(props) => props.theme.colors.purple + '80'};
+    border-left-color: ${(props) => props.theme.colors.prime1 + '80'};
     padding-left: 10px;
     margin-left: 10px;
     margin-top: -10px;
@@ -186,7 +186,7 @@ const FlatListContainer = (styled(FlatList)`
 
 const PageResultCard = styled.View`
     display: flex;
-    flex-direction column;
+    flex-direction: column;
     z-index: 1;
     width: 620px;
     max-width: 100%;

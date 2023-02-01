@@ -6,8 +6,8 @@ import {
     Linking,
     NativeSyntheticEvent,
     NativeScrollEvent,
+    Dimensions,
 } from 'react-native'
-
 import Logic, { State, Event, Props } from './logic'
 import { StatefulUIElement } from 'src/ui/types'
 import ResultPage from '../../components/result-page'
@@ -18,7 +18,6 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import * as scrollHelpers from 'src/utils/scroll-helpers'
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import SyncRibbon from '../../components/sync-ribbon'
-import Navigation from '../../components/navigation'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled from 'styled-components/native'
 import { normalizedStateToArray } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
@@ -27,10 +26,17 @@ import ListShareBtn from 'src/features/list-share-btn'
 import { ALL_SAVED_FILTER_ID } from './constants'
 import FeedActivityIndicator from 'src/features/activity-indicator'
 import { DEEP_LINK_PREFIX, FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
+import { Icon } from 'src/ui/components/icons/icon-mobile'
+import WebView from 'react-native-webview'
+import Navigation, {
+    height as navigationBarHeight,
+} from 'src/features/overview/ui/components/navigation'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
     private unsubNavFocus!: () => void
+
+    private flatList!: FlatList
 
     constructor(props: Props) {
         super(props, new Logic(props))
@@ -129,19 +135,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         })
     }
 
-    private handleLogoPress = () => {
-        if (this.state.selectedListId !== SPECIAL_LIST_IDS.MOBILE) {
-            this.props.navigation.setParams({
-                selectedListId: SPECIAL_LIST_IDS.MOBILE,
-            })
-            this.processEvent('setFilteredListId', {
-                id: SPECIAL_LIST_IDS.MOBILE,
-            })
-        }
-
-        this.processEvent('reload', { initListId: SPECIAL_LIST_IDS.MOBILE })
-    }
-
     private renderListPage: ListRenderItem<
         UIPage & { spacePills?: JSX.Element }
     > = ({ item }) => (
@@ -160,13 +153,23 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     private listKeyExtracter = (item: UIPage) => item.url
 
     private renderList() {
-        if (
-            this.state.loadState === 'pristine' ||
-            this.state.loadState === 'running'
-        ) {
+        if (this.state.showFeed) {
+            return (
+                <WebViewContainer>
+                    <WebView
+                        source={{ url: 'https://staging.memex.social/feed' }}
+                        style={{ height: '100%' }}
+                    />
+                </WebViewContainer>
+            )
+        }
+
+        if (this.state.reloadState === 'running') {
             return (
                 <ResultListContainer>
-                    <LoadingBalls />
+                    <LoadingBallsBox>
+                        <LoadingBalls />
+                    </LoadingBallsBox>
                 </ResultListContainer>
             )
         }
@@ -194,18 +197,14 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
         return (
             <ResultListContainer>
-                {this.state.reloadState === 'running' && (
-                    <LoadingBallsBox>
-                        <LoadingBalls />
-                    </LoadingBallsBox>
-                )}
                 <ResultsList
                     data={preparedData}
+                    ref={(ref) => (this.flatList = ref!)}
                     renderItem={this.renderListPage}
                     keyExtractor={this.listKeyExtracter}
                     onScrollEndDrag={this.handleScrollToEnd}
                     scrollEventThrottle={32}
-                    onEndReachedThreshold={0.1}
+                    onEndReachedThreshold={1.5}
                     onEndReached={this.handleListEndReached}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
@@ -223,12 +222,29 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                             }
                         />
                     }
+                    ListFooterComponent={() =>
+                        this.state.loadMoreState === 'running' ? (
+                            <LoadMoreBallBox>
+                                <LoadingBalls />
+                            </LoadMoreBallBox>
+                        ) : this.state.resultsExhausted ? (
+                            <ResultsExhaustedContainer>
+                                <Icon
+                                    icon={icons.CheckedRound}
+                                    strokeWidth="0"
+                                    heightAndWidth="18px"
+                                    color="greyScale4"
+                                    fill
+                                />
+                                <ResultsExhaustedText>
+                                    End of Results
+                                </ResultsExhaustedText>
+                            </ResultsExhaustedContainer>
+                        ) : (
+                            <LastItemEmpty />
+                        )
+                    }
                 />
-                {this.state.loadMoreState === 'running' && (
-                    <LoadingBallsBox>
-                        <LoadingBalls />
-                    </LoadingBallsBox>
-                )}
             </ResultListContainer>
         )
     }
@@ -261,44 +277,202 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         return (
             <NavTitleContainer>
                 <NavTitleText numberOfLines={1}>
-                    {selectedListData.name}
+                    {!this.state.showFeed ? selectedListData.name : 'Hive Feed'}
                 </NavTitleText>
-                <ListShareBtn
-                    localListId={selectedListData.id}
-                    remoteListId={selectedListData.remoteId ?? null}
-                    services={this.props.services}
-                    onListShare={(remoteListId) =>
-                        this.processEvent('shareSelectedList', { remoteListId })
-                    }
-                />
+                {!this.state.showFeed && (
+                    <ListShareBtn
+                        localListId={selectedListData.id}
+                        remoteListId={selectedListData.remoteId ?? null}
+                        services={this.props.services}
+                        onListShare={(remoteListId) =>
+                            this.processEvent('shareSelectedList', {
+                                remoteListId,
+                            })
+                        }
+                    />
+                )}
             </NavTitleContainer>
         )
     }
 
     render() {
+        console.log(this.state.showFeed)
         return (
             <Container>
                 <Navigation
-                    leftIcon={icons.Burger}
-                    leftBtnPress={this.handleListsFilterPress}
+                    // leftBtnPress={this.handleListsFilterPress}
                     leftIconSize={'26px'}
                     rightIcon={icons.Settings}
+                    rightIconStrokeWidth={'0'}
                     rightBtnPress={() =>
                         this.props.navigation.navigate('SettingsMenu')
                     }
                     titleText={this.renderNavTitle()}
-                    renderIndicator={() => (
-                        <FeedActivityIndicator services={this.props.services} />
-                    )}
                 />
                 <ResultsContainer>{this.renderList()}</ResultsContainer>
+                <FooterActionBar>
+                    <FooterActionBtn
+                        onPress={() => {
+                            this.processEvent('setFilteredListId', {
+                                id: ALL_SAVED_FILTER_ID,
+                            })
+                            this.processEvent('reload', {
+                                initListId: ALL_SAVED_FILTER_ID,
+                            })
+                        }}
+                    >
+                        <Icon
+                            icon={icons.HeartIcon}
+                            strokeWidth="0"
+                            heightAndWidth="18px"
+                            color="greyScale5"
+                            fill
+                        />
+                        <FooterActionText>All Saved</FooterActionText>
+                    </FooterActionBtn>
+                    <FooterActionBtn
+                        onPress={() => {
+                            this.processEvent('setFilteredListId', {
+                                id: SPECIAL_LIST_IDS.INBOX,
+                            })
+                            this.processEvent('reload', {
+                                initListId: SPECIAL_LIST_IDS.INBOX,
+                            })
+                        }}
+                    >
+                        <Icon
+                            icon={icons.Inbox}
+                            strokeWidth="0"
+                            heightAndWidth="18px"
+                            color="greyScale5"
+                            fill
+                        />
+                        <FooterActionText>Inbox</FooterActionText>
+                    </FooterActionBtn>
+                    <FooterActionBtn
+                        onPress={() => this.handleListsFilterPress()}
+                    >
+                        <Icon
+                            icon={icons.SpacesEmtpy}
+                            strokeWidth="0"
+                            heightAndWidth="18px"
+                            color="greyScale5"
+                            fill
+                        />
+                        <FooterActionText>Spaces</FooterActionText>
+                    </FooterActionBtn>
+                    <FooterActionBtn
+                        onPress={() => this.processEvent('toggleFeed', null)}
+                    >
+                        <FeedActivityIndicatorBox>
+                            <FeedActivityIndicator
+                                services={this.props.services}
+                            />
+                        </FeedActivityIndicatorBox>
+                        <Icon
+                            icon={icons.Feed}
+                            strokeWidth="0"
+                            heightAndWidth="18px"
+                            color="greyScale5"
+                            fill
+                        />
+                        <FooterActionText>Feed</FooterActionText>
+                    </FooterActionBtn>
+                </FooterActionBar>
             </Container>
         )
     }
 }
 
+const Testtesxt = styled.Text`
+    width: 100%;
+`
+
+const WebViewContainer = styled.View<{
+    isLandscape?: boolean
+    isLoading?: boolean
+}>`
+    width: 100%;
+    height: 100%;
+    background: red;
+    ${(props) =>
+        props.isLoading
+            ? `
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    `
+            : ''}
+`
+
+const FeedActivityIndicatorBox = styled.View`
+    position: absolute;
+    right: -3px;
+    top: -3px;
+    z-index: 1;
+`
+
+const LastItemEmpty = styled.View`
+    height: 100px;
+`
+
+const ResultsExhaustedContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-top: 15px;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100px;
+`
+
+const ResultsExhaustedText = styled.Text`
+    display: flex;
+    margin-left: 5px;
+    font-size: 12px;
+    color: ${(props) => props.theme.colors.greyScale4};
+`
+
 const LoadingBallsBox = styled.View`
-    height: 200px;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`
+const LoadMoreBallBox = styled.View`
+    height: 300px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-top: 50px;
+    padding-bottom: 300px;
+    justify-content: flex-start;
+`
+
+const FooterActionBtn = styled.TouchableOpacity`
+    display: flex;
+    margin: 10px;
+    position: relative;
+`
+const FooterActionBar = styled.View`
+    display: flex;
+    flex-direction: row;
+    background: ${(props) => props.theme.colors.greyScale1};
+    border: 1px solid ${(props) => props.theme.colors.greyScale2};
+    border-radius: 10px;
+
+    position: absolute;
+    bottom: 20px;
+    padding: 0 10px;
+`
+
+const FooterActionText = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale4};
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 400;
 `
 
 const Container = styled.SafeAreaView`
@@ -314,11 +488,12 @@ const Container = styled.SafeAreaView`
 const ResultsContainer = styled.View`
     display: flex;
     margin: 0px 5px;
+    width: 100%;
 `
 
 const ResultListContainer = styled.View`
     display: flex;
-    align-items: stretch;
+    align-items: flex-start;
 `
 
 const ResultsList = (styled(FlatList)`
@@ -345,6 +520,6 @@ const NavTitleText = styled.Text`
     height: 100%;
     align-items: center;
     display: flex;
-    font-weight: 800;
-    color: ${(props) => props.theme.colors.greyScale5};
+    font-weight: 600;
+    color: ${(props) => props.theme.colors.white};
 `

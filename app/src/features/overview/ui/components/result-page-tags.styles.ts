@@ -19,7 +19,7 @@ export default EStyleSheet.create({
     tagPill: {
         marginRight: 5,
         marginTop: 5,
-        backgroundColor: '#67B3E3',
+        backgroundColor: 'red',
         color: '#3A2F45',
         borderRadius: 4,
         paddingVertical:

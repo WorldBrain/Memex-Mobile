@@ -39,11 +39,13 @@ export interface State {
     couldHaveMore: boolean
     shouldShowSyncRibbon: boolean
     pages: NormalizedState<UIPage>
-    selectedListId: number
+    selectedListId: number | undefined
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
     listData: { [listId: number]: List }
+    showFeed: boolean
+    resultsExhausted: boolean
 }
 
 export type Event = UIEvent<{
@@ -59,6 +61,7 @@ export type Event = UIEvent<{
     setFilteredListId: { id: number }
     shareSelectedList: { remoteListId: string }
     focusFromNavigation: MainNavigatorParamList['Dashboard']
+    toggleFeed: null
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -112,7 +115,7 @@ export default class Logic extends UILogic<State, Event> {
         return {
             syncState: 'pristine',
             loadState: 'pristine',
-            reloadState: 'pristine',
+            reloadState: 'running',
             loadMoreState: 'pristine',
             listNameLoadState: 'pristine',
             couldHaveMore: true,
@@ -122,6 +125,8 @@ export default class Logic extends UILogic<State, Event> {
             pages: initNormalizedState(),
             selectedListId,
             listData: {},
+            showFeed: false,
+            resultsExhausted: false,
         }
     }
 
@@ -190,6 +195,7 @@ export default class Logic extends UILogic<State, Event> {
                 await this.doLoadMore(this.getInitialState())
             }),
         ])
+        this.emitMutation({ reloadState: { $set: 'pristine' } })
     }
 
     cleanup() {
@@ -209,6 +215,10 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
+        this.emitMutation({
+            reloadState: { $set: 'running' },
+            selectedListId: { $set: undefined },
+        })
         await this.fetchAndSetListName(event.selectedListId)
 
         await executeUITask<State, 'reloadState', void>(
@@ -248,6 +258,12 @@ export default class Logic extends UILogic<State, Event> {
         await this.fetchAndSetListName(incoming.event.id)
     }
 
+    async toggleFeed(): Promise<void> {
+        this.emitMutation({
+            showFeed: { $set: true },
+        })
+    }
+
     private async fetchAndSetListName(listId: number) {
         const { metaPicker } = this.props.storage.modules
 
@@ -283,6 +299,8 @@ export default class Logic extends UILogic<State, Event> {
         if (event.triggerSync && (await isSyncEnabled(this.props.services))) {
             this.doSync()
         }
+
+        this.emitMutation({ showFeed: { $set: false } })
 
         await executeUITask<State, 'reloadState', void>(
             this,
@@ -346,11 +364,21 @@ export default class Logic extends UILogic<State, Event> {
                 }),
             },
         })
+
+        if (!couldHaveMore) {
+            this.emitMutation({
+                resultsExhausted: { $set: true },
+                loadMoreState: { $set: 'done' },
+            })
+        } else {
+            this.emitMutation({ resultsExhausted: { $set: false } })
+        }
     }
 
     private choosePageEntryLoader({
         selectedListId,
     }: State): PageLookupEntryLoader {
+        this.emitMutation({ showFeed: { $set: false } })
         if (selectedListId === ALL_SAVED_FILTER_ID) {
             return this.loadEntriesForVisits
         }

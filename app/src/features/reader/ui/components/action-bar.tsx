@@ -41,83 +41,85 @@ class ActionBar extends React.PureComponent<Props> {
             : actionBtns.AnnotateBtn
     }
 
-    private renderRightBtns() {
-        if (this.props.isErrorView) {
-            return null
-        }
-
-        if (this.props.selectedText != null) {
-            return (
-                <ActionBox isLandscape={this.props.rotation === 'landscape'}>
-                    <IconContainer onPress={this.props.onHighlightBtnPress}>
-                        <Icon
-                            icon={icons.Highlighter}
-                            strokeWidth="3"
-                            heightAndWidth="20px"
-                        />
-                    </IconContainer>
-                    <IconContainer onPress={this.props.onAnnotateBtnPress}>
-                        <Icon
-                            icon={icons.AddNote}
-                            strokeWidth="3"
-                            heightAndWidth="20px"
-                        />
-                    </IconContainer>
-                </ActionBox>
-            )
-        }
-
-        return (
-            <ActionBox isLandscape={this.props.rotation === 'landscape'}>
-                <IconContainer onPress={this.props.onCommentBtnPress}>
-                    {this.props.hasNotes ? (
-                        <Icon
-                            icon={icons.Comment}
-                            strokeWidth="3"
-                            heightAndWidth="24px"
-                            fill
-                        />
-                    ) : (
-                        <Icon
-                            icon={icons.Comment}
-                            strokeWidth="3"
-                            heightAndWidth="24px"
-                        />
-                    )}
-                </IconContainer>
-
-                {/* <IconContainer>
-                    {this.props.isListed ? (
-                        <Icon
-                            icon={icons.Comment}
-                            strokeWidth="3"
-                            fill
-                            heightAndWidth="16px"
-                        />
-                    ) : (
-                        <Icon
-                            icon={icons.Comment}
-                            strokeWidth="3"
-                            heightAndWidth="16px"
-                        />
-                    )}
-                </IconContainer> */}
-            </ActionBox>
-        )
-    }
-
     render() {
         return (
-            <Container isLandscape={this.props.rotation === 'landscape'}>
-                <LeftBtns></LeftBtns>
-                <CenterButton>
-                    <AddToSpacesBtn
-                        onPress={this.props.onListBtnPress}
-                        spaceCount={this.props.spaceCount}
+            <FooterActionBar>
+                <FooterActionBtn onPress={this.props.onCommentBtnPress}>
+                    {this.props.hasNotes ? (
+                        <Icon
+                            icon={icons.CommentFull}
+                            strokeWidth="0"
+                            fill
+                            heightAndWidth="18px"
+                            color="greyScale5"
+                        />
+                    ) : (
+                        <Icon
+                            icon={icons.Comment}
+                            strokeWidth="0.2"
+                            heightAndWidth="18px"
+                            fill
+                            color="greyScale5"
+                        />
+                    )}
+                    <FooterActionText>Notes</FooterActionText>
+                </FooterActionBtn>
+                <FooterActionBtn onPress={this.props.onListBtnPress}>
+                    {this.props.spaceCount > 0 && (
+                        <SpaceCounterPill>
+                            <SpaceCounterPillText>
+                                {this.props.spaceCount}
+                            </SpaceCounterPillText>
+                        </SpaceCounterPill>
+                    )}
+                    <Icon
+                        icon={icons.SpacesEmtpy}
+                        strokeWidth="0"
+                        heightAndWidth="18px"
+                        color="greyScale5"
+                        fill
                     />
-                </CenterButton>
-                <RightBtns>{this.renderRightBtns()}</RightBtns>
-            </Container>
+                    <FooterActionText>Spaces</FooterActionText>
+                </FooterActionBtn>
+                {this.props.selectedText != null && (
+                    <>
+                        <FooterActionBtn
+                            onPress={this.props.onHighlightBtnPress}
+                        >
+                            <Icon
+                                icon={icons.Highlighter}
+                                strokeWidth="0"
+                                heightAndWidth="18px"
+                                color="greyScale5"
+                                fill
+                            />
+                            <FooterActionText>Highlight</FooterActionText>
+                        </FooterActionBtn>
+                        <FooterActionBtn
+                            onPress={this.props.onAnnotateBtnPress}
+                        >
+                            <Icon
+                                icon={icons.AddNote}
+                                strokeWidth="0"
+                                heightAndWidth="18px"
+                                color="greyScale5"
+                                fill
+                            />
+                            <FooterActionText>Annotate</FooterActionText>
+                        </FooterActionBtn>
+                    </>
+                )}
+            </FooterActionBar>
+            // <Container isLandscape={this.props.rotation === 'landscape'}>
+            //     <LeftBtns></LeftBtns>
+            //     <CenterButton>
+            //         <AddToSpacesBtn
+            //             onPress={this.props.onListBtnPress}
+            //             spaceCount={this.props.spaceCount}
+            //         />
+            //     </CenterButton>
+            //     <RightBtns>{this.renderRightBtns()}</RightBtns>
+            // </Container>
         )
     }
 }
@@ -126,6 +128,49 @@ export default ActionBar
 
 export const heightLandscape = 60
 export const heightPortrait = 45
+
+const SpaceCounterPill = styled.View`
+    background: ${(props) => props.theme.colors.prime1};
+    border-radius: 10px;
+    padding: 2px 6px;
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    right: 2px;
+    top: -3px;
+    z-index: 1;
+`
+
+const SpaceCounterPillText = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale1};
+    font-size: 8px;
+    font-weight: 600;
+`
+
+const FooterActionBtn = styled.TouchableOpacity`
+    display: flex;
+    margin: 10px;
+    position: relative;
+`
+const FooterActionBar = styled.View`
+    display: flex;
+    flex-direction: row;
+    background: ${(props) => props.theme.colors.greyScale1};
+    border: 1px solid ${(props) => props.theme.colors.greyScale2};
+    border-radius: 10px;
+
+    position: absolute;
+    bottom: 0px;
+    padding: 0 10px;
+`
+
+const FooterActionText = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale4};
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 400;
+`
 
 const Container = styled.View<{ isLandscape?: boolean }>`
     position: absolute;
