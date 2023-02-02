@@ -29,6 +29,7 @@ export interface State {
     saveState: UITaskState
     privacyLevel: AnnotationPrivacyLevels
     spacesToAdd: Array<{ id: number; name: string; remoteId?: string }>
+    keyBoardHeight: number
 }
 
 export type Event = UIEvent<{
@@ -40,6 +41,8 @@ export type Event = UIEvent<{
     setHighlightTextLines: { lines: number }
     setSpacePickerShown: { isShown: boolean }
     selectSpacePickerEntry: { entry: SpacePickerEntry }
+    keyBoardShow: { event: { keyBoardHeight: number } }
+    keyBoardHide: null
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -92,6 +95,7 @@ export default class Logic extends UILogic<State, Event> {
             isSpacePickerShown: false,
             saveState: 'pristine',
             showAllText: false,
+            keyBoardHeight: 0,
         }
     }
 
@@ -161,6 +165,15 @@ export default class Logic extends UILogic<State, Event> {
                 protectAnnotation: true,
             })
         }
+    }
+
+    keyBoardShow: EventHandler<'keyBoardShow'> = (keyBoardHeight: string) => {
+        // let keyBoardHeight = event.endCoordinates.height
+        // console.log(keyBoardHeight)
+        this.emitMutation({ keyBoardHeight: { $set: keyBoardHeight.event } })
+    }
+    keyBoardHide: EventHandler<'keyBoardHide'> = async () => {
+        this.emitMutation({ keyBoardHeight: { $set: 0 } })
     }
 
     saveNote: EventHandler<'saveNote'> = async ({ previousState }) => {

@@ -61,8 +61,16 @@ export default class Logic extends UILogic<State, Event> {
             isModalShown: true,
             noteText: '',
             statusText: '',
+            keyBoardHeight: 0,
             ...initValues,
         }
+    }
+
+    keyBoardShow: EventHandler<'keyBoardShow'> = (keyBoardHeight: string) => {
+        this.emitMutation({ keyBoardHeight: { $set: keyBoardHeight.event } })
+    }
+    keyBoardHide: EventHandler<'keyBoardHide'> = async () => {
+        this.emitMutation({ keyBoardHeight: { $set: 0 } })
     }
 
     private handleSyncError(error: Error) {

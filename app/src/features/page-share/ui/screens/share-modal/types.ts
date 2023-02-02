@@ -21,6 +21,7 @@ export interface State {
     isSpacePickerShown: boolean
     isUnsupportedApplication: boolean
     privacyLevel: AnnotationPrivacyLevels
+    keyBoardHeight: number
 }
 
 export type Event = UIEvent<{
@@ -41,4 +42,6 @@ export type Event = UIEvent<{
     setSpacesToAdd: { values: number[] }
     setPrivacyLevel: { value: AnnotationPrivacyLevels }
     clearSyncError: null
+    keyBoardShow: { event: { keyBoardHeight: number } }
+    keyBoardHide: null
 }>

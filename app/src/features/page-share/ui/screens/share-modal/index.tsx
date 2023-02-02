@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Linking } from 'react-native'
+import { Text, Linking, Keyboard, Dimensions } from 'react-native'
 
 import { supportEmail } from '../../../../../../app.json'
 import { StatefulUIElement } from 'src/ui/types'
@@ -36,6 +36,32 @@ export default class ShareModalScreen extends StatefulUIElement<
 
     constructor(props: Props) {
         super(props, new Logic(props))
+    }
+
+    keyboardShowListener
+    keyboardHideListener
+
+    componentDidMount(): void {
+        this.keyboardShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            this.handleKeyboardShow,
+        )
+        this.keyboardHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            this.handleKeyboardHide,
+        )
+    }
+
+    componentWillUnmount(): void {
+        this.keyboardShowListener.remove()
+        this.keyboardHideListener.remove()
+    }
+
+    handleKeyboardShow = (event: KeyboardEvent) => {
+        this.processEvent('keyBoardShow', event.endCoordinates.height)
+    }
+    handleKeyboardHide = () => {
+        this.processEvent('keyBoardHide', null)
     }
 
     private setSpacePickerShown = (isShown: boolean) => (e: any) => {
@@ -120,7 +146,7 @@ export default class ShareModalScreen extends StatefulUIElement<
 
     private renderMetaPicker() {
         return (
-            <>
+            <ShareModalContainer>
                 <MetaPicker
                     onEntryPress={this.handleMetaPickerEntryPress}
                     initSelectedEntries={this.state.spacesToAdd}
@@ -160,7 +186,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                 >
                     {this.renderTitle()}
                 </ActionBar>
-            </>
+            </ShareModalContainer>
         )
     }
 
@@ -197,17 +223,43 @@ export default class ShareModalScreen extends StatefulUIElement<
                         isInputDirty(this.state) ? (
                             <Icon
                                 icon={icons.CheckMark}
-                                heightAndWidth={'28px'}
-                                color={'purple'}
-                                strokeWidth={'3px'}
+                                heightAndWidth={'24px'}
+                                color={'prime1'}
+                                strokeWidth={'0px'}
+                                fill
                             />
                         ) : (
                             <Icon
                                 icon={icons.CheckMark}
                                 heightAndWidth={'24px'}
-                                strokeWidth={'2px'}
+                                strokeWidth={'0px'}
+                                fill
                             />
                         )
+                    }
+                    rightArea={
+                        this.state.noteText ? (
+                            <AnnotationPrivacyBtn
+                                actionSheetService={
+                                    this.props.services.actionSheet
+                                }
+                                level={this.state.privacyLevel}
+                                onPrivacyLevelChoice={
+                                    this.handlePrivacyLevelSet
+                                }
+                            />
+                        ) : undefined
+                    }
+                    leftArea={
+                        <AddToSpacesBtn
+                            mainText={`${
+                                this.state.noteText.trim().length
+                                    ? 'Note'
+                                    : 'Page'
+                            } to Spaces`}
+                            onPress={this.setSpacePickerShown(true)}
+                            spaceCount={this.state.spacesToAdd.length}
+                        />
                     }
                     renderIndicator={() => (
                         <FeedActivityIndicator
@@ -218,36 +270,13 @@ export default class ShareModalScreen extends StatefulUIElement<
                         />
                     )}
                 >
-                    {this.state.spacesState === 'running' ? (
+                    {/* {this.state.spacesState === 'running' ? (
                         <LoadingIndicatorBox>
                             <LoadingIndicator size={15} />
                         </LoadingIndicatorBox>
                     ) : (
-                        <>
-                            {this.state.noteText ? (
-                                <AnnotationPrivacyBtn
-                                    actionSheetService={
-                                        this.props.services.actionSheet
-                                    }
-                                    level={this.state.privacyLevel}
-                                    onPrivacyLevelChoice={
-                                        this.handlePrivacyLevelSet
-                                    }
-                                />
-                            ) : (
-                                <></>
-                            )}
-                            <AddToSpacesBtn
-                                mainText={`Add ${
-                                    this.state.noteText.trim().length
-                                        ? 'Note'
-                                        : 'Page'
-                                } to Spaces`}
-                                onPress={this.setSpacePickerShown(true)}
-                                spaceCount={this.state.spacesToAdd.length}
-                            />
-                        </>
-                    )}
+                        <></>
+                    )} */}
                 </ActionBarContainer>
             </>
         )
@@ -300,11 +329,14 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     render() {
+        let editorHeight =
+            Dimensions.get('screen').height - this.state.keyBoardHeight - 100
         return (
             <ShareModal
                 isModalShown={this.state.isModalShown}
                 onClosed={this.props.services.shareExt.close}
                 stretched={!!this.state.isSpacePickerShown}
+                height={editorHeight}
             >
                 {this.renderModalContent()}
             </ShareModal>
@@ -312,12 +344,18 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 }
 
+const ShareModalContainer = styled.View`
+    background: ${(props) => props.theme.colors.greyScale1};
+    display: flex;
+    flex-direction: column;
+`
+
 const ActionBarContainer = styled(ActionBar)`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background: white;
+    background: ${(props) => props.theme.colors.greyScale1};
 `
 
 const LoadingIndicatorBox = styled.View`

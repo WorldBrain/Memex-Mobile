@@ -21,9 +21,10 @@ const AddToSpacesBtn: React.SFC<Props> = ({
         {spaceCount === 0 ? (
             <Icon
                 icon={PlusIcon}
-                color="purple"
-                strokeWidth="2px"
-                heightAndWidth="14px"
+                color="prime1"
+                strokeWidth="0px"
+                heightAndWidth="20px"
+                fill
             />
         ) : (
             <SpacesCounterPill>
@@ -40,22 +41,18 @@ export default React.memo(
 )
 
 const AddSpacesContainer = styled.TouchableOpacity`
-    border-width: 2px;
-    border-style: dotted;
-    border-color: ${(props) => props.theme.colors.greyScale5}
     display: flex;
     justify-content: space-between;
     width: auto;
     align-items: center;
     flex-direction: row;
-    text-align-vertical: center;
     height: 30px;
     padding: 2px 8px;
     margin-right: 10px;
 `
 
 const AddSpacesText = styled.Text`
-    color: ${(props) => props.theme.colors.prime1};
+    color: ${(props) => props.theme.colors.greyScale6};
     font-size: 12px;
     display: flex;
     align-items: flex-end;

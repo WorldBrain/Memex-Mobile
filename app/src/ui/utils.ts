@@ -23,6 +23,20 @@ export const privacyLevelToIcon = (
         ? LockIcon
         : LockIcon
 
+export const privacyLevelToText = (
+    lvl: AnnotationPrivacyLevels,
+    hasSharedLists: boolean,
+) =>
+    lvl === AnnotationPrivacyLevels.SHARED
+        ? 'Public'
+        : lvl === AnnotationPrivacyLevels.PRIVATE
+        ? 'Private'
+        : lvl === AnnotationPrivacyLevels.PROTECTED && hasSharedLists
+        ? 'Shared'
+        : lvl === AnnotationPrivacyLevels.PROTECTED && !hasSharedLists
+        ? 'Locked'
+        : 'Private'
+
 export async function loadInitial<State extends { loadState: UITaskState }>(
     logic: UILogic<State, any>,
     loader: () => Promise<any>,

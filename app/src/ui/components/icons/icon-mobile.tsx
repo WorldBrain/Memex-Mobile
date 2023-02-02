@@ -3,6 +3,7 @@ import { ColorThemeKeys } from '../theme/types'
 import { theme } from '../theme/theme'
 import styled from 'styled-components/native'
 import { SvgProps } from 'react-native-svg'
+import { IconKeysMobile } from '@worldbrain/memex-common/lib/common-ui/styles/types'
 
 const defaultHeight = '20px'
 const defaultWidth = '20px'

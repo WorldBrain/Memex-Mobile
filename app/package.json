@@ -178,6 +178,7 @@
         "preset": "react-native"
     },
     "resolutions": {
-        "graceful-fs": "4.2.4"
+        "graceful-fs": "4.2.4",
+        "@types/react": "17.0.1"
     }
 }

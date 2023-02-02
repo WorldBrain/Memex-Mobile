@@ -5,6 +5,7 @@ import {
     LayoutChangeEvent,
     Dimensions,
     useWindowDimensions,
+    Keyboard,
 } from 'react-native'
 
 import Navigation from '../../components/navigation'
@@ -22,10 +23,40 @@ import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import RenderHtml from 'react-native-render-html'
+import {
+    CORE_THEME,
+    THEME,
+} from '@worldbrain/memex-common/lib/common-ui/styles/theme'
 
 export default class extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
         super(props, new Logic(props))
+    }
+
+    keyboardShowListener
+    keyboardHideListener
+
+    componentDidMount(): void {
+        this.keyboardShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            this.handleKeyboardShow,
+        )
+        this.keyboardHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            this.handleKeyboardHide,
+        )
+    }
+
+    componentWillUnmount(): void {
+        this.keyboardShowListener.remove()
+        this.keyboardHideListener.remove()
+    }
+
+    handleKeyboardShow = (event: KeyboardEvent) => {
+        this.processEvent('keyBoardShow', event.endCoordinates.height)
+    }
+    handleKeyboardHide = () => {
+        this.processEvent('keyBoardHide', null)
     }
 
     private get disableInputs(): boolean {
@@ -110,19 +141,29 @@ export default class extends StatefulUIElement<Props, State, Event> {
         return (
             <AnnotationContainer>
                 <VerticalBar />
-                <TextContainer>
+                <HTMLRenderBox>
                     <RenderHtml
-                        contentWidth={Dimensions.get('screen').width - 40}
+                        contentWidth={Dimensions.get('screen').width - 60}
                         source={{
-                            html: '<div>' + this.state.highlightText + '</div>',
+                            html: `<div>` + this.state.highlightText + '</div>',
+                        }}
+                        tagsStyles={testStyles}
+                        baseStyle={{
+                            marginTop: '-10px',
+                            marginBottom: '-10px',
+                            lineHeight: 20,
+                            fontWeight: '300',
                         }}
                     />
-                </TextContainer>
+                </HTMLRenderBox>
             </AnnotationContainer>
         )
     }
 
     render() {
+        let editorHeight =
+            Dimensions.get('screen').height - this.state.keyBoardHeight - 220
+
         return (
             <Container>
                 <Navigation
@@ -171,7 +212,16 @@ export default class extends StatefulUIElement<Props, State, Event> {
                         />
                     ) : (
                         <>
-                            <TopBar>
+                            {this.renderHighlightText()}
+                            <NoteInputEditorBox height={editorHeight + 'px'}>
+                                <NoteInputEditor
+                                    onChange={this.handleInputChange}
+                                    disabled={this.disableInputs}
+                                    className={styles.noteInput}
+                                    value={this.state.noteText}
+                                />
+                            </NoteInputEditorBox>
+                            {/* <TopBar>
                                 <SpaceBar>
                                     <AddToSpacesBtn
                                         mini={this.state.spacesToAdd.length > 0}
@@ -204,16 +254,7 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                         })
                                     }
                                 />
-                            </TopBar>
-                            {this.renderHighlightText()}
-                            <NoteInputEditorBox>
-                                <NoteInputEditor
-                                    onChange={this.handleInputChange}
-                                    disabled={this.disableInputs}
-                                    className={styles.noteInput}
-                                    value={this.state.noteText}
-                                />
-                            </NoteInputEditorBox>
+                            </TopBar> */}
                         </>
                     )}
                 </ScrollContainer>
@@ -222,15 +263,22 @@ export default class extends StatefulUIElement<Props, State, Event> {
     }
 }
 
+const HTMLRenderBox = styled.View`
+    margin: -10px 0px;
+    width: 50%;
+    flex: 1;
+`
+
 const Container = styled.SafeAreaView`
     background: ${(props) => props.theme.colors.black};
 `
 
-const NoteInputEditorBox = styled.View`
+const NoteInputEditorBox = styled.View<{ height: string }>`
     border-style: solid;
     border-width: 1px;
+    border-radius: 8px;
     border-color: ${(props) => props.theme.colors.greyScale3};
-    height: 50%;
+    height: ${(props) => props.height};
     max-height: 400px;
     margin: 0 10px;
     width: 620px;
@@ -238,7 +286,7 @@ const NoteInputEditorBox = styled.View`
 `
 
 const NoteInputEditor = styled(NoteInput)`
-    background: red;
+    background: ${(props) => props.theme.colors.greyScale1};
     margin: 20px;
     flex: 1;
     height: 100%;
@@ -274,19 +322,23 @@ const ScrollContainer = styled.View<{ highlightText: string | null }>`
 `
 
 const AnnotationContainer = styled.View`
-    margin: 20px 0px 20px 20px;
-    padding: 5px 5px 5px 10px;
+    margin: 10px 0px 10px 0px;
+    padding: 15px;
+    border-radius: 8px;
     max-width: 620px;
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
+    background: ${(props) => props.theme.colors.greyScale1};
+    max-height: 100px;
 `
 
 const VerticalBar = styled.View`
     background: ${(props) => props.theme.colors.prime1};
     border-radius: 3px;
-    max-width: 4px;
+    min-width: 6px;
+    max-width: 6px;
     flex: 1;
     height: auto;
     display: flex;
@@ -304,20 +356,113 @@ const AnnotationHighlight = styled.Text`
     line-height: 18px;
 `
 
-const TextContainer = styled.View`
-    width: 90%;
-    display: flex;
-    margin: -10px 0px;
-    color: ${(props) => props.theme.colors.white};
+const testStyles = {
+    p: {
+        color: `${CORE_THEME().colors.white}`,
+    },
+    a: {
+        color: `${CORE_THEME().colors.prime1}`,
+        textDecorationLine: 'none',
+    },
+    h1: {
+        fontSize: '18px',
+    },
+    h2: {
+        fontSize: '16px',
+    },
+    h3: {
+        fontSize: '14px',
+    },
+    h4: {
+        fontSize: '12px',
+    },
+    h5: {
+        fontSize: '12px',
+    },
+    table: {
+        borderRadius: '8px',
+        borderColor: `${CORE_THEME().colors.greyScale2}`,
+        borderWidth: '1px',
+        width: '100%',
+    },
+    th: {
+        padding: '8px 10px',
+        color: `${CORE_THEME().colors.white}`,
+        borderBottomColor: `${CORE_THEME().colors.greyScale2}`,
+        borderBottomWidth: '1px',
+    },
+    td: {
+        padding: '8px 10px',
+        color: `${CORE_THEME().colors.white}`,
+        borderBottomColor: `${CORE_THEME().colors.greyScale2}`,
+        borderBottomWidth: '1px',
+        borderLeftColor: `${CORE_THEME().colors.greyScale2}`,
+        borderLeftWidth: '1px',
+    },
+}
+
+const EditorStyless = (props: any) => {
+    return `
+    outline: none;
+    width: fill-available;
+    hyphens: none;
+    color: ${props.theme.colors.white};
     line-height: 20px;
+
+    & table {
+        border-radius: 8px;
+        border: 1px solid ${props.theme.colors.greyScale2};
+        width: fit-available;
+        border-spacing: 0px;
+        max-width: 100%;
+        width: fill-available;
+    }
+    & th {
+        border-bottom: 1px solid ${props.theme.colors.greyScale2};
+        vertical-align: middle;
+        border-right: 1px solid ${props.theme.colors.greyScale2};
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: middle;
+        max-width: 100px;
+        width: fill-available;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    & tr {
+        width: fill-available;
+    }
+
+    & tr:last-child {
+        & th {
+            border-bottom: none;
+        }
+        & td {
+            border-bottom: none;
+        }
+    }
+
+    & td {
+        border-right: 1px solid ${props.theme.colors.greyScale2};
+        border-bottom: 1px solid ${props.theme.colors.greyScale2};
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: middle;
+
+        &:last-child {
+            border-right: none;
+        }
+    }
+
 
     .WikiLink {
         text-decoration: none;
     }
 
-    .a {
-        text-decoration: none;
-    }
+    a {text-decoration: none};
 
     & * {
         line-height: 20px;
@@ -325,7 +470,7 @@ const TextContainer = styled.View`
         word-break: break-word;
         hyphens: none;
         letter-spacing: 0.8px;
-        color: ${(props) => props.theme.colors.white};
+        color: ${props.theme.colors.white};
     }
 
     & img {
@@ -370,10 +515,10 @@ const TextContainer = styled.View`
     }
 
     & a {
-        color: ${(props) => props.theme.colors.prime1};
+        color: ${props.theme.colors.prime1};
 
         &:visited {
-            color: ${(props) => props.theme.colors.prime1};
+            color: ${props.theme.colors.prime1};
         }
     }
 
@@ -461,6 +606,7 @@ const TextContainer = styled.View`
         }
     }
 
+    
     & > * {
         & > * {
             &:first-child {
@@ -476,4 +622,5 @@ const TextContainer = styled.View`
             }
         }
     }
-`
+    `
+}
