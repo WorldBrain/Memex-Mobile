@@ -21,6 +21,7 @@ import io.invertase.firebase.database.ReactNativeFirebaseDatabasePackage;
 import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import io.invertase.firebase.functions.ReactNativeFirebaseFunctionsPackage;
+import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -56,6 +57,7 @@ public class MainApplication extends Application implements ReactApplication {
         new RNLocalResourcePackage(),
         new ReactNativeFirebaseAppPackage(),
         new ReactNativeFirebaseAuthPackage(),
+        new ReactNativeFirebaseStoragePackage(),
         new ReactNativeFirebaseDatabasePackage(),
         new ReactNativeFirebaseFirestorePackage(),
         new ReactNativeFirebaseFunctionsPackage(),
