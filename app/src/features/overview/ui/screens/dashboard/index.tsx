@@ -296,7 +296,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     }
 
     render() {
-        console.log(this.state.showFeed)
         return (
             <Container>
                 <Navigation
@@ -318,6 +317,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                             })
                             this.processEvent('reload', {
                                 initListId: ALL_SAVED_FILTER_ID,
+                                triggerSync: true,
                             })
                         }}
                     >
@@ -328,9 +328,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                             color="greyScale5"
                             fill
                         />
-                        <FooterActionText>All Saved</FooterActionText>
+                        <FooterActionText>Saved</FooterActionText>
                     </FooterActionBtn>
-                    <FooterActionBtn
+                    {/* <FooterActionBtn
                         onPress={() => {
                             this.processEvent('setFilteredListId', {
                                 id: SPECIAL_LIST_IDS.INBOX,
@@ -348,7 +348,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                             fill
                         />
                         <FooterActionText>Inbox</FooterActionText>
-                    </FooterActionBtn>
+                    </FooterActionBtn> */}
                     <FooterActionBtn
                         onPress={() => this.handleListsFilterPress()}
                     >
@@ -435,11 +435,12 @@ const ResultsExhaustedText = styled.Text`
 `
 
 const LoadingBallsBox = styled.View`
-    height: 100%;
+    height: 70%;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
 `
 const LoadMoreBallBox = styled.View`
     height: 300px;
@@ -455,6 +456,9 @@ const FooterActionBtn = styled.TouchableOpacity`
     display: flex;
     margin: 10px;
     position: relative;
+    align-items: center;
+    width: 42px;
+    text-align: center;
 `
 const FooterActionBar = styled.View`
     display: flex;

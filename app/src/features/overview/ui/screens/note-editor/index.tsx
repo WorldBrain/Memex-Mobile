@@ -1,5 +1,11 @@
 import React from 'react'
-import { Text, TouchableOpacity, LayoutChangeEvent } from 'react-native'
+import {
+    Text,
+    TouchableOpacity,
+    LayoutChangeEvent,
+    Dimensions,
+    useWindowDimensions,
+} from 'react-native'
 
 import Navigation from '../../components/navigation'
 import Logic, { State, Props, Event } from './logic'
@@ -15,6 +21,7 @@ import MetaPicker from 'src/features/meta-picker/ui/screens/meta-picker'
 import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import RenderHtml from 'react-native-render-html'
 
 export default class extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
@@ -102,17 +109,15 @@ export default class extends StatefulUIElement<Props, State, Event> {
 
         return (
             <AnnotationContainer>
-                <AnnotationHighlight
-                    onLayout={this.handleHighlightTextLayoutChange}
-                    numberOfLines={
-                        this.state.showAllText
-                            ? undefined
-                            : Logic.HIGHLIGHT_MAX_LINES
-                    }
-                >
-                    {this.state.highlightText}
-                </AnnotationHighlight>
-                {this.renderShowMore()}
+                <VerticalBar />
+                <TextContainer>
+                    <RenderHtml
+                        contentWidth={Dimensions.get('screen').width - 40}
+                        source={{
+                            html: '<div>' + this.state.highlightText + '</div>',
+                        }}
+                    />
+                </TextContainer>
             </AnnotationContainer>
         )
     }
@@ -269,18 +274,206 @@ const ScrollContainer = styled.View<{ highlightText: string | null }>`
 `
 
 const AnnotationContainer = styled.View`
-    padding-left: 10px;
-    border-left-color: ${(props) => props.theme.colors.prime1 + '80'};
-    border-left-width: 5px;
-    border-style: solid;
     margin: 20px 0px 20px 20px;
     padding: 5px 5px 5px 10px;
-    width: 620px;
-    max-width: 100%;
+    max-width: 620px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
 `
+
+const VerticalBar = styled.View`
+    background: ${(props) => props.theme.colors.prime1};
+    border-radius: 3px;
+    max-width: 4px;
+    flex: 1;
+    height: auto;
+    display: flex;
+    margin-right: 10px;
+`
+// const TextContainer = styled.View`
+//     width: 90%;
+//     display: flex;
+//     margin: -10px 0px;
+// `
 
 const AnnotationHighlight = styled.Text`
     color: ${(props) => props.theme.colors.greyScale6};
     font-size: 14px;
     line-height: 18px;
+`
+
+const TextContainer = styled.View`
+    width: 90%;
+    display: flex;
+    margin: -10px 0px;
+    color: ${(props) => props.theme.colors.white};
+    line-height: 20px;
+
+    .WikiLink {
+        text-decoration: none;
+    }
+
+    .a {
+        text-decoration: none;
+    }
+
+    & * {
+        line-height: 20px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        hyphens: none;
+        letter-spacing: 0.8px;
+        color: ${(props) => props.theme.colors.white};
+    }
+
+    & img {
+        max-width: fill-available;
+        width: auto;
+        height: auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 3px;
+    }
+
+    & li {
+        line-height: 20px;
+        margin-left: -15px;
+    }
+
+    & p {
+        margin-block-start: 0.5em;
+        margin-block-end: 0.5em;
+        line-height: 20px;
+        hyphens: none;
+        font-size: 14px;
+
+        & img {
+            height: auto;
+            max-width: fill-available;
+            width: auto;
+            background: white;
+            max-height: 250px;
+        }
+    }
+
+    & ul {
+        margin-block-start: 0.5em;
+        margin-block-end: 0.5em;
+    }
+
+    & p {
+        margin-block-start: 0.5em;
+        margin-block-end: 0.5em;
+        line-height: 20px;
+        font-size: 14px;
+    }
+
+    & a {
+        color: ${(props) => props.theme.colors.prime1};
+
+        &:visited {
+            color: ${(props) => props.theme.colors.prime1};
+        }
+    }
+
+    & h1 {
+        font-size: 18px;
+        margin-block-start: 1em;
+        margin-block-end: 0.5em;
+        line-height: 22px;
+
+        &:first-child {
+            margin-top: 5px;
+        }
+    }
+
+    & h2 {
+        margin-block-start: 1em;
+        margin-block-end: 0.5em;
+        line-height: 22px;
+        font-size: 16px;
+
+        &:first-child {
+            margin-top: 5px;
+        }
+    }
+
+    & h3 {
+        font-size: 16px;
+        margin-block-start: 1em;
+        margin-block-end: 0.5em;
+        line-height: 22px;
+
+        &:first-child {
+            margin-top: 5px;
+        }
+    }
+
+    & h4 {
+        margin-block-start: 1em;
+        margin-block-end: 0.5em;
+
+        &:first-child {
+            margin-top: 5px;
+        }
+    }
+
+    & h5 {
+        margin-block-start: 1em;
+        margin-block-end: 0.5em;
+
+        &:first-child {
+            margin-top: 5px;
+        }
+    }
+
+    & blockquote {
+        border-left: #5cd9a6 3px solid;
+        margin-inline-start: 10px;
+        padding-left: 10px;
+    }
+
+    & code {
+        padding: 2px 3px 1px;
+        border: 1px solid #1d1c1d21;
+        border-radius: 3px;
+        background-color: #1d1c1d0a;
+        color: #e01e5a;
+        font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace !important;
+    }
+
+    & pre {
+        width: fill-available;
+        border: 1px solid #1d1c1d21;
+        border-radius: 3px;
+        background-color: #1d1c1d0a;
+        padding: 10px;
+        font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace !important;
+
+        & code {
+            width: 100%;
+            padding: unset;
+            border: none;
+            border-radius: unset;
+            background-color: unset;
+            color: inherit;
+        }
+    }
+
+    & > * {
+        & > * {
+            &:first-child {
+                margin-block-start: 0em !important;
+            }
+        }
+    }
+
+    & > * {
+        & > * {
+            &:last-child {
+                margin-block-end: 0em !important;
+            }
+        }
+    }
 `

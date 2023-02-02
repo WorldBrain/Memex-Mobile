@@ -192,10 +192,10 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 
         // TODO: sort out the type error here :S
 
-        console.log(this.props)
         return (
             <WebViewContainer isLandscape={this.state.rotation === 'landscape'}>
                 <WebView
+                    mediaPlaybackRequiresUserAction={true}
                     source={{
                         uri: this.state.url,
                         // html: this.props.htmlSource,
@@ -210,7 +210,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     allowsLinkPreview
                     renderError={this.renderError}
                     renderLoading={this.renderLoading}
-                    mediaPlaybackRequiresUserAction
                     ref={(ref) => (this.webView = ref!)}
                     onMessage={({ nativeEvent }) => {
                         this.handleWebViewMessageReceived(nativeEvent.data)

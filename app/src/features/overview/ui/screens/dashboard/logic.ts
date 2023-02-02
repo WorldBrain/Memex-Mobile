@@ -232,18 +232,21 @@ export default class Logic extends UILogic<State, Event> {
     private async doSync() {
         const { cloudSync } = this.props.services
 
+        let syncChanges = 0
         await executeUITask<State, 'syncState'>(this, 'syncState', async () => {
             try {
-                const { totalChanges } = await cloudSync.sync()
-                if (totalChanges > 0) {
-                    this.emitMutation({
-                        shouldShowSyncRibbon: { $set: true },
-                    })
-                }
+                let { totalChanges } = await cloudSync.sync()
+                syncChanges = totalChanges
             } catch (err) {
                 handleSyncError(err, this.props)
             }
         })
+
+        if (syncChanges > 0) {
+            this.emitMutation({
+                shouldShowSyncRibbon: { $set: true },
+            })
+        }
     }
 
     setSyncRibbonShow(
@@ -296,7 +299,7 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     async reload({ event }: IncomingUIEvent<State, Event, 'reload'>) {
-        if (event.triggerSync && (await isSyncEnabled(this.props.services))) {
+        if (event.triggerSync) {
             this.doSync()
         }
 
