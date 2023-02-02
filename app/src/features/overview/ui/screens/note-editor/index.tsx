@@ -27,6 +27,8 @@ import {
     CORE_THEME,
     THEME,
 } from '@worldbrain/memex-common/lib/common-ui/styles/theme'
+import { Icon } from 'src/ui/components/icons/icon-mobile'
+import { RenderHTML } from 'src/ui/utils/RenderHTML'
 
 export default class extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
@@ -142,19 +144,7 @@ export default class extends StatefulUIElement<Props, State, Event> {
             <AnnotationContainer>
                 <VerticalBar />
                 <HTMLRenderBox>
-                    <RenderHtml
-                        contentWidth={Dimensions.get('screen').width - 60}
-                        source={{
-                            html: `<div>` + this.state.highlightText + '</div>',
-                        }}
-                        tagsStyles={testStyles}
-                        baseStyle={{
-                            marginTop: '-10px',
-                            marginBottom: '-10px',
-                            lineHeight: 20,
-                            fontWeight: '300',
-                        }}
-                    />
+                    {RenderHTML(this.state.highlightText)}
                 </HTMLRenderBox>
             </AnnotationContainer>
         )
@@ -179,23 +169,6 @@ export default class extends StatefulUIElement<Props, State, Event> {
                     rightIconSize={'24px'}
                     rightIconStrokeWidth={'3px'}
                     titleText={this.titleText}
-                    // renderRightIcon={() => (
-                    //     <TouchableOpacity
-                    //         onPress={this.handleSaveBtnPress}
-                    //         style={navigationStyles.btnContainer}
-                    //         disabled={this.disableSaveBtn}
-                    //     >
-                    //         <Image
-                    //             resizeMode="contain"
-                    //             style={
-                    //                 this.disableSaveBtn
-                    //                     ? navigationStyles.disabled
-                    //                     : navigationStyles.checkIcon
-                    //             }
-                    //             source={require('src/ui/img/tick.png')}
-                    //         />
-                    //     </TouchableOpacity>
-                    // )}
                 />
                 <ScrollContainer highlightText={this.state.highlightText}>
                     {this.state.isSpacePickerShown ? (
@@ -220,41 +193,64 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                     className={styles.noteInput}
                                     value={this.state.noteText}
                                 />
-                            </NoteInputEditorBox>
-                            {/* <TopBar>
-                                <SpaceBar>
-                                    <AddToSpacesBtn
-                                        mini={this.state.spacesToAdd.length > 0}
-                                        onPress={() =>
-                                            this.processEvent(
-                                                'setSpacePickerShown',
-                                                { isShown: true },
-                                            )
-                                        }
-                                    />
-                                    {this.state.spacesToAdd.map((space) => (
-                                        <SpacePill
-                                            key={space.id}
-                                            name={space.name}
-                                            isShared={space.remoteId != null}
+                                <TopBar>
+                                    <SpaceBar>
+                                        <AddToSpacesBtn
+                                            mini={
+                                                this.state.spacesToAdd.length >
+                                                0
+                                            }
+                                            onPress={() =>
+                                                this.processEvent(
+                                                    'setSpacePickerShown',
+                                                    { isShown: true },
+                                                )
+                                            }
+                                            spaceCount={
+                                                this.state.spacesToAdd.length
+                                            }
                                         />
-                                    ))}
-                                </SpaceBar>
-                                <AnnotationPrivacyBtn
-                                    actionSheetService={
-                                        this.props.services.actionSheet
-                                    }
-                                    level={this.state.privacyLevel}
-                                    hasSharedLists={this.state.spacesToAdd.some(
-                                        (space) => space.remoteId != null,
-                                    )}
-                                    onPrivacyLevelChoice={(value) =>
-                                        this.processEvent('setPrivacyLevel', {
-                                            value,
-                                        })
-                                    }
-                                />
-                            </TopBar> */}
+                                    </SpaceBar>
+                                    <RightSide>
+                                        <AnnotationPrivacyBtn
+                                            actionSheetService={
+                                                this.props.services.actionSheet
+                                            }
+                                            level={this.state.privacyLevel}
+                                            hasSharedLists={this.state.spacesToAdd.some(
+                                                (space) =>
+                                                    space.remoteId != null,
+                                            )}
+                                            onPrivacyLevelChoice={(value) =>
+                                                this.processEvent(
+                                                    'setPrivacyLevel',
+                                                    {
+                                                        value,
+                                                    },
+                                                )
+                                            }
+                                        />
+                                        <IconContainer
+                                            onPress={
+                                                this.showSaveBtn &&
+                                                this.handleSaveBtnPress
+                                            }
+                                        >
+                                            <Icon
+                                                icon={icons.CheckMark}
+                                                strokeWidth="0"
+                                                heightAndWidth="22px"
+                                                color={
+                                                    this.showSaveBtn
+                                                        ? 'prime1'
+                                                        : 'greyScale4'
+                                                }
+                                                fill
+                                            />
+                                        </IconContainer>
+                                    </RightSide>
+                                </TopBar>
+                            </NoteInputEditorBox>
                         </>
                     )}
                 </ScrollContainer>
@@ -262,6 +258,21 @@ export default class extends StatefulUIElement<Props, State, Event> {
         )
     }
 }
+
+const IconContainer = styled.TouchableOpacity`
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`
+
+const RightSide = styled.View`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+`
 
 const HTMLRenderBox = styled.View`
     margin: -10px 0px;
@@ -282,7 +293,9 @@ const NoteInputEditorBox = styled.View<{ height: string }>`
     max-height: 400px;
     margin: 0 10px;
     width: 620px;
+    overflow: hidden;
     max-width: 100%;
+    background: ${(props) => props.theme.colors.greyScale1};
 `
 
 const NoteInputEditor = styled(NoteInput)`
@@ -298,6 +311,12 @@ const TopBar = styled.View`
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    height: 40px;
+    background: ${(props) => props.theme.colors.greyScale1};
+    border-style: solid;
+    border-top-width: 1px;
+    border-top-color: ${(props) => props.theme.colors.greyScale2};
+    padding: 0 10px 0 5px;
 `
 
 const SpaceBar = styled.View`
@@ -306,7 +325,6 @@ const SpaceBar = styled.View`
     justify-content: flex-start;
     align-items: center;
     overflow: scroll;
-    padding-top: 10px;
 `
 
 const ScrollContainer = styled.View<{ highlightText: string | null }>`
@@ -344,62 +362,6 @@ const VerticalBar = styled.View`
     display: flex;
     margin-right: 10px;
 `
-// const TextContainer = styled.View`
-//     width: 90%;
-//     display: flex;
-//     margin: -10px 0px;
-// `
-
-const AnnotationHighlight = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale6};
-    font-size: 14px;
-    line-height: 18px;
-`
-
-const testStyles = {
-    p: {
-        color: `${CORE_THEME().colors.white}`,
-    },
-    a: {
-        color: `${CORE_THEME().colors.prime1}`,
-        textDecorationLine: 'none',
-    },
-    h1: {
-        fontSize: '18px',
-    },
-    h2: {
-        fontSize: '16px',
-    },
-    h3: {
-        fontSize: '14px',
-    },
-    h4: {
-        fontSize: '12px',
-    },
-    h5: {
-        fontSize: '12px',
-    },
-    table: {
-        borderRadius: '8px',
-        borderColor: `${CORE_THEME().colors.greyScale2}`,
-        borderWidth: '1px',
-        width: '100%',
-    },
-    th: {
-        padding: '8px 10px',
-        color: `${CORE_THEME().colors.white}`,
-        borderBottomColor: `${CORE_THEME().colors.greyScale2}`,
-        borderBottomWidth: '1px',
-    },
-    td: {
-        padding: '8px 10px',
-        color: `${CORE_THEME().colors.white}`,
-        borderBottomColor: `${CORE_THEME().colors.greyScale2}`,
-        borderBottomWidth: '1px',
-        borderLeftColor: `${CORE_THEME().colors.greyScale2}`,
-        borderLeftWidth: '1px',
-    },
-}
 
 const EditorStyless = (props: any) => {
     return `

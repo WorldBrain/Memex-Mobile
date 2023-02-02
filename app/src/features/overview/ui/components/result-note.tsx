@@ -13,6 +13,7 @@ import type { List } from 'src/features/meta-picker/types'
 import type { ActionSheetServiceInterface } from 'src/services/action-sheet/types'
 import type { AutoPk } from '@worldbrain/memex-common/lib/storage/types'
 import { getNoteShareUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
+import { RenderHTML } from 'src/ui/utils/RenderHTML'
 
 export interface Props extends BodyProps, InteractionProps {
     isStarred?: boolean
@@ -42,19 +43,22 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                 <ContentContainer>
                     {props.noteText && (
                         <AnnotationContainer>
-                            <AnnotationHighlight>
+                            <VerticalBar />
+                            <HTMLRenderBox>
+                                {RenderHTML(props.noteText)}
+                            </HTMLRenderBox>
+                            {/* <AnnotationHighlight>
                                 {props.noteText}
-                            </AnnotationHighlight>
+                            </AnnotationHighlight> */}
                         </AnnotationContainer>
                     )}
-                    {!(!props.commentText || !props.noteText) && (
+                    {((props.noteText && props.commentText) ||
+                        (props.commentText && !props.noteText)) && (
                         <AnnotationSpacing />
                     )}
                     {props.commentText && (
                         <AnnotationNote>{props.commentText}</AnnotationNote>
                     )}
-                    <AnnotationSpacing />
-                    <DateBox>{props.date}</DateBox>
                 </ContentContainer>
                 {/* </TouchableWithoutFeedback> */}
             </TopArea>
@@ -72,9 +76,17 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                 </Section>
             )}
             <Section>
-                <AddToSpacesBtn onPress={props.onAddSpacesPress} />
                 <ActionBar>
-                    {props.remoteId != null && (
+                    <LeftSide>
+                        <AnnotationPrivacyBtn
+                            level={props.privacyLevel}
+                            hasSharedLists={props.hasSharedLists}
+                            onPrivacyLevelChoice={props.onPrivacyLevelSet}
+                            actionSheetService={props.actionSheetService}
+                        />
+                        <DateBox>{props.date}</DateBox>
+                    </LeftSide>
+                    {/* {props.remoteId != null && (
                         <IconContainer
                             onPress={async () => {
                                 const remoteUrl = getNoteShareUrl({
@@ -95,38 +107,75 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                                 heightAndWidth={'16px'}
                             />
                         </IconContainer>
-                    )}
-                    <IconContainer onPress={props.onEditPress}>
-                        <Icon
-                            icon={icons.Edit}
-                            strokeWidth={'2px'}
-                            heightAndWidth={'16px'}
-                        />
-                    </IconContainer>
-                    <IconContainer onPress={props.onDeletePress}>
-                        <Icon icon={icons.Trash} heightAndWidth={'16px'} />
-                    </IconContainer>
-                    <AnnotationPrivacyBtn
-                        level={props.privacyLevel}
-                        hasSharedLists={props.hasSharedLists}
-                        onPrivacyLevelChoice={props.onPrivacyLevelSet}
-                        actionSheetService={props.actionSheetService}
-                    />
+                    )} */}
+                    <RightSide>
+                        <IconContainer onPress={props.onEditPress}>
+                            <Icon
+                                icon={icons.Edit}
+                                strokeWidth={'0px'}
+                                heightAndWidth={'16px'}
+                                fill
+                            />
+                        </IconContainer>
+                        <IconContainer onPress={props.onDeletePress}>
+                            <Icon
+                                icon={icons.Trash}
+                                strokeWidth={'0px'}
+                                fill
+                                heightAndWidth={'16px'}
+                            />
+                        </IconContainer>
+                        <AddToSpacesBtn mini onPress={props.onAddSpacesPress} />
+                    </RightSide>
                 </ActionBar>
             </Section>
         </NoteContainer>
     )
 }
 
+const LeftSide = styled.View`
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-start;
+`
+const RightSide = styled.View`
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+`
+
+const HTMLRenderBox = styled.View`
+    margin: -10px 0px;
+    width: 50%;
+    flex: 1;
+`
+
 const ContentContainer = styled.View`
-    padding: 15px 15px 15px 15px;
+    padding: 0px 10px 15px 0px;
 `
 
 const AnnotationContainer = styled.View`
-    padding-left: 10px;
-    border-left-color: ${(props) => props.theme.colors.prime1 + '80'};
-    border-left-width: 5px;
-    border-style: solid;
+    margin: 0px 0px 0px 0px;
+    padding: 15px 15px 5px 15px;
+    border-radius: 8px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    background: ${(props) => props.theme.colors.greyScale1};
+`
+
+const VerticalBar = styled.View`
+    background: ${(props) => props.theme.colors.prime1};
+    border-radius: 3px;
+    min-width: 6px;
+    max-width: 6px;
+    flex: 1;
+    height: auto;
+    display: flex;
+    margin-right: 10px;
 `
 
 const AnnotationSpacing = styled.View`
@@ -140,41 +189,38 @@ const AnnotationHighlight = styled.Text`
 `
 
 const AnnotationNote = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5};
+    color: ${(props) => props.theme.colors.white};
     font-size: 14px;
+    padding: 0 15px;
 `
 
 const DateBox = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5};
+    color: ${(props) => props.theme.colors.greyScale4};
     font-size: 12px;
-    margin: -5px 0px;
+    margin: 0px 0px;
 `
 
 const ActionBar = styled.View`
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     width: 100%;
     flex: 1;
 `
 
 const NoteContainer = styled.View`
-    background: white;
     margin: 10px 0px 0 0;
-    shadow-opacity: 0.5;
-    shadow-radius: 5px;
-    shadow-color: #d0d0d0;
-    shadow-offset: 0px 2px;
     border-radius: 8px;
-    background: white;
+    background: ${(props) => props.theme.colors.greyScale1};
     width: 100%;
 `
 
 const TopArea = styled.TouchableOpacity``
 
 const IconContainer = styled.TouchableOpacity`
-    margin-left: 15px;
+    margin-right: 10px;
+    margin-left: 10px;
 `
 
 const SpaceList = styled.View`
@@ -192,9 +238,9 @@ const Section = styled.View`
     justify-content: space-between;
     align-items: center;
     border-top-width: 1px;
-    border-top-color: #f0f0f0;
+    border-top-color: ${(props) => props.theme.colors.greyScale2};
     border-style: solid;
-    padding: 5px 10px 5px 15px;
+    padding: 5px 0px 5px 5px;
 `
 
 export default ResultNote

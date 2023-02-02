@@ -97,7 +97,6 @@ class NotesList extends React.PureComponent<Props> {
                     </NoResults>
                 ) : (
                     <ResultsContainer>
-                        {this.renderPageItem()}
                         <FlatListContainer
                             renderItem={this.renderNote}
                             data={this.props.notes}
@@ -172,14 +171,11 @@ const NoResults = styled.View`
 
 const FlatListContainer = (styled(FlatList)`
     display: flex;
-    border-left-width: 4px;
-    border-left-color: ${(props) => props.theme.colors.prime1 + '80'};
     padding-left: 10px;
-    margin-left: 10px;
     margin-top: -10px;
     padding-top: 5px;
     padding-right: 10px;
-    width: 94%;
+    width: 100%;
     max-width: 600px;
     flex: 1;
 ` as unknown) as typeof FlatList

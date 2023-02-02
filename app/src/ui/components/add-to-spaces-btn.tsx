@@ -18,20 +18,20 @@ const AddToSpacesBtn: React.SFC<Props> = ({
     mini,
 }) => (
     <AddSpacesContainer onPress={onPress}>
-        {spaceCount === 0 ? (
-            <Icon
-                icon={PlusIcon}
-                color="prime1"
-                strokeWidth="0px"
-                heightAndWidth="20px"
-                fill
-            />
+        <Icon
+            icon={PlusIcon}
+            color="prime1"
+            strokeWidth="0px"
+            heightAndWidth="20px"
+            fill
+        />
+        {spaceCount === 0 && !mini ? (
+            <AddSpacesText> {mainText}</AddSpacesText>
         ) : (
-            <SpacesCounterPill>
-                <SpacesCounterText>{spaceCount}</SpacesCounterText>
-            </SpacesCounterPill>
+            <SpacesCounterText>
+                {spaceCount > 0 && spaceCount}
+            </SpacesCounterText>
         )}
-        {!mini && <AddSpacesText> {mainText}</AddSpacesText>}
     </AddSpacesContainer>
 )
 
@@ -60,20 +60,10 @@ const AddSpacesText = styled.Text`
     justify-content: center;
 `
 
-const SpacesCounterPill = styled.View`
-    padding: 1px 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    background: ${(props) => props.theme.colors.prime1};
-    border-radius: 50px;
-    margin-right: 5px;
-`
-
 const SpacesCounterText = styled.Text`
-    color: white;
+    color: ${(props) => props.theme.colors.white};
     font-weight: 600;
     text-align: center;
     font-size: 12px;
+    margin-left: 5px;
 `

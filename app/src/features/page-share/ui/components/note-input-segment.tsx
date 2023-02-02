@@ -42,7 +42,10 @@ const Container = styled.SafeAreaView`
 
 const TextBox = styled.View`
     background: ${(props) => props.theme.colors.greyScale1};
-    border-radius: 8px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
     height: 100%;
     width: 100%;
     flex: 1;
