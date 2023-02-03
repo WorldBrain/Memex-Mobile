@@ -165,6 +165,7 @@ export async function createStorage({
         metaPicker: modules.metaPicker,
         pageEditor: modules.pageEditor,
         clientSyncLog: modules.clientSyncLog,
+        followedLists: modules.followedLists,
         syncInfo: modules.syncInfo,
         reader: modules.reader,
         contentSharing: modules.contentSharing,
