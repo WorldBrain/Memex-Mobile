@@ -71,16 +71,12 @@ class SettingsMenu extends React.PureComponent<Props> {
             <>
                 <Navigation
                     leftIcon={icons.BackArrow}
-                    leftIconSize={'30px'}
+                    leftIconSize={'24px'}
                     leftBtnPress={this.props.onExitMenuPress}
-                    leftIconStrokeWidth={'5px'}
+                    leftIconStrokeWidth={'0px'}
                     titleText={'Settings'}
                 />
-                <View style={styles.mainContainer}>
-                    <View style={styles.linksContainer}>
-                        {this.props.children}
-                    </View>
-                </View>
+                <MainContainer>{this.props.children}</MainContainer>
                 <View style={styles.footerContainer}>
                     {/* {this.props.isPaired && (
                         <Button
@@ -104,6 +100,15 @@ class SettingsMenu extends React.PureComponent<Props> {
     }
 }
 
-const Container = styled.SafeAreaView``
+const Container = styled.SafeAreaView`
+    background: ${(props) => props.theme.colors.black};
+    padding: 20px 30px;
+`
+const MainContainer = styled.SafeAreaView`
+    background: ${(props) => props.theme.colors.black};
+    padding: 20px 30px;
+    height: 100%;
+    width: 100%;
+`
 
 export default SettingsMenu

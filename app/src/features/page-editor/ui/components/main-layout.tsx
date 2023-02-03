@@ -24,8 +24,8 @@ const MainLayout: React.StatelessComponent<Props> = (props) => (
     <Container>
         <Navigation
             leftIcon={icons.BackArrow}
-            leftIconSize={'30px'}
-            leftIconStrokeWidth={'6px'}
+            leftIconSize={'24px'}
+            leftIconStrokeWidth={'0px'}
             leftBtnPress={props.onLeftPress}
             titleText={props.titleText}
             rightIcon={props.rightIcon}

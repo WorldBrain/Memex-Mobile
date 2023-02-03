@@ -64,6 +64,7 @@ export default class Navigation extends React.Component<Props> {
                                     heightAndWidth={this.props.leftIconSize}
                                     strokeWidth={this.props.leftIconStrokeWidth}
                                     icon={this.props.leftIcon}
+                                    fill
                                 />
                             </IconBox>
                         </LeftBtnContainer>

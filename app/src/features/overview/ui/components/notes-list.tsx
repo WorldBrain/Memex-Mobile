@@ -86,12 +86,13 @@ class NotesList extends React.PureComponent<Props> {
                             <Icon
                                 icon={icons.Comment}
                                 heightAndWidth={'30px'}
-                                color="purple"
-                                strokeWidth="3px"
+                                color="prime1"
+                                strokeWidth="0px"
+                                fill
                             />
                         </SectionCircle>
                         <NoResultsTitle>No Annotations</NoResultsTitle>
-                        <NoResultsSubTitle style={styles.noResultsSubTitle}>
+                        <NoResultsSubTitle>
                             Add new annotations with the + icon
                         </NoResultsSubTitle>
                     </NoResults>
@@ -120,9 +121,13 @@ const EmptyItem = styled.View`
 
 const SectionCircle = styled.View`
     background: ${(props) => props.theme.colors.greyScale2};
-    border-radius: 100px;
-    height: 60px;
-    width: 60px;
+    border-radius: 8px;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 8px;
+    border-color: ${(props) => props.theme.colors.greyScale4};
+    height: 50px;
+    width: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -136,17 +141,17 @@ const Container = styled.View`
 `
 
 const NoResultsTitle = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale6};
-    font-size: 20px;
-    font-weight: 800;
+    color: ${(props) => props.theme.colors.white};
+    font-size: 16px;
+    font-weight: 500;
     text-align: center;
     margin-bottom: 10px;
     margin-top: 20px;
 `
 
 const NoResultsSubTitle = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5};
-    font-size: 20px;
+    color: ${(props) => props.theme.colors.greyScale4};
+    font-size: 14px;
     font-weight: 400;
     text-align: center;
     margin-bottom: 10px;
@@ -166,7 +171,7 @@ const NoResults = styled.View`
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 30px;
+    padding-top: 50px;
 `
 
 const FlatListContainer = (styled(FlatList)`

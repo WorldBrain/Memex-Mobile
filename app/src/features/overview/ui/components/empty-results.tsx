@@ -5,6 +5,7 @@ import styles from './empty-results.styles'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
+import { SectionCircle } from 'src/ui/utils/SectionCircle'
 
 export interface Props {
     goToPairing: () => void
@@ -13,14 +14,7 @@ export interface Props {
 
 const EmptyResults: React.StatelessComponent<Props> = (props) => (
     <Container>
-        <SectionCircle>
-            <Icon
-                icon={icons.HeartIcon}
-                heightAndWidth={'24px'}
-                color="purple"
-                strokeWidth="2.5px"
-            />
-        </SectionCircle>
+        {SectionCircle(60, icons.HeartIcon)}
         <TitleText>Save your first page</TitleText>
         <SubText>
             Sync with the Memex browser extension {'\n'}or save a page with the
@@ -39,25 +33,16 @@ const Container = styled.View`
     padding-top: 15%;
 `
 
-const SectionCircle = styled.View`
-    background: ${(props) => props.theme.colors.greyScale3};
-    border-radius: 100px;
-    height: 50px;
-    width: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 30px;
-`
-
 const TitleText = styled.Text`
     font-size: 20px;
-    color: ${(props) => props.theme.colors.greyScale6};
-    font-weight: 800;
+    color: ${(props) => props.theme.colors.white};
+    font-weight: 500;
     margin-bottom: 10px;
+    margin-top: 20px;
 `
 const SubText = styled.Text`
-    font-size: 16px;
+    font-size: 14px;
     color: ${(props) => props.theme.colors.greyScale5};
     text-align: center;
+    font-weight: 300;
 `

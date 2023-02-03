@@ -129,13 +129,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         if (errorCode === -1023 || errorCode === -1200) {
             return (
                 <ErrorScreen>
-                    <SectionCircle size="60px">
-                        <Icon
-                            icon={icons.Lock}
-                            heightAndWidth="20px"
-                            color="prime1"
-                        />
-                    </SectionCircle>
+                    <SectionCircle size="60px" icon={icons.Lock} />
                     <Header>HTTP pages not supported</Header>
                     <ErrorMessage>
                         Please save and open a HTTPS version of this page
@@ -242,8 +236,8 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 <Navigation
                     leftBtnPress={() => this.processEvent('goBack', null)}
                     leftIcon={icons.BackArrow}
-                    leftIconSize="30px"
-                    leftIconStrokeWidth="5px"
+                    leftIconSize="24px"
+                    leftIconStrokeWidth="0px"
                     titleText={'Annotate this page'}
                     rightBtnPress={() => Linking.openURL(this.state.url)}
                     rightIcon={icons.ExternalLink}

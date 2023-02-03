@@ -55,7 +55,7 @@ const AnnotationPrivacyBtn: React.SFC<Props> = ({
         <PrivacyButton onPress={onShowSheet}>
             <Icon
                 icon={privacyLevelToIcon(level, hasSharedLists ?? false)}
-                strokeWidth="0.5px"
+                strokeWidth="0px"
                 heightAndWidth="18px"
                 fill
                 color="greyScale5"
@@ -81,7 +81,7 @@ const PrivacyButton = styled.TouchableOpacity`
 `
 
 const PrivacyText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale6};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 12px;
     display: flex;
     margin-left: 5px;

@@ -42,18 +42,12 @@ const MainContainer = styled.View`
     width: 100%;
     align-items: center;
     justify-content: center;
+    background: ${(props) => props.theme.colors.black};
     flex: 1;
-    //padding-top: ${
-        conditionalStyles() === 'tabletLandscape'
-            ? '0rem'
-            : conditionalStyles() === 'tabletPortrait'
-            ? '2rem'
-            : '5rem'
-    }
 `
 
 const ImgContainer = styled.View`
-    flex: 3;
+    flex: 2;
     flex-direction: column;
     position: relative;
     align-items: center;
@@ -65,20 +59,21 @@ const ImgContainer = styled.View`
 const TitleContainer = styled.View``
 
 const HeadingText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale6};
+    color: ${(props) => props.theme.colors.white};
     font-size: 24px;
-    font-weight: 800;
+    font-weight: 500;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 `
 
 const SecondaryText = styled.Text`
     color: ${(props) => props.theme.colors.greyScale5};
-    font-size: 20px;
-    font-weight: 400;
+    font-size: 16px;
+    font-weight: 300;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 80px;
     padding: 0 20px;
+    line-height: 30px;
 `
 
 export default OnboardingFeature

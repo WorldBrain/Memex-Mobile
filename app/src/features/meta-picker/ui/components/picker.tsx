@@ -15,7 +15,7 @@ const MetaPicker: React.StatelessComponent<Props> = (props) => (
 )
 
 const Container = styled.View`
-    margin: 10px;
+    background: ${(props) => props.theme.colors.black};
 `
 
 export default MetaPicker

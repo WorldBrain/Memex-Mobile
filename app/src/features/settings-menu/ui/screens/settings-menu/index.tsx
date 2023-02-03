@@ -49,23 +49,19 @@ export default class SettingsMenuScreen extends StatefulUIElement<
                 hasSuccessfullySynced={this.state.syncState === 'done'}
             >
                 <SettingsContainer>
-                    <SettingsEntryRow
-                        onPress={() =>
-                            navigation.navigate('Onboarding', {
-                                redoOnboarding: true,
-                            })
-                        }
-                    >
-                        <Icon icon={icons.HelpIcon} heightAndWidth={'24px'} />
-                        <SettingsEntryText>Tutorial</SettingsEntryText>
-                    </SettingsEntryRow>
                     <Link
                         href={
                             'https://www.notion.so/worldbrain/Release-Notes-Roadmap-262a367f7a2a48ff8115d2c71f700c14'
                         }
                     >
                         <SettingsEntryRowLink>
-                            <Icon icon={icons.Clock} heightAndWidth={'24px'} />
+                            <Icon
+                                icon={icons.Clock}
+                                heightAndWidth={'24px'}
+                                fill
+                                strokeWidth="0px"
+                                color={'greyScale6'}
+                            />
                             <SettingsEntryText>
                                 Changelog & Feature Roadmap
                             </SettingsEntryText>
@@ -76,6 +72,9 @@ export default class SettingsMenuScreen extends StatefulUIElement<
                             <Icon
                                 icon={icons.SadFace}
                                 heightAndWidth={'24px'}
+                                fill
+                                strokeWidth="0px"
+                                color={'greyScale6'}
                             />
                             <SettingsEntryText>
                                 Bugs & Feature Requests
@@ -88,7 +87,13 @@ export default class SettingsMenuScreen extends StatefulUIElement<
                         }
                     >
                         <SettingsEntryRowLink>
-                            <Icon icon={icons.Trash} heightAndWidth={'24px'} />
+                            <Icon
+                                icon={icons.Trash}
+                                heightAndWidth={'24px'}
+                                fill
+                                strokeWidth="0px"
+                                color={'greyScale6'}
+                            />
                             <SettingsEntryText>
                                 Delete Account
                             </SettingsEntryText>
@@ -97,7 +102,13 @@ export default class SettingsMenuScreen extends StatefulUIElement<
                     <SettingsEntryRow
                         onPress={() => this.processEvent('logout', null)}
                     >
-                        <Icon icon={icons.LogOut} heightAndWidth={'24px'} />
+                        <Icon
+                            icon={icons.LogOut}
+                            heightAndWidth={'24px'}
+                            fill
+                            strokeWidth="0px"
+                            color={'greyScale6'}
+                        />
                         <SettingsEntryText>Log out of Memex</SettingsEntryText>
                     </SettingsEntryRow>
                 </SettingsContainer>
@@ -108,17 +119,17 @@ export default class SettingsMenuScreen extends StatefulUIElement<
 
 const SettingsContainer = styled.View`
     height: 600px;
-    max-width: 600px;
     width: 100%;
-    min-width: 250px;
+    background: ${(props) => props.theme.colors.black};
+    padding: 0 20px;
 `
 
 const SettingsEntryText = styled.Text`
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start
-    color: ${(props) => props.theme.colors.greyScale5};
+    justify-content: flex-start;
+    color: ${(props) => props.theme.colors.white};
     font-size: 14px;
     margin-left: 10px;
 `
@@ -127,20 +138,14 @@ const SettingsEntryRow = styled.TouchableOpacity`
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start
+    justify-content: flex-start;
     height: 60px;
-    border-style: solid;
-    border-bottom-width: 1px;
-    border-color: ${(props) => props.theme.colors.greyScale5};
 `
 
 const SettingsEntryRowLink = styled.View`
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start
+    justify-content: flex-start;
     height: 60px;
-    border-style: solid;
-    border-bottom-width: 1px;
-    border-color: ${(props) => props.theme.colors.greyScale5};
 `

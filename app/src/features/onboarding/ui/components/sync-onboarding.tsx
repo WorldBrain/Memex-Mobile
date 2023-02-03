@@ -8,18 +8,16 @@ import featureStyles from './onboarding-feature.styles'
 export interface Props {}
 
 const SyncOnboarding: React.StatelessComponent<Props> = (props) => (
-    <View style={styles.mainContainer}>
-        <OnboardingFeature
-            headingText="Annotate the Web"
-            secondaryText="Highlight and attach notes to sections of websites"
-        >
-            <Image
-                resizeMode="contain"
-                style={styles.mainImg}
-                source={require('../assets/annotate.png')}
-            />
-        </OnboardingFeature>
-    </View>
+    <OnboardingFeature
+        headingText="Annotate Websites & Videos"
+        secondaryText="Highlight and attach notes to sections of websites"
+    >
+        <Image
+            resizeMode="contain"
+            style={styles.mainImg}
+            source={require('../assets/annotate.png')}
+        />
+    </OnboardingFeature>
 )
 
 export default SyncOnboarding

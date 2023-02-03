@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 
 import * as icons from 'src/ui/components/icons/icons-list'
-import styled from 'styled-components/native'
+import styled, { css } from 'styled-components/native'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 
 import type { SpacePickerEntry } from '../../types'
@@ -26,23 +26,33 @@ const MetaPickerEntry: React.StatelessComponent<Props> = (props) => (
             <TextContainer>
                 {props.canAdd && <NewText>Add new:</NewText>}
                 <EntryTextBox>
-                    <EntryText>{props.name}</EntryText>
+                    <EntryText checked={props.isChecked}>
+                        {props.name}
+                    </EntryText>
                 </EntryTextBox>
                 {props.remoteId != null && (
                     <Icon
-                        icon={icons.Shared}
+                        icon={icons.People}
                         fill={true}
-                        color="darkerBlue"
-                        strokeWidth="2px"
-                        heightAndWidth="12px"
+                        color={'greyScale4'}
+                        strokeWidth="0px"
+                        heightAndWidth="22px"
                     />
                 )}
             </TextContainer>
-            <CheckMarkContainer>
+            <CheckMarkContainer checked={props.isChecked}>
                 {props.isChecked ? (
-                    <Icon icon={icons.CheckedRound} color="blue" />
+                    <EmptyCircle checked={props.isChecked}>
+                        <Icon
+                            icon={icons.CheckMark}
+                            color={props.isChecked && 'black'}
+                            heightAndWidth="20px"
+                            strokeWidth="0px"
+                            fill
+                        />
+                    </EmptyCircle>
                 ) : (
-                    <EmptyCircle />
+                    <EmptyCircle checked={props.isChecked} />
                 )}
             </CheckMarkContainer>
         </Container>
@@ -51,10 +61,19 @@ const MetaPickerEntry: React.StatelessComponent<Props> = (props) => (
 
 export default MetaPickerEntry
 
-const EntryText = styled.Text`
+const EntryText = styled.Text<{
+    checked: boolean
+}>`
     color: ${(props) => props.theme.colors.greyScale6};
     font-size: 16px;
-    font-weight: 400;
+    font-weight: 300;
+
+    ${(props) =>
+        props.checked &&
+        css`
+            color: ${(props) => props.theme.colors.white};
+            font-weight: 400;
+        `};
 `
 
 const NewText = styled.Text`
@@ -75,7 +94,9 @@ const TextContainer = styled.View`
     align-items: center;
 `
 
-const CheckMarkContainer = styled.View`
+const CheckMarkContainer = styled.View<{
+    checked: boolean
+}>`
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -88,16 +109,19 @@ const Container = styled.View`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    border-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-color: ${(props) => props.theme.colors.greyScale5};
 `
 
-const EmptyCircle = styled.View`
+const EmptyCircle = styled.View<{
+    checked: boolean
+}>`
     height: 20px;
     width: 20px;
-    border-radius: 50px;
-    border-style: solid;
-    border-width: 2px;
-    border-color: ${(props) => props.theme.colors.greyScale5};
+    border-radius: 3px;
+    background: ${(props) => props.theme.colors.greyScale2};
+
+    ${(props) =>
+        props.checked &&
+        css`
+            background: ${(props) => props.theme.colors.white};
+        `};
 `

@@ -227,7 +227,8 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                             <LoadMoreBallBox>
                                 <LoadingBalls />
                             </LoadMoreBallBox>
-                        ) : this.state.resultsExhausted ? (
+                        ) : this.state.resultsExhausted &&
+                          this.state.pages.allIds.length > 0 ? (
                             <ResultsExhaustedContainer>
                                 <Icon
                                     icon={icons.CheckedRound}
@@ -497,7 +498,7 @@ const ResultsContainer = styled.View`
 
 const ResultListContainer = styled.View`
     display: flex;
-    align-items: flex-start;
+    align-items: center;
 `
 
 const ResultsList = (styled(FlatList)`

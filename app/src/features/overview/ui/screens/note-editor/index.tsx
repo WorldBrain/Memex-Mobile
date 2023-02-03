@@ -152,20 +152,20 @@ export default class extends StatefulUIElement<Props, State, Event> {
 
     render() {
         let editorHeight =
-            Dimensions.get('screen').height - this.state.keyBoardHeight - 220
+            Dimensions.get('screen').height - this.state.keyBoardHeight - 120
 
         return (
             <Container>
                 <Navigation
                     leftIcon={icons.BackArrow}
                     leftBtnPress={this.handleBackBtnPress}
-                    leftIconSize={'30px'}
-                    leftIconStrokeWidth={'8px'}
+                    leftIconSize={'24px'}
+                    leftIconStrokeWidth={'0px'}
                     rightIcon={this.showSaveBtn && icons.CheckMark}
                     rightBtnPress={
                         this.showSaveBtn ? this.handleSaveBtnPress : undefined
                     }
-                    rightIconColor={'purple'}
+                    rightIconColor={'prime1'}
                     rightIconSize={'24px'}
                     rightIconStrokeWidth={'3px'}
                     titleText={this.titleText}

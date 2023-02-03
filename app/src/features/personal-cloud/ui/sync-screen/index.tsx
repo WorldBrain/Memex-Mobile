@@ -11,7 +11,8 @@ import Button from 'src/ui/components/memex-btn'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
-import { PrimaryAction, SecondaryAction } from 'src/ui/utils/ActionButtons'
+import { PrimaryAction } from 'src/ui/utils/ActionButtons'
+import { SectionCircle } from 'src/ui/utils/SectionCircle'
 
 interface Props extends LogicProps {}
 
@@ -54,26 +55,29 @@ export default class CloudSyncScreen extends StatefulUIElement<
         if (this.state.totalDownloads) {
             return (
                 <SyncInfoContainer>
-                    <InfoTextProgress>
+                    <InfoText>
                         {this.state.totalDownloads == null
                             ? '...'
-                            : calcPercComplete(this.state)}
-                        %
-                    </InfoTextProgress>
-                    <Spacer />
-                    <SecondaryText>
-                        Changes left to Sync: {'\n'}
-                        <InfoText>
-                            {this.state.totalDownloads == null
-                                ? '...'
-                                : this.state.pendingDownloads}{' '}
-                            <SecondaryText>of</SecondaryText>{' '}
-                            {this.state.totalDownloads ?? '...'}
-                        </InfoText>
-                    </SecondaryText>
-                    <SecondaryText>
-                        Sync only runs with the app open.
-                    </SecondaryText>
+                            : this.state.pendingDownloads}{' '}
+                        / {this.state.totalDownloads ?? '...'}
+                    </InfoText>
+                    <ProgressExplainer>Changes left to Sync</ProgressExplainer>
+                    <ProgressBarContainer>
+                        <ProgressBar>
+                            <ProgressBarInner
+                                percentageComplete={calcPercComplete(
+                                    this.state,
+                                )}
+                            />
+                        </ProgressBar>
+
+                        <ProgressBarHelperTextLeft>
+                            Progress
+                        </ProgressBarHelperTextLeft>
+                        <ProgressBarHelperTextRight>
+                            {calcPercComplete(this.state)}%
+                        </ProgressBarHelperTextRight>
+                    </ProgressBarContainer>
                 </SyncInfoContainer>
             )
         } else {
@@ -85,13 +89,15 @@ export default class CloudSyncScreen extends StatefulUIElement<
         return (
             <Container>
                 <InnerContainer>
-                    <LoadingBalls size={40} />
                     {this.state.totalDownloads === null ? (
                         <HeadingText>Preparing Sync</HeadingText>
                     ) : (
                         <HeadingText>Sync in Progress</HeadingText>
                     )}
-                    {this.renderStats()}
+                    <SecondaryText>
+                        Sync only runs with the app open.
+                    </SecondaryText>
+                    {this.state.totalDownloads == null && this.renderStats()}
                 </InnerContainer>
             </Container>
         )
@@ -108,15 +114,19 @@ export default class CloudSyncScreen extends StatefulUIElement<
                     <PrimaryAction
                         label="Retry"
                         onPress={() => this.processEvent('retrySync', null)}
+                        type="primary"
+                        size="medium"
                     />
                 </View>
                 <ContactContainer>
                     <SecondaryText>Continues to fail?</SecondaryText>
-                    <SecondaryAction
+                    <PrimaryAction
                         label="Contact Support"
                         onPress={() => {
                             Linking.openURL('mailto:support@memex.garden')
                         }}
+                        type="secondary"
+                        size="medium"
                     />
                 </ContactContainer>
             </Container>
@@ -126,35 +136,22 @@ export default class CloudSyncScreen extends StatefulUIElement<
     private renderSyncingComplete() {
         return (
             <Container>
-                <SectionCircle>
-                    <Icon
-                        icon={icons.CheckMark}
-                        heightAndWidth={'30px'}
-                        color="purple"
-                        strokeWidth="2px"
-                    />
-                </SectionCircle>
+                {SectionCircle(60, icons.CheckMark)}
                 <View>
                     <HeadingText>Sync successful</HeadingText>
                 </View>
                 <View>
-                    {this.props.route.params?.shouldRetrospectiveSync ? (
-                        <SecondaryText>
-                            We've added some new features to the app which
-                            require syncing some more data from the extension.
-                            Please stay on this screen momentarily.
-                        </SecondaryText>
-                    ) : (
-                        <SecondaryText>
-                            If you see no data in the dashboard, make sure you
-                            synced on at least one of your other devices first
-                            then restart the app.
-                        </SecondaryText>
-                    )}
+                    <SecondaryText>
+                        If you see no data in the dashboard, make sure you
+                        synced on at least one of your other devices first then
+                        restart the app.
+                    </SecondaryText>
                 </View>
                 <PrimaryAction
                     label="Go to Dashboard"
                     onPress={() => this.processEvent('goToDashboard', null)}
+                    type="primary"
+                    size="medium"
                 />
             </Container>
         )
@@ -178,6 +175,45 @@ export default class CloudSyncScreen extends StatefulUIElement<
     }
 }
 
+const ProgressBarContainer = styled.View`
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+`
+
+const ProgressBar = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    background: ${(props) => props.theme.colors.greyScale3};
+    border-radius: 5px;
+    height: 6px;
+    width: 100%;
+    margin-bottom: 5px;
+`
+
+const ProgressBarInner = styled.View<{
+    percentageComplete: number
+}>`
+    width: ${(props) => props.percentageComplete}%;
+    border-radius: 5px;
+    height: 6px;
+`
+
+const ProgressBarHelperTextLeft = styled.View`
+    display: flex;
+    font-size: 12px;
+    color: ${(props) => props.theme.colors.greyScale4};
+`
+
+const ProgressBarHelperTextRight = styled.View`
+    display: flex;
+    font-size: 12px;
+    color: ${(props) => props.theme.colors.greyScale4};
+`
+
 const ContactContainer = styled.View`
     display: flex;
     flex-direction: column;
@@ -187,37 +223,37 @@ const ContactContainer = styled.View`
 `
 
 const HeadingText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale6};
-    font-size: 24px;
-    font-weight: 800;
+    color: ${(props) => props.theme.colors.white};
+    font-size: 20px;
+    font-weight: 500;
     text-align: center;
     margin-bottom: 20px;
-    margin-top: 20px;
+    margin-top: 30px;
 `
 
 const SecondaryText = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale4};
+    font-size: 14px;
+    font-weight: 300;
+    text-align: center;
+    padding: 0 20px;
+    max-width: 600px;
+    margin: 20px 0;
+`
+const ProgressExplainer = styled.Text`
     color: ${(props) => props.theme.colors.greyScale5};
-    font-size: 18px;
+    font-size: 12px;
     font-weight: 400;
     text-align: center;
     margin-bottom: 10px;
     padding: 0 20px;
     max-width: 600px;
     margin-bottom: 30px;
+    margin: 15px 0;
 `
 
 const TertiaryText = styled.Text`
     color: ${(props) => props.theme.colors.prime1};
-`
-
-const SectionCircle = styled.View`
-    background: ${(props) => props.theme.colors.greyScale2};
-    border-radius: 100px;
-    height: 60px;
-    width: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 `
 
 const Container = styled.SafeAreaView`
@@ -226,6 +262,7 @@ const Container = styled.SafeAreaView`
     width: 100%;
     justify-content: center;
     align-items: center;
+    background: ${(props) => props.theme.colors.black};
 `
 
 const InnerContainer = styled.View`
@@ -244,6 +281,7 @@ const MemexLogo = styled.Image`
 const InfoText = styled.Text`
     font-weight: bold;
     color: ${(props) => props.theme.colors.prime1};
+    font-size: 22px;
 `
 
 const InfoTextProgress = styled.Text`
@@ -258,7 +296,8 @@ const SyncInfoContainer = styled.View`
     align-items: center;
     justify-content: flex-start;
     margin-bottom: 50px;
-    height: 150px;
+    padding: 30px;
+    background: ${(props) => props.theme.colors.greyScale1};
 `
 
 const Spacer = styled.View`

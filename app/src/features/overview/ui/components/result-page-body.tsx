@@ -55,7 +55,7 @@ const TitleText = styled.Text`
 
 const DomainText = styled.Text`
     color: ${(props) => props.theme.colors.greyScale5};
-    font-weight: 500;
+    font-weight: 400;
     font-size: 14px;
     margin-right: 10px;
 `

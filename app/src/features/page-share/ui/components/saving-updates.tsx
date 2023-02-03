@@ -31,9 +31,9 @@ const InnerContainer = styled.View`
 `
 
 const TitleText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5};
+    color: ${(props) => props.theme.colors.white};
     font-size: 20px;
-    font-weight: 800;
+    font-weight: 500;
 `
 
 export default SavingUpdates

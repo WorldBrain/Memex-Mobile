@@ -38,8 +38,8 @@ export default class ListsFilter extends StatefulUIElement<
                     titleText="Select a Space"
                     leftIcon={icons.BackArrow}
                     leftBtnPress={this.props.navigation.goBack}
-                    leftIconSize={'30px'}
-                    leftIconStrokeWidth={'5px'}
+                    leftIconSize={'24px'}
+                    leftIconStrokeWidth={'0px'}
                 />
                 <MetaPickerContainer>
                     <MetaPicker

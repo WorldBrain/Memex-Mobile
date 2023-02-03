@@ -126,10 +126,16 @@ export default class ShareModalScreen extends StatefulUIElement<
     private renderTitle() {
         if (this.state.isSpacePickerShown) {
             return (
-                <>
-                    <TitleText>{this.state.statusText}</TitleText>
-                    <ReloadBtn onPress={this.handleReloadPress} />
-                </>
+                <ReloadButton onPress={this.handleReloadPress}>
+                    <Icon
+                        icon={icons.Reload}
+                        strokeWidth="0"
+                        heightAndWidth="15px"
+                        color="greyScale4"
+                        fill
+                    />
+                    <TitleText>Refresh</TitleText>
+                </ReloadButton>
             )
         }
 
@@ -158,7 +164,8 @@ export default class ShareModalScreen extends StatefulUIElement<
                         <Icon
                             icon={icons.BackArrow}
                             heightAndWidth={'24px'}
-                            strokeWidth={'8px'}
+                            strokeWidth={'0px'}
+                            fill
                         />
                     }
                     onLeftBtnPress={this.setSpacePickerShown(false)}
@@ -172,14 +179,16 @@ export default class ShareModalScreen extends StatefulUIElement<
                             <Icon
                                 icon={icons.CheckMark}
                                 heightAndWidth={'28px'}
-                                color={'purple'}
-                                strokeWidth={'3px'}
+                                color={'prime1'}
+                                strokeWidth={'0px'}
+                                fill
                             />
                         ) : (
                             <Icon
                                 icon={icons.CheckMark}
                                 heightAndWidth={'24px'}
-                                strokeWidth={'2px'}
+                                strokeWidth={'0px'}
+                                fill
                             />
                         )
                     }
@@ -348,6 +357,7 @@ const ShareModalContainer = styled.View`
     background: ${(props) => props.theme.colors.greyScale1};
     display: flex;
     flex-direction: column;
+    height: 100%;
 `
 
 const ActionBarContainer = styled(ActionBar)`
@@ -363,7 +373,17 @@ const LoadingIndicatorBox = styled.View`
 `
 
 const TitleText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5};
+    color: ${(props) => props.theme.colors.greyScale4};
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 300;
+    margin-left: 5px;
+`
+
+const ReloadButton = styled.TouchableOpacity`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 40px;
 `

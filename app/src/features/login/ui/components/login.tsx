@@ -18,7 +18,8 @@ import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 import { theme } from 'src/ui/components/theme/theme'
-import { PrimaryAction, SecondaryAction } from 'src/ui/utils/ActionButtons'
+import { PrimaryAction } from 'src/ui/utils/ActionButtons'
+import { SectionCircle } from 'src/ui/utils/SectionCircle'
 
 const MemexLogoFile = require('src/ui/assets/MemexIcon.png')
 
@@ -71,35 +72,25 @@ const Login: React.StatelessComponent<Props> = (props) => {
                 )} */}
                 {props.mode === 'requestReset' && (
                     <>
-                        <SectionCircle>
-                            <Icon
-                                icon={icons.Login}
-                                heightAndWidth={'30px'}
-                                color="purple"
-                            />
-                        </SectionCircle>
+                        {SectionCircle(60, icons.Reload)}
                         <IntroTitle>Request a new password</IntroTitle>
                     </>
                 )}
                 {props.mode === 'confirmReset' && (
                     <>
-                        <SectionCircle>
-                            <Icon
-                                icon={icons.Login}
-                                heightAndWidth={'30px'}
-                                color="purple"
-                            />
-                        </SectionCircle>
+                        {SectionCircle(60, icons.Mail)}
                         <IntroTitle>Check your email inbox</IntroTitle>
                     </>
                 )}
-                <LoginSignupBox containerViewStyle={{ width: '100%' }}>
+                <LoginSignupBox>
                     {props.mode !== 'confirmReset' && (
                         <>
                             <TextInputContainer>
                                 <Icon
                                     icon={icons.Mail}
-                                    heightAndWidth={'20px'}
+                                    heightAndWidth={'22px'}
+                                    strokeWidth={'0px'}
+                                    fill
                                 />
                                 <TextInputBox
                                     value={props.emailInputValue}
@@ -121,7 +112,9 @@ const Login: React.StatelessComponent<Props> = (props) => {
                             <TextInputContainer>
                                 <Icon
                                     icon={icons.Lock}
-                                    heightAndWidth={'20px'}
+                                    heightAndWidth={'24px'}
+                                    strokeWidth={'0px'}
+                                    fill
                                 />
                                 <TextInputBox
                                     value={props.passwordInputValue}
@@ -151,7 +144,9 @@ const Login: React.StatelessComponent<Props> = (props) => {
                                     <TextInputContainer>
                                         <Icon
                                             icon={icons.Lock}
-                                            heightAndWidth={'20px'}
+                                            heightAndWidth={'24px'}
+                                            fill
+                                            strokeWidth="0px"
                                         />
                                         <TextInputBox
                                             value={
@@ -183,11 +178,14 @@ const Login: React.StatelessComponent<Props> = (props) => {
                                         props.emailInputValue.length === 0 &&
                                         props.passwordInputValue.length === 0
                                     }
+                                    type="primary"
+                                    size="medium"
                                 />
-                                <SecondaryAction
+                                <PrimaryAction
                                     label={'New to Memex?'}
                                     onPress={props.onModeToggle}
-                                    width="200px"
+                                    type="forth"
+                                    size="medium"
                                 />
                             </>
                         )}
@@ -202,11 +200,14 @@ const Login: React.StatelessComponent<Props> = (props) => {
                                         props.passwordConfirmInputValue !=
                                             props.passwordInputValue
                                     }
+                                    type="primary"
+                                    size="medium"
                                 />
-                                <SecondaryAction
+                                <PrimaryAction
                                     label={'Already have an Account?'}
                                     onPress={props.onModeToggle}
-                                    width="200px"
+                                    type="forth"
+                                    size="medium"
                                 />
                             </>
                         )}
@@ -218,11 +219,14 @@ const Login: React.StatelessComponent<Props> = (props) => {
                                     isDisabled={
                                         props.emailInputValue.length === 0
                                     }
+                                    type="primary"
+                                    size="medium"
                                 />
-                                <SecondaryAction
+                                <PrimaryAction
                                     label={'Go Back'}
                                     onPress={props.onModeToggle}
-                                    width="200px"
+                                    type="forth"
+                                    size="medium"
                                 />
                             </>
                         )}
@@ -231,6 +235,8 @@ const Login: React.StatelessComponent<Props> = (props) => {
                                 <PrimaryAction
                                     label={'Back to login'}
                                     onPress={props.onModeToggle}
+                                    type="forth"
+                                    size="medium"
                                 />
                             </>
                         )}
@@ -333,20 +339,10 @@ const ActionButtonContainer = styled.View`
 
 const IntroTitle = styled.Text`
     font-size: 20px;
-    color: ${(props) => props.theme.colors.greyScale6};
+    color: ${(props) => props.theme.colors.white};
     margin-bottom: 20px;
-    font-weight: 800;
+    font-weight: 500;
     margin-top: 30px;
-`
-
-const SectionCircle = styled.View`
-    background: ${(props) => props.theme.colors.greyScale2};
-    border-radius: 100px;
-    height: 60px;
-    width: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 `
 
 const MemexLogo = styled.Image`
@@ -361,7 +357,7 @@ const LoginSignupScreen = styled.SafeAreaView`
     justify-content: flex-start;
     align-items: center;
     flex-direction: column;
-    margin-top: 100px;
+    margin-top: 200px;
 `
 
 const LoginSignupContainer = styled.View`
@@ -371,7 +367,7 @@ const LoginSignupContainer = styled.View`
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20%;
+    background: ${(props) => props.theme.colors.black};
 `
 
 const LoginSignupBox = styled.View`
@@ -387,20 +383,28 @@ const TextInputContainer = styled.View`
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    border: 1px solid ${(props) => props.theme.colors.greyScale5};
     height: 50px;
     border-radius: 8px;
     width: 350px;
     padding: 0 15px;
     margin-bottom: 15px;
+    border-width: 1px;
+    border-radius: 8px;
+    border-color: ${(props) => props.theme.colors.greyScale2};
+    background: ${(props) => props.theme.colors.greyScale2};
+
+    &:focus-within {
+        border-color: ${(props) => props.theme.colors.greyScale3};
+    }
 `
 
 const TextInputBox = styled(TextInput)`
     background: transparent;
     flex: 1;
     color: ${(props) => props.theme.colors.greyScale6};
-    background: transparent;
-    margin-left: 10px;
+    border-style: solid;
+    padding-left: 10px;
+    height: 100%;
 `
 
 const ForgotPasswordBox = styled.TouchableOpacity`

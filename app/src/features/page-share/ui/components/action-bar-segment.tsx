@@ -77,6 +77,7 @@ const Container = styled.View`
     border-style: solid;
     border-top-width: 1px;
     border-color: ${(props) => props.theme.colors.greyScale2};
+    background: ${(props) => props.theme.colors.black};
 `
 
 const ButtonContainer = styled.View`

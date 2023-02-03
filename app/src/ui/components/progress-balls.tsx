@@ -1,8 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import styled from 'styled-components/native'
-
-import styles from './progress-balls.styles'
+import styled, { css } from 'styled-components/native'
 
 export interface Props {
     count?: number
@@ -13,27 +11,58 @@ const ProgressBalls: React.StatelessComponent<Props> = ({
     count = 3,
     selectedIndex,
 }) => (
-    <View style={styles.container}>
+    <Container>
         {[...Array(count)].map((_, i) => (
-            <Ball
-                key={i}
-                selectedIndex={selectedIndex}
-                isSelected={i === selectedIndex}
-            />
+            <OuterBall isSelected={i === selectedIndex}>
+                <Ball
+                    key={i}
+                    selectedIndex={selectedIndex}
+                    isSelected={i === selectedIndex}
+                />
+            </OuterBall>
         ))}
-    </View>
+    </Container>
 )
+
+const OuterBall = styled.View<{
+    isSelected: boolean
+}>`
+    height: 10px;
+    width: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px;
+    margin: 4px 6px;
+
+    ${(props) =>
+        props.isSelected &&
+        css`
+            background: ${(props) => props.theme.colors.white};
+        `};
+`
 
 const Ball = styled.View<{
     isSelected: boolean
 }>`
-    height: 20px;
-    width: 20px;
+    height: 6px;
+    width: 6px;
     border-radius: 30px;
     background: ${(props) =>
         props.isSelected
             ? props.theme.colors.prime1 + '70'
             : props.theme.colors.greyScale2};
+`
+
+const Container = styled.View`
+    border-radius: 100px;
+    border-width: 1px;
+    border-color: ${(props) => props.theme.colors.greyScale2};
+    padding: 4px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 `
 
 export default ProgressBalls

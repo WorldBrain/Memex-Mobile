@@ -151,6 +151,7 @@ const EmptyItem = styled.View`
 const InnerContainer = styled.View`
     width: 600px;
     max-width: 100%;
+    background: ${(props) => props.theme.colors.black};
 `
 
 const SearchInputContainer = styled(SuggestInput)`
@@ -174,6 +175,8 @@ const ResultsContainer = styled.View`
     height: 100%;
     display: flex;
     align-items: flex-start;
+    background: ${(props) => props.theme.colors.black};
+    padding: 10px;
 `
 
 const LoadingBallsContainer = styled.View`

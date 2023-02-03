@@ -74,11 +74,12 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async loadInitEntries() {
-        const loadedSuggestions =
-            await this.props.storage.modules.metaPicker.findListSuggestions({
+        const loadedSuggestions = await this.props.storage.modules.metaPicker.findListSuggestions(
+            {
                 limit: INIT_SUGGESTIONS_LIMIT,
                 includeSpecialLists: this.props.filterMode,
-            })
+            },
+        )
 
         const entries = initNormalizedState<SpacePickerEntry, number>({
             seedData: [
@@ -174,8 +175,9 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         const name = previousState.inputText.trim()
-        const { object: newList } =
-            await this.props.storage.modules.metaPicker.createList({ name })
+        const {
+            object: newList,
+        } = await this.props.storage.modules.metaPicker.createList({ name })
         const newEntry: SpacePickerEntry = {
             name,
             id: newList.id,

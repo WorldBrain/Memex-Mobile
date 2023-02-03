@@ -67,12 +67,6 @@ export default class OnboardingScreen extends StatefulUIElement<
             case 1:
                 return this.renderNewUserOnboardingStage({
                     showBackBtn: true,
-                    children: <OrganizeContent />,
-                })
-            case 2:
-            default:
-                return this.renderNewUserOnboardingStage({
-                    showBackBtn: true,
                     children: <SyncOnboarding />,
                     onSkipPress: () =>
                         this.processEvent('finishOnboarding', null),
