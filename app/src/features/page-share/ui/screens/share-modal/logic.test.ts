@@ -66,6 +66,7 @@ describe('share modal UI logic tests', () => {
                     ____wipeDBForSync: async () => undefined,
                 } as any,
             },
+            keyboardAPI: { addListener: () => ({ remove: () => {} } as any) },
         })
         const initialState = logic.getInitialState()
         const element = new FakeStatefulUIElement<State, Event>(logic)

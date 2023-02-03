@@ -5,6 +5,7 @@ import {
     UIMutation,
 } from 'ui-logic-core'
 
+import type { EmitterSubscription, KeyboardStatic } from 'react-native'
 import type { UIServices, UIStorageModules, ShareNavProps } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
@@ -27,6 +28,7 @@ export interface Dependencies extends ShareNavProps<'ShareModal'> {
         | 'activityIndicator'
     >
     storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
+    keyboardAPI: Pick<KeyboardStatic, 'addListener'>
 }
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -41,6 +43,8 @@ export default class Logic extends UILogic<State, Event> {
     syncRunning: Promise<void> | null = null
     pageTitleFetchRunning: Promise<void> | null = null
     private initValues = { ...initValues }
+    private keyboardShowListener!: EmitterSubscription
+    private keyboardHideListener!: EmitterSubscription
 
     constructor(private deps: Dependencies) {
         super()
@@ -61,16 +65,9 @@ export default class Logic extends UILogic<State, Event> {
             isModalShown: true,
             noteText: '',
             statusText: '',
-            keyBoardHeight: 0,
+            keyboardHeight: 0,
             ...initValues,
         }
-    }
-
-    keyBoardShow: EventHandler<'keyBoardShow'> = (keyBoardHeight: string) => {
-        this.emitMutation({ keyBoardHeight: { $set: keyBoardHeight.event } })
-    }
-    keyBoardHide: EventHandler<'keyBoardHide'> = async () => {
-        this.emitMutation({ keyBoardHeight: { $set: 0 } })
     }
 
     private handleSyncError(error: Error) {
@@ -129,7 +126,25 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    async init(incoming: IncomingUIEvent<State, Event, 'init'>) {
+    cleanup: EventHandler<'cleanup'> = async ({}) => {
+        await this.deps.services.shareExt.close()
+        this.keyboardShowListener.remove()
+        this.keyboardHideListener.remove()
+    }
+
+    init: EventHandler<'init'> = async ({}) => {
+        this.keyboardShowListener = this.deps.keyboardAPI.addListener(
+            'keyboardDidShow',
+            (event) =>
+                this.emitMutation({
+                    keyboardHeight: { $set: event.endCoordinates.height },
+                }),
+        )
+        this.keyboardHideListener = this.deps.keyboardAPI.addListener(
+            'keyboardDidHide',
+            (event) => this.emitMutation({ keyboardHeight: { $set: 0 } }),
+        )
+
         this.doSync()
 
         const { services, storage } = this.deps
@@ -145,6 +160,7 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ pageUrl: { $set: url } })
 
         const existingPage = await storage.modules.overview.findPage({ url })
+        console.log('existing page:', existingPage)
 
         // No need to do state hydration from DB if this is new page, just index it
         if (existingPage == null) {
@@ -371,6 +387,7 @@ export default class Logic extends UILogic<State, Event> {
 
     private async storePageInit(state: State) {
         const { overview, metaPicker } = this.deps.storage.modules
+        console.log('gonna do it:', state)
 
         await overview.createPage({
             url: state.pageUrl,
@@ -383,6 +400,7 @@ export default class Logic extends UILogic<State, Event> {
 
         await metaPicker.createInboxListEntry({ fullPageUrl: state.pageUrl })
         await metaPicker.createMobileListEntry({ fullPageUrl: state.pageUrl })
+        console.log('created!')
     }
 
     private async storePageFinal(state: State, customTimestamp?: number) {

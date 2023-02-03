@@ -25,7 +25,7 @@ import FeedActivityIndicator from 'src/features/activity-indicator'
 import { isInputDirty } from './util'
 import type { State, Event } from './types'
 
-export interface Props extends Dependencies {}
+export interface Props extends Omit<Dependencies, 'keyboardAPI'> {}
 
 export default class ShareModalScreen extends StatefulUIElement<
     Props,
@@ -35,33 +35,13 @@ export default class ShareModalScreen extends StatefulUIElement<
     private metaPicker!: MetaPicker
 
     constructor(props: Props) {
-        super(props, new Logic(props))
-    }
-
-    keyboardShowListener
-    keyboardHideListener
-
-    componentDidMount(): void {
-        this.keyboardShowListener = Keyboard.addListener(
-            'keyboardDidShow',
-            this.handleKeyboardShow,
+        super(
+            props,
+            new Logic({
+                ...props,
+                keyboardAPI: Keyboard,
+            }),
         )
-        this.keyboardHideListener = Keyboard.addListener(
-            'keyboardDidHide',
-            this.handleKeyboardHide,
-        )
-    }
-
-    componentWillUnmount(): void {
-        this.keyboardShowListener.remove()
-        this.keyboardHideListener.remove()
-    }
-
-    handleKeyboardShow = (event: KeyboardEvent) => {
-        this.processEvent('keyBoardShow', event.endCoordinates.height)
-    }
-    handleKeyboardHide = () => {
-        this.processEvent('keyBoardHide', null)
     }
 
     private setSpacePickerShown = (isShown: boolean) => (e: any) => {
@@ -339,7 +319,7 @@ export default class ShareModalScreen extends StatefulUIElement<
 
     render() {
         let editorHeight =
-            Dimensions.get('screen').height - this.state.keyBoardHeight - 100
+            Dimensions.get('screen').height - this.state.keyboardHeight - 100
         return (
             <ShareModal
                 isModalShown={this.state.isModalShown}

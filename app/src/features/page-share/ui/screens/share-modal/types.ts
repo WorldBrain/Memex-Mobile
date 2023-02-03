@@ -1,7 +1,7 @@
 import type { UIEvent } from 'ui-logic-core'
 import type { UITaskState } from 'src/ui/types'
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
-import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 
 export interface State {
     loadState: UITaskState
@@ -21,7 +21,7 @@ export interface State {
     isSpacePickerShown: boolean
     isUnsupportedApplication: boolean
     privacyLevel: AnnotationPrivacyLevels
-    keyBoardHeight: number
+    keyboardHeight: number
 }
 
 export type Event = UIEvent<{
@@ -42,6 +42,4 @@ export type Event = UIEvent<{
     setSpacesToAdd: { values: number[] }
     setPrivacyLevel: { value: AnnotationPrivacyLevels }
     clearSyncError: null
-    keyBoardShow: { event: { keyBoardHeight: number } }
-    keyBoardHide: null
 }>
