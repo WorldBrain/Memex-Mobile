@@ -65,6 +65,7 @@ export default class OnboardingScreen extends StatefulUIElement<
                     children: <SaveWebsite />,
                 })
             case 1:
+            default:
                 return this.renderNewUserOnboardingStage({
                     showBackBtn: true,
                     children: <SyncOnboarding />,
