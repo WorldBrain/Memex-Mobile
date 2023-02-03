@@ -17,6 +17,7 @@ export interface List {
     isDeletable?: boolean
     isNestable?: boolean
     createdAt: Date
+    description: string
 }
 
 export interface ListEntry {

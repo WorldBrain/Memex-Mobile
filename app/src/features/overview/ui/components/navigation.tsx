@@ -19,6 +19,7 @@ export interface Props {
     rightIconColor?: ColorThemeKeys
     rightIconSize?: string
     rightIconStrokeWidth?: string
+    rightArea?: JSX.Element
 }
 
 export interface State {
@@ -88,6 +89,7 @@ export default class Navigation extends React.Component<Props> {
                                 fill
                             />
                         )}
+                        {this.props.rightArea && this.props.rightArea}
                     </RightBtnContainer>
                 </ContainerBox>
             </Container>
@@ -142,11 +144,11 @@ const Spacer10 = styled.View`
 
 const LeftBtnContainer = styled.View`
     height: 30px;
-    width: 50px;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    flex: 1;
 `
 
 const IconBox = styled.TouchableOpacity`
@@ -159,10 +161,11 @@ const IconBox = styled.TouchableOpacity`
 
 const RightBtnContainer = styled.TouchableOpacity`
     height: 30px;
-    width: 50px;
     display: flex;
-    justify-content: center;
+    flex: 1;
+    justify-content: flex-end;
     align-items: center;
+    flex-direction: row;
 `
 
 const TextArea = styled.Text`
@@ -171,5 +174,6 @@ const TextArea = styled.Text`
     align-items: center;
     display: flex;
     font-weight: 600;
+    flex: 2;
     color: ${(props) => props.theme.colors.white};
 `

@@ -63,17 +63,15 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                 {/* </TouchableWithoutFeedback> */}
             </TopArea>
             {props.spaces.length > 0 && (
-                <Section>
-                    <SpaceList>
-                        {props.spaces.map((space) => (
-                            <SpacePill
-                                key={space.id}
-                                name={space.name}
-                                isShared={space.remoteId != null}
-                            />
-                        ))}
-                    </SpaceList>
-                </Section>
+                <SpaceList>
+                    {props.spaces.map((space) => (
+                        <SpacePill
+                            key={space.id}
+                            name={space.name}
+                            isShared={space.remoteId != null}
+                        />
+                    ))}
+                </SpaceList>
             )}
             <Section>
                 <ActionBar>
@@ -230,6 +228,7 @@ const SpaceList = styled.View`
     align-items: center;
     width: 100%;
     flex-wrap: wrap;
+    padding: 0px 10px 10px 10px;
 `
 
 const Section = styled.View`

@@ -136,7 +136,7 @@ export default class PageEditorScreen extends StatefulUIElement<
 
         switch (this.state.mode) {
             case 'notes':
-                return this.state.page.titleText ?? ' '
+                return 'Annotations'
             case 'collections':
             default:
                 return 'Add to Spaces'

@@ -64,13 +64,16 @@ class NotesList extends React.PureComponent<Props> {
                 <TopArea>
                     <Body {...pageData!} date={pageData?.date} />
                     <SpacesArea>
-                        {pageData?.listIds.map((listId) => (
-                            <SpacePill
-                                key={listId}
-                                name={listData[listId]?.name}
-                                isShared={listData[listId]?.remoteId != null}
-                            />
-                        ))}
+                        {pageData?.listIds != null &&
+                            pageData?.listIds.map((listId) => (
+                                <SpacePill
+                                    key={listId}
+                                    name={listData[listId]?.name}
+                                    isShared={
+                                        listData[listId]?.remoteId != null
+                                    }
+                                />
+                            ))}
                     </SpacesArea>
                 </TopArea>
             </PageResultCard>
@@ -104,6 +107,7 @@ class NotesList extends React.PureComponent<Props> {
                             keyExtractor={(item) => item.url}
                             contentContainerStyle={styles.list}
                             ListFooterComponent={<EmptyItem />}
+                            ListHeaderComponent={this.renderPageItem()}
                             showsVerticalScrollIndicator={false}
                         />
                     </ResultsContainer>
@@ -176,10 +180,10 @@ const NoResults = styled.View`
 
 const FlatListContainer = (styled(FlatList)`
     display: flex;
-    padding-left: 10px;
+    padding-left: 15px;
     margin-top: -10px;
     padding-top: 5px;
-    padding-right: 10px;
+    padding-right: 15px;
     width: 100%;
     max-width: 600px;
     flex: 1;
@@ -200,19 +204,12 @@ const ResultItem = styled.View`
 `
 
 const TopArea = styled.View`
-    padding: 15px;
+    padding: 15px 5px 10px 5px;
     display: flex;
     flex-direction: column;
-    margin: 5px 10px;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    shadow-opacity: 0.5;
-    shadow-radius: 5px;
-    shadow-color: #e0e0e0;
-    shadow-offset: 0px 2px;
-    border-radius: 8px;
-    background: white;
 `
 
 const Footer = styled.TouchableOpacity`

@@ -5,7 +5,14 @@ import {
     UIMutation,
     UIEventHandler,
 } from 'ui-logic-core'
-import { AppStateStatic, AppStateStatus, Linking } from 'react-native'
+import {
+    Alert,
+    AppStateStatic,
+    AppStateStatus,
+    Linking,
+    Platform,
+    Share,
+} from 'react-native'
 
 import { storageKeys } from '../../../../../../app.json'
 import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
@@ -29,6 +36,8 @@ import {
     normalizedStateToArray,
 } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
 import { getFeedUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
+import { Copy, Trash } from 'src/ui/components/icons/icons-list'
+import normalize from '@worldbrain/memex-url-utils/ts/normalize'
 
 export interface State {
     syncState: UITaskState
@@ -57,7 +66,7 @@ export type Event = UIEvent<{
     updatePage: { page: UIPage }
     deletePage: { url: string }
     togglePageStar: { url: string }
-    toggleResultPress: { url: string }
+    toggleResultPress: { fullUrl: string }
     setFilteredListId: { id: number }
     shareSelectedList: { remoteListId: string }
     focusFromNavigation: MainNavigatorParamList['Dashboard']
@@ -266,6 +275,13 @@ export default class Logic extends UILogic<State, Event> {
             showFeed: { $set: true },
         })
     }
+
+    // private async fetchListDescription(listId: number) {
+    //     this.emitMutation({
+    //         selectedListId: { $set: listId },
+    //         listData: { [listId]: { $set: selectedList } },
+    //     })
+    // }
 
     private async fetchAndSetListName(listId: number) {
         const { metaPicker } = this.props.storage.modules
@@ -632,23 +648,70 @@ export default class Logic extends UILogic<State, Event> {
 
     toggleResultPress({
         event,
+        previousState,
     }: IncomingUIEvent<State, Event, 'toggleResultPress'>): UIMutation<State> {
-        return {
-            pages: {
-                byId: {
-                    [event.url]: {
-                        isResultPressed: { $apply: (prev) => !prev },
+        let url = normalize(event.fullUrl)
+
+        this.props.services.actionSheet.show({
+            hideOnSelection: true,
+            actions: [
+                {
+                    key: 'copy-page',
+                    title: 'Copy & Share page url',
+                    subtitle: 'Via the share sheet of your phone',
+                    icon: Copy,
+                    onPress: async () => {
+                        await Share.share({
+                            url: event.fullUrl,
+                            message:
+                                Platform.OS === 'ios' ? undefined : event.url,
+                        })
                     },
                 },
-            },
-            // pages: (state) => {
-            //     const page = state.get(url)!
-            //     return state.set(url, {
-            //         ...page,
-            //         isResultPressed: !page.isResultPressed,
-            //     })
-            // },
-        }
+                {
+                    key: 'delete-page',
+                    title: 'Delete this page',
+                    subtitle: 'And all its associated notes',
+                    icon: Trash,
+                    onPress: async () => {
+                        Alert.alert(
+                            'Delete confirm',
+                            'Do you really want to delete this page?',
+                            [
+                                { text: 'Cancel' },
+                                {
+                                    text: 'Delete',
+                                    onPress: () =>
+                                        this.processUIEvent('deletePage', {
+                                            previousState,
+                                            event: {
+                                                url: url,
+                                            },
+                                        }),
+                                },
+                            ],
+                        )
+                    },
+                },
+            ],
+        })
+
+        // return {
+        //     pages: {
+        //         byId: {
+        //             [event.url]: {
+        //                 isResultPressed: { $apply: (prev) => !prev },
+        //             },
+        //         },
+        //     },
+        //     // pages: (state) => {
+        //     //     const page = state.get(url)!
+        //     //     return state.set(url, {
+        //     //         ...page,
+        //     //         isResultPressed: !page.isResultPressed,
+        //     //     })
+        //     // },
+        // }
     }
 
     private async openMemexFeed() {

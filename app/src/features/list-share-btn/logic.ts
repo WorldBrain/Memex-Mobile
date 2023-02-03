@@ -3,6 +3,7 @@ import { Share, Platform } from 'react-native'
 import type { UIServices, UITaskState } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { UIMutation } from '@worldbrain/memex-common/lib/main-ui/classes/logic'
+import { Comment, Link, People } from 'src/ui/components/icons/icons-list'
 
 export interface State {
     localListId: number
@@ -146,16 +147,14 @@ export default class Logic extends UILogic<State, Event> {
     pressBtn: EventHandler<'pressBtn'> = async ({ previousState }) => {
         this.deps.services.actionSheet.show({
             hideOnSelection: true,
-            title:
-                previousState.remoteListId == null
-                    ? 'Share Space'
-                    : 'Share Space links',
             actions:
                 previousState.remoteListId == null
                     ? [
                           {
                               key: 'create-invite-links',
                               title: 'Create invite links',
+                              icon: Link,
+                              subtitle: 'Share or collaborate on this Space',
                               onPress: async () => {
                                   this.processUIEvent('shareList', {
                                       previousState,
@@ -168,6 +167,8 @@ export default class Logic extends UILogic<State, Event> {
                           {
                               key: 'copy-commenter-link',
                               title: 'Share commenter link',
+                              subtitle: 'Access to read and comment',
+                              icon: Comment,
                               onPress: async () => {
                                   await this.processUIEvent(
                                       'invokeCommenterLink',
@@ -178,6 +179,9 @@ export default class Logic extends UILogic<State, Event> {
                           {
                               key: 'copy-contributor-link',
                               title: 'Share contributor link',
+                              subtitle:
+                                  'Access to add pages, annotations & comments',
+                              icon: People,
                               onPress: async () => {
                                   await this.processUIEvent(
                                       'invokeContributorLink',

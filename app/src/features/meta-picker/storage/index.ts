@@ -35,6 +35,7 @@ export class MetaPickerStorage extends StorageModule {
     static TAG_COLL = TAG_COLL_NAMES.tag
     static LIST_COLL = LIST_COLL_NAMES.list
     static LIST_ENTRY_COLL = LIST_COLL_NAMES.listEntry
+    static LIST_DESCRIPTION_COLL = LIST_COLL_NAMES.listDescription
 
     static DEF_SUGGESTION_LIMIT = 25
     static DEF_TAG_LIMIT = 1000
@@ -98,6 +99,13 @@ export class MetaPickerStorage extends StorageModule {
                 collection: MetaPickerStorage.LIST_COLL,
                 args: {
                     id: '$listId:number',
+                },
+            },
+            findListDescriptionById: {
+                operation: 'findObject',
+                collection: MetaPickerStorage.LIST_DESCRIPTION_COLL,
+                args: {
+                    listId: '$listId:number',
                 },
             },
             findListsByIds: {
@@ -393,12 +401,21 @@ export class MetaPickerStorage extends StorageModule {
         const list: List | null =
             (await this.operation('findListById', { listId: id })) ?? null
 
+        const listDescription =
+            (await this.operation('findListDescriptionById', {
+                listId: id,
+            })) ?? null
+
         if (!includeRemoteIds || list == null) {
             return list
         }
 
         const remoteIds = await this.options.getSpaceRemoteIds([id])
-        return { ...list, remoteId: remoteIds[id] }
+        return {
+            ...list,
+            remoteId: remoteIds[id],
+            description: listDescription?.description ?? undefined,
+        }
     }
 
     async findListsByIds({

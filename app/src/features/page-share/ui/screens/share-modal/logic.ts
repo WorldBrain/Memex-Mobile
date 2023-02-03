@@ -160,7 +160,6 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ pageUrl: { $set: url } })
 
         const existingPage = await storage.modules.overview.findPage({ url })
-        console.log('existing page:', existingPage)
 
         // No need to do state hydration from DB if this is new page, just index it
         if (existingPage == null) {
@@ -387,7 +386,6 @@ export default class Logic extends UILogic<State, Event> {
 
     private async storePageInit(state: State) {
         const { overview, metaPicker } = this.deps.storage.modules
-        console.log('gonna do it:', state)
 
         await overview.createPage({
             url: state.pageUrl,
@@ -400,7 +398,6 @@ export default class Logic extends UILogic<State, Event> {
 
         await metaPicker.createInboxListEntry({ fullPageUrl: state.pageUrl })
         await metaPicker.createMobileListEntry({ fullPageUrl: state.pageUrl })
-        console.log('created!')
     }
 
     private async storePageFinal(state: State, customTimestamp?: number) {

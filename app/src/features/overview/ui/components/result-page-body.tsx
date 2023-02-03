@@ -49,7 +49,7 @@ const Title = styled.View`
 const TitleText = styled.Text`
     color: ${(props) => props.theme.colors.white};
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
     letter-spacing: 0.3px;
 `
 

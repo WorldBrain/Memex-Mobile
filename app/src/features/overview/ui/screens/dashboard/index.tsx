@@ -31,6 +31,7 @@ import WebView from 'react-native-webview'
 import Navigation, {
     height as navigationBarHeight,
 } from 'src/features/overview/ui/components/navigation'
+import { PrimaryAction } from 'src/ui/utils/ActionButtons'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -94,8 +95,8 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         this.processEvent('togglePageStar', { url })
     }
 
-    private initHandleResultPress = ({ url }: UIPage) => () => {
-        this.processEvent('toggleResultPress', { url })
+    private initHandleResultPress = ({ fullUrl }: UIPage) => () => {
+        this.processEvent('toggleResultPress', { fullUrl })
     }
 
     private initHandleReaderPress = ({ url, titleText }: UIPage) => () => {
@@ -151,6 +152,23 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     )
 
     private listKeyExtracter = (item: UIPage) => item.url
+
+    private SpaceTitleSection = () => {
+        return (
+            <SpaceTitleContainer>
+                <SpaceTitleText>
+                    {this.state.listData[this.state.selectedListId].name}
+                </SpaceTitleText>
+                {this.state.listData[this.state.selectedListId]
+                    ?.description && (
+                    <SpaceDescription>
+                        {this.state.listData[this.state.selectedListId]
+                            ?.description ?? undefined}
+                    </SpaceDescription>
+                )}
+            </SpaceTitleContainer>
+        )
+    }
 
     private renderList() {
         if (this.state.showFeed) {
@@ -210,6 +228,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     contentContainerStyle={{
                         paddingBottom: 100,
                     }}
+                    ListHeaderComponent={this.SpaceTitleSection()}
                     ListEmptyComponent={
                         <EmptyResults
                             goToPairing={() =>
@@ -260,55 +279,121 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             )
         }
 
+        // const selectedListData = this.state.listData[this.state.selectedListId]
+        // if (selectedListData == null) {
+        //     return ''
+        // }
+
+        // if (
+        //     [
+        //         ALL_SAVED_FILTER_ID,
+        //         SPECIAL_LIST_IDS.INBOX,
+        //         SPECIAL_LIST_IDS.INBOX,
+        //     ].includes(this.state.selectedListId)
+        // ) {
+        //     return selectedListData.name
+        // }
+
+        // return (
+        //     <NavTitleContainer>
+        //         <NavTitleText numberOfLines={1}>
+        //             {!this.state.showFeed ? selectedListData.name : 'Hive Feed'}
+        //         </NavTitleText>
+        //         {!this.state.showFeed && (
+        //             <ListShareBtn
+        //                 localListId={selectedListData.id}
+        //                 remoteListId={selectedListData.remoteId ?? null}
+        //                 services={this.props.services}
+        //                 onListShare={(remoteListId) =>
+        //                     this.processEvent('shareSelectedList', {
+        //                         remoteListId,
+        //                     })
+        //                 }
+        //             />
+        //         )}
+        //     </NavTitleContainer>
+        // )
+    }
+
+    renderNavigation() {
         const selectedListData = this.state.listData[this.state.selectedListId]
-        if (selectedListData == null) {
-            return ''
-        }
-
         if (
-            [
-                ALL_SAVED_FILTER_ID,
-                SPECIAL_LIST_IDS.INBOX,
-                SPECIAL_LIST_IDS.INBOX,
-            ].includes(this.state.selectedListId)
+            this.state.selectedListId !== ALL_SAVED_FILTER_ID &&
+            this.state.selectedListId !== SPECIAL_LIST_IDS.INBOX &&
+            this.state.selectedListId !== SPECIAL_LIST_IDS.MOBILE
         ) {
-            return selectedListData.name
+            return (
+                <Navigation
+                    leftIcon={icons.BackArrow}
+                    leftBtnPress={() => {
+                        this.processEvent('setFilteredListId', {
+                            id: ALL_SAVED_FILTER_ID,
+                        })
+                        this.processEvent('reload', {
+                            triggerSync: true,
+                            initListId: ALL_SAVED_FILTER_ID,
+                        })
+                        this.props.navigation.goBack()
+                    }}
+                    titleText={this.renderNavTitle()}
+                    rightArea={
+                        <RightAreaContainer>
+                            {this.state.listData[this.state.selectedListId]
+                                ?.remoteId && (
+                                <IconContainer
+                                    onPress={() =>
+                                        Linking.openURL(
+                                            'https://memex.social/c/' +
+                                                this.state.listData[
+                                                    this.state.selectedListId
+                                                ]?.remoteId,
+                                        )
+                                    }
+                                >
+                                    <Icon
+                                        icon={icons.ExternalLink}
+                                        strokeWidth="0"
+                                        heightAndWidth="22px"
+                                        color="greyScale4"
+                                        fill
+                                    />
+                                </IconContainer>
+                            )}
+                            {selectedListData != null && (
+                                <ListShareBtn
+                                    localListId={
+                                        this.state.listData[
+                                            this.state.selectedListId
+                                        ].id ?? null
+                                    }
+                                    remoteListId={
+                                        selectedListData.remoteId ?? null
+                                    }
+                                    services={this.props.services}
+                                    onListShare={(remoteListId) =>
+                                        this.processEvent('shareSelectedList', {
+                                            remoteListId,
+                                        })
+                                    }
+                                />
+                            )}
+                            {/* <PrimaryAction
+                                label="Share Space"
+                                onPress={() => {}}
+                                size="small"
+                                type="primary"
+                            /> */}
+                        </RightAreaContainer>
+                    }
+                />
+            )
         }
-
-        return (
-            <NavTitleContainer>
-                <NavTitleText numberOfLines={1}>
-                    {!this.state.showFeed ? selectedListData.name : 'Hive Feed'}
-                </NavTitleText>
-                {!this.state.showFeed && (
-                    <ListShareBtn
-                        localListId={selectedListData.id}
-                        remoteListId={selectedListData.remoteId ?? null}
-                        services={this.props.services}
-                        onListShare={(remoteListId) =>
-                            this.processEvent('shareSelectedList', {
-                                remoteListId,
-                            })
-                        }
-                    />
-                )}
-            </NavTitleContainer>
-        )
     }
 
     render() {
         return (
             <Container>
-                <Navigation
-                    // leftBtnPress={this.handleListsFilterPress}
-                    leftIconSize={'26px'}
-                    rightIcon={icons.Settings}
-                    rightIconStrokeWidth={'0'}
-                    rightBtnPress={() =>
-                        this.props.navigation.navigate('SettingsMenu')
-                    }
-                    titleText={this.renderNavTitle()}
-                />
+                {this.renderNavigation()}
                 <ResultsContainer>{this.renderList()}</ResultsContainer>
                 <FooterActionBar>
                     <FooterActionBtn
@@ -384,6 +469,43 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         )
     }
 }
+
+const IconContainer = styled.TouchableOpacity`
+    height: 30px;
+    width: 30px;
+    margin-right: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+const RightAreaContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+`
+
+const SpaceTitleContainer = styled.View`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 15px 5px;
+`
+
+const SpaceTitleText = styled.Text`
+    font-size: 22px;
+    color: ${(props) => props.theme.colors.white};
+    font-weight: 500;
+`
+
+const SpaceDescription = styled.Text`
+    font-size: 14px;
+    color: ${(props) => props.theme.colors.greyScale6};
+    font-weight: 300;
+    margin-top: 10px;
+`
 
 const Testtesxt = styled.Text`
     width: 100%;
@@ -499,6 +621,7 @@ const ResultsContainer = styled.View`
 const ResultListContainer = styled.View`
     display: flex;
     align-items: center;
+    padding: 0 10px;
 `
 
 const ResultsList = (styled(FlatList)`

@@ -16,14 +16,6 @@ const aspectRatio = height / width
 
 const OnboardingFeature = (props) => {
     const orientation = useDeviceOrientation()
-    // const [orientation , setOrientation] = useState(true);
-
-    // useEffect(() => {
-    //     console.log("Effect Run");
-    //     Dimensions.addEventListener('change', () => {
-    //         setOrientation(orientationInfo.portrait ? true : false);
-    //     })
-    // })
 
     return (
         <MainContainer>

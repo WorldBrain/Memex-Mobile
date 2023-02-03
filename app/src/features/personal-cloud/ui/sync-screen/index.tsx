@@ -52,16 +52,25 @@ export default class CloudSyncScreen extends StatefulUIElement<
         //     return null
         // }
 
-        if (this.state.totalDownloads) {
+        if (
+            this.state.totalDownloads != null &&
+            this.state.pendingDownloads != null
+        ) {
             return (
                 <SyncInfoContainer>
                     <InfoText>
-                        {this.state.totalDownloads == null
-                            ? '...'
-                            : this.state.pendingDownloads}{' '}
-                        / {this.state.totalDownloads ?? '...'}
+                        {this.state.totalDownloads != null && (
+                            <>
+                                {this.state.pendingDownloads &&
+                                    this.state.totalDownloads -
+                                        this.state.pendingDownloads}{' '}
+                                / {this.state.totalDownloads}
+                            </>
+                        )}
                     </InfoText>
-                    <ProgressExplainer>Changes left to Sync</ProgressExplainer>
+                    <ProgressExplainer>
+                        Changes already synced
+                    </ProgressExplainer>
                     <ProgressBarContainer>
                         <ProgressBar>
                             <ProgressBarInner
@@ -70,18 +79,19 @@ export default class CloudSyncScreen extends StatefulUIElement<
                                 )}
                             />
                         </ProgressBar>
-
-                        <ProgressBarHelperTextLeft>
-                            Progress
-                        </ProgressBarHelperTextLeft>
-                        <ProgressBarHelperTextRight>
-                            {calcPercComplete(this.state)}%
-                        </ProgressBarHelperTextRight>
+                        <ProgressBarHelperTextContainer>
+                            <ProgressBarHelperTextLeft>
+                                Progress
+                            </ProgressBarHelperTextLeft>
+                            <ProgressBarHelperTextRight>
+                                {calcPercComplete(this.state)}%
+                            </ProgressBarHelperTextRight>
+                        </ProgressBarHelperTextContainer>
                     </ProgressBarContainer>
                 </SyncInfoContainer>
             )
         } else {
-            return <SyncInfoContainer />
+            return undefined
         }
     }
 
@@ -90,7 +100,10 @@ export default class CloudSyncScreen extends StatefulUIElement<
             <Container>
                 <InnerContainer>
                     {this.state.totalDownloads === null ? (
-                        <HeadingText>Preparing Sync</HeadingText>
+                        <SyncPreparationBox>
+                            <LoadingBalls />
+                            <HeadingText>Preparing Sync</HeadingText>
+                        </SyncPreparationBox>
                     ) : (
                         <HeadingText>Sync in Progress</HeadingText>
                     )}
@@ -175,11 +188,20 @@ export default class CloudSyncScreen extends StatefulUIElement<
     }
 }
 
+const SyncPreparationBox = styled.View`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+`
+
 const ProgressBarContainer = styled.View`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    width: 250px;
 `
 
 const ProgressBar = styled.View`
@@ -200,18 +222,27 @@ const ProgressBarInner = styled.View<{
     width: ${(props) => props.percentageComplete}%;
     border-radius: 5px;
     height: 6px;
+    background: ${(props) => props.theme.colors.prime1};
+`
+
+const ProgressBarHelperTextContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 `
 
 const ProgressBarHelperTextLeft = styled.Text`
     display: flex;
-    font-size: 12px;
+    font-size: 14px;
     color: ${(props) => props.theme.colors.greyScale4};
 `
 
 const ProgressBarHelperTextRight = styled.Text`
     display: flex;
-    font-size: 12px;
-    color: ${(props) => props.theme.colors.greyScale4};
+    font-size: 14px;
+    color: ${(props) => props.theme.colors.white};
 `
 
 const ContactContainer = styled.View`
@@ -232,24 +263,23 @@ const HeadingText = styled.Text`
 `
 
 const SecondaryText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale4};
+    color: ${(props) => props.theme.colors.greyScale5};
     font-size: 14px;
     font-weight: 300;
     text-align: center;
     padding: 0 20px;
     max-width: 600px;
-    margin: 20px 0;
+    margin: 0px 0 30px 0px;
 `
 const ProgressExplainer = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5};
-    font-size: 12px;
+    color: ${(props) => props.theme.colors.greyScale6};
+    font-size: 14px;
     font-weight: 400;
     text-align: center;
     margin-bottom: 10px;
     padding: 0 20px;
     max-width: 600px;
-    margin-bottom: 30px;
-    margin: 15px 0;
+    margin: 15px 0 30px 0px;
 `
 
 const TertiaryText = styled.Text`
@@ -269,7 +299,6 @@ const InnerContainer = styled.View`
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 60%;
     width: 100%;
 `
 
@@ -281,7 +310,7 @@ const MemexLogo = styled.Image`
 const InfoText = styled.Text`
     font-weight: bold;
     color: ${(props) => props.theme.colors.prime1};
-    font-size: 22px;
+    font-size: 26px;
 `
 
 const InfoTextProgress = styled.Text`
@@ -297,6 +326,7 @@ const SyncInfoContainer = styled.View`
     justify-content: flex-start;
     margin-bottom: 50px;
     padding: 30px;
+    border-radius: 8px;
     background: ${(props) => props.theme.colors.greyScale1};
 `
 

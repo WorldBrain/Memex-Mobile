@@ -38,7 +38,7 @@ const GenericActionSheet: React.FunctionComponent<SheetProps> = ({
                 {options?.title && (
                     <>
                         <TitleBox>
-                            <TitleText>Change Privacy of Note</TitleText>
+                            <TitleText>{options.title}</TitleText>
                         </TitleBox>
                     </>
                 )}

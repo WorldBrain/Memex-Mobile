@@ -6,6 +6,7 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import { Link as LinkIcon } from 'src/ui/components/icons/icons-list'
 
 import Logic, { State, Event, Dependencies } from './logic'
+import { PrimaryAction } from 'src/ui/utils/ActionButtons'
 
 export interface Props extends Dependencies {}
 
@@ -45,9 +46,12 @@ export default class ListShareBtn extends StatefulUIElement<
         }
 
         return (
-            <Btn onPress={this.handleBtnPress}>
-                <Icon icon={LinkIcon} strokeWidth="2px" heightAndWidth="16px" />
-            </Btn>
+            <PrimaryAction
+                size={'small'}
+                type={'primary'}
+                label={'Share Space'}
+                onPress={this.handleBtnPress}
+            />
         )
     }
 }
