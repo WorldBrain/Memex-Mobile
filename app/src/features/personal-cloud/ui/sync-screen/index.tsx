@@ -97,7 +97,7 @@ export default class CloudSyncScreen extends StatefulUIElement<
                     <SecondaryText>
                         Sync only runs with the app open.
                     </SecondaryText>
-                    {this.state.totalDownloads == null && this.renderStats()}
+                    {this.renderStats()}
                 </InnerContainer>
             </Container>
         )
@@ -202,13 +202,13 @@ const ProgressBarInner = styled.View<{
     height: 6px;
 `
 
-const ProgressBarHelperTextLeft = styled.View`
+const ProgressBarHelperTextLeft = styled.Text`
     display: flex;
     font-size: 12px;
     color: ${(props) => props.theme.colors.greyScale4};
 `
 
-const ProgressBarHelperTextRight = styled.View`
+const ProgressBarHelperTextRight = styled.Text`
     display: flex;
     font-size: 12px;
     color: ${(props) => props.theme.colors.greyScale4};

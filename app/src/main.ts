@@ -40,6 +40,7 @@ import { migrateSettings } from 'src/utils/migrate-settings-for-cloud'
 import { createSelfTests } from 'src/tests/self-tests'
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake'
 import type { UIDependencies } from './ui/types'
+import { initFirestoreSyncTriggerListener } from '@worldbrain/memex-common/lib/personal-cloud/backend/utils'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
@@ -122,6 +123,9 @@ export async function main() {
                 key: storageKeys.deviceId,
             })! as Promise<PersonalCloudDeviceId>,
         firebase: reactNativeFBToCloudBackendFBDeps(firebase),
+        setupSyncTriggerListener: initFirestoreSyncTriggerListener(
+            firebase as any,
+        ),
     })
 
     const services = await createServices({
