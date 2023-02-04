@@ -154,20 +154,42 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     private listKeyExtracter = (item: UIPage) => item.url
 
     private SpaceTitleSection = () => {
-        return (
-            <SpaceTitleContainer>
-                <SpaceTitleText>
-                    {this.state.listData[this.state.selectedListId].name}
-                </SpaceTitleText>
-                {this.state.listData[this.state.selectedListId]
-                    ?.description && (
-                    <SpaceDescription>
+        if (this.state.selectedListId) {
+            return (
+                <SpaceTitleContainer>
+                    <SpaceTitleContent>
+                        <SpaceTitleText>
+                            {
+                                this.state.listData[this.state.selectedListId]
+                                    .name
+                            }
+                        </SpaceTitleText>
                         {this.state.listData[this.state.selectedListId]
-                            ?.description ?? undefined}
-                    </SpaceDescription>
-                )}
-            </SpaceTitleContainer>
-        )
+                            ?.description && (
+                            <SpaceDescription>
+                                {this.state.listData[this.state.selectedListId]
+                                    ?.description ?? undefined}
+                            </SpaceDescription>
+                        )}
+                    </SpaceTitleContent>
+                    {this.state.listData[this.state.selectedListId]?.id ===
+                        ALL_SAVED_FILTER_ID && (
+                        <IconContainer
+                            onPress={() =>
+                                this.props.navigation.navigate('SettingsMenu')
+                            }
+                        >
+                            <Icon
+                                icon={icons.Settings}
+                                heightAndWidth={'22px'}
+                                strokeWidth={'0px'}
+                                fill
+                            />
+                        </IconContainer>
+                    )}
+                </SpaceTitleContainer>
+            )
+        }
     }
 
     private renderList() {
@@ -270,20 +292,10 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     }
 
     private renderNavTitle(): React.ReactNode {
-        if (this.state.shouldShowSyncRibbon) {
-            return (
-                <SyncRibbon
-                    text={'New Sync Updates'}
-                    onPress={this.resetDashboard}
-                />
-            )
-        }
-
         // const selectedListData = this.state.listData[this.state.selectedListId]
         // if (selectedListData == null) {
         //     return ''
         // }
-
         // if (
         //     [
         //         ALL_SAVED_FILTER_ID,
@@ -293,7 +305,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         // ) {
         //     return selectedListData.name
         // }
-
         // return (
         //     <NavTitleContainer>
         //         <NavTitleText numberOfLines={1}>
@@ -390,10 +401,22 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         }
     }
 
+    renderUpdatePill = () => {
+        if (this.state.shouldShowSyncRibbon) {
+            return (
+                <SyncRibbon
+                    text={'New Sync Updates'}
+                    onPress={this.resetDashboard}
+                />
+            )
+        }
+    }
+
     render() {
         return (
             <Container>
                 {this.renderNavigation()}
+                {this.renderUpdatePill()}
                 <ResultsContainer>{this.renderList()}</ResultsContainer>
                 <FooterActionBar>
                     <FooterActionBtn
@@ -448,7 +471,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         <FooterActionText>Spaces</FooterActionText>
                     </FooterActionBtn>
                     <FooterActionBtn
-                        onPress={() => this.processEvent('toggleFeed', null)}
+                        onPress={() =>
+                            Linking.openURL('https://memex.social/feed')
+                        }
                     >
                         <FeedActivityIndicatorBox>
                             <FeedActivityIndicator
@@ -464,11 +489,32 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         />
                         <FooterActionText>Feed</FooterActionText>
                     </FooterActionBtn>
+                    {/* <FooterActionBtn
+                        onPress={() =>
+                            this.props.navigation.navigate('SettingsMenu')
+                        }
+                    >
+                        <Icon
+                            icon={icons.Settings}
+                            strokeWidth="0"
+                            heightAndWidth="18px"
+                            color="greyScale5"
+                            fill
+                        />
+                        <FooterActionText>Settings</FooterActionText>
+                    </FooterActionBtn> */}
                 </FooterActionBar>
             </Container>
         )
     }
 }
+
+const SpaceTitleContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+`
 
 const IconContainer = styled.TouchableOpacity`
     height: 30px;
@@ -486,7 +532,7 @@ const RightAreaContainer = styled.View`
     align-items: center;
 `
 
-const SpaceTitleContainer = styled.View`
+const SpaceTitleContent = styled.View`
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -580,7 +626,7 @@ const FooterActionBtn = styled.TouchableOpacity`
     margin: 10px;
     position: relative;
     align-items: center;
-    width: 42px;
+    width: 48px;
     text-align: center;
 `
 const FooterActionBar = styled.View`

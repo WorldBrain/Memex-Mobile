@@ -6,6 +6,7 @@ import {
     TextInput,
     Button,
 } from 'react-native'
+import { TextEditor } from 'src/ui/utils/editor'
 
 import styles from './note-adder.styles'
 
@@ -16,10 +17,11 @@ export interface Props {
     onCancelPress: (e: GestureResponderEvent) => void
 }
 
-const NoteAdder: React.StatelessComponent<Props> = props => (
+const NoteAdder: React.StatelessComponent<Props> = (props) => (
     <View style={styles.container}>
         <Text style={styles.mainText}>Add New Note</Text>
         <View style={styles.inputContainer}>
+            <TextEditor />
             <TextInput
                 style={styles.textInput}
                 value={props.value}

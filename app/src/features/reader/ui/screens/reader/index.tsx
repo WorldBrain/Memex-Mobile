@@ -129,7 +129,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         if (errorCode === -1023 || errorCode === -1200) {
             return (
                 <ErrorScreen>
-                    <SectionCircle size="60px" icon={icons.Lock} />
+                    <SectionCircle size={60} icon={icons.Lock} />
                     <Header>HTTP pages not supported</Header>
                     <ErrorMessage>
                         Please save and open a HTTPS version of this page
@@ -213,6 +213,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         { label: 'Add Note', key: 'annotate' },
                     ]}
                     onCustomMenuSelection={(webViewEvent) => {
+                        // console.log(webViewEvent)
                         if (
                             (webViewEvent.nativeEvent as any).key ===
                             'highlight'

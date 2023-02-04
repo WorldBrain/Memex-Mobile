@@ -16,9 +16,10 @@ const SyncRibbon: React.StatelessComponent<Props> = (props) => {
         <Container onPress={props.onPress}>
             <Icon
                 icon={icons.Reload}
-                heightAndWidth={'14px'}
-                color={'white'}
-                strokeWidth={'3px'}
+                heightAndWidth={'18px'}
+                color={'black'}
+                strokeWidth={'0px'}
+                fill
             />
             <UpdateBox>
                 <UpdateText>{props.text}</UpdateText>
@@ -32,24 +33,25 @@ export default SyncRibbon
 const UpdateBox = styled.View``
 
 const UpdateText = styled.Text`
-    color: white;
+    color: ${(props) => props.theme.colors.black};
     font-size: 12px;
     margin-left: 10px;
-    font-weight: 600;
+    font-weight: 400;
 `
 
 const Container = styled.TouchableOpacity`
-    position: relative;
+    position: absolute;
+    right: 15px;
+    top: 62px;
     display: flex;
     width: 100%;
     align-items: center;
-    border-radius: 30px;
+    border-radius: 8px;
     z-index: 10000;
     background: ${(props) => props.theme.colors.prime1};
     width: 180px;
     height: 30px;
-    border-radius: 30px;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: center;)
 `

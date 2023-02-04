@@ -8,6 +8,7 @@ import {
 import { setupRemoteFunctions } from './remote-functions'
 import { Anchor, MessagePoster, Highlight } from './types'
 import { HIGHLIGHT_CLASS } from './constants'
+import { getSelectionHtml } from '@worldbrain/memex-common/lib/annotations/utils'
 
 export interface Props {
     window?: Window
@@ -24,6 +25,7 @@ export class WebViewContentScript {
             renderHighlights: this.renderHighlights,
             renderHighlight: this.renderHighlight,
         })
+        console.log('constructor')
     }
 
     private get document(): Document {
@@ -53,8 +55,9 @@ export class WebViewContentScript {
         type: 'highlight' | 'annotation',
     ) => async () => {
         const selection = this.getDOMSelection()
+        console.log('selection1', selection)
         const anchor = await this.extractAnchorSelection(selection)
-
+        console.log('anchor', anchor)
         this.props.postMessageToRN({ type, payload: anchor })
     }
 
@@ -67,13 +70,15 @@ export class WebViewContentScript {
         // NOTE: There seems to be a bug with the `Selection.toString()` in RN WebView where
         //   it often returns the empty string. Instead we'll try to derive it from the selectors
         // const quote = selection.toString()
+
+        const HTMLquote = getSelectionHtml(selection)
         const descriptor = await selectionToDescriptor({ selection })
 
         if (!descriptor) {
             throw new Error(`Unable to derive descriptor from text selection`)
         }
 
-        return { quote: grabQuoteFromSelectors(descriptor.content), descriptor }
+        return { quote: HTMLquote, descriptor }
     }
 
     private getDOMSelection(): Selection {
@@ -87,6 +92,7 @@ export class WebViewContentScript {
     }
 
     renderHighlights = async (highlights: Highlight[]) => {
+        console.log('renderHighlights', highlights)
         for (const highlight of highlights) {
             await this.renderHighlight(highlight)
         }
@@ -105,7 +111,7 @@ export class WebViewContentScript {
             `.${HIGHLIGHT_CLASS}:not([data-annotation])`,
         )
 
-        newHighlights.forEach(highlightEl => {
+        newHighlights.forEach((highlightEl) => {
             highlightEl.dataset.annotation = highlightUrl
 
             highlightEl.addEventListener('click', () =>
@@ -120,7 +126,7 @@ export class WebViewContentScript {
 
 function grabQuoteFromSelectors(selectors: any[]): string {
     const textQuoteSelector = selectors.find(
-        selector => selector.type === 'TextQuoteSelector',
+        (selector) => selector.type === 'TextQuoteSelector',
     )
 
     if (!textQuoteSelector) {

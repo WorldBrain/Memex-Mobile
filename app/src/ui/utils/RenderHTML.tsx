@@ -9,20 +9,21 @@ export const RenderHTML = (html: string) => {
         <RenderHtml
             contentWidth={Dimensions.get('screen').width - 60}
             source={{
-                html: `<div>` + html + '</div>',
+                html: html,
             }}
             tagsStyles={RenderHTMLStyles}
             baseStyle={{
-                marginTop: '-10px',
-                marginBottom: '-10px',
+                marginTop: '10px',
+                marginBottom: '10px',
                 lineHeight: 20,
                 fontWeight: '300',
+                color: `${CORE_THEME().colors.white}`,
             }}
         />
     )
 }
 
-const RenderHTMLStyles = {
+export const RenderHTMLStyles = {
     p: {
         color: `${CORE_THEME().colors.white}`,
     },
@@ -64,5 +65,8 @@ const RenderHTMLStyles = {
         borderBottomWidth: '1px',
         borderLeftColor: `${CORE_THEME().colors.greyScale2}`,
         borderLeftWidth: '1px',
+        firstChild: {
+            background: 'red',
+        },
     },
 }

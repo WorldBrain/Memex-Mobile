@@ -77,6 +77,7 @@
         "react-native-indicators": "^0.17.0",
         "react-native-keychain": "^4.0.5",
         "react-native-knex": "^0.14.5",
+        "react-native-markdown-display": "^7.0.0-alpha.2",
         "react-native-modalbox": "^1.7.1",
         "react-native-reanimated": "^1.13.1",
         "react-native-render-html": "^6.3.4",

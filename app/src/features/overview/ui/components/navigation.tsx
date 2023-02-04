@@ -174,6 +174,5 @@ const TextArea = styled.Text`
     align-items: center;
     display: flex;
     font-weight: 600;
-    flex: 2;
     color: ${(props) => props.theme.colors.white};
 `

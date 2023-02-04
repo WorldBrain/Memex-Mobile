@@ -13,7 +13,9 @@ import type { List } from 'src/features/meta-picker/types'
 import type { ActionSheetServiceInterface } from 'src/services/action-sheet/types'
 import type { AutoPk } from '@worldbrain/memex-common/lib/storage/types'
 import { getNoteShareUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
-import { RenderHTML } from 'src/ui/utils/RenderHTML'
+import { RenderHTML, RenderHTMLStyles } from 'src/ui/utils/RenderHTML'
+import Markdown from 'react-native-markdown-display'
+import { CORE_THEME } from '@worldbrain/memex-common/lib/common-ui/styles/theme'
 
 export interface Props extends BodyProps, InteractionProps {
     isStarred?: boolean
@@ -57,7 +59,9 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                         <AnnotationSpacing />
                     )}
                     {props.commentText && (
-                        <AnnotationNote>{props.commentText}</AnnotationNote>
+                        <Markdown style={MarkDownStyles}>
+                            {props.commentText}
+                        </Markdown>
                     )}
                 </ContentContainer>
                 {/* </TouchableWithoutFeedback> */}
@@ -129,6 +133,71 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
             </Section>
         </NoteContainer>
     )
+}
+
+const MarkDownStyles = {
+    body: {
+        color: `${CORE_THEME().colors.white}`,
+        paddingLeft: 15,
+        paddingRight: 15,
+    },
+    link: {
+        color: `${CORE_THEME().colors.prime1}`,
+        textDecorationLine: 'none',
+    },
+    heading1: {
+        fontSize: 18,
+        marginBottom: 5,
+    },
+    heading2: {
+        fontSize: 16,
+        marginBottom: 5,
+    },
+    heading3: {
+        fontSize: 14,
+        marginBottom: 5,
+    },
+    heading4: {
+        fontSize: 12,
+        marginBottom: 5,
+    },
+    heading5: {
+        fontSize: 12,
+        marginBottom: 5,
+    },
+    list_item: {
+        marginLeft: 0,
+        paddingLeft: 0,
+    },
+    bullet_list_icon: {
+        backgroundColor: '#ffffff',
+        height: 3,
+        width: 3,
+        display: 'flex',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+    },
+    table: {
+        borderRadius: 8,
+        borderColor: `${CORE_THEME().colors.greyScale2}`,
+        borderWidth: 1,
+        width: '100%',
+    },
+    th: {
+        padding: 8,
+        color: `${CORE_THEME().colors.white}`,
+        borderBottomColor: `${CORE_THEME().colors.greyScale2}`,
+        borderBottomWidth: 1,
+    },
+    td: {
+        padding: 8,
+        color: `${CORE_THEME().colors.white}`,
+        borderBottomColor: `${CORE_THEME().colors.greyScale2}`,
+        borderBottomWidth: 1,
+        borderLeftColor: `${CORE_THEME().colors.greyScale2}`,
+        borderLeftWidth: 1,
+    },
 }
 
 const LeftSide = styled.View`
