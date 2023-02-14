@@ -14,7 +14,7 @@ export interface Props {
 
 const EmptyResults: React.StatelessComponent<Props> = (props) => (
     <Container>
-        {SectionCircle(60, icons.HeartIcon)}
+        {SectionCircle(40, icons.HeartIcon)}
         <TitleText>Save your first page</TitleText>
         <SubText>
             Sync with the Memex browser extension {'\n'}or save a page with the
@@ -39,10 +39,12 @@ const TitleText = styled.Text`
     font-weight: 500;
     margin-bottom: 10px;
     margin-top: 20px;
+    font-family: 'Satoshi';
 `
 const SubText = styled.Text`
     font-size: 14px;
     color: ${(props) => props.theme.colors.greyScale5};
     text-align: center;
     font-weight: 300;
+    font-family: 'Satoshi';
 `

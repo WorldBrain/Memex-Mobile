@@ -57,6 +57,17 @@ static void InitializeFlipper(UIApplication *application) {
                                                    moduleName:@"Memex"
                                             initialProperties:nil];
 
+  
+  for (NSString* family in [UIFont familyNames])
+  {
+      NSLog(@"%@", family);
+
+      for (NSString* name in [UIFont fontNamesForFamilyName: family])
+      {
+          NSLog(@"Family name:  %@", name);
+      }
+  }
+  
   if (@available(iOS 13.0, *)) {
       rootView.backgroundColor = [UIColor systemBackgroundColor];
   } else {

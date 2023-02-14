@@ -81,6 +81,7 @@ const NewText = styled.Text`
     color: ${(props) => props.theme.colors.prime1};
     font-weight: 800;
     margin-right: 15px;
+    font-family: 'Satoshi';
 `
 
 const EntryTextBox = styled.View`

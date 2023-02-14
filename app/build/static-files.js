@@ -3,8 +3,8 @@
  * See: https://github.com/jharris4/html-webpack-include-assets-plugin#example
  */
 export const htmlAssets = [
-    'fonts/Inter/Inter.css',
-    'fonts/Inter/inter.css',
+    'fonts/Satoshi/satoshi.css',
+    'fonts/Satoshi/satoshi.css',
     // 'fonts/Poppins/poppins.css',
     'lib/browser-polyfill.js',
 ]
@@ -41,8 +41,8 @@ export const copyPatterns = [
         to: 'fonts/[name].[ext]',
     },
     {
-        from: 'fonts/Inter/*',
-        to: 'fonts/Inter/[name].[ext]',
+        from: 'fonts/Satoshi/*',
+        to: 'fonts/Satoshi/[name].[ext]',
     },
     // {
     //     from: 'fonts/Poppins/*',

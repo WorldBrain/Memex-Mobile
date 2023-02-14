@@ -118,6 +118,7 @@ const TitleText = styled.Text`
     font-weight: bold;
     font-size: 16px;
     color: ${(props) => props.theme.colors.greyScale5};
+    font-family: 'Satoshi';
 `
 
 const Choice = styled.TouchableOpacity<{
@@ -157,6 +158,7 @@ const Text = styled.Text`
     font-size: 14px;
     color: ${(props) => props.theme.colors.white};
     margin-bottom: 5px;
+    font-family: 'Satoshi';
 `
 
 const SubText = styled.Text`
@@ -164,4 +166,5 @@ const SubText = styled.Text`
     font-weight: 300;
     font-size: 12px;
     color: ${(props) => props.theme.colors.greyScale5};
+    font-family: 'Satoshi';
 `

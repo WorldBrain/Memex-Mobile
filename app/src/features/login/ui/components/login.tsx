@@ -49,7 +49,7 @@ const Login: React.StatelessComponent<Props> = (props) => {
     return (
         <LoginSignupContainer>
             <LoginSignupScreen>
-                {/* {props.mode === 'signup' && (
+                {props.mode === 'signup' && (
                     <>
                         <MemexLogo
                             resizeMode="contain"
@@ -60,16 +60,13 @@ const Login: React.StatelessComponent<Props> = (props) => {
                 )}
                 {props.mode === 'login' && (
                     <>
-                        <SectionCircle>
-                            <Icon
-                                icon={icons.Login}
-                                heightAndWidth={'30px'}
-                                color="purple"
-                            />
-                        </SectionCircle>
+                        <MemexLogo
+                            resizeMode="contain"
+                            source={MemexLogoFile}
+                        />
                         <IntroTitle>Login to Memex</IntroTitle>
                     </>
-                )} */}
+                )}
                 {props.mode === 'requestReset' && (
                     <>
                         {SectionCircle(60, icons.Reload)}
@@ -328,6 +325,7 @@ const WarningText = styled.Text`
     color: white;
     font-size: 16px;
     text-align: center;
+    font-family: 'Satoshi';
 `
 
 const ActionButtonContainer = styled.View`
@@ -338,11 +336,12 @@ const ActionButtonContainer = styled.View`
 `
 
 const IntroTitle = styled.Text`
-    font-size: 20px;
+    font-size: 24px;
     color: ${(props) => props.theme.colors.white};
     margin-bottom: 20px;
-    font-weight: 500;
-    margin-top: 30px;
+    font-weight: 900;
+    margin-top: 20px;
+    font-family: 'Satoshi';
 `
 
 const MemexLogo = styled.Image`
@@ -419,6 +418,7 @@ const ForgotPasswordBox = styled.TouchableOpacity`
 const ForgotPasswordText = styled.Text`
     color: ${(props) => props.theme.colors.prime1};
     font-size: 14px;
+    font-family: 'Satoshi';
 `
 
 const LoadingBox = styled.View`

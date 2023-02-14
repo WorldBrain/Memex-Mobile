@@ -175,4 +175,5 @@ const TextArea = styled.Text`
     display: flex;
     font-weight: 600;
     color: ${(props) => props.theme.colors.white};
+    font-family: 'Satoshi';
 `

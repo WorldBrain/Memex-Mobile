@@ -10,7 +10,7 @@ export interface Props {}
 const SyncOnboarding: React.StatelessComponent<Props> = (props) => (
     <OnboardingFeature
         headingText="Annotate Websites & Videos"
-        secondaryText="Highlight and attach notes to sections of websites"
+        secondaryText="Highlight and attach notes to sections of websites via the in-app reader"
     >
         <Image
             resizeMode="contain"

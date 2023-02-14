@@ -132,6 +132,7 @@ const SettingsEntryText = styled.Text`
     color: ${(props) => props.theme.colors.white};
     font-size: 14px;
     margin-left: 10px;
+    font-family: 'Satoshi';
 `
 
 const SettingsEntryRow = styled.TouchableOpacity`

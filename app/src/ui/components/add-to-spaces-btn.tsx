@@ -58,6 +58,7 @@ const AddSpacesText = styled.Text`
     align-items: flex-end;
     flex-direction: row;
     justify-content: center;
+    font-family: 'Satoshi';
 `
 
 const SpacesCounterText = styled.Text`
@@ -66,4 +67,5 @@ const SpacesCounterText = styled.Text`
     text-align: center;
     font-size: 12px;
     margin-left: 5px;
+    font-family: 'Satoshi';
 `

@@ -37,6 +37,7 @@ const UpdateText = styled.Text`
     font-size: 12px;
     margin-left: 10px;
     font-weight: 400;
+    font-family: 'Satoshi';
 `
 
 const Container = styled.TouchableOpacity`

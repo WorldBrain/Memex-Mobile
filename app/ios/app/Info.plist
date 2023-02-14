@@ -38,7 +38,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -54,24 +54,30 @@
 	</dict>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Inter-Black.woff</string>
-		<string>Inter-BlackItalic.woff</string>
-		<string>Inter-Bold.woff</string>
-		<string>Inter-BoldItalic.woff</string>
-		<string>Inter-ExtraBold.woff</string>
-		<string>Inter-ExtraBoldItalic.woff</string>
-		<string>Inter-ExtraLight-BETA.woff</string>
-		<string>Inter-ExtraLightItalic-BETA.woff</string>
-		<string>Inter-Italic.woff</string>
-		<string>Inter-Light-BETA.woff</string>
-		<string>Inter-LightItalic-BETA.woff</string>
-		<string>Inter-Medium.woff</string>
-		<string>Inter-MediumItalic.woff</string>
-		<string>Inter-Regular.woff</string>
-		<string>Inter-SemiBold.woff</string>
-		<string>Inter-SemiBoldItalic.woff</string>
-		<string>Inter-Thin-BETA.woff</string>
-		<string>Inter-ThinItalic-BETA.woff</string>
+		<string>Satoshi-Black.ttf</string>
+		<string>Satoshi-Black.woff</string>
+		<string>Satoshi-BlackItalic.ttf</string>
+		<string>Satoshi-BlackItalic.woff</string>
+		<string>Satoshi-Bold.ttf</string>
+		<string>Satoshi-Bold.woff</string>
+		<string>Satoshi-BoldItalic.ttf</string>
+		<string>Satoshi-BoldItalic.woff</string>
+		<string>Satoshi-Italic.ttf</string>
+		<string>Satoshi-Italic.woff</string>
+		<string>Satoshi-Light.ttf</string>
+		<string>Satoshi-Light.woff</string>
+		<string>Satoshi-LightItalic.ttf</string>
+		<string>Satoshi-LightItalic.woff</string>
+		<string>Satoshi-Medium.ttf</string>
+		<string>Satoshi-Medium.woff</string>
+		<string>Satoshi-MediumItalic.ttf</string>
+		<string>Satoshi-MediumItalic.woff</string>
+		<string>Satoshi-Regular.ttf</string>
+		<string>Satoshi-Regular.woff</string>
+		<string>Satoshi-Variable.ttf</string>
+		<string>Satoshi-Variable.woff</string>
+		<string>Satoshi-VariableItalic.ttf</string>
+		<string>Satoshi-VariableItalic.woff</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

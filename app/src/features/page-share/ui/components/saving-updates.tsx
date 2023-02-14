@@ -34,6 +34,7 @@ const TitleText = styled.Text`
     color: ${(props) => props.theme.colors.white};
     font-size: 20px;
     font-weight: 500;
+    font-family: 'Satoshi';
 `
 
 export default SavingUpdates

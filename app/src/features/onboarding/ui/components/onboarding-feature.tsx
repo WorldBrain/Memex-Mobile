@@ -53,19 +53,21 @@ const TitleContainer = styled.View``
 const HeadingText = styled.Text`
     color: ${(props) => props.theme.colors.white};
     font-size: 24px;
-    font-weight: 500;
+    font-weight: 700;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    font-family: 'Satoshi';
 `
 
 const SecondaryText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5};
+    color: ${(props) => props.theme.colors.greyScale6};
     font-size: 16px;
     font-weight: 300;
     text-align: center;
     margin-bottom: 80px;
     padding: 0 20px;
-    line-height: 30px;
+    line-height: 24px;
+    font-family: 'Satoshi';
 `
 
 export default OnboardingFeature

@@ -249,22 +249,11 @@ const AnnotationSpacing = styled.View`
     height: 15px;
 `
 
-const AnnotationHighlight = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale5};
-    font-size: 14px;
-    line-height: 18px;
-`
-
-const AnnotationNote = styled.Text`
-    color: ${(props) => props.theme.colors.white};
-    font-size: 14px;
-    padding: 0 15px;
-`
-
 const DateBox = styled.Text`
     color: ${(props) => props.theme.colors.greyScale4};
     font-size: 12px;
     margin: 0px 0px;
+    font-family: 'Satoshi';
 `
 
 const ActionBar = styled.View`

@@ -88,4 +88,5 @@ const PrivacyText = styled.Text`
     align-items: flex-end;
     flex-direction: row;
     justify-content: center;
+    font-family: 'Satoshi';
 `

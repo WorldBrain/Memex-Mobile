@@ -34,6 +34,7 @@ const EmptyRowText = styled.Text`
     color: ${(props) => props.theme.colors.greyScale6};
     font-weight: 500;
     margin-top: 10px;
+    font-family: 'Satoshi';
 `
 
 export default MetaPickerEmptyRow

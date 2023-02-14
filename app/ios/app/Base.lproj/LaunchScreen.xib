@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
-        <viewController id="9R8-hQ-vUF">
+        <viewController modalTransitionStyle="crossDissolve" id="9R8-hQ-vUF">
             <layoutGuides>
                 <viewControllerLayoutGuide type="top" id="Ay1-Jv-yON"/>
                 <viewControllerLayoutGuide type="bottom" id="9RL-mj-qhc"/>
@@ -18,18 +18,18 @@
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" semanticContentAttribute="spatial" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="logo_vertical" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G4o-Qb-CjF">
-                        <rect key="frame" x="74" y="210" width="267" height="476"/>
+                        <rect key="frame" x="111" y="237" width="192" height="422"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.070588238540000001" green="0.074509806930000005" blue="0.1019607931" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </imageView>
                 </subviews>
-                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                <color key="backgroundColor" red="0.070588238540000001" green="0.074509806930000005" blue="0.1019607931" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
             </view>
-            <point key="canvasLocation" x="121.73913043478262" y="1135.7142857142856"/>
+            <point key="canvasLocation" x="121.73913043478262" y="1135.0446428571429"/>
         </viewController>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
     </objects>
     <resources>
-        <image name="logo_vertical" width="787" height="603"/>
+        <image name="logo_vertical" width="196" height="225"/>
     </resources>
 </document>

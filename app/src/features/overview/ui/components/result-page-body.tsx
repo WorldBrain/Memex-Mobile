@@ -33,6 +33,7 @@ const PDFPill = styled.Text`
     padding: 2px 5px;
     font-size: 10px;
     margin-right: 10px;
+    font-family: 'Satoshi';
 `
 
 const ContentBox = styled.View`
@@ -40,6 +41,10 @@ const ContentBox = styled.View`
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+
+    & * {
+        font-family: 'Satoshi';
+    }
 `
 
 const Title = styled.View`
@@ -48,9 +53,10 @@ const Title = styled.View`
 
 const TitleText = styled.Text`
     color: ${(props) => props.theme.colors.white};
-    font-weight: 600;
-    font-size: 16px;
+    font-weight: 700;
+    font-size: 14px;
     letter-spacing: 0.3px;
+    font-family: 'Satoshi';
 `
 
 const DomainText = styled.Text`
@@ -58,6 +64,7 @@ const DomainText = styled.Text`
     font-weight: 400;
     font-size: 14px;
     margin-right: 10px;
+    font-family: 'Satoshi';
 `
 
 const BottomBarBox = styled.View`
@@ -65,10 +72,4 @@ const BottomBarBox = styled.View`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-`
-
-const DateText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale4};
-    font-weight: 400;
-    font-size: 14px;
 `

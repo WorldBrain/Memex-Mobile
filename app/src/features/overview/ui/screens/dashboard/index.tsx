@@ -519,7 +519,6 @@ const SpaceTitleContainer = styled.View`
 const IconContainer = styled.TouchableOpacity`
     height: 30px;
     width: 30px;
-    margin-right: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -544,6 +543,7 @@ const SpaceTitleText = styled.Text`
     font-size: 22px;
     color: ${(props) => props.theme.colors.white};
     font-weight: 500;
+    font-family: 'Satoshi';
 `
 
 const SpaceDescription = styled.Text`
@@ -551,10 +551,7 @@ const SpaceDescription = styled.Text`
     color: ${(props) => props.theme.colors.greyScale6};
     font-weight: 300;
     margin-top: 10px;
-`
-
-const Testtesxt = styled.Text`
-    width: 100%;
+    font-family: 'Satoshi';
 `
 
 const WebViewContainer = styled.View<{
@@ -601,6 +598,7 @@ const ResultsExhaustedText = styled.Text`
     margin-left: 5px;
     font-size: 12px;
     color: ${(props) => props.theme.colors.greyScale4};
+    font-family: 'Satoshi';
 `
 
 const LoadingBallsBox = styled.View`
@@ -646,6 +644,7 @@ const FooterActionText = styled.Text`
     font-size: 12px;
     margin-top: 4px;
     font-weight: 400;
+    font-family: 'Satoshi';
 `
 
 const Container = styled.SafeAreaView`
@@ -682,18 +681,4 @@ const SpacesArea = styled.View`
     margin-top: 10px;
     flex-wrap: wrap;
     margin-bottom: -5px;
-`
-
-const NavTitleContainer = styled.View`
-    display: flex;
-    flex-direction: row;
-`
-
-const NavTitleText = styled.Text`
-    font-size: 16px;
-    height: 100%;
-    align-items: center;
-    display: flex;
-    font-weight: 600;
-    color: ${(props) => props.theme.colors.white};
 `

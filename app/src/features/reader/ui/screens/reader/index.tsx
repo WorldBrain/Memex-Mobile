@@ -333,6 +333,7 @@ const ErrorMessage = styled.Text`
     color: ${(props) => props.theme.colors.greyScale5};
     text-align: center;
     padding: 0px 20px;
+    font-family: 'Satoshi';
 `
 
 const Header = styled.Text`
@@ -340,6 +341,7 @@ const Header = styled.Text`
     font-weight: 800;
     color: ${(props) => props.theme.colors.greyScale6};
     margin-bottom: 10px;
+    font-family: 'Satoshi';
 `
 const SectionCircle = styled.View<{ size: string }>`
     background: ${(props) => props.theme.colors.greyScale1};
@@ -370,4 +372,5 @@ const ButtonText = styled.Text`
     font-weight: 500;
     font-size: 16px;
     color: white;
+    font-family: 'Satoshi';
 `

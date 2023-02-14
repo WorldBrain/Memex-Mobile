@@ -110,9 +110,6 @@ export default class OnboardingScreen extends StatefulUIElement<
     }
 
     render() {
-        if (this.state.isExistingUser) {
-            return this.renderExistingUserOnboarding()
-        }
         return this.renderNewUserOnboarding()
     }
 }

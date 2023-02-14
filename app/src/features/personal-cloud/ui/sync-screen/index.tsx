@@ -237,12 +237,14 @@ const ProgressBarHelperTextLeft = styled.Text`
     display: flex;
     font-size: 14px;
     color: ${(props) => props.theme.colors.greyScale4};
+    font-family: 'Satoshi';
 `
 
 const ProgressBarHelperTextRight = styled.Text`
     display: flex;
     font-size: 14px;
     color: ${(props) => props.theme.colors.white};
+    font-family: 'Satoshi';
 `
 
 const ContactContainer = styled.View`
@@ -260,6 +262,7 @@ const HeadingText = styled.Text`
     text-align: center;
     margin-bottom: 20px;
     margin-top: 30px;
+    font-family: 'Satoshi';
 `
 
 const SecondaryText = styled.Text`
@@ -270,6 +273,7 @@ const SecondaryText = styled.Text`
     padding: 0 20px;
     max-width: 600px;
     margin: 0px 0 30px 0px;
+    font-family: 'Satoshi';
 `
 const ProgressExplainer = styled.Text`
     color: ${(props) => props.theme.colors.greyScale6};
@@ -280,10 +284,7 @@ const ProgressExplainer = styled.Text`
     padding: 0 20px;
     max-width: 600px;
     margin: 15px 0 30px 0px;
-`
-
-const TertiaryText = styled.Text`
-    color: ${(props) => props.theme.colors.prime1};
+    font-family: 'Satoshi';
 `
 
 const Container = styled.SafeAreaView`
@@ -311,13 +312,7 @@ const InfoText = styled.Text`
     font-weight: bold;
     color: ${(props) => props.theme.colors.prime1};
     font-size: 26px;
-`
-
-const InfoTextProgress = styled.Text`
-    font-weight: bold;
-    color: ${(props) => props.theme.colors.prime1};
-    font-size: 22px;
-    margin: -10px 0 10px 0%;
+    font-family: 'Satoshi';
 `
 
 const SyncInfoContainer = styled.View`

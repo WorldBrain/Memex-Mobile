@@ -142,6 +142,10 @@ export default ResultPage
 
 const ResultItemContainer = styled.View`
     position: relative;
+
+    & * {
+        font-family: 'Satoshi';
+    }
 `
 
 const MoreActionTooltip = styled(Modal)`
@@ -216,4 +220,5 @@ const DateText = styled.Text`
     color: ${(props) => props.theme.colors.greyScale4};
     font-weight: 400;
     font-size: 14px;
+    font-family: 'Satoshi';
 `

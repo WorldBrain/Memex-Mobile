@@ -357,6 +357,7 @@ const TitleText = styled.Text`
     font-size: 14px;
     font-weight: 300;
     margin-left: 5px;
+    font-family: 'Satoshi';
 `
 
 const ReloadButton = styled.TouchableOpacity`
