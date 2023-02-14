@@ -32,7 +32,7 @@ export default EStyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white',
+        backgroundColor: 'red',
         borderBottomColor: '#DADADA',
         borderBottomWidth: 1,
     },

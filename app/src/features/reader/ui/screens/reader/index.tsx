@@ -280,7 +280,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 
 const ActionBarContainer = styled.View`
     position: absolute;
-    bottom: 20px;
+    bottom: -30px;
     width: 100%;
     display: flex;
     width: 100%;
@@ -291,6 +291,9 @@ const Container = styled.SafeAreaView`
     height: 100%;
     display: flex;
     align-items: center;
+    height: ${(props) =>
+        Dimensions.get('window').height - navigationBarHeight + 40}px;
+    background: ${(props) => props.theme.colors.black};
 `
 
 const WebViewContainer = styled.SafeAreaView<{
@@ -300,7 +303,8 @@ const WebViewContainer = styled.SafeAreaView<{
     background: ${(props) => props.theme.colors.black};
     width: 100%;
     height: ${(props) =>
-        Dimensions.get('window').height - navigationBarHeight + 20}px;
+        Dimensions.get('window').height - navigationBarHeight + 40}px;
+
     ${(props) =>
         props.isLoading
             ? `
