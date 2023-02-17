@@ -44,6 +44,14 @@
         <data android:mimeType="text/plain" />
       </intent-filter>
     </activity>
+
+    <!-- This overrides the receiver declaration in this package, as Android 12 updated reqs to have "android:exported" declared for all <intent-filter>s and this package wasn't updated -->
+    <receiver android:name="com.transistorsoft.tsbackgroundfetch.BootReceiver" android:exported="false">
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+            <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+        </intent-filter>
+    </receiver>
     </application>
 
 </manifest>
