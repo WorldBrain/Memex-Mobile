@@ -47,6 +47,11 @@ if (!process.nextTick) {
     process.nextTick = setImmediate
 }
 
+// NOTE: There seems to be some serialization difference when calling FB functions via React Native FB,
+//   resulting in Date objects turning into the empty object `{}` when sent as function params. This gets around that.
+//   Servers-side there's already catches for string-serialized Dates like this.
+const serializeDateForFBFunction = (date: Date): any => date.toISOString()
+
 export async function main() {
     const ui = new UI()
 
@@ -102,7 +107,14 @@ export async function main() {
         authService,
         createDeviceId,
         uploadClientUpdates: async (updates) => {
-            await personalCloudBackend?.pushUpdates(updates)
+            await personalCloudBackend?.pushUpdates(
+                updates.map((update) => ({
+                    ...update,
+                    schemaVersion: serializeDateForFBFunction(
+                        update.schemaVersion,
+                    ),
+                })),
+            )
         },
         typeORMConnectionOpts: {
             type: 'react-native',
@@ -121,7 +133,10 @@ export async function main() {
             },
         ),
         getServerStorageManager: async () => serverStorage.manager,
-        getCurrentSchemaVersion: () => getCurrentSchemaVersion(storage.manager),
+        getCurrentSchemaVersion: () =>
+            serializeDateForFBFunction(
+                getCurrentSchemaVersion(storage.manager),
+            ),
         authChanges: authChangesGenerator,
         getDeviceId,
         getLastUpdateProcessedTime: () =>
