@@ -7,7 +7,7 @@ import type {
     PersonalCloudDeviceId,
     PersonalCloudService,
 } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
-import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
+import { authChangesGeneratorFactory } from '@worldbrain/memex-common/lib/authentication/utils'
 import { getCurrentSchemaVersion } from '@worldbrain/memex-common/lib/storage/utils'
 import { firebaseService } from '@worldbrain/memex-common/lib/firebase-backend/services/client'
 import {
@@ -41,12 +41,11 @@ import { createSelfTests } from 'src/tests/self-tests'
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake'
 import type { UIDependencies } from './ui/types'
 import { initFirestoreSyncTriggerListener } from '@worldbrain/memex-common/lib/personal-cloud/backend/utils'
+import { deviceIdCreatorFactory } from '@worldbrain/memex-common/lib/personal-cloud/storage/device-id'
 
 if (!process.nextTick) {
     process.nextTick = setImmediate
 }
-
-console.disableYellowBox = true
 
 export async function main() {
     const ui = new UI()
@@ -69,8 +68,39 @@ export async function main() {
         firebase: reactNativeFBToAuthFBDeps(firebase),
     })
     const serverStorage = await createServerStorage(firebase)
+
+    const createDeviceId = deviceIdCreatorFactory({
+        getServerStorage: async () => ({
+            personalCloud: serverStorage.modules.personalCloud,
+        }),
+        personalDeviceInfo: {
+            os:
+                Platform.OS === 'android'
+                    ? PersonalDeviceOs.Android
+                    : PersonalDeviceOs.IOS,
+            type: PersonalDeviceType.Mobile,
+            product: PersonalDeviceProduct.MobileApp,
+        },
+    })
+    const getDeviceId = () =>
+        storage.modules.localSettings.getSetting<PersonalCloudDeviceId>({
+            key: storageKeys.deviceId,
+        })
+
+    const authChangesGenerator = authChangesGeneratorFactory({
+        authService,
+        createDeviceId,
+        getDeviceId,
+        setDeviceId: (value) =>
+            storage.modules.localSettings.setSetting({
+                key: storageKeys.deviceId,
+                value,
+            }),
+    })
+
     const storage = await createStorage({
         authService,
+        createDeviceId,
         uploadClientUpdates: async (updates) => {
             await personalCloudBackend?.pushUpdates(updates)
         },
@@ -78,22 +108,6 @@ export async function main() {
             type: 'react-native',
             location: 'Shared',
             database: 'memex',
-        },
-        createDeviceId: async (userId) => {
-            const device = await serverStorage.modules.personalCloud.createDeviceInfo(
-                {
-                    device: {
-                        os:
-                            Platform.OS === 'android'
-                                ? PersonalDeviceOs.Android
-                                : PersonalDeviceOs.IOS,
-                        type: PersonalDeviceType.Mobile,
-                        product: PersonalDeviceProduct.MobileApp,
-                    },
-                    userId,
-                },
-            )
-            return device.id
         },
     })
 
@@ -108,7 +122,8 @@ export async function main() {
         ),
         getServerStorageManager: async () => serverStorage.manager,
         getCurrentSchemaVersion: () => getCurrentSchemaVersion(storage.manager),
-        userChanges: () => authChanges(authService),
+        authChanges: authChangesGenerator,
+        getDeviceId,
         getLastUpdateProcessedTime: () =>
             storage.modules.localSettings.getSetting({
                 key: storageKeys.syncLastProcessedTime,
@@ -118,10 +133,6 @@ export async function main() {
                 key: storageKeys.retroSyncLastProcessedTime,
             }),
         getClientDeviceType: () => PersonalDeviceType.Mobile,
-        getDeviceId: () =>
-            storage.modules.localSettings.getSetting({
-                key: storageKeys.deviceId,
-            })! as Promise<PersonalCloudDeviceId>,
         firebase: reactNativeFBToCloudBackendFBDeps(firebase),
         setupSyncTriggerListener: initFirestoreSyncTriggerListener(
             firebase as any,

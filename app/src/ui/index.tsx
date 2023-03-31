@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { AppRegistry, Dimensions, Platform } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
+import { userChanges } from '@worldbrain/memex-common/lib/authentication/utils'
 import { theme } from 'src/ui/components/theme/theme'
 import { ThemeProvider } from 'styled-components'
 import 'src/ui/components/action-sheets'
@@ -52,7 +52,7 @@ export class UI {
                 }
 
                 private async observeAuthChanges({ auth }: Services) {
-                    for await (const user of authChanges(auth)) {
+                    for await (const user of userChanges(auth)) {
                         this.setState({ isLoggedIn: user != null })
                     }
                 }

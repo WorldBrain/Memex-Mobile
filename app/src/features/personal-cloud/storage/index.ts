@@ -14,6 +14,7 @@ import {
     PersonalCloudUpdateType,
     PersonalCloudUpdateBatch,
     PersonalCloudUpdatePushBatch,
+    PersonalCloudDeviceId,
 } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import { getCurrentSchemaVersion } from '@worldbrain/memex-common/lib/storage/utils'
 
@@ -26,7 +27,6 @@ import {
     PERSONAL_CLOUD_ACTION_RETRY_INTERVAL,
     CLOUD_SYNCED_COLLECTIONS,
 } from './constants'
-import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
 
 export interface Dependencies {
     storageManager: StorageManager
@@ -34,10 +34,9 @@ export interface Dependencies {
         updates: PersonalCloudUpdatePushBatch,
     ) => Promise<void>
     getUserId(): Promise<string | number | null>
-    userIdChanges(): AsyncIterableIterator<AuthenticatedUser | null>
     createDeviceId(userId: number | string): Promise<string | number>
-    getDeviceId(): Promise<string | number>
-    setDeviceId(deviceId: string | number): Promise<void>
+    getDeviceId(): Promise<PersonalCloudDeviceId | null>
+    setDeviceId(deviceId: PersonalCloudDeviceId): Promise<void>
 }
 
 export class PersonalCloudStorage {
@@ -45,7 +44,7 @@ export class PersonalCloudStorage {
     private currentSchemaVersion?: Date
     private pushMutex = new AsyncMutex()
     private pullMutex = new AsyncMutex()
-    private deviceId?: string | number
+    private deviceId: PersonalCloudDeviceId | null = null
 
     constructor(private dependencies: Dependencies) {
         this.actionQueue = new ActionQueue({
@@ -76,7 +75,7 @@ export class PersonalCloudStorage {
             this.actionQueue.unpause()
         } else {
             this.actionQueue.pause()
-            delete this.deviceId
+            this.deviceId = null
         }
     }
 

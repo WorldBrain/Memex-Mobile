@@ -37,8 +37,10 @@ import extractTerms from '@worldbrain/memex-stemmer'
 import { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import { CopyPasterStorage } from 'src/features/copy-paster/storage'
 import { CLOUD_SYNCED_COLLECTIONS } from 'src/features/personal-cloud/storage/constants'
-import { authChanges } from '@worldbrain/memex-common/lib/authentication/utils'
-import type { PersonalCloudUpdatePushBatch } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
+import type {
+    PersonalCloudDeviceId,
+    PersonalCloudUpdatePushBatch,
+} from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import type { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import ContentSharingStorage from '@worldbrain/memex-common/lib/content-sharing/storage'
 import ContentConversationStorage from '@worldbrain/memex-common/lib/content-conversations/storage'
@@ -149,12 +151,13 @@ export async function createStorage({
             storageManager,
             createDeviceId,
             getDeviceId: () =>
-                localSettings.getSetting({ key: storageKeys.deviceId })!,
+                localSettings.getSetting<PersonalCloudDeviceId>({
+                    key: storageKeys.deviceId,
+                }),
             setDeviceId: async (value) =>
                 localSettings.setSetting({ key: storageKeys.deviceId, value }),
             getUserId: async () =>
                 (await authService.getCurrentUser())?.id ?? null,
-            userIdChanges: () => authChanges(authService),
         }),
     }
 
