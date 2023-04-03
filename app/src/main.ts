@@ -50,7 +50,12 @@ if (!process.nextTick) {
 // NOTE: There seems to be some serialization difference when calling FB functions via React Native FB,
 //   resulting in Date objects turning into the empty object `{}` when sent as function params. This gets around that.
 //   Servers-side there's already catches for string-serialized Dates like this.
-const serializeDateForFBFunction = (date: Date): any => date.toISOString()
+const serializeDateForFBFunction = (date?: Date): any => {
+    if (!date?.toISOString || typeof date === 'string') {
+        return date
+    }
+    return date.toISOString()
+}
 
 export async function main() {
     const ui = new UI()
