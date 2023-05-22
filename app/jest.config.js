@@ -22,8 +22,6 @@ module.exports = {
             '<rootDir>/external/@worldbrain/storex-schema-migrations/ts',
         '^@worldbrain/memex-stemmer$':
             '<rootDir>/external/@worldbrain/memex-stemmer/ts',
-        '^@worldbrain/memex-storage$':
-            '<rootDir>/external/@worldbrain/memex-storage/ts',
         '^@worldbrain/memex-url-utils$':
             '<rootDir>/external/@worldbrain/memex-url-utils/ts',
         '^@worldbrain/memex-common$':

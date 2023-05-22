@@ -63,12 +63,6 @@
             "@worldbrain/memex-stemmer/lib/*": [
                 "external/@worldbrain/memex-stemmer/ts/*"
             ],
-            "@worldbrain/memex-storage": [
-                "external/@worldbrain/memex-storage/ts"
-            ],
-            "@worldbrain/memex-storage/lib/*": [
-                "external/@worldbrain/memex-storage/ts/*"
-            ],
             "@worldbrain/memex-common": [
                 "external/@worldbrain/memex-common/ts"
             ],
