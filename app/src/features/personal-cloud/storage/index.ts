@@ -5,6 +5,7 @@ import {
     updateOrCreate,
 } from '@worldbrain/storex/lib/utils'
 import ActionQueue from '@worldbrain/memex-common/lib/action-queue'
+import { COLLECTION_NAMES as PAGES_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/storage/modules/pages/constants'
 import { StorageOperationEvent } from '@worldbrain/storex-middleware-change-watcher/lib/types'
 import { ActionExecutor } from '@worldbrain/memex-common/lib/action-queue/types'
 import { preprocessPulledObject } from '@worldbrain/memex-common/lib/personal-cloud/utils'
@@ -27,6 +28,7 @@ import {
     PERSONAL_CLOUD_ACTION_RETRY_INTERVAL,
     CLOUD_SYNCED_COLLECTIONS,
 } from './constants'
+import { PAGE_FETCH_DATA_FLAG } from '@worldbrain/memex-common/lib/page-indexing/constants'
 
 export interface Dependencies {
     storageManager: StorageManager
@@ -173,6 +175,11 @@ export class PersonalCloudStorage {
                         // we got the change to look at it, so just ignore the create
                         continue
                     }
+                    // Set up created pages to have their text fetched on the cloud translation layer
+                    if (change.collection === PAGES_COLLECTION_NAMES.page) {
+                        object.text = PAGE_FETCH_DATA_FLAG
+                    }
+
                     await this.actionQueue.scheduleAction(
                         {
                             type: PersonalCloudActionType.PushObject,
