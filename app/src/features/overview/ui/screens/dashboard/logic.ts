@@ -46,6 +46,7 @@ export interface State {
     loadMoreState: UITaskState
     listNameLoadState: UITaskState
     couldHaveMore: boolean
+    isSyncing: boolean
     shouldShowSyncRibbon: boolean
     pages: NormalizedState<UIPage>
     selectedListId: number | undefined
@@ -127,6 +128,7 @@ export default class Logic extends UILogic<State, Event> {
             reloadState: 'running',
             loadMoreState: 'pristine',
             listNameLoadState: 'pristine',
+            isSyncing: true,
             couldHaveMore: true,
             actionState: 'pristine',
             shouldShowSyncRibbon: false,

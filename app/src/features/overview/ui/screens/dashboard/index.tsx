@@ -28,10 +28,7 @@ import FeedActivityIndicator from 'src/features/activity-indicator'
 import { DEEP_LINK_PREFIX, FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import WebView from 'react-native-webview'
-import Navigation, {
-    height as navigationBarHeight,
-} from 'src/features/overview/ui/components/navigation'
-import { PrimaryAction } from 'src/ui/utils/ActionButtons'
+import Navigation from 'src/features/overview/ui/components/navigation'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -172,21 +169,31 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                             </SpaceDescription>
                         )}
                     </SpaceTitleContent>
-                    {this.state.listData[this.state.selectedListId]?.id ===
-                        ALL_SAVED_FILTER_ID && (
-                        <IconContainer
-                            onPress={() =>
-                                this.props.navigation.navigate('SettingsMenu')
-                            }
-                        >
-                            <Icon
-                                icon={icons.Settings}
-                                heightAndWidth={'22px'}
-                                strokeWidth={'0px'}
-                                fill
-                            />
-                        </IconContainer>
-                    )}
+                    <TopIconsContainer>
+                        {this.state.isSyncing && (
+                            <SyncingIconContainer>
+                                <SyncingText>syncing </SyncingText>
+                                <LoadingBalls size={14} />
+                            </SyncingIconContainer>
+                        )}
+                        {this.state.listData[this.state.selectedListId]?.id ===
+                            ALL_SAVED_FILTER_ID && (
+                            <IconContainer
+                                onPress={() =>
+                                    this.props.navigation.navigate(
+                                        'SettingsMenu',
+                                    )
+                                }
+                            >
+                                <Icon
+                                    icon={icons.Settings}
+                                    heightAndWidth={'22px'}
+                                    strokeWidth={'0px'}
+                                    fill
+                                />
+                            </IconContainer>
+                        )}
+                    </TopIconsContainer>
                 </SpaceTitleContainer>
             )
         }
@@ -510,6 +517,31 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 }
 
 const SpaceTitleContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+`
+
+const TopIconsContainer = styled.View`
+    height: 30px;
+    width: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+`
+
+const SyncingText = styled.Text`
+    font-size: 12px;
+    color: ${(props) => props.theme.colors.white};
+    font-weight: 500;
+    font-family: 'Satoshi';
+`
+
+const SyncingIconContainer = styled.View`
+    height: 30px;
+    width: 60px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
