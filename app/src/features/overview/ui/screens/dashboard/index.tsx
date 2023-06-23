@@ -176,7 +176,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         {allSavedMode && this.state.syncState === 'running' && (
                             <SyncingIconContainer>
                                 <SyncingText>syncing{'  '}</SyncingText>
-                                <LoadingBalls size={14} />
+                                <LoadingBalls size={16} />
                             </SyncingIconContainer>
                         )}
                         {allSavedMode && (
@@ -536,7 +536,7 @@ const TopIconsContainer = styled.View`
 
 const SyncingText = styled.Text`
     font-size: 12px;
-    color: ${(props) => props.theme.colors.white};
+    color: ${(props) => props.theme.colors.greyScale6};
     font-weight: 500;
     font-family: 'Satoshi';
 `
@@ -544,6 +544,7 @@ const SyncingText = styled.Text`
 const SyncingIconContainer = styled.View`
     height: 30px;
     width: 60px;
+    margin-right: 8px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
