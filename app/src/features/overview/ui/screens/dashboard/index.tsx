@@ -151,6 +151,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     private listKeyExtracter = (item: UIPage) => item.url
 
     private SpaceTitleSection = () => {
+        const allSavedMode =
+            this.state.listData[this.state.selectedListId!]?.id ===
+            ALL_SAVED_FILTER_ID
         if (this.state.selectedListId) {
             return (
                 <SpaceTitleContainer>
@@ -170,14 +173,13 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         )}
                     </SpaceTitleContent>
                     <TopIconsContainer>
-                        {this.state.isSyncing && (
+                        {allSavedMode && this.state.syncState === 'running' && (
                             <SyncingIconContainer>
-                                <SyncingText>syncing </SyncingText>
+                                <SyncingText>syncing{'  '}</SyncingText>
                                 <LoadingBalls size={14} />
                             </SyncingIconContainer>
                         )}
-                        {this.state.listData[this.state.selectedListId]?.id ===
-                            ALL_SAVED_FILTER_ID && (
+                        {allSavedMode && (
                             <IconContainer
                                 onPress={() =>
                                     this.props.navigation.navigate(
@@ -686,7 +688,6 @@ const Container = styled.SafeAreaView`
     background: ${(props) => props.theme.colors.black};
     display: flex;
     align-items: center;
-    position: absolute;
 `
 
 const ResultsContainer = styled.View`

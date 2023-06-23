@@ -41,6 +41,7 @@ const UpdateText = styled.Text`
 `
 
 const Container = styled.TouchableOpacity`
+    position: absolute;
     top: 62px;
     display: flex;
     width: 100%;
