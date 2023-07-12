@@ -120,12 +120,10 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    changeNoteText(
-        incoming: IncomingUIEvent<State, Event, 'changeNoteText'>,
-    ): UIMutation<State> {
-        return {
-            noteText: { $set: incoming.event.value },
-        }
+    changeNoteText: EventHandler<'changeNoteText'> = ({ event }) => {
+        this.emitMutation({
+            noteText: { $set: event.value },
+        })
     }
 
     private async handleCreation(state: State) {

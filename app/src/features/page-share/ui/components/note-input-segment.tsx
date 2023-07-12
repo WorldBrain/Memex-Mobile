@@ -1,9 +1,6 @@
 import { CORE_THEME } from '@worldbrain/memex-common/lib/common-ui/styles/theme'
 import React from 'react'
-import { View, TextInput } from 'react-native'
 import styled from 'styled-components/native'
-
-import styles from './note-input-segment.styles'
 
 export interface Props {
     containerClassName?: string
