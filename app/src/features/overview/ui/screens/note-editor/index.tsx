@@ -4,8 +4,8 @@ import {
     TouchableOpacity,
     LayoutChangeEvent,
     Dimensions,
-    useWindowDimensions,
     Keyboard,
+    EmitterSubscription,
 } from 'react-native'
 
 import Navigation from '../../components/navigation'
@@ -31,34 +31,29 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 import { RenderHTML } from 'src/ui/utils/RenderHTML'
 
 export default class extends StatefulUIElement<Props, State, Event> {
+    private keyboardShowListener: EmitterSubscription
+    private keyboardHideListener: EmitterSubscription
+
     constructor(props: Props) {
         super(props, new Logic(props))
-    }
 
-    keyboardShowListener
-    keyboardHideListener
-
-    componentDidMount(): void {
         this.keyboardShowListener = Keyboard.addListener(
             'keyboardDidShow',
-            this.handleKeyboardShow,
+            (event) =>
+                this.processEvent('keyBoardShow', {
+                    keyBoardHeight: event.endCoordinates.height,
+                }),
         )
         this.keyboardHideListener = Keyboard.addListener(
             'keyboardDidHide',
-            this.handleKeyboardHide,
+            (event) => this.processEvent('keyBoardHide', null),
         )
     }
 
-    componentWillUnmount(): void {
+    async componentWillUnmount() {
         this.keyboardShowListener.remove()
         this.keyboardHideListener.remove()
-    }
-
-    handleKeyboardShow = (event: KeyboardEvent) => {
-        this.processEvent('keyBoardShow', event.endCoordinates.height)
-    }
-    handleKeyboardHide = () => {
-        this.processEvent('keyBoardHide', null)
+        await super.componentWillUnmount()
     }
 
     private get disableInputs(): boolean {
@@ -568,7 +563,7 @@ const EditorStyless = (props: any) => {
         }
     }
 
-    
+
     & > * {
         & > * {
             &:first-child {

@@ -41,7 +41,7 @@ export type Event = UIEvent<{
     setHighlightTextLines: { lines: number }
     setSpacePickerShown: { isShown: boolean }
     selectSpacePickerEntry: { entry: SpacePickerEntry }
-    keyBoardShow: { event: { keyBoardHeight: number } }
+    keyBoardShow: { keyBoardHeight: number }
     keyBoardHide: null
 }>
 
@@ -165,10 +165,8 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    keyBoardShow: EventHandler<'keyBoardShow'> = (keyBoardHeight: string) => {
-        // let keyBoardHeight = event.endCoordinates.height
-        // console.log(keyBoardHeight)
-        this.emitMutation({ keyBoardHeight: { $set: keyBoardHeight.event } })
+    keyBoardShow: EventHandler<'keyBoardShow'> = ({ event }) => {
+        this.emitMutation({ keyBoardHeight: { $set: event.keyBoardHeight } })
     }
     keyBoardHide: EventHandler<'keyBoardHide'> = async () => {
         this.emitMutation({ keyBoardHeight: { $set: 0 } })
