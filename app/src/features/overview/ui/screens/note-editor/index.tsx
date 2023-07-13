@@ -6,6 +6,7 @@ import {
     Dimensions,
     Keyboard,
     EmitterSubscription,
+    Platform,
 } from 'react-native'
 
 import Navigation from '../../components/navigation'
@@ -145,10 +146,17 @@ export default class extends StatefulUIElement<Props, State, Event> {
         )
     }
 
-    render() {
-        let editorHeight =
-            Dimensions.get('screen').height - this.state.keyBoardHeight - 120
+    private get editorHeight(): number {
+        const offset =
+            Platform.OS === 'android' && this.state.keyBoardHeight > 0
+                ? 200
+                : 120
+        return (
+            Dimensions.get('screen').height - this.state.keyBoardHeight - offset
+        )
+    }
 
+    render() {
         return (
             <Container>
                 <Navigation
@@ -181,7 +189,9 @@ export default class extends StatefulUIElement<Props, State, Event> {
                     ) : (
                         <>
                             {this.renderHighlightText()}
-                            <NoteInputEditorBox height={editorHeight + 'px'}>
+                            <NoteInputEditorBox
+                                height={this.editorHeight + 'px'}
+                            >
                                 <NoteInputEditor
                                     onChange={this.handleInputChange}
                                     disabled={this.disableInputs}
