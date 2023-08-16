@@ -13,12 +13,8 @@ const ProgressBalls: React.StatelessComponent<Props> = ({
 }) => (
     <Container>
         {[...Array(count)].map((_, i) => (
-            <OuterBall isSelected={i === selectedIndex}>
-                <Ball
-                    key={i}
-                    selectedIndex={selectedIndex}
-                    isSelected={i === selectedIndex}
-                />
+            <OuterBall key={i} isSelected={i === selectedIndex}>
+                <Ball isSelected={i === selectedIndex} />
             </OuterBall>
         ))}
     </Container>
