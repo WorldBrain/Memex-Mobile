@@ -5,7 +5,6 @@ import { UITaskState, UIServices, MainNavProps } from 'src/ui/types'
 import { executeUITask } from 'src/ui/utils'
 import type { LoginMode } from '../../types'
 import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
-import { auth } from 'firebase-admin'
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
     State,

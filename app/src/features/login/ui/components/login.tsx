@@ -129,7 +129,6 @@ const Login: React.StatelessComponent<Props> = (props) => {
                             {props.mode !== 'signup' && (
                                 <ForgotPasswordBox
                                     onPress={props.requestPasswordReset}
-                                    containerViewStyle={{ width: '100%' }}
                                 >
                                     <ForgotPasswordText>
                                         Forgot Password?
@@ -153,7 +152,7 @@ const Login: React.StatelessComponent<Props> = (props) => {
                                                 props.onPasswordConfirmChange
                                             }
                                             placeholder="Confirm your Password"
-                                            textContentType="confirmPassword"
+                                            textContentType="password"
                                             secureTextEntry
                                             editable={!props.isLoading}
                                             placeholderTextColor={
@@ -178,12 +177,12 @@ const Login: React.StatelessComponent<Props> = (props) => {
                                     type="primary"
                                     size="medium"
                                 />
-                                <PrimaryAction
+                                {/* <PrimaryAction
                                     label={'New to Memex?'}
                                     onPress={props.onModeToggle}
                                     type="forth"
                                     size="medium"
-                                />
+                                /> */}
                             </>
                         )}
                         {props.mode === 'signup' && (
