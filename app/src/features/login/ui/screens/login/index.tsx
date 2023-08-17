@@ -356,6 +356,8 @@ const QRCodeContainer = styled.View`
     max-width: 90%;
     height: 300px;
     width: 300px;
+    border-radius: 10px;
+    border: 1px solid ${(props) => props.theme.colors.greyScale3};
 `
 
 const WarningBox = styled.View`
