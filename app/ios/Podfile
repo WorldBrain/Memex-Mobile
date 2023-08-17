@@ -36,6 +36,10 @@ target 'app' do
   pod 'react-native-webview', :path => '../node_modules/react-native-webview'
   pod 'react-native-safe-area-context', :path => '../node_modules/react-native-safe-area-context'
 
+  pod 'VisionCamera', :path => '../node_modules/react-native-vision-camera'
+
+  pod 'vision-camera-code-scanner', :path => '../node_modules/vision-camera-code-scanner'
+
   target 'MemexShare' do
     use_native_modules!
     inherit! :complete

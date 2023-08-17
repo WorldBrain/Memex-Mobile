@@ -11,6 +11,8 @@ import org.unimodules.core.interfaces.SingletonModule;
 
 import com.oblador.keychain.KeychainPackage;
 import com.facebook.react.ReactApplication;
+import com.visioncameracodescanner.VisionCameraCodeScannerPluginPackage;
+import com.mrousavy.camera.CameraPackage;
 import io.sentry.react.RNSentryPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
@@ -51,6 +53,8 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
         new SQLitePluginPackage(),   // register SQLite Plugin here
         new MainReactPackage(),
+            new VisionCameraCodeScannerPluginPackage(),
+            new CameraPackage(),
         new RNSentryPackage(),
         new SafeAreaContextPackage(),
         new RNCWebViewPackage(),

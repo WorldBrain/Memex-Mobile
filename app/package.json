@@ -90,6 +90,7 @@
         "react-native-svg": "^9.13.6",
         "react-native-tiptap": "git+https://github.com/WorldBrain/react-native-tiptap",
         "react-native-unimodules": "^0.7.0",
+        "react-native-vision-camera": "^2.15.6",
         "react-native-webview": "^11.17.2",
         "readability-node": "^0.1.0",
         "remove-stopwords": "^1.0.3",
@@ -108,6 +109,7 @@
         "url-parse": "^1.4.7",
         "url-regex": "^5.0.0",
         "user-logic": "^0.0.1",
+        "vision-camera-code-scanner": "^0.2.0",
         "whatwg-url": "^7.1.0",
         "xmldom-silent": "^0.1.19"
     },

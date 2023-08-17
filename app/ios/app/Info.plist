@@ -98,5 +98,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Memex needs access to your camera to scan sign-in QR codes.</string>
 </dict>
 </plist>
