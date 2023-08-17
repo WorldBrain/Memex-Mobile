@@ -35,15 +35,6 @@ export default class LoginScreen extends StatefulUIElement<
         return (
             <LoginSignupContainer>
                 <LoginSignupScreen>
-                    {this.state.mode === 'signup' && (
-                        <>
-                            <MemexLogo
-                                resizeMode="contain"
-                                source={MemexLogoFile}
-                            />
-                            <IntroTitle>Create a new account</IntroTitle>
-                        </>
-                    )}
                     {this.state.mode === 'login' && (
                         <>
                             <MemexLogo
@@ -51,6 +42,10 @@ export default class LoginScreen extends StatefulUIElement<
                                 source={MemexLogoFile}
                             />
                             <IntroTitle>Login to Memex</IntroTitle>
+                            <IntroSubTitle>
+                                Go to "My Account" in the extension <br /> and
+                                scan the QR code
+                            </IntroSubTitle>
                         </>
                     )}
                     {this.state.mode === 'requestReset' && (
@@ -63,6 +58,14 @@ export default class LoginScreen extends StatefulUIElement<
                         <>
                             {SectionCircle(60, icons.Mail)}
                             <IntroTitle>Check your email inbox</IntroTitle>
+                        </>
+                    )}
+                    {this.state.mode === 'login' && (
+                        <>
+                            <QRCodeContainer>
+                                {/* Add CameraScanner Here */}
+                            </QRCodeContainer>
+                            <ORtext>Or use your email address</ORtext>
                         </>
                     )}
                     <LoginSignupBox>
@@ -97,8 +100,7 @@ export default class LoginScreen extends StatefulUIElement<
                             </>
                         )}
 
-                        {(this.state.mode === 'login' ||
-                            this.state.mode === 'signup') && (
+                        {this.state.mode === 'login' && (
                             <>
                                 <TextInputContainer>
                                     <Icon
@@ -127,21 +129,22 @@ export default class LoginScreen extends StatefulUIElement<
                                         autoCapitalize="none"
                                     />
                                 </TextInputContainer>
-                                {this.state.mode !== 'signup' && (
-                                    <ForgotPasswordBox
-                                        onPress={() =>
-                                            this.processEvent(
-                                                'requestPasswordReset',
-                                                null,
-                                            )
-                                        }
-                                    >
-                                        <ForgotPasswordText>
-                                            Forgot Password?
-                                        </ForgotPasswordText>
-                                    </ForgotPasswordBox>
-                                )}
-                                {this.state.mode === 'signup' &&
+                                {this.state.mode !== 'signup' &&
+                                    this.state.emailInputValue.length > 0 && (
+                                        <ForgotPasswordBox
+                                            onPress={() =>
+                                                this.processEvent(
+                                                    'requestPasswordReset',
+                                                    null,
+                                                )
+                                            }
+                                        >
+                                            <ForgotPasswordText>
+                                                Forgot Password?
+                                            </ForgotPasswordText>
+                                        </ForgotPasswordBox>
+                                    )}
+                                {/* {this.state.mode === 'signup' &&
                                     this.state.passwordInputValue.length >
                                         0 && (
                                         <TextInputContainer>
@@ -175,33 +178,34 @@ export default class LoginScreen extends StatefulUIElement<
                                                 autoCapitalize="none"
                                             />
                                         </TextInputContainer>
-                                    )}
+                                    )} */}
                             </>
                         )}
-                        <ActionButtonContainer>
-                            {this.state.mode === 'login' && (
-                                <>
-                                    <PrimaryAction
-                                        label={'Log in'}
-                                        onPress={this.onLoginPress}
-                                        isDisabled={
-                                            this.state.emailInputValue
-                                                .length === 0 &&
-                                            this.state.passwordInputValue
-                                                .length === 0
-                                        }
-                                        type="primary"
-                                        size="medium"
-                                    />
-                                    {/* <PrimaryAction
+                        {this.state.emailInputValue.length > 0 && (
+                            <ActionButtonContainer>
+                                {this.state.mode === 'login' && (
+                                    <>
+                                        <PrimaryAction
+                                            label={'Log in'}
+                                            onPress={this.onLoginPress}
+                                            isDisabled={
+                                                this.state.emailInputValue
+                                                    .length === 0 &&
+                                                this.state.passwordInputValue
+                                                    .length === 0
+                                            }
+                                            type="primary"
+                                            size="medium"
+                                        />
+                                        {/* <PrimaryAction
                                     label={'New to Memex?'}
                                     onPress={this.props.onModeToggle}
                                     type="forth"
                                     size="medium"
                                 /> */}
-                                </>
-                            )}
-                            {this.state.mode === 'signup' && (
+                                    </>
+                                )}
+                                {/* {this.state.mode === 'signup' && (
                                 <>
                                     <PrimaryAction
                                         label={'Sign up'}
@@ -225,46 +229,47 @@ export default class LoginScreen extends StatefulUIElement<
                                         size="medium"
                                     />
                                 </>
-                            )}
-                            {this.state.mode === 'requestReset' && (
-                                <>
-                                    <PrimaryAction
-                                        label={'Request Reset'}
-                                        onPress={() =>
-                                            this.processEvent(
-                                                'confirmPasswordReset',
-                                                {
-                                                    email: this.state
-                                                        .emailInputValue,
-                                                },
-                                            )
-                                        }
-                                        isDisabled={
-                                            this.state.emailInputValue
-                                                .length === 0
-                                        }
-                                        type="primary"
-                                        size="medium"
-                                    />
-                                    <PrimaryAction
-                                        label={'Go Back'}
-                                        onPress={this.onModeToggle}
-                                        type="forth"
-                                        size="medium"
-                                    />
-                                </>
-                            )}
-                            {this.state.mode === 'confirmReset' && (
-                                <>
-                                    <PrimaryAction
-                                        label={'Back to login'}
-                                        onPress={this.onModeToggle}
-                                        type="forth"
-                                        size="medium"
-                                    />
-                                </>
-                            )}
-                        </ActionButtonContainer>
+                            )} */}
+                                {this.state.mode === 'requestReset' && (
+                                    <>
+                                        <PrimaryAction
+                                            label={'Request Reset'}
+                                            onPress={() =>
+                                                this.processEvent(
+                                                    'confirmPasswordReset',
+                                                    {
+                                                        email: this.state
+                                                            .emailInputValue,
+                                                    },
+                                                )
+                                            }
+                                            isDisabled={
+                                                this.state.emailInputValue
+                                                    .length === 0
+                                            }
+                                            type="primary"
+                                            size="medium"
+                                        />
+                                        <PrimaryAction
+                                            label={'Go Back'}
+                                            onPress={this.onModeToggle}
+                                            type="forth"
+                                            size="medium"
+                                        />
+                                    </>
+                                )}
+                                {this.state.mode === 'confirmReset' && (
+                                    <>
+                                        <PrimaryAction
+                                            label={'Back to login'}
+                                            onPress={this.onModeToggle}
+                                            type="forth"
+                                            size="medium"
+                                        />
+                                    </>
+                                )}
+                            </ActionButtonContainer>
+                        )}
                         {this.state.loginState === 'running' && (
                             <LoadingBox>
                                 <LoadingBalls />
@@ -339,6 +344,20 @@ export default class LoginScreen extends StatefulUIElement<
     }
 }
 
+const ORtext = styled.Text`
+    font-size: 16px;
+    margin: 20px 0px;
+    color: ${(props) => props.theme.colors.greyScale6};
+    text-align: center;
+    width: 100%;
+`
+
+const QRCodeContainer = styled.View`
+    max-width: 90%;
+    height: 300px;
+    width: 300px;
+`
+
 const WarningBox = styled.View`
     padding: 20px;
     background: ${(props) => props.theme.colors.warning};
@@ -369,6 +388,14 @@ const IntroTitle = styled.Text`
     margin-bottom: 20px;
     font-weight: 900;
     margin-top: 20px;
+    font-family: 'Satoshi';
+`
+const IntroSubTitle = styled.Text`
+    font-size: 18px;
+    color: ${(props) => props.theme.colors.greyScale5};
+    margin-bottom: 20px;
+    margin-top: -10px;
+    font-weight: 400;
     font-family: 'Satoshi';
 `
 
