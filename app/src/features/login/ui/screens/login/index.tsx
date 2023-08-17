@@ -129,21 +129,20 @@ export default class LoginScreen extends StatefulUIElement<
                                         autoCapitalize="none"
                                     />
                                 </TextInputContainer>
-                                {this.state.mode !== 'signup' &&
-                                    this.state.emailInputValue.length > 0 && (
-                                        <ForgotPasswordBox
-                                            onPress={() =>
-                                                this.processEvent(
-                                                    'requestPasswordReset',
-                                                    null,
-                                                )
-                                            }
-                                        >
-                                            <ForgotPasswordText>
-                                                Forgot Password?
-                                            </ForgotPasswordText>
-                                        </ForgotPasswordBox>
-                                    )}
+                                {this.state.emailInputValue.length > 0 && (
+                                    <ForgotPasswordBox
+                                        onPress={() =>
+                                            this.processEvent(
+                                                'requestPasswordReset',
+                                                null,
+                                            )
+                                        }
+                                    >
+                                        <ForgotPasswordText>
+                                            Forgot Password?
+                                        </ForgotPasswordText>
+                                    </ForgotPasswordBox>
+                                )}
                                 {/* {this.state.mode === 'signup' &&
                                     this.state.passwordInputValue.length >
                                         0 && (
