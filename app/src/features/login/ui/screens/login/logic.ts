@@ -26,6 +26,7 @@ export type Event = UIEvent<{
     changePasswordConfirmInput: { value: string }
     changeEmailInput: { value: string }
     submitLogin: null
+    submitLoginWithToken: { token: string }
     toggleMode: null
     confirmPasswordReset: { email: string }
     requestPasswordReset: null
@@ -105,6 +106,51 @@ export default class Logic extends UILogic<State, Event> {
             )
         } catch (e) {
             console.log(e)
+        }
+    }
+
+    submitLoginWithToken: EventHandler<'submitLoginWithToken'> = async ({
+        event,
+    }) => {
+        const {
+            services: { auth },
+            navigation,
+            route,
+        } = this.props
+
+        try {
+            await executeUITask<State, 'loginState', void>(
+                this,
+                'loginState',
+                this.performAuthWithToken(event.token),
+            )
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    private performAuthWithToken = (token: string) => async () => {
+        const {
+            services: { auth },
+            navigation,
+            route,
+        } = this.props
+
+        await auth.loginWithToken(token)
+        const { userHasChanged } = await this.rememberUserDetails()
+        if (userHasChanged) {
+            navigation.navigate('CloudSync', { shouldWipeDBFirst: true })
+            return
+        }
+
+        const nextRoute = route.params?.nextRoute
+        if (nextRoute) {
+            // This timeout needs to be here for android, which doesn't update the routes
+            //  in time for this nav event
+            await new Promise((resolve) => setTimeout(resolve, 0))
+            navigation.navigate(nextRoute)
+        } else {
+            navigation.goBack()
         }
     }
 
