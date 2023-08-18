@@ -6,6 +6,7 @@ import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styles from '../../components/login.styles'
+import { QRCodeScanner } from '../../components/qr-scanner'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import { PrimaryAction } from 'src/ui/utils/ActionButtons'
@@ -43,8 +44,8 @@ export default class LoginScreen extends StatefulUIElement<
                             />
                             <IntroTitle>Login to Memex</IntroTitle>
                             <IntroSubTitle>
-                                Go to "My Account" in the extension <br /> and
-                                scan the QR code
+                                Go to "My Account" in the extension and scan the
+                                QR code
                             </IntroSubTitle>
                         </>
                     )}
@@ -63,7 +64,7 @@ export default class LoginScreen extends StatefulUIElement<
                     {this.state.mode === 'login' && (
                         <>
                             <QRCodeContainer>
-                                {/* Add CameraScanner Here */}
+                                <QRCodeScanner />
                             </QRCodeContainer>
                             <ORtext>Or use your email address</ORtext>
                         </>
