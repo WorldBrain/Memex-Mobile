@@ -398,7 +398,7 @@ const IntroTitle = styled.Text`
 const IntroSubTitle = styled.Text`
     font-size: 18px;
     color: ${(props) => props.theme.colors.greyScale5};
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     margin-top: -10px;
     font-weight: 400;
     font-family: 'Satoshi';
