@@ -1,3 +1,4 @@
+import 'react-native-reanimated'
 import 'react-native-gesture-handler'
 import { Platform } from 'react-native'
 import * as Sentry from '@sentry/react-native'

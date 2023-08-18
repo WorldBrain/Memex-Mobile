@@ -40,6 +40,8 @@ target 'app' do
 
   pod 'vision-camera-code-scanner', :path => '../node_modules/vision-camera-code-scanner'
 
+  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
+
   target 'MemexShare' do
     use_native_modules!
     inherit! :complete
