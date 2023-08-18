@@ -101,36 +101,39 @@ export default class LoginScreen extends StatefulUIElement<
                             </>
                         )}
 
-                        {this.state.mode === 'login' && (
-                            <>
-                                <TextInputContainer>
-                                    <Icon
-                                        icon={icons.Lock}
-                                        heightAndWidth={'24px'}
-                                        strokeWidth={'0px'}
-                                        fill
-                                    />
-                                    <TextInputBox
-                                        value={this.state.passwordInputValue}
-                                        onChangeText={(value) =>
-                                            this.processEvent(
-                                                'changePasswordInput',
-                                                { value },
-                                            )
-                                        }
-                                        placeholder="Password"
-                                        textContentType="password"
-                                        secureTextEntry
-                                        editable={
-                                            this.state.loginState !== 'running'
-                                        }
-                                        placeholderTextColor={
-                                            theme.colors.greyScale5
-                                        }
-                                        autoCapitalize="none"
-                                    />
-                                </TextInputContainer>
-                                {this.state.emailInputValue.length > 0 && (
+                        {this.state.mode === 'login' &&
+                            this.state.emailInputValue.length > 0 && (
+                                <>
+                                    <TextInputContainer>
+                                        <Icon
+                                            icon={icons.Lock}
+                                            heightAndWidth={'24px'}
+                                            strokeWidth={'0px'}
+                                            fill
+                                        />
+                                        <TextInputBox
+                                            value={
+                                                this.state.passwordInputValue
+                                            }
+                                            onChangeText={(value) =>
+                                                this.processEvent(
+                                                    'changePasswordInput',
+                                                    { value },
+                                                )
+                                            }
+                                            placeholder="Password"
+                                            textContentType="password"
+                                            secureTextEntry
+                                            editable={
+                                                this.state.loginState !==
+                                                'running'
+                                            }
+                                            placeholderTextColor={
+                                                theme.colors.greyScale5
+                                            }
+                                            autoCapitalize="none"
+                                        />
+                                    </TextInputContainer>
                                     <ForgotPasswordBox
                                         onPress={() =>
                                             this.processEvent(
@@ -143,8 +146,7 @@ export default class LoginScreen extends StatefulUIElement<
                                             Forgot Password?
                                         </ForgotPasswordText>
                                     </ForgotPasswordBox>
-                                )}
-                                {/* {this.state.mode === 'signup' &&
+                                    {/* {this.state.mode === 'signup' &&
                                     this.state.passwordInputValue.length >
                                         0 && (
                                         <TextInputContainer>
@@ -179,8 +181,8 @@ export default class LoginScreen extends StatefulUIElement<
                                             />
                                         </TextInputContainer>
                                     )} */}
-                            </>
-                        )}
+                                </>
+                            )}
                         {this.state.emailInputValue.length > 0 && (
                             <ActionButtonContainer>
                                 {this.state.mode === 'login' && (
@@ -357,6 +359,7 @@ const QRCodeContainer = styled.View`
     height: 300px;
     width: 300px;
     border-radius: 10px;
+    overflow: hidden;
     border: 1px solid ${(props) => props.theme.colors.greyScale3};
 `
 
@@ -399,6 +402,8 @@ const IntroSubTitle = styled.Text`
     margin-top: -10px;
     font-weight: 400;
     font-family: 'Satoshi';
+    width: 90%;
+    text-align: center;
 `
 
 const MemexLogo = styled.Image`
@@ -406,7 +411,7 @@ const MemexLogo = styled.Image`
     display: flex;
 `
 
-const LoginSignupScreen = styled.SafeAreaView`
+const LoginSignupScreen = styled.ScrollView`
     height: 100%;
     width: 100%;
     display: flex;
@@ -416,7 +421,7 @@ const LoginSignupScreen = styled.SafeAreaView`
     margin-top: 200px;
 `
 
-const LoginSignupContainer = styled.View`
+const LoginSignupContainer = styled.SafeAreaView`
     height: 100%;
     width: 100%;
     flex: 1;
