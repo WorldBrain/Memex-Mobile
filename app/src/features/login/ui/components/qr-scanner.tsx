@@ -1,9 +1,10 @@
 import * as React from 'react'
 import styled from 'styled-components/native'
-import { StyleSheet } from 'react-native'
+import { Linking, StyleSheet } from 'react-native'
 import { useCameraDevices } from 'react-native-vision-camera'
 import { Camera } from 'react-native-vision-camera'
 import { useScanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner'
+import Icon from '@worldbrain/memex-common/lib/common-ui/components/icon'
 
 export interface Props {}
 
@@ -28,7 +29,11 @@ export const QRCodeScanner: React.FunctionComponent<Props> = ({}) => {
 
     if (!device || !hasPermission) {
         return (
-            <ErrorMsgContainer>
+            <ErrorMsgContainer
+                onPress={() => {
+                    Linking.openSettings()
+                }}
+            >
                 <ErrorMsg>
                     Please give Memex permission to access the camera to scan
                     the login code
@@ -53,6 +58,6 @@ export const QRCodeScanner: React.FunctionComponent<Props> = ({}) => {
     )
 }
 
-const ErrorMsgContainer = styled.View``
+const ErrorMsgContainer = styled.TouchableOpacity``
 const ErrorMsg = styled.Text``
 const Barcode = styled.Text``
