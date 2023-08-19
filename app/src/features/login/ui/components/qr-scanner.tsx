@@ -29,7 +29,10 @@ export const QRCodeScanner: React.FunctionComponent<Props> = ({}) => {
     if (!device || !hasPermission) {
         return (
             <ErrorMsgContainer>
-                <ErrorMsg>Cannot access the camera to scan QR code</ErrorMsg>
+                <ErrorMsg>
+                    Please give Memex permission to access the camera to scan
+                    the login code
+                </ErrorMsg>
             </ErrorMsgContainer>
         )
     }
