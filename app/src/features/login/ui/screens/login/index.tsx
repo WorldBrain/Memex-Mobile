@@ -35,7 +35,13 @@ export default class LoginScreen extends StatefulUIElement<
     render() {
         return (
             <LoginSignupContainer>
-                <LoginSignupScreen>
+                <LoginSignupScreen
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                    }}
+                >
                     {this.state.mode === 'login' && (
                         <>
                             <MemexLogo
@@ -61,14 +67,25 @@ export default class LoginScreen extends StatefulUIElement<
                             <IntroTitle>Check your email inbox</IntroTitle>
                         </>
                     )}
-                    {this.state.mode === 'login' && (
-                        <>
-                            <QRCodeContainer>
-                                <QRCodeScanner />
-                            </QRCodeContainer>
-                            <ORtext>Or use your email address</ORtext>
-                        </>
-                    )}
+                    {this.state.mode === 'login' &&
+                        (this.state.loginState === 'running' ? (
+                            <LoadingBox>
+                                <LoadingBalls />
+                            </LoadingBox>
+                        ) : (
+                            <>
+                                <QRCodeContainer>
+                                    <QRCodeScanner
+                                        onQRCodeScan={(token) =>
+                                            this.processEvent('submitLogin', {
+                                                token,
+                                            })
+                                        }
+                                    />
+                                </QRCodeContainer>
+                                <ORtext>Or use your email address</ORtext>
+                            </>
+                        ))}
                     <LoginSignupBox>
                         {this.state.mode !== 'confirmReset' && (
                             <>
@@ -272,11 +289,6 @@ export default class LoginScreen extends StatefulUIElement<
                                 )}
                             </ActionButtonContainer>
                         )}
-                        {this.state.loginState === 'running' && (
-                            <LoadingBox>
-                                <LoadingBalls />
-                            </LoadingBox>
-                        )}
                         {this.state.loginState === 'error' && (
                             <WarningBox>
                                 <WarningText
@@ -348,7 +360,7 @@ export default class LoginScreen extends StatefulUIElement<
 
 const ORtext = styled.Text`
     font-size: 16px;
-    margin: 20px 0px;
+    margin-top: 40px;
     color: ${(props) => props.theme.colors.greyScale6};
     text-align: center;
     width: 100%;
@@ -415,10 +427,8 @@ const LoginSignupScreen = styled.ScrollView`
     height: 100%;
     width: 100%;
     display: flex;
-    justify-content: flex-start;
-    align-items: center;
     flex-direction: column;
-    margin-top: 200px;
+    margin-top: 50px;
     padding-bottom: 400px;
 `
 

@@ -25,8 +25,7 @@ export type Event = UIEvent<{
     changePasswordInput: { value: string }
     changePasswordConfirmInput: { value: string }
     changeEmailInput: { value: string }
-    submitLogin: null
-    submitLoginWithToken: { token: string }
+    submitLogin: null | { token: string }
     toggleMode: null
     confirmPasswordReset: { email: string }
     requestPasswordReset: null
@@ -97,79 +96,40 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ passwordConfirmInputValue: { $set: event.value } })
     }
 
-    submitLogin: EventHandler<'submitLogin'> = async ({ previousState }) => {
-        try {
-            await executeUITask<State, 'loginState', void>(
-                this,
-                'loginState',
-                this.performAuth(previousState),
-            )
-        } catch (e) {
-            console.log(e)
-        }
-    }
-
-    submitLoginWithToken: EventHandler<'submitLoginWithToken'> = async ({
+    submitLogin: EventHandler<'submitLogin'> = async ({
+        previousState,
         event,
     }) => {
-        const {
-            services: { auth },
-            navigation,
-            route,
-        } = this.props
-
         try {
             await executeUITask<State, 'loginState', void>(
                 this,
                 'loginState',
-                this.performAuthWithToken(event.token),
+                this.performAuth(previousState, event?.token),
             )
         } catch (e) {
             console.log(e)
         }
     }
 
-    private performAuthWithToken = (token: string) => async () => {
+    private performAuth = (
+        { mode, emailInputValue, passwordInputValue: password }: State,
+        token?: string,
+    ) => async () => {
         const {
             services: { auth },
             navigation,
             route,
         } = this.props
 
-        await auth.loginWithToken(token)
-        const { userHasChanged } = await this.rememberUserDetails()
-        if (userHasChanged) {
-            navigation.navigate('CloudSync', { shouldWipeDBFirst: true })
-            return
-        }
-
-        const nextRoute = route.params?.nextRoute
-        if (nextRoute) {
-            // This timeout needs to be here for android, which doesn't update the routes
-            //  in time for this nav event
-            await new Promise((resolve) => setTimeout(resolve, 0))
-            navigation.navigate(nextRoute)
+        if (token) {
+            await auth.loginWithToken(token)
         } else {
-            navigation.goBack()
-        }
-    }
-
-    private performAuth = ({
-        mode,
-        emailInputValue,
-        passwordInputValue: password,
-    }: State) => async () => {
-        const {
-            services: { auth },
-            navigation,
-            route,
-        } = this.props
-
-        const email = emailInputValue.trim()
-        if (mode === 'login') {
-            await auth.loginWithEmailAndPassword(email, password)
-        } else {
-            await auth.signupWithEmailAndPassword(email, password)
+            const email = emailInputValue.trim()
+            if (mode === 'login') {
+                await auth.loginWithEmailAndPassword(email, password)
+            } else {
+                await auth.signupWithEmailAndPassword(email, password)
+            }
         }
 
         const { userHasChanged } = await this.rememberUserDetails()

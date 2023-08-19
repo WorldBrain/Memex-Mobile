@@ -4,14 +4,20 @@ import { Linking, StyleSheet } from 'react-native'
 import { useCameraDevices } from 'react-native-vision-camera'
 import { Camera } from 'react-native-vision-camera'
 import { useScanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner'
-import Icon from '@worldbrain/memex-common/lib/common-ui/components/icon'
+import type { UITaskState } from 'src/ui/types'
 
-export interface Props {}
+export interface Props {
+    onQRCodeScan: (value: string) => void
+}
 
-export const QRCodeScanner: React.FunctionComponent<Props> = ({}) => {
+export const QRCodeScanner: React.FunctionComponent<Props> = ({
+    onQRCodeScan,
+}) => {
     const [hasPermission, setHasPermission] = React.useState<boolean>(false)
-    const devices = useCameraDevices()
-    const device = devices.back
+    const [loadPermissionState, setLoadPermissionState] = React.useState<
+        UITaskState
+    >('pristine')
+    const { back: device } = useCameraDevices()
 
     const [frameProcessor, barcodes] = useScanBarcodes(
         [BarcodeFormat.QR_CODE],
@@ -22,10 +28,16 @@ export const QRCodeScanner: React.FunctionComponent<Props> = ({}) => {
 
     React.useEffect(() => {
         ;(async () => {
+            setLoadPermissionState('running')
             const status = await Camera.requestCameraPermission()
             setHasPermission(status === 'authorized')
+            setLoadPermissionState('done')
         })()
     }, [])
+
+    if (loadPermissionState === 'running' || !device) {
+        return null
+    }
 
     if (!device || !hasPermission) {
         return (
@@ -42,19 +54,18 @@ export const QRCodeScanner: React.FunctionComponent<Props> = ({}) => {
         )
     }
 
+    if (barcodes[0]?.rawValue) {
+        onQRCodeScan(barcodes[0].rawValue)
+    }
+
     return (
-        <>
-            <Camera
-                style={StyleSheet.absoluteFill}
-                device={device}
-                isActive={true}
-                frameProcessor={frameProcessor}
-                frameProcessorFps={5}
-            />
-            {barcodes.map((barcode, idx) => (
-                <Barcode key={idx}>fsf: {barcode.displayValue}</Barcode>
-            ))}
-        </>
+        <Camera
+            style={StyleSheet.absoluteFill}
+            device={device}
+            isActive={true}
+            frameProcessor={frameProcessor}
+            frameProcessorFps={5}
+        />
     )
 }
 
