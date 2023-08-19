@@ -419,6 +419,7 @@ const LoginSignupScreen = styled.ScrollView`
     align-items: center;
     flex-direction: column;
     margin-top: 200px;
+    padding-bottom: 400px;
 `
 
 const LoginSignupContainer = styled.SafeAreaView`
