@@ -81,7 +81,16 @@ export default class LoginScreen extends StatefulUIElement<
                         ) : (
                             <>
                                 {/* if iOS */}
-                                <PasteCodeTextBox placeholder="Paste the login code here" />
+                                <PasteCodeTextBox
+                                    onChangeText={(text) => {
+                                        if (text.length > 0) {
+                                            this.processEvent('submitLogin', {
+                                                token: text,
+                                            })
+                                        }
+                                    }}
+                                    placeholder="Paste the login code here"
+                                />
                                 {/* if Android */}
                                 <QRCodeContainer>
                                     <QRCodeScanner
