@@ -96,6 +96,7 @@ export default class LoginScreen extends StatefulUIElement<
                                             }
                                         }}
                                         placeholder="Paste the login code here"
+                                        placeholderTextColor="#A9A9B1"
                                     />
                                 )}
                                 {Platform.OS === 'android' && (
