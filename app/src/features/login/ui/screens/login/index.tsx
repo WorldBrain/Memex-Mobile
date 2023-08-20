@@ -49,9 +49,15 @@ export default class LoginScreen extends StatefulUIElement<
                                 source={MemexLogoFile}
                             />
                             <IntroTitle>Login to Memex</IntroTitle>
+                            {/* if Android */}
                             <IntroSubTitle>
                                 Go to "My Account" in the extension and scan the
-                                QR code
+                                login code
+                            </IntroSubTitle>
+                            {/* if iOS */}
+                            <IntroSubTitle>
+                                Go to "My Account" in the extension and copy the
+                                login code
                             </IntroSubTitle>
                         </>
                     )}
@@ -74,6 +80,9 @@ export default class LoginScreen extends StatefulUIElement<
                             </LoadingBox>
                         ) : (
                             <>
+                                {/* if iOS */}
+                                <PasteCodeTextBox placeholder="Paste the login code here" />
+                                {/* if Android */}
                                 <QRCodeContainer>
                                     <QRCodeScanner
                                         onQRCodeScan={(token) =>
@@ -357,6 +366,14 @@ export default class LoginScreen extends StatefulUIElement<
         )
     }
 }
+
+const PasteCodeTextBox = styled.TextInput`
+    width: 90%;
+    max-width: 500px;
+    border-radius: 5px;
+    border: 1px solid ${(props) => props.theme.colors.greyScale3};
+    padding: 6px 12px;
+`
 
 const ORtext = styled.Text`
     font-size: 16px;
