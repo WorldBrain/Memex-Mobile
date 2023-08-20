@@ -1,5 +1,5 @@
 import React from 'react'
-import { TextInput, Dimensions } from 'react-native'
+import { TextInput, Dimensions, Platform } from 'react-native'
 import styled from 'styled-components/native'
 
 import { StatefulUIElement } from 'src/ui/types'
@@ -49,16 +49,19 @@ export default class LoginScreen extends StatefulUIElement<
                                 source={MemexLogoFile}
                             />
                             <IntroTitle>Login to Memex</IntroTitle>
-                            {/* if Android */}
-                            <IntroSubTitle>
-                                Go to "My Account" in the extension and scan the
-                                login code
-                            </IntroSubTitle>
+                            {Platform.OS === 'android' && (
+                                <IntroSubTitle>
+                                    Go to "My Account" in the extension and scan
+                                    the login code
+                                </IntroSubTitle>
+                            )}
                             {/* if iOS */}
-                            <IntroSubTitle>
-                                Go to "My Account" in the extension and copy the
-                                login code
-                            </IntroSubTitle>
+                            {Platform.OS === 'ios' && (
+                                <IntroSubTitle>
+                                    Go to "My Account" in the extension and copy
+                                    the login code
+                                </IntroSubTitle>
+                            )}
                         </>
                     )}
                     {this.state.mode === 'requestReset' && (
@@ -80,27 +83,35 @@ export default class LoginScreen extends StatefulUIElement<
                             </LoadingBox>
                         ) : (
                             <>
-                                {/* if iOS */}
-                                <PasteCodeTextBox
-                                    onChangeText={(text) => {
-                                        if (text.length > 0) {
-                                            this.processEvent('submitLogin', {
-                                                token: text,
-                                            })
-                                        }
-                                    }}
-                                    placeholder="Paste the login code here"
-                                />
-                                {/* if Android */}
-                                <QRCodeContainer>
-                                    <QRCodeScanner
-                                        onQRCodeScan={(token) =>
-                                            this.processEvent('submitLogin', {
-                                                token,
-                                            })
-                                        }
+                                {Platform.OS === 'ios' && (
+                                    <PasteCodeTextBox
+                                        onChangeText={(text) => {
+                                            if (text.length > 0) {
+                                                this.processEvent(
+                                                    'submitLogin',
+                                                    {
+                                                        token: text,
+                                                    },
+                                                )
+                                            }
+                                        }}
+                                        placeholder="Paste the login code here"
                                     />
-                                </QRCodeContainer>
+                                )}
+                                {Platform.OS === 'android' && (
+                                    <QRCodeContainer>
+                                        <QRCodeScanner
+                                            onQRCodeScan={(token) =>
+                                                this.processEvent(
+                                                    'submitLogin',
+                                                    {
+                                                        token,
+                                                    },
+                                                )
+                                            }
+                                        />
+                                    </QRCodeContainer>
+                                )}
                                 <ORtext>Or use your email address</ORtext>
                             </>
                         ))}
