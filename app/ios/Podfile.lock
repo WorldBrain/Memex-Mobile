@@ -785,8 +785,35 @@ PODS:
     - React-Core
   - RNKeychain (4.0.5):
     - React
-  - RNReanimated (1.13.4):
+  - RNReanimated (2.2.0):
+    - DoubleConversion
+    - FBLazyVector
+    - FBReactNativeSpec
+    - glog
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React
+    - React-callinvoker
     - React-Core
+    - React-Core/DevSupport
+    - React-Core/RCTWebSocket
+    - React-CoreModules
+    - React-cxxreact
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-RCTActionSheet
+    - React-RCTAnimation
+    - React-RCTBlob
+    - React-RCTImage
+    - React-RCTLinking
+    - React-RCTNetwork
+    - React-RCTSettings
+    - React-RCTText
+    - React-RCTVibration
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNScreens (2.18.1):
     - React-Core
   - RNSentry (4.0.2):
@@ -815,7 +842,7 @@ PODS:
   - vision-camera-code-scanner (0.2.0):
     - GoogleMLKit/BarcodeScanning
     - React-Core
-  - VisionCamera (2.15.6):
+  - VisionCamera (2.13.0):
     - React
     - React-callinvoker
     - React-Core
@@ -1201,7 +1228,7 @@ SPEC CHECKSUMS:
   RNFBStorage: f61af0a8c39c38e828747af586f63d450e99866a
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNKeychain: 840f8e6f13be0576202aefcdffd26a4f54bfe7b5
-  RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
+  RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNSentry: a0db9b7879436933e78c7a3669e098eeb9c98001
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
@@ -1219,10 +1246,10 @@ SPEC CHECKSUMS:
   UMSensorsInterface: d708a892ef1500bdd9fc3ff03f7836c66d1634d3
   UMTaskManagerInterface: a98e37a576a5220bf43b8faf33cfdc129d2f441d
   vision-camera-code-scanner: dda884a7f3ec8243a2a6d6489b91860648371bca
-  VisionCamera: b1f73beaa431730b30e082f966f794ecb6c801ab
+  VisionCamera: 57487a11a98a0d5d3ed73946062ab3920110f08e
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 700a12a91a6fcc57c9ea105da30c63f991dc1af1
+PODFILE CHECKSUM: f6b15b2ff2e033f3de025dce83d1bc965abbc078
 
 COCOAPODS: 1.11.3
