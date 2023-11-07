@@ -1669,6 +1669,7 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-ld_classic",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.worldbrain.memex.MemexShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1715,6 +1716,7 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-ld_classic",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.worldbrain.memex.MemexShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2032,6 +2034,7 @@
 					"$(inherited)",
 					"-lc++",
 					"-ObjC",
+					"-ld_classic",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.worldbrain.memexTestDrive.MemexShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
