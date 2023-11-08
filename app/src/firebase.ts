@@ -49,6 +49,11 @@ export const reactNativeFBToAuthFBDeps = (
             auth.signInWithEmailAndPassword(email, pw) as any,
         createUserWithEmailAndPassword: (_, email, pw) =>
             auth.createUserWithEmailAndPassword(email, pw) as any,
+        signInViaProvider: (_) => {
+            throw new Error(
+                'Provider sign-in method not yet supported on mobile',
+            )
+        },
     }
 }
 export const reactNativeFBToCloudBackendFBDeps = (
