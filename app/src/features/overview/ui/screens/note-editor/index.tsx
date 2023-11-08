@@ -24,10 +24,6 @@ import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import RenderHtml from 'react-native-render-html'
-import {
-    CORE_THEME,
-    THEME,
-} from '@worldbrain/memex-common/lib/common-ui/styles/theme'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import { RenderHTML } from 'src/ui/utils/RenderHTML'
 

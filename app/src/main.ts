@@ -81,9 +81,9 @@ export async function main() {
     const serverStorage = await createServerStorage(firebase)
 
     const createDeviceId = deviceIdCreatorFactory({
-        getServerStorage: async () => ({
+        serverStorage: {
             personalCloud: serverStorage.modules.personalCloud,
-        }),
+        },
         personalDeviceInfo: {
             os:
                 Platform.OS === 'android'
@@ -138,7 +138,7 @@ export async function main() {
                 return result.data
             },
         ),
-        getServerStorageManager: async () => serverStorage.manager,
+        serverStorageManager: serverStorage.manager,
         getCurrentSchemaVersion: () =>
             serializeDateForFBFunction(
                 getCurrentSchemaVersion(storage.manager),

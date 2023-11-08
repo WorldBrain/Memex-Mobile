@@ -15,7 +15,7 @@ import type { AutoPk } from '@worldbrain/memex-common/lib/storage/types'
 import { getNoteShareUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
 import { RenderHTML, RenderHTMLStyles } from 'src/ui/utils/RenderHTML'
 import Markdown from 'react-native-markdown-display'
-import { CORE_THEME } from '@worldbrain/memex-common/lib/common-ui/styles/theme'
+import { theme } from 'src/ui/components/theme/theme'
 
 export interface Props extends BodyProps, InteractionProps {
     isStarred?: boolean
@@ -137,12 +137,12 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
 
 const MarkDownStyles = {
     body: {
-        color: `${CORE_THEME().colors.white}`,
+        color: `${theme.colors.white}`,
         paddingLeft: 15,
         paddingRight: 15,
     },
     link: {
-        color: `${CORE_THEME().colors.prime1}`,
+        color: `${theme.colors.prime1}`,
         textDecorationLine: 'none',
     },
     heading1: {
@@ -180,22 +180,22 @@ const MarkDownStyles = {
     },
     table: {
         borderRadius: 8,
-        borderColor: `${CORE_THEME().colors.greyScale2}`,
+        borderColor: `${theme.colors.greyScale2}`,
         borderWidth: 1,
         width: '100%',
     },
     th: {
         padding: 8,
-        color: `${CORE_THEME().colors.white}`,
-        borderBottomColor: `${CORE_THEME().colors.greyScale2}`,
+        color: `${theme.colors.white}`,
+        borderBottomColor: `${theme.colors.greyScale2}`,
         borderBottomWidth: 1,
     },
     td: {
         padding: 8,
-        color: `${CORE_THEME().colors.white}`,
-        borderBottomColor: `${CORE_THEME().colors.greyScale2}`,
+        color: `${theme.colors.white}`,
+        borderBottomColor: `${theme.colors.greyScale2}`,
         borderBottomWidth: 1,
-        borderLeftColor: `${CORE_THEME().colors.greyScale2}`,
+        borderLeftColor: `${theme.colors.greyScale2}`,
         borderLeftWidth: 1,
     },
 }

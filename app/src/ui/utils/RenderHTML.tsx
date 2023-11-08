@@ -1,8 +1,7 @@
 import RenderHtml from 'react-native-render-html'
-import { CORE_THEME } from '@worldbrain/memex-common/lib/common-ui/styles/theme'
-
 import React from 'react'
 import { Dimensions } from 'react-native'
+import { theme } from '../components/theme/theme'
 
 export const RenderHTML = (html: string) => {
     return (
@@ -17,7 +16,7 @@ export const RenderHTML = (html: string) => {
                 marginBottom: '10px',
                 lineHeight: 20,
                 fontWeight: '300',
-                color: `${CORE_THEME().colors.white}`,
+                color: `${theme.colors.white}`,
             }}
         />
     )
@@ -25,10 +24,10 @@ export const RenderHTML = (html: string) => {
 
 export const RenderHTMLStyles = {
     p: {
-        color: `${CORE_THEME().colors.white}`,
+        color: `${theme.colors.white}`,
     },
     a: {
-        color: `${CORE_THEME().colors.prime1}`,
+        color: `${theme.colors.prime1}`,
         textDecorationLine: 'none',
     },
     h1: {
@@ -48,22 +47,22 @@ export const RenderHTMLStyles = {
     },
     table: {
         borderRadius: '8px',
-        borderColor: `${CORE_THEME().colors.greyScale2}`,
+        borderColor: `${theme.colors.greyScale2}`,
         borderWidth: '1px',
         width: '100%',
     },
     th: {
         padding: '8px 10px',
-        color: `${CORE_THEME().colors.white}`,
-        borderBottomColor: `${CORE_THEME().colors.greyScale2}`,
+        color: `${theme.colors.white}`,
+        borderBottomColor: `${theme.colors.greyScale2}`,
         borderBottomWidth: '1px',
     },
     td: {
         padding: '8px 10px',
-        color: `${CORE_THEME().colors.white}`,
-        borderBottomColor: `${CORE_THEME().colors.greyScale2}`,
+        color: `${theme.colors.white}`,
+        borderBottomColor: `${theme.colors.greyScale2}`,
         borderBottomWidth: '1px',
-        borderLeftColor: `${CORE_THEME().colors.greyScale2}`,
+        borderLeftColor: `${theme.colors.greyScale2}`,
         borderLeftWidth: '1px',
         firstChild: {
             background: 'red',

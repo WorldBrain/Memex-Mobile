@@ -1,5 +1,5 @@
-import { CORE_THEME } from '@worldbrain/memex-common/lib/common-ui/styles/theme'
 import React from 'react'
+import { theme } from 'src/ui/components/theme/theme'
 import styled from 'styled-components/native'
 
 export interface Props {
@@ -20,7 +20,7 @@ const NoteInput: React.StatelessComponent<Props> = (props) => {
                     textAlignVertical="top"
                     placeholder="Add Note"
                     editable={!props.disabled}
-                    placeholderTextColor={CORE_THEME().colors.greyScale6}
+                    placeholderTextColor={theme.colors.greyScale6}
                     multiline
                     autoFocus
                 />
