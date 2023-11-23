@@ -113,9 +113,8 @@ export async function createServices(
     const activityIndicator = new ActivityIndicatorService({
         authService: auth,
         activityStreamsService: activityStreams,
+        activityStreamsStorage: serverStorageModules.activityStreams,
         captureError: (err) => options.errorTracker.track(err),
-        getActivityStreamsStorage: async () =>
-            serverStorageModules.activityStreams,
         getStatusCacheFlag: async () =>
             (await storageModules.syncSettings.getSetting<boolean>({
                 key: '@ActivityIndicator-feedHasActivity',
