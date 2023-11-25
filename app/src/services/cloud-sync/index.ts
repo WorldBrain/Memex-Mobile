@@ -108,6 +108,12 @@ export class CloudSyncService implements CloudSyncAPI {
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
 
+        let totalDownloads = 0
+        for await (const { totalCount } of backend.countChanges()) {
+            totalDownloads = totalCount
+        }
+        this._modifyStats({ totalDownloads })
+
         try {
             for await (const { batch, lastSeen } of backend.streamUpdates({
                 skipUserChangeListening: true,
