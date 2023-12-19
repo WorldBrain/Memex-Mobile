@@ -1,6 +1,7 @@
 import React from 'react'
-import { theme } from 'src/ui/components/theme/theme'
 import styled from 'styled-components/native'
+import QuillEditor, { QuillToolbar } from 'react-native-cn-quill'
+import { StyleSheet } from 'react-native'
 
 export interface Props {
     containerClassName?: string
@@ -8,13 +9,40 @@ export interface Props {
     value: string
     disabled?: boolean
     onChange: (text: string) => void
+    initNote?: string
 }
 
 const NoteInput: React.StatelessComponent<Props> = (props) => {
+    const _editor = React.createRef()
+
     return (
         <Container>
             <TextBox>
-                <TextInputContainer
+                <QuillToolbar
+                    style={styles.toolbar}
+                    editor={_editor}
+                    theme="light"
+                    options={[
+                        'bold',
+                        'italic',
+                        'underline',
+                        'strike',
+                        { header: 1 },
+                        { header: 2 },
+                        { list: 'ordered' },
+                        { list: 'bullet' },
+                    ]}
+                />
+                <QuillEditor
+                    style={styles.editor}
+                    ref={_editor}
+                    initialHtml={props.initNote}
+                    onHtmlChange={({ html }) => {
+                        props.onChange(html)
+                    }}
+                />
+
+                {/* <TextInputContainer
                     value={props.value}
                     onChangeText={props.onChange}
                     textAlignVertical="top"
@@ -23,11 +51,32 @@ const NoteInput: React.StatelessComponent<Props> = (props) => {
                     placeholderTextColor={theme.colors.greyScale6}
                     multiline
                     autoFocus
-                />
+                /> */}
             </TextBox>
         </Container>
     )
 }
+
+const styles = StyleSheet.create({
+    title: {
+        fontWeight: 'bold',
+        alignSelf: 'center',
+    },
+    root: {
+        flex: 1,
+    },
+    editor: {
+        flex: 1,
+        padding: 0,
+        backgroundColor: '#191a20',
+    },
+    toolbar: {
+        flex: 1,
+        borderRadius: 6,
+        backgroundColor: '#191a20',
+        color: 'red',
+    },
+})
 
 const Container = styled.SafeAreaView`
     flex: 1;
@@ -43,7 +92,6 @@ const TextBox = styled.View`
     border-top-right-radius: 8px;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
-    height: 100%;
     width: 100%;
     flex: 1;
     border: none;

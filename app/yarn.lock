@@ -10611,6 +10611,11 @@ react-native-background-fetch@^2.7.1:
     plist "^3.0.1"
     xcode "^2.0.0"
 
+react-native-cn-quill@^0.7.18:
+  version "0.7.18"
+  resolved "https://registry.yarnpkg.com/react-native-cn-quill/-/react-native-cn-quill-0.7.18.tgz#9006e5227eebc0b751aea6cb91490a22a1c286f2"
+  integrity sha512-v8r6FEV3xFD+z/lEZrGIReZwmAnw7aTxyJSSmcv9O2PSHL994L4nW6nnDLXPKBG3PLfOKIkLbErQK9r6aQdXUQ==
+
 react-native-codegen@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.0.6.tgz#b3173faa879cf71bfade8d030f9c4698388f6909"

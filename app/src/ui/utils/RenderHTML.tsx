@@ -12,8 +12,6 @@ export const RenderHTML = (html: string) => {
             }}
             tagsStyles={RenderHTMLStyles}
             baseStyle={{
-                marginTop: '10px',
-                marginBottom: '10px',
                 lineHeight: 20,
                 fontWeight: '300',
                 color: `${theme.colors.white}`,

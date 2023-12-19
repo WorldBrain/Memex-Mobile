@@ -193,6 +193,7 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                     disabled={this.disableInputs}
                                     className={styles.noteInput}
                                     value={this.state.noteText}
+                                    initNote={this.state.initNoteText}
                                 />
                                 <TopBar>
                                     <SpaceBar>
@@ -233,8 +234,9 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                         />
                                         <IconContainer
                                             onPress={
-                                                this.showSaveBtn &&
-                                                this.handleSaveBtnPress
+                                                this.showSaveBtn
+                                                    ? this.handleSaveBtnPress
+                                                    : () => {}
                                             }
                                         >
                                             <Icon
@@ -275,7 +277,7 @@ const RightSide = styled.View`
     justify-content: flex-end;
 `
 
-const HTMLRenderBox = styled.View`
+const HTMLRenderBox = styled.ScrollView`
     margin: -10px 0px;
     width: 50%;
     flex: 1;
@@ -291,7 +293,7 @@ const NoteInputEditorBox = styled.View<{ height: string }>`
     border-radius: 8px;
     border-color: ${(props) => props.theme.colors.greyScale3};
     height: ${(props) => props.height};
-    max-height: 400px;
+    max-height: 35%;
     margin: 0 10px;
     width: 620px;
     overflow: hidden;
@@ -301,7 +303,7 @@ const NoteInputEditorBox = styled.View<{ height: string }>`
 
 const NoteInputEditor = styled(NoteInput)`
     background: ${(props) => props.theme.colors.greyScale1};
-    margin: 20px;
+    margin: 0 20px;
     flex: 1;
     height: 100%;
 `

@@ -59,9 +59,9 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                         <AnnotationSpacing />
                     )}
                     {props.commentText && (
-                        <Markdown style={MarkDownStyles}>
-                            {props.commentText}
-                        </Markdown>
+                        <NoteRenderBox>
+                            {RenderHTML(props.commentText)}
+                        </NoteRenderBox>
                     )}
                 </ContentContainer>
                 {/* </TouchableWithoutFeedback> */}
@@ -213,8 +213,14 @@ const RightSide = styled.View`
     justify-content: flex-end;
 `
 
+const NoteRenderBox = styled.Text`
+    width: 100%;
+    margin: 0 15px;
+    flex: 1;
+`
+
 const HTMLRenderBox = styled.View`
-    margin: -10px 0px;
+    padding: 0px 0px;
     width: 50%;
     flex: 1;
 `
@@ -246,7 +252,7 @@ const VerticalBar = styled.View`
 `
 
 const AnnotationSpacing = styled.View`
-    height: 15px;
+    height: 5px;
 `
 
 const DateBox = styled.Text`

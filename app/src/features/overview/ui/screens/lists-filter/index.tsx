@@ -70,6 +70,7 @@ const Container = styled.SafeAreaView`
     height: 100%;
     display: flex;
     align-items: center;
+    background-color: ${(props) => props.theme.colors.black};
 `
 
 const MetaPickerContainer = styled.View`

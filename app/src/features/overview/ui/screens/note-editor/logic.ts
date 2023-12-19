@@ -21,6 +21,7 @@ import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotation
 import { AnnotationSharingState } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 
 export interface State {
+    initNoteText: string
     noteText: string
     isSpacePickerShown: boolean
     highlightText: string | null
@@ -96,6 +97,7 @@ export default class Logic extends UILogic<State, Event> {
             saveState: 'pristine',
             showAllText: false,
             keyBoardHeight: 0,
+            initNoteText: this.initNoteText,
         }
     }
 
