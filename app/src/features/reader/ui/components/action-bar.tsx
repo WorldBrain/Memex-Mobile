@@ -20,6 +20,7 @@ export interface Props
     onCommentBtnPress: TouchEventHandler
     onListBtnPress: TouchEventHandler
     spaceCount: number
+    pageUrl: string
 }
 
 class ActionBar extends React.PureComponent<Props> {
@@ -44,71 +45,73 @@ class ActionBar extends React.PureComponent<Props> {
     render() {
         return (
             <FooterActionBar>
-                <FooterActionBtn onPress={this.props.onCommentBtnPress}>
-                    {this.props.hasNotes ? (
+                <LeftSideActions>
+                    <FooterActionBtn onPress={this.props.onCommentBtnPress}>
+                        {this.props.hasNotes ? (
+                            <Icon
+                                icon={icons.CommentFull}
+                                strokeWidth="0"
+                                fill
+                                heightAndWidth="18px"
+                                color="greyScale5"
+                            />
+                        ) : (
+                            <Icon
+                                icon={icons.Comment}
+                                strokeWidth="0.2"
+                                heightAndWidth="18px"
+                                fill
+                                color="greyScale5"
+                            />
+                        )}
+                        <FooterActionText>Notes</FooterActionText>
+                    </FooterActionBtn>
+                    <FooterActionBtn onPress={this.props.onListBtnPress}>
+                        {this.props.spaceCount > 0 && (
+                            <SpaceCounterPill>
+                                <SpaceCounterPillText>
+                                    {this.props.spaceCount}
+                                </SpaceCounterPillText>
+                            </SpaceCounterPill>
+                        )}
                         <Icon
-                            icon={icons.CommentFull}
+                            icon={icons.SpacesEmtpy}
                             strokeWidth="0"
-                            fill
                             heightAndWidth="18px"
                             color="greyScale5"
+                            fill
                         />
-                    ) : (
+                        <FooterActionText>Spaces</FooterActionText>
+                    </FooterActionBtn>
+                </LeftSideActions>
+                <RightSideActions>
+                    {this.props.selectedText != null ||
+                        this.props.pageUrl.includes('www.youtube.com/watch') ||
+                        (this.props.pageUrl.includes('youtu.be') && (
+                            <FooterActionBtn
+                                onPress={this.props.onHighlightBtnPress}
+                            >
+                                <Icon
+                                    icon={icons.Highlighter}
+                                    strokeWidth="0"
+                                    heightAndWidth="18px"
+                                    color="greyScale5"
+                                    fill
+                                />
+                                <FooterActionText>Highlight</FooterActionText>
+                            </FooterActionBtn>
+                        ))}
+                    <FooterActionBtn onPress={this.props.onAnnotateBtnPress}>
                         <Icon
-                            icon={icons.Comment}
-                            strokeWidth="0.2"
+                            icon={icons.AddNote}
+                            strokeWidth="0"
                             heightAndWidth="18px"
-                            fill
                             color="greyScale5"
+                            fill
                         />
-                    )}
-                    <FooterActionText>Notes</FooterActionText>
-                </FooterActionBtn>
-                <FooterActionBtn onPress={this.props.onListBtnPress}>
-                    {this.props.spaceCount > 0 && (
-                        <SpaceCounterPill>
-                            <SpaceCounterPillText>
-                                {this.props.spaceCount}
-                            </SpaceCounterPillText>
-                        </SpaceCounterPill>
-                    )}
-                    <Icon
-                        icon={icons.SpacesEmtpy}
-                        strokeWidth="0"
-                        heightAndWidth="18px"
-                        color="greyScale5"
-                        fill
-                    />
-                    <FooterActionText>Spaces</FooterActionText>
-                </FooterActionBtn>
-                {this.props.selectedText != null && (
-                    <>
-                        <FooterActionBtn
-                            onPress={this.props.onHighlightBtnPress}
-                        >
-                            <Icon
-                                icon={icons.Highlighter}
-                                strokeWidth="0"
-                                heightAndWidth="18px"
-                                color="greyScale5"
-                                fill
-                            />
-                            <FooterActionText>Highlight</FooterActionText>
-                        </FooterActionBtn>
-                        <FooterActionBtn
-                            onPress={this.props.onAnnotateBtnPress}
-                        >
-                            <Icon
-                                icon={icons.AddNote}
-                                strokeWidth="0"
-                                heightAndWidth="18px"
-                                color="greyScale5"
-                                fill
-                            />
-                            <FooterActionText>Annotate</FooterActionText>
-                        </FooterActionBtn>
-                    </>
-                )}
+                        <FooterActionText>Annotate</FooterActionText>
+                    </FooterActionBtn>
+                </RightSideActions>
             </FooterActionBar>
             // <Container isLandscape={this.props.rotation === 'landscape'}>
             //     <LeftBtns></LeftBtns>
@@ -128,6 +131,17 @@ export default ActionBar
 
 export const heightLandscape = 60
 export const heightPortrait = 45
+
+const RightSideActions = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`
+const LeftSideActions = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`
 
 const SpaceCounterPill = styled.View`
     background: ${(props) => props.theme.colors.prime1};
@@ -156,6 +170,7 @@ const FooterActionBtn = styled.TouchableOpacity`
 const FooterActionBar = styled.View`
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     background: ${(props) => props.theme.colors.greyScale1};
     border: 1px solid ${(props) => props.theme.colors.greyScale2};
 

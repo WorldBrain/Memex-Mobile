@@ -17,13 +17,13 @@ import PageEditor from 'src/features/page-editor/ui/screens/page-editor'
 import SettingsMenu from 'src/features/settings-menu/ui/screens/settings-menu'
 import Reader from 'src/features/reader/ui/screens/reader'
 import Login from 'src/features/login/ui/screens/login'
-import { MainNavigatorParamList, ShareNavigatorParamList } from './types'
+import { MainNavigatorParamList } from './types'
 import { lightTheme } from './color-themes'
 
 export type NavigationContainerFactory = (state: CoreUIState) => JSX.Element
 
 const MainStack = createStackNavigator<MainNavigatorParamList>()
-const ShareStack = createStackNavigator<ShareNavigatorParamList>()
+const ShareStack = createStackNavigator<MainNavigatorParamList>()
 
 export const createMainNavigator: NavigationContainerFactory = ({
     isLoggedIn,
@@ -107,13 +107,32 @@ export const createShareNavigator: NavigationContainerFactory = ({
     dependencies: deps,
     isLoggedIn,
 }) => {
+    const shareScreenStack = [
+        <ShareStack.Screen name="ShareModal">
+            {(props) => (
+                <ShareModal
+                    {...props}
+                    {...deps}
+                    loadContentScript={loadContentScript}
+                />
+            )}
+        </ShareStack.Screen>,
+        <ShareStack.Screen name="PageEditor" key="PageEditor">
+            {(props) => <PageEditor {...props} {...deps} />}
+        </ShareStack.Screen>,
+        <ShareStack.Screen name="NoteEditor" key="NoteEditor">
+            {(props) => <NoteEditor {...props} {...deps} />}
+        </ShareStack.Screen>,
+        <ShareStack.Screen name="ListsFilter" key="ListsFilter">
+            {(props) => <ListsFilter {...props} {...deps} />}
+        </ShareStack.Screen>,
+    ]
+
     return (
         <NavigationContainer theme={lightTheme}>
             <ShareStack.Navigator headerMode="none">
                 {isLoggedIn ? (
-                    <ShareStack.Screen name="ShareModal">
-                        {(props) => <ShareModal {...props} {...deps} />}
-                    </ShareStack.Screen>
+                    shareScreenStack
                 ) : (
                     <ShareStack.Screen name="Login">
                         {(props) => <Login {...props} {...deps} />}

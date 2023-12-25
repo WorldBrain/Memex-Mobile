@@ -71,6 +71,8 @@ export interface Props extends MainNavProps<'Reader'> {
         'readability' | 'resourceLoader' | 'errorTracker' | 'annotationSharing'
     >
     loadContentScript: ContentScriptLoader
+    pageUrl: string
+    hideNavigation?: boolean
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -88,8 +90,13 @@ export default class Logic extends UILogic<State, Event> {
 
     getInitialState(): State {
         const { params } = this.props.route
+        let insertedUrl
+        if (this.props.pageUrl) {
+            insertedUrl = this.props.pageUrl
+            console.log('getInitialState', insertedUrl)
+        }
 
-        if (!params?.url) {
+        if (!params?.url && !insertedUrl) {
             throw new Error("Navigation error: reader didn't receive URL")
         }
 
@@ -97,8 +104,10 @@ export default class Logic extends UILogic<State, Event> {
 
         return {
             rotation: screen.width > screen.height ? 'landscape' : 'portrait',
-            title: params.title,
-            url: Logic.formUrl(params.url),
+            title: 'test',
+            url: insertedUrl
+                ? Logic.formUrl(insertedUrl)
+                : Logic.formUrl(params.url),
             loadState: 'pristine',
             isErrorReported: false,
             isBookmarked: false,
@@ -279,7 +288,7 @@ export default class Logic extends UILogic<State, Event> {
 
         const { annotationUrl } = await pageEditor.createAnnotation({
             pageUrl: previousState.url,
-            pageTitle: previousState.title,
+            pageTitle: previousState.title ?? '',
             selector: anchor,
             body: anchor.quote,
         })
@@ -357,7 +366,7 @@ export default class Logic extends UILogic<State, Event> {
             highlightText: note.body,
             noteText: note.comment,
             anchor: note.selector,
-            pageTitle: previousState.title,
+            pageTitle: previousState.title ?? '',
             spaces: lists.map((list) => ({
                 id: list.id,
                 name: list.name,

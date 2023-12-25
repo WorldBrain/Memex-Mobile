@@ -15,7 +15,7 @@ export const isSyncEnabled = async ({
 
 type SyncErrorNavProps =
     | MainNavProps<'Dashboard' | 'SettingsMenu'>
-    | ShareNavProps<'ShareModal'>
+    | ShareNavProps<'Reader'>
 
 export const handleSyncError = (
     error: Error,

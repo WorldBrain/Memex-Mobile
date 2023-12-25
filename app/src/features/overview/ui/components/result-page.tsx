@@ -88,51 +88,6 @@ class ResultPage extends React.PureComponent<Props> {
                         </Footer>
                     </ResultItem>
                 </ResultContainer>
-                {/* <MoreActionTooltip
-                    animationType="none"
-                    transparent={true}
-                    visible={this.props.isResultPressed}
-                    onRequestClose={() => {
-                        this.props.onResultPress
-                    }}
-                >
-                    <MoreButtons>
-                        <IconContainer onPress={this.props.onDeletePress}>
-                            <Icon
-                                icon={icons.Trash}
-                                strokeWidth="0.5"
-                                fill
-                                heightAndWidth="18px"
-                            />
-                        </IconContainer>
-                        <IconContainer
-                            onPress={async () => {
-                                await Share.share({
-                                    url: this.props.fullUrl,
-                                    message:
-                                        Platform.OS === 'ios'
-                                            ? undefined
-                                            : this.props.fullUrl,
-                                })
-                            }}
-                        >
-                            <Icon
-                                icon={icons.Copy}
-                                strokeWidth="0.5"
-                                fill
-                                heightAndWidth="18px"
-                            />
-                        </IconContainer>
-                        <IconContainer onPress={this.props.onVisitPress}>
-                            <Icon
-                                icon={icons.ExternalLink}
-                                strokeWidth="0.5"
-                                fill
-                                heightAndWidth="18px"
-                            />
-                        </IconContainer>
-                    </MoreButtons>
-                </MoreActionTooltip> */}
             </ResultItemContainer>
         )
     }
@@ -142,10 +97,6 @@ export default ResultPage
 
 const ResultItemContainer = styled.View`
     position: relative;
-
-    & * {
-        font-family: 'Satoshi';
-    }
 `
 
 const MoreActionTooltip = styled(Modal)`

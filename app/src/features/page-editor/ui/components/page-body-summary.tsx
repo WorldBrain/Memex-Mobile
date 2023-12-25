@@ -18,7 +18,7 @@ export interface Props {
     date: string
 }
 
-const ResultPageBody: React.StatelessComponent<Props> = props => (
+const ResultPageBody: React.StatelessComponent<Props> = (props) => (
     <>
         <TouchableWithoutFeedback
             onPress={() => Linking.openURL(props.fullUrl)}
@@ -31,13 +31,9 @@ const ResultPageBody: React.StatelessComponent<Props> = props => (
                             source={{ uri: props.favIcon }}
                         />
                     )}
-                    <Text numberOfLines={1} style={styles.titleText}>
-                        {props.titleText}
-                    </Text>
+                    <Text style={styles.titleText}>{props.titleText}</Text>
                 </View>
-                <Text numberOfLines={1} style={styles.linkText}>
-                    {props.domain}
-                </Text>
+                <Text style={styles.linkText}>{props.domain}</Text>
             </View>
         </TouchableWithoutFeedback>
     </>

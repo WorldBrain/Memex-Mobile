@@ -10,7 +10,7 @@ import type {
     MainNavigatorParamList,
     MainNavigatorRoutes,
     ShareNavigatorRoutes,
-    ShareNavigatorParamList,
+    // ShareNavigatorParamList,
 } from 'src/ui/navigation/types'
 
 export type UITaskState = 'pristine' | 'running' | 'done' | 'error'
@@ -37,9 +37,9 @@ export interface MainNavProps<Route extends MainNavigatorRoutes> {
     route: RouteProp<MainNavigatorParamList, Route>
 }
 
-export interface ShareNavProps<Route extends ShareNavigatorRoutes> {
-    navigation: StackNavigationProp<ShareNavigatorParamList, Route>
-    route: RouteProp<ShareNavigatorParamList, Route>
+export interface ShareNavProps<Route extends MainNavigatorRoutes> {
+    navigation: StackNavigationProp<MainNavigatorParamList, Route>
+    route: RouteProp<MainNavigatorParamList, Route>
 }
 
 export abstract class StatefulUIElement<Props, State, Event> extends UIElement<

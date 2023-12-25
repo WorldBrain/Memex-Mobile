@@ -187,12 +187,13 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 
         // TODO: sort out the type error here :S
 
+        const urlToRender = this.state.url || this.props.pageUrl
         return (
             <WebViewContainer isLandscape={this.state.rotation === 'landscape'}>
                 <WebView
                     mediaPlaybackRequiresUserAction={true}
                     source={{
-                        uri: this.state.url,
+                        uri: urlToRender,
                         // html: this.props.htmlSource,
                         // baseUrl: this.props.url,
                     }}
@@ -235,17 +236,19 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
     render() {
         return (
             <Container>
-                <Navigation
-                    leftBtnPress={() => this.processEvent('goBack', null)}
-                    leftIcon={icons.BackArrow}
-                    leftIconSize="24px"
-                    leftIconStrokeWidth="0px"
-                    titleText={'Annotate this page'}
-                    rightBtnPress={() => Linking.openURL(this.state.url)}
-                    rightIcon={icons.ExternalLink}
-                    rightIconSize="24px"
-                    rightIconStrokeWidth="0px"
-                />
+                {!this.props.hideNavigation && (
+                    <Navigation
+                        leftBtnPress={() => this.processEvent('goBack', null)}
+                        leftIcon={icons.BackArrow}
+                        leftIconSize="24px"
+                        leftIconStrokeWidth="0px"
+                        titleText={'Annotate this page'}
+                        rightBtnPress={() => Linking.openURL(this.state.url)}
+                        rightIcon={icons.ExternalLink}
+                        rightIconSize="24px"
+                        rightIconStrokeWidth="0px"
+                    />
+                )}
                 {this.renderWebView()}
                 <ActionBarContainer>
                     <ActionBar
@@ -272,6 +275,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                             })
                         }
                         spaceCount={this.state.spaces.length}
+                        pageUrl={this.state.url}
                     />
                 </ActionBarContainer>
             </Container>

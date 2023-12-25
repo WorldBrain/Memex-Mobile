@@ -15,8 +15,9 @@ import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotation
 import type { State, Event } from './types'
 import { isInputDirty, initValues } from './util'
 import { FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
+import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
 
-export interface Dependencies extends ShareNavProps<'ShareModal'> {
+export interface Dependencies extends ShareNavProps<'Reader'> {
     services: UIServices<
         | 'cloudSync'
         | 'shareExt'
@@ -26,9 +27,14 @@ export interface Dependencies extends ShareNavProps<'ShareModal'> {
         | 'actionSheet'
         | 'annotationSharing'
         | 'activityIndicator'
+        | 'readability'
+        | 'resourceLoader'
     >
-    storage: UIStorageModules<'overview' | 'metaPicker' | 'pageEditor'>
+    storage: UIStorageModules<
+        'overview' | 'metaPicker' | 'pageEditor' | 'reader' | 'pageEditor'
+    >
     keyboardAPI: Pick<KeyboardStatic, 'addListener'>
+    loadContentScript: ContentScriptLoader
 }
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -133,6 +139,18 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     init: EventHandler<'init'> = async ({}) => {
+        const { services, storage } = this.deps
+        let url: string
+
+        try {
+            url = await services.shareExt.getSharedUrl()
+        } catch (err) {
+            this.emitMutation({ isUnsupportedApplication: { $set: true } })
+            return
+        }
+
+        this.emitMutation({ pageUrl: { $set: url } })
+
         this.keyboardShowListener = this.deps.keyboardAPI.addListener(
             'keyboardDidShow',
             (event) =>
@@ -146,18 +164,6 @@ export default class Logic extends UILogic<State, Event> {
         )
 
         this.doSync()
-
-        const { services, storage } = this.deps
-        let url: string
-
-        try {
-            url = await services.shareExt.getSharedUrl()
-        } catch (err) {
-            this.emitMutation({ isUnsupportedApplication: { $set: true } })
-            return
-        }
-
-        this.emitMutation({ pageUrl: { $set: url } })
 
         const existingPage = await storage.modules.overview.findPage({ url })
 

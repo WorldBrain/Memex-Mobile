@@ -71,9 +71,7 @@ export default class Navigation extends React.Component<Props> {
                         </LeftBtnContainer>
                     )}
                     {typeof this.props.titleText === 'string' ? (
-                        <TextArea numberOfLines={1}>
-                            {this.props.titleText}
-                        </TextArea>
+                        <TextArea>{this.props.titleText}</TextArea>
                     ) : (
                         <>{this.props.titleText}</>
                     )}

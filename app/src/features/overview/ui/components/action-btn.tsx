@@ -42,9 +42,7 @@ export const ActionBtn: React.StatelessComponent<Props & OwnProps> = (
             {props.label && (
                 <>
                     <View style={styles.marginBottom10} />
-                    <Text style={styles.subText} numberOfLines={1}>
-                        {props.label}
-                    </Text>
+                    <Text style={styles.subText}>{props.label}</Text>
                 </>
             )}
         </View>

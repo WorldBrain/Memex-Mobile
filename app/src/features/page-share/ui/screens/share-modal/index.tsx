@@ -24,6 +24,8 @@ import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotation
 import FeedActivityIndicator from 'src/features/activity-indicator'
 import { isInputDirty } from './util'
 import type { State, Event } from './types'
+import { WebView, WebViewNavigation } from 'react-native-webview'
+import Reader from 'src/features/reader/ui/screens/reader'
 
 export interface Props extends Omit<Dependencies, 'keyboardAPI'> {}
 
@@ -299,6 +301,33 @@ export default class ShareModalScreen extends StatefulUIElement<
         )
     }
 
+    private renderWebView() {
+        const storage = this.props.storage
+        const services = this.props.services
+        const loadContentScript = this.props.loadContentScript
+
+        const deps = {
+            storage,
+            services,
+            loadContentScript,
+        }
+
+        console.log('state.pageUrl', this.state.pageUrl)
+
+        if (!this.state.pageUrl) {
+            return null // or return <LoadingComponent /> if you have one
+        }
+        return (
+            <Reader
+                {...this.props}
+                {...deps}
+                loadContentScript={this.props.loadContentScript}
+                pageUrl={this.state.pageUrl}
+                hideNavigation
+            />
+        )
+    }
+
     private renderModalContent() {
         if (this.state.showSavingPage) {
             return <SavingUpdates />
@@ -314,7 +343,7 @@ export default class ShareModalScreen extends StatefulUIElement<
 
         return this.state.isSpacePickerShown
             ? this.renderMetaPicker()
-            : this.renderInputs()
+            : this.renderWebView()
     }
 
     render() {

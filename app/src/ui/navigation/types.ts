@@ -46,14 +46,17 @@ export type MainNavigatorParamList = {
     )
     Reader: {
         url: string
-        title: string
         /** Affords sending page changes that occur in this route back up to parent route. */
         updatePage: (page: UIPageWithNotes) => void
     }
+    ShareModal: undefined
 }
 
-export type ShareNavigatorRoutes = keyof ShareNavigatorParamList
-export type ShareNavigatorParamList = {
-    ShareModal: undefined
-    Login: undefined
-}
+// export type ShareNavigatorRoutes = keyof MainNavigatorParamList
+// export type ShareNavigatorParamList = {
+//     ShareModal: undefined
+//     Login: undefined
+//     Reader: {
+//         pageUrl: string
+//     }
+// }

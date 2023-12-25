@@ -16,9 +16,8 @@ const ResultPageBody: React.StatelessComponent<Props> = (props) => (
                 <TitleText>{props.titleText}</TitleText>
             </Title>
             <BottomBarBox>
-                <DomainText numberOfLines={1}>{props.domain}</DomainText>
+                <DomainText>{props.domain}</DomainText>
                 {props.type !== 'page' && <PDFPill>PDF</PDFPill>}
-                {/* <DateText>{props.date}</DateText> */}
             </BottomBarBox>
         </ContentBox>
     </View>
@@ -41,10 +40,7 @@ const ContentBox = styled.View`
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-
-    & * {
-        font-family: 'Satoshi';
-    }
+    font-family: 'Satoshi';
 `
 
 const Title = styled.View`
