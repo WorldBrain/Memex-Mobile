@@ -17,7 +17,6 @@ export interface Props {
 }
 
 const NoteInput: React.StatelessComponent<Props> = (props) => {
-    const editor = React.createRef()
     const [renderEditor, setRenderEditor] = useState(false)
 
     useEffect(() => {
@@ -31,28 +30,26 @@ const NoteInput: React.StatelessComponent<Props> = (props) => {
     return (
         <Container>
             <TextBox>
-                <Box>
-                    <QuillToolbar
-                        editor={editor}
-                        theme="dark"
-                        options={[
-                            'bold',
-                            'italic',
-                            'underline',
-                            'strike',
-                            { header: 1 },
-                            { header: 2 },
-                            { list: 'ordered' },
-                            { list: 'bullet' },
-                        ]}
-                    />
-                </Box>
                 {renderEditor ? (
                     <QuillEditor
-                        ref={editor}
                         initialHtml={props.initNote}
                         onHtmlChange={({ html }) => {
                             props.onChange(html)
+                        }}
+                        quill={{
+                            modules: {
+                                toolbar: [
+                                    'bold',
+                                    'italic',
+                                    'underline',
+                                    'strike',
+                                    { header: 1 },
+                                    { header: 2 },
+                                    { list: 'ordered' },
+                                    { list: 'bullet' },
+                                ],
+                            },
+                            placeholder: 'Write your note here!',
                         }}
                     />
                 ) : (

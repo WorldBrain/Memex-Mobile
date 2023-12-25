@@ -19,6 +19,7 @@ import * as icons from 'src/ui/components/icons/icons-list'
 import styled, { css } from 'styled-components/native'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 
+const ActionBarHeight = 60
 export default class Reader extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
         super(props, new Logic(props))
@@ -280,19 +281,18 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 
 const ActionBarContainer = styled.View`
     position: absolute;
-    bottom: -30px;
+    bottom: 0px;
     width: 100%;
     display: flex;
-    width: 100%;
     align-items: center;
+    height: ${ActionBarHeight}px;
 `
 
 const Container = styled.SafeAreaView`
     height: 100%;
     display: flex;
     align-items: center;
-    height: ${(props) =>
-        Dimensions.get('window').height - navigationBarHeight + 40}px;
+    height: 100%;
     background: ${(props) => props.theme.colors.black};
 `
 
@@ -302,8 +302,8 @@ const WebViewContainer = styled.SafeAreaView<{
 }>`
     background: ${(props) => props.theme.colors.black};
     width: 100%;
-    height: ${(props) =>
-        Dimensions.get('window').height - navigationBarHeight + 40}px;
+    display: flex;
+    height: ${() => Dimensions.get('window').height - 130}px;
 
     ${(props) =>
         props.isLoading

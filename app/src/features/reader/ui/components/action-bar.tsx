@@ -150,7 +150,7 @@ const SpaceCounterPillText = styled.Text`
 
 const FooterActionBtn = styled.TouchableOpacity`
     display: flex;
-    margin: 10px;
+    padding: 10px;
     position: relative;
 `
 const FooterActionBar = styled.View`
@@ -158,15 +158,15 @@ const FooterActionBar = styled.View`
     flex-direction: row;
     background: ${(props) => props.theme.colors.greyScale1};
     border: 1px solid ${(props) => props.theme.colors.greyScale2};
-    border-radius: 10px;
 
     position: absolute;
     bottom: 0px;
-    padding: 0 10px;
+    padding: 0 20px;
+    width: 100%;
 `
 
 const FooterActionText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale4};
+    color: ${(props) => props.theme.colors.greyScale6};
     font-size: 12px;
     margin-top: 4px;
     font-weight: 400;
