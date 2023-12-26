@@ -1,25 +1,20 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import RenderHtml from 'react-native-render-html'
 import { Dimensions } from 'react-native'
 import { theme } from '../components/theme/theme'
 
 export const RenderHTML = (html: string) => {
-    const renderedHTML = useMemo(
-        () => (
-            <RenderHtml
-                contentWidth={Dimensions.get('screen').width - 60}
-                source={{ html }}
-                baseStyle={{
-                    lineHeight: 20,
-                    fontWeight: '300',
-                    color: `${theme.colors.white}`,
-                }}
-            />
-        ),
-        [html],
+    return (
+        <RenderHtml
+            contentWidth={Dimensions.get('screen').width - 60}
+            source={{ html }}
+            baseStyle={{
+                lineHeight: 20,
+                fontWeight: '300',
+                color: `${theme.colors.white}`,
+            }}
+        />
     )
-
-    return renderedHTML
 }
 
 export const RenderHTMLStyles = {
