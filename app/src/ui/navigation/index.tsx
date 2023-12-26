@@ -107,7 +107,7 @@ export const createShareNavigator: NavigationContainerFactory = ({
     dependencies: deps,
     isLoggedIn,
 }) => {
-    const shareScreenStack = [
+    const protectedRoutes = [
         <ShareStack.Screen name="ShareModal">
             {(props) => (
                 <ShareModal
@@ -132,7 +132,7 @@ export const createShareNavigator: NavigationContainerFactory = ({
         <NavigationContainer theme={lightTheme}>
             <ShareStack.Navigator headerMode="none">
                 {isLoggedIn ? (
-                    shareScreenStack
+                    protectedRoutes
                 ) : (
                     <ShareStack.Screen name="Login">
                         {(props) => <Login {...props} {...deps} />}

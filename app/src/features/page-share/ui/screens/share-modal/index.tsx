@@ -302,16 +302,6 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     private renderWebView() {
-        const storage = this.props.storage
-        const services = this.props.services
-        const loadContentScript = this.props.loadContentScript
-
-        const deps = {
-            storage,
-            services,
-            loadContentScript,
-        }
-
         console.log('state.pageUrl', this.state.pageUrl)
 
         if (!this.state.pageUrl) {
@@ -320,8 +310,6 @@ export default class ShareModalScreen extends StatefulUIElement<
         return (
             <Reader
                 {...this.props}
-                {...deps}
-                loadContentScript={this.props.loadContentScript}
                 pageUrl={this.state.pageUrl}
                 hideNavigation
             />

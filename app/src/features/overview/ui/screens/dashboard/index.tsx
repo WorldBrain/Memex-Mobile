@@ -60,7 +60,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
     private navToPageEditor = ({ fullUrl }: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {
-            pageUrl: fullUrl,
+            pageUrl: fullUrl!,
             mode,
             updatePage: (page) => this.processEvent('updatePage', { page }),
         })

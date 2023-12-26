@@ -128,7 +128,9 @@ export default class Logic extends UILogic<State, Event> {
                     previousState.title,
                 )
             } catch (err) {
-                this.emitMutation({ error: { $set: err } })
+                if (err instanceof Error) {
+                    this.emitMutation({ error: { $set: err } })
+                }
             }
         })
     }
@@ -375,13 +377,11 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    goBack = this.props.navigation.goBack
-
     private updatePageDataFlags = (incomingPage: UIPageWithNotes) => {
         // Allow incoming page to go back up to Dashboard so that can also react to changes
-        this.props.route.params.updatePage(incomingPage)
+        this.props.route.params?.updatePage?.(incomingPage)
         this.emitMutation({
-            isListed: { $set: incomingPage.listIds?.length > 0 },
+            isListed: { $set: (incomingPage.listIds?.length ?? 0) > 0 },
             hasNotes: { $set: incomingPage.notes?.length > 0 },
         })
     }
