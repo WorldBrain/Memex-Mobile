@@ -72,7 +72,10 @@ export class WebViewContentScript {
         // const quote = selection.toString()
 
         const HTMLquote = getSelectionHtml(selection)
-        const descriptor = await selectionToDescriptor({ selection })
+        const descriptor = await selectionToDescriptor({
+            selection,
+            isPdf: false,
+        })
 
         if (!descriptor) {
             throw new Error(`Unable to derive descriptor from text selection`)
@@ -99,10 +102,11 @@ export class WebViewContentScript {
     }
 
     renderHighlight = async ({ anchor: { descriptor }, url }: Highlight) => {
-        const range = await descriptorToRange({ descriptor })
-        markRange({ range, cssClass: HIGHLIGHT_CLASS })
-
-        this.attachEventListenersToNewHighlights(url)
+        const range = await descriptorToRange({ descriptor, isPdf: false })
+        if (range != null) {
+            markRange({ range, cssClass: HIGHLIGHT_CLASS })
+            this.attachEventListenersToNewHighlights(url)
+        }
     }
 
     private attachEventListenersToNewHighlights(highlightUrl: string) {
