@@ -18,6 +18,7 @@ import Navigation, {
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled, { css } from 'styled-components/native'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
+import { TouchableOpacity } from 'react-native'
 
 const ActionBarHeight = 60
 export default class Reader extends StatefulUIElement<Props, State, Event> {
@@ -114,7 +115,10 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 
     private renderLoading = () => (
         <WebViewContainer
-            isLandscape={this.state.rotation === 'landscape'}
+            deviceOrientation={
+                this.props.deviceInfo?.deviceOrientation ?? 'portrait'
+            }
+            os={this.props.deviceInfo?.isIos ? 'iOS' : 'Android'}
             isLoading
         >
             <LoadingBalls />
@@ -189,7 +193,12 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 
         const urlToRender = this.state.url || this.props.pageUrl
         return (
-            <WebViewContainer isLandscape={this.state.rotation === 'landscape'}>
+            <WebViewContainer
+                deviceOrientation={
+                    this.props.deviceInfo?.deviceOrientation ?? 'portrait'
+                }
+                os={this.props.deviceInfo?.isIos ? 'iOS' : 'Android'}
+            >
                 <WebView
                     mediaPlaybackRequiresUserAction={true}
                     source={{
@@ -215,7 +224,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         { label: 'Add Note', key: 'annotate' },
                     ]}
                     onCustomMenuSelection={(webViewEvent) => {
-                        // console.log(webViewEvent)
                         if (
                             (webViewEvent.nativeEvent as any).key ===
                             'highlight'
@@ -235,7 +243,12 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
 
     render() {
         return (
-            <Container>
+            <Container
+                deviceOrientation={
+                    this.props.deviceInfo?.deviceOrientation ?? 'portrait'
+                }
+                os={this.props.deviceInfo?.isIos ? 'iOS' : 'Android'}
+            >
                 {!this.props.hideNavigation && (
                     <Navigation
                         leftBtnPress={() => this.processEvent('goBack', null)}
@@ -251,6 +264,19 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 )}
                 {this.renderWebView()}
                 <ActionBarContainer>
+                    {this.props.location === 'shareExt' && (
+                        <PageClosePill onPress={this.props.closeModal}>
+                            <Icon
+                                icon={icons.BackArrow}
+                                heightAndWidth="15px"
+                                strokeWidth="0"
+                                fill
+                                color="prime1"
+                                hoverOff
+                            />
+                            <PageCloseText>Close Memex</PageCloseText>
+                        </PageClosePill>
+                    )}
                     <ActionBar
                         isErrorView={this.state.error != null}
                         {...this.state}
@@ -276,6 +302,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         }
                         spaceCount={this.state.spaces.length}
                         pageUrl={this.state.url}
+                        deviceInfo={this.props.deviceInfo}
                     />
                 </ActionBarContainer>
             </Container>
@@ -283,8 +310,34 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
     }
 }
 
+const PageClosePill = styled(TouchableOpacity)`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 24px;
+    background: ${(props) => props.theme.colors.greyScale2};
+    border: 1px solid ${(props) => props.theme.colors.greyScale3};
+    border-radius: 15px;
+    position: absolute;
+    top: -24px;
+    left: 2px;
+    padding: 0 5px 2px 2px;
+    z-index: 1000;
+`
+
+const PageCloseText = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale7};
+    font-size: 12px;
+    font-weight: 300;
+    margin-left: 5px;
+    font-family: 'Satoshi';
+`
+
 const ActionBarContainer = styled.View`
     position: absolute;
+    padding-bottom: 5px;
     bottom: 0px;
     width: 100%;
     display: flex;
@@ -292,22 +345,57 @@ const ActionBarContainer = styled.View`
     height: ${ActionBarHeight}px;
 `
 
-const Container = styled.SafeAreaView`
+const Container = styled.SafeAreaView<{
+    deviceOrientation: 'portrait' | 'landscape'
+    os: 'iOS' | 'Android'
+}>`
     height: 100%;
     display: flex;
     align-items: center;
-    height: 100%;
-    background: ${(props) => props.theme.colors.black};
+    background: ${(props) => props.theme.colors.greyScale1};
+
+    ${(props) =>
+        props.os === 'iOS' &&
+        css<any>`
+            ${(props) =>
+                props.deviceOrientation === 'portrait' &&
+                css<any>`
+                    overflow: hidden;
+                    border-radius: 0px;
+                `};
+            ${(props) =>
+                props.deviceOrientation === 'landscape' &&
+                css<any>`
+                    border-radius: 8px;
+                `};
+        `};
+    ${(props) =>
+        props.os === 'Android' &&
+        css<any>`
+            ${(props) =>
+                props.deviceOrientation === 'portrait' &&
+                css<any>`
+                    border-radius: 8px;
+                    overflow: hidden;
+                `};
+            ${(props) =>
+                props.deviceOrientation === 'landscape' &&
+                css<any>`
+                    border-radius: 8px;
+                    overflow: hidden;
+                `};
+        `};
 `
 
 const WebViewContainer = styled.SafeAreaView<{
-    isLandscape?: boolean
+    deviceOrientation?: 'portrait' | 'landscape'
     isLoading?: boolean
+    os: 'iOS' | 'Android'
 }>`
-    background: ${(props) => props.theme.colors.black};
+    background: ${(props) => props.theme.colors.greyScale1};
     width: 100%;
     display: flex;
-    height: ${() => Dimensions.get('window').height - 130}px;
+    height: 96%;
 
     ${(props) =>
         props.isLoading
@@ -316,14 +404,34 @@ const WebViewContainer = styled.SafeAreaView<{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    height: 100%;
     `
             : ''}
 
     ${(props) =>
-        props.isLandscape &&
-        css`
-            width: ${(props) => Dimensions.get('window').width}px;
-            height: ${(props) => Dimensions.get('window').height}px;
+        props.os === 'iOS' &&
+        css<any>`
+            ${(props) =>
+                props.deviceOrientation === 'portrait' &&
+                css<any>`
+                    border-radius: 10px;
+                `};
+            ${(props) =>
+                props.deviceOrientation === 'landscape' &&
+                css<any>`
+                    border-radius: 50px;
+                    width: 110%;
+                `};
+        `};
+    ${(props) =>
+        props.os === 'Android' &&
+        css<any>`
+            ${(props) => props.deviceOrientation === 'portrait' && css<any>``};
+            ${(props) =>
+                props.deviceOrientation === 'landscape' &&
+                css<any>`
+                    width: 110%;
+                `};
         `};
 `
 

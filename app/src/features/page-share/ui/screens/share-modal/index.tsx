@@ -10,21 +10,18 @@ import ShareModal from '../../components/share-modal'
 import ActionBar from '../../components/action-bar-segment'
 import NoteInput from '../../components/note-input-segment'
 import UnsupportedApp from '../../components/unsupported-app'
-import ReloadBtn from '../../components/reload-btn'
 import SavingUpdates from '../../components/saving-updates'
 import SyncError from '../../components/sync-error'
 import styles from './styles'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
-import LoadingIndicator from 'src/ui/components/loading-balls'
 import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import FeedActivityIndicator from 'src/features/activity-indicator'
 import { isInputDirty } from './util'
 import type { State, Event } from './types'
-import { WebView, WebViewNavigation } from 'react-native-webview'
 import Reader from 'src/features/reader/ui/screens/reader'
 
 export interface Props extends Omit<Dependencies, 'keyboardAPI'> {}
@@ -302,8 +299,6 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     private renderWebView() {
-        console.log('state.pageUrl', this.state.pageUrl)
-
         if (!this.state.pageUrl) {
             return null // or return <LoadingComponent /> if you have one
         }
@@ -312,6 +307,8 @@ export default class ShareModalScreen extends StatefulUIElement<
                 {...this.props}
                 pageUrl={this.state.pageUrl}
                 hideNavigation
+                deviceInfo={this.state.deviceInfo ?? null}
+                closeModal={this.handleModalClose}
             />
         )
     }
@@ -335,20 +332,58 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     render() {
-        let editorHeight =
-            Dimensions.get('screen').height - this.state.keyboardHeight - 100
+        let editorHeight = Dimensions.get('screen').height
         return (
             <ShareModal
                 isModalShown={this.state.isModalShown}
                 onClosed={this.props.services.shareExt.close}
                 stretched={!!this.state.isSpacePickerShown}
                 height={editorHeight}
+                deviceInfo={this.state.deviceInfo ?? null}
             >
+                {this.state.pageSaveFinished && (
+                    <PageSavedPill>
+                        <Icon
+                            icon={icons.CheckMark}
+                            heightAndWidth="15px"
+                            strokeWidth="0"
+                            fill
+                            color="prime1"
+                            hoverOff
+                        />
+                        <PageSavedText>Page saved!</PageSavedText>
+                    </PageSavedPill>
+                )}
                 {this.renderModalContent()}
             </ShareModal>
         )
     }
 }
+
+const PageSavedPill = styled.View`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 30px;
+    background: ${(props) => props.theme.colors.greyScale1};
+    border: 1px solid ${(props) => props.theme.colors.greyScale3};
+    border-radius: 15px;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    margin-left: -60px;
+    z-index: 1000;
+`
+
+const PageSavedText = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale7};
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 5px;
+    font-family: 'Satoshi';
+`
 
 const ShareModalContainer = styled.View`
     background: ${(props) => props.theme.colors.greyScale1};

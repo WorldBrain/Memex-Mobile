@@ -19,6 +19,7 @@ import Reader from 'src/features/reader/ui/screens/reader'
 import Login from 'src/features/login/ui/screens/login'
 import { MainNavigatorParamList } from './types'
 import { lightTheme } from './color-themes'
+import { getDeviceDetails } from 'src/features/page-share/ui/screens/share-modal/util'
 
 export type NavigationContainerFactory = (state: CoreUIState) => JSX.Element
 
@@ -73,6 +74,8 @@ export const createMainNavigator: NavigationContainerFactory = ({
                     {...props}
                     {...deps}
                     loadContentScript={loadContentScript}
+                    deviceInfo={getDeviceDetails()}
+                    location={'mainApp'}
                 />
             )}
         </MainStack.Screen>,

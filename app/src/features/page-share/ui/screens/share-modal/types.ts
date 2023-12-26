@@ -2,6 +2,7 @@ import type { UIEvent } from 'ui-logic-core'
 import type { UITaskState } from 'src/ui/types'
 import type { SpacePickerEntry } from 'src/features/meta-picker/types'
 import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import { DeviceDetails } from './util'
 
 export interface State {
     loadState: UITaskState
@@ -22,6 +23,8 @@ export interface State {
     isUnsupportedApplication: boolean
     privacyLevel: AnnotationPrivacyLevels
     keyboardHeight: number
+    pageSaveFinished: boolean
+    deviceInfo?: DeviceDetails | null
 }
 
 export type Event = UIEvent<{

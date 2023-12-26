@@ -5,7 +5,8 @@ import {
     UIMutation,
 } from 'ui-logic-core'
 
-import type { EmitterSubscription, KeyboardStatic } from 'react-native'
+import { Dimensions } from 'react-native'
+import { EmitterSubscription, KeyboardStatic } from 'react-native'
 import type { UIServices, UIStorageModules, ShareNavProps } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
@@ -13,7 +14,7 @@ import { isSyncEnabled, handleSyncError } from 'src/features/sync/utils'
 import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import type { State, Event } from './types'
-import { isInputDirty, initValues } from './util'
+import { isInputDirty, initValues, getDeviceDetails } from './util'
 import { FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
 import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
 
@@ -72,6 +73,8 @@ export default class Logic extends UILogic<State, Event> {
             noteText: '',
             statusText: '',
             keyboardHeight: 0,
+            pageSaveFinished: false,
+            deviceInfo: null,
             ...initValues,
         }
     }
@@ -139,6 +142,8 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     init: EventHandler<'init'> = async ({}) => {
+        this.handleDimensionsChange()
+        Dimensions.addEventListener('change', this.handleDimensionsChange)
         const { services, storage } = this.deps
         let url: string
 
@@ -191,6 +196,15 @@ export default class Logic extends UILogic<State, Event> {
             services.errorTracker.track(err)
         }
 
+        this.emitMutation({
+            pageSaveFinished: { $set: true },
+        })
+        setTimeout(() => {
+            this.emitMutation({
+                pageSaveFinished: { $set: false },
+            })
+        }, 4000)
+
         const bookmarkP = executeUITask<State, 'bookmarkState', void>(
             this,
             'bookmarkState',
@@ -239,6 +253,14 @@ export default class Logic extends UILogic<State, Event> {
         )
 
         await Promise.all([bookmarkP, listsP])
+    }
+
+    private handleDimensionsChange = () => {
+        const deviceInfo = getDeviceDetails()
+
+        this.emitMutation({
+            deviceInfo: { $set: deviceInfo },
+        })
     }
 
     async retrySync() {

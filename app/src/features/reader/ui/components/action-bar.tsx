@@ -7,9 +7,11 @@ import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
+import { DeviceDetails } from 'src/features/page-share/ui/screens/share-modal/util'
+import { css } from 'styled-components'
 
 export interface Props
-    extends Pick<State, 'isBookmarked' | 'isListed' | 'hasNotes' | 'rotation'> {
+    extends Pick<State, 'isBookmarked' | 'isListed' | 'hasNotes'> {
     className?: string
     selectedText?: string
     isErrorView?: boolean
@@ -21,9 +23,17 @@ export interface Props
     onListBtnPress: TouchEventHandler
     spaceCount: number
     pageUrl: string
+    deviceInfo: DeviceDetails | null
 }
 
-class ActionBar extends React.PureComponent<Props> {
+interface State {
+    showHighlightNotif: boolean
+}
+
+class ActionBar extends React.PureComponent<Props, State> {
+    state = {
+        showHighlightNotif: false,
+    }
     private get BookmarkBtn(): actionBtns.ActionBtnComponent {
         return this.props.isBookmarked
             ? actionBtns.StarBtnFull
@@ -44,7 +54,13 @@ class ActionBar extends React.PureComponent<Props> {
 
     render() {
         return (
-            <FooterActionBar>
+            <FooterActionBar
+                os={this.props.deviceInfo?.isIos ? 'ios' : 'android'}
+                deviceOrientation={
+                    this.props.deviceInfo?.deviceOrientation ?? 'portrait'
+                }
+                deviceType={this.props.deviceInfo?.isPhone ? 'phone' : 'tablet'}
+            >
                 <LeftSideActions>
                     <FooterActionBtn onPress={this.props.onCommentBtnPress}>
                         {this.props.hasNotes ? (
@@ -85,11 +101,27 @@ class ActionBar extends React.PureComponent<Props> {
                     </FooterActionBtn>
                 </LeftSideActions>
                 <RightSideActions>
-                    {this.props.selectedText != null ||
-                        this.props.pageUrl.includes('www.youtube.com/watch') ||
-                        (this.props.pageUrl.includes('youtu.be') && (
+                    {this.state.showHighlightNotif ? (
+                        <ShowHighlightNotifText>
+                            Select some text first
+                        </ShowHighlightNotifText>
+                    ) : (
+                        <>
                             <FooterActionBtn
-                                onPress={this.props.onHighlightBtnPress}
+                                onPress={(e) => {
+                                    if (this.props.selectedText == null) {
+                                        this.setState({
+                                            showHighlightNotif: true,
+                                        })
+                                        setTimeout(() => {
+                                            this.setState({
+                                                showHighlightNotif: false,
+                                            })
+                                        }, 2000)
+                                    } else {
+                                        this.props.onHighlightBtnPress(e)
+                                    }
+                                }}
                             >
                                 <Icon
                                     icon={icons.Highlighter}
@@ -100,20 +132,36 @@ class ActionBar extends React.PureComponent<Props> {
                                 />
                                 <FooterActionText>Highlight</FooterActionText>
                             </FooterActionBtn>
-                        ))}
-                    <FooterActionBtn onPress={this.props.onAnnotateBtnPress}>
-                        <Icon
-                            icon={icons.AddNote}
-                            strokeWidth="0"
-                            heightAndWidth="18px"
-                            color="greyScale5"
-                            fill
-                        />
-                        <FooterActionText>Annotate</FooterActionText>
-                    </FooterActionBtn>
+                            <FooterActionBtn
+                                onPress={(e) => {
+                                    if (this.props.selectedText == null) {
+                                        this.setState({
+                                            showHighlightNotif: true,
+                                        })
+                                        setTimeout(() => {
+                                            this.setState({
+                                                showHighlightNotif: false,
+                                            })
+                                        }, 2000)
+                                    } else {
+                                        this.props.onAnnotateBtnPress(e)
+                                    }
+                                }}
+                            >
+                                <Icon
+                                    icon={icons.AddNote}
+                                    strokeWidth="0"
+                                    heightAndWidth="18px"
+                                    color="greyScale5"
+                                    fill
+                                />
+                                <FooterActionText>Annotate</FooterActionText>
+                            </FooterActionBtn>
+                        </>
+                    )}
                 </RightSideActions>
             </FooterActionBar>
-            // <Container isLandscape={this.props.rotation === 'landscape'}>
+            // <Container isLandscape={this.props.deviceOrientation === 'landscape'}>
             //     <LeftBtns></LeftBtns>
             //     <CenterButton>
             //         <AddToSpacesBtn
@@ -131,6 +179,18 @@ export default ActionBar
 
 export const heightLandscape = 60
 export const heightPortrait = 45
+
+const ShowHighlightNotifText = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale5};
+    font-size: 14px;
+    font-weight: 400;
+    align-content: center;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+`
 
 const RightSideActions = styled.View`
     display: flex;
@@ -167,17 +227,31 @@ const FooterActionBtn = styled.TouchableOpacity`
     padding: 10px;
     position: relative;
 `
-const FooterActionBar = styled.View`
+const FooterActionBar = styled.View<{
+    os: 'ios' | 'android'
+    deviceOrientation: 'landscape' | 'portrait'
+    deviceType?: 'phone' | 'tablet'
+}>`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     background: ${(props) => props.theme.colors.greyScale1};
-    border: 1px solid ${(props) => props.theme.colors.greyScale2};
+    border-style: solid;
+    border-top-width: 1px;
+    border-color: ${(props) => props.theme.colors.greyScale2};
 
     position: absolute;
     bottom: 0px;
     padding: 0 20px;
     width: 100%;
+
+    ${(props) =>
+        props.deviceOrientation === 'landscape' &&
+        props.deviceType === 'phone' &&
+        css<any>`
+            width: 130%;
+            padding: 0 120px;
+        `};
 `
 
 const FooterActionText = styled.Text`
