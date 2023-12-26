@@ -246,6 +246,10 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
+    goBack: EventHandler<'goBack'> = async ({ previousState }) => {
+        this.props.navigation.goBack()
+    }
+
     toggleBookmark: EventHandler<'toggleBookmark'> = async ({
         previousState,
     }) => {
