@@ -31,7 +31,7 @@ export class CloudSyncService implements CloudSyncAPI {
     private shouldInterruptStream = false
     private stats: SyncStats = {
         totalDownloads: null,
-        pendingDownloads: null,
+        pendingDownloads: 0,
     }
 
     constructor(private props: Props) {
@@ -48,7 +48,7 @@ export class CloudSyncService implements CloudSyncAPI {
         props.backend.events.on('incomingChangesProcessed', (event) => {
             this._modifyStats({
                 pendingDownloads:
-                    (this.stats.pendingDownloads ?? 0) - event.count,
+                    (this.stats.pendingDownloads ?? 0) + event.count,
             })
         })
     }

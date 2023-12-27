@@ -84,20 +84,22 @@ export default class LoginScreen extends StatefulUIElement<
                         ) : (
                             <>
                                 {Platform.OS === 'ios' && (
-                                    <PasteCodeTextBox
-                                        onChangeText={(text) => {
-                                            if (text.length > 0) {
-                                                this.processEvent(
-                                                    'submitLogin',
-                                                    {
-                                                        token: text,
-                                                    },
-                                                )
-                                            }
-                                        }}
-                                        placeholder="Paste the login code here"
-                                        placeholderTextColor="#A9A9B1"
-                                    />
+                                    <TextInputContainer>
+                                        <TextInputBox
+                                            onChangeText={(text) => {
+                                                if (text.length > 0) {
+                                                    this.processEvent(
+                                                        'submitLogin',
+                                                        {
+                                                            token: text,
+                                                        },
+                                                    )
+                                                }
+                                            }}
+                                            placeholder="Paste the login code here"
+                                            placeholderTextColor="#A9A9B1"
+                                        />
+                                    </TextInputContainer>
                                 )}
                                 {Platform.OS === 'android' && (
                                     <QRCodeContainer>
@@ -138,7 +140,7 @@ export default class LoginScreen extends StatefulUIElement<
                                         placeholderTextColor={
                                             theme.colors.greyScale5
                                         }
-                                        textContentType="emailAddress"
+                                        textContentType="username"
                                         editable={
                                             this.state.loginState !== 'running'
                                         }
@@ -148,52 +150,48 @@ export default class LoginScreen extends StatefulUIElement<
                             </>
                         )}
 
-                        {this.state.mode === 'login' &&
-                            this.state.emailInputValue.length > 0 && (
-                                <>
-                                    <TextInputContainer>
-                                        <Icon
-                                            icon={icons.Lock}
-                                            heightAndWidth={'24px'}
-                                            strokeWidth={'0px'}
-                                            fill
-                                        />
-                                        <TextInputBox
-                                            value={
-                                                this.state.passwordInputValue
-                                            }
-                                            onChangeText={(value) =>
-                                                this.processEvent(
-                                                    'changePasswordInput',
-                                                    { value },
-                                                )
-                                            }
-                                            placeholder="Password"
-                                            textContentType="password"
-                                            secureTextEntry
-                                            editable={
-                                                this.state.loginState !==
-                                                'running'
-                                            }
-                                            placeholderTextColor={
-                                                theme.colors.greyScale5
-                                            }
-                                            autoCapitalize="none"
-                                        />
-                                    </TextInputContainer>
-                                    <ForgotPasswordBox
-                                        onPress={() =>
+                        {this.state.mode === 'login' && (
+                            <>
+                                <TextInputContainer>
+                                    <Icon
+                                        icon={icons.Lock}
+                                        heightAndWidth={'24px'}
+                                        strokeWidth={'0px'}
+                                        fill
+                                    />
+                                    <TextInputBox
+                                        value={this.state.passwordInputValue}
+                                        onChangeText={(value) =>
                                             this.processEvent(
-                                                'requestPasswordReset',
-                                                null,
+                                                'changePasswordInput',
+                                                { value },
                                             )
                                         }
-                                    >
-                                        <ForgotPasswordText>
-                                            Forgot Password?
-                                        </ForgotPasswordText>
-                                    </ForgotPasswordBox>
-                                    {/* {this.state.mode === 'signup' &&
+                                        placeholder="Password"
+                                        textContentType="password"
+                                        secureTextEntry
+                                        editable={
+                                            this.state.loginState !== 'running'
+                                        }
+                                        placeholderTextColor={
+                                            theme.colors.greyScale5
+                                        }
+                                        autoCapitalize="none"
+                                    />
+                                </TextInputContainer>
+                                <ForgotPasswordBox
+                                    onPress={() =>
+                                        this.processEvent(
+                                            'requestPasswordReset',
+                                            null,
+                                        )
+                                    }
+                                >
+                                    <ForgotPasswordText>
+                                        Forgot Password?
+                                    </ForgotPasswordText>
+                                </ForgotPasswordBox>
+                                {/* {this.state.mode === 'signup' &&
                                     this.state.passwordInputValue.length >
                                         0 && (
                                         <TextInputContainer>
@@ -228,8 +226,8 @@ export default class LoginScreen extends StatefulUIElement<
                                             />
                                         </TextInputContainer>
                                     )} */}
-                                </>
-                            )}
+                            </>
+                        )}
                         {this.state.emailInputValue.length > 0 && (
                             <ActionButtonContainer>
                                 {this.state.mode === 'login' && (

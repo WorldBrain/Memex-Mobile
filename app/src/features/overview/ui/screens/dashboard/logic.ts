@@ -198,6 +198,7 @@ export default class Logic extends UILogic<State, Event> {
             )
         }
 
+        this.emitMutation({ reloadState: { $set: 'pristine' } })
         await Promise.all([
             this.doSync(),
             loadInitial<State>(this, async () => {

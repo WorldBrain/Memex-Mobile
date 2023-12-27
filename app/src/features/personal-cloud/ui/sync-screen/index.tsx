@@ -21,7 +21,7 @@ const MemexLogoFile = require('src/ui/assets/MemexIcon.png')
 const calcPercComplete = ({
     totalDownloads,
     pendingDownloads,
-}: State): number => Math.trunc(100 * (1 - pendingDownloads! / totalDownloads!))
+}: State): number => Math.trunc(100 * (pendingDownloads! / totalDownloads!))
 
 export default class CloudSyncScreen extends StatefulUIElement<
     Props,
@@ -62,8 +62,7 @@ export default class CloudSyncScreen extends StatefulUIElement<
                         {this.state.totalDownloads != null && (
                             <>
                                 {this.state.pendingDownloads &&
-                                    this.state.totalDownloads -
-                                        this.state.pendingDownloads}{' '}
+                                    this.state.pendingDownloads}{' '}
                                 / {this.state.totalDownloads}
                             </>
                         )}
@@ -105,12 +104,14 @@ export default class CloudSyncScreen extends StatefulUIElement<
                             <HeadingText>Preparing Sync</HeadingText>
                         </SyncPreparationBox>
                     ) : (
-                        <HeadingText>Sync in Progress</HeadingText>
+                        <>
+                            <HeadingText>Sync in Progress</HeadingText>
+                            {this.renderStats()}
+                        </>
                     )}
                     <SecondaryText>
                         Sync only runs with the app open.
                     </SecondaryText>
-                    {this.renderStats()}
                 </InnerContainer>
             </Container>
         )
