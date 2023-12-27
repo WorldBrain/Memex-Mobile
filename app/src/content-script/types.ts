@@ -27,11 +27,11 @@ export interface SelectionMessage {
 }
 export interface HighlightMessage {
     type: 'highlight'
-    payload: Anchor
+    payload: { anchor: Anchor; videoTimestamp?: [string, string] }
 }
 export interface AnnotationMessage {
     type: 'annotation'
-    payload: Anchor
+    payload: { anchor: Anchor; videoTimestamp?: [string, string] }
 }
 export interface HighlightClickedMessage {
     type: 'highlightClicked'

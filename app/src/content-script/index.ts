@@ -1,7 +1,6 @@
 import { WebViewContentScript } from './content-script'
 import { postMessageToRN } from './rn-utils'
 import { HIGHLIGHT_CLASS } from './constants'
-import { theme } from 'src/ui/components/theme/theme'
 
 const contentScript = new WebViewContentScript({ postMessageToRN })
 
@@ -14,4 +13,4 @@ contentScript.addStyleElementToHead(`
 `)
 
 document.onselectionchange = contentScript.handleSelectionChange
-    ; (window as any)['remoteFnEvents'] = contentScript.remoteFnEvents
+;(window as any)['remoteFnEvents'] = contentScript.remoteFnEvents

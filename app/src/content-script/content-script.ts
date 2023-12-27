@@ -1,12 +1,13 @@
-import { EventEmitter } from 'events'
+import type { EventEmitter } from 'events'
 import {
     selectionToDescriptor,
     descriptorToRange,
     markRange,
 } from '@worldbrain/memex-common/lib/annotations'
-
+import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
+import { getHTML5VideoTimestamp } from '@worldbrain/memex-common/lib/editor/utils'
 import { setupRemoteFunctions } from './remote-functions'
-import { Anchor, MessagePoster, Highlight } from './types'
+import type { Anchor, MessagePoster, Highlight } from './types'
 import { HIGHLIGHT_CLASS } from './constants'
 import { getSelectionHtml } from '@worldbrain/memex-common/lib/annotations/utils'
 
@@ -25,7 +26,6 @@ export class WebViewContentScript {
             renderHighlights: this.renderHighlights,
             renderHighlight: this.renderHighlight,
         })
-        console.log('constructor')
     }
 
     private get document(): Document {
@@ -55,10 +55,16 @@ export class WebViewContentScript {
         type: 'highlight' | 'annotation',
     ) => async () => {
         const selection = this.getDOMSelection()
-        console.log('selection1', selection)
         const anchor = await this.extractAnchorSelection(selection)
-        console.log('anchor', anchor)
-        this.props.postMessageToRN({ type, payload: anchor })
+
+        const videoTimestamp = isUrlYTVideo(this.window.location.href)
+            ? getHTML5VideoTimestamp(0)
+            : undefined
+
+        this.props.postMessageToRN({
+            type,
+            payload: { anchor, videoTimestamp } as any,
+        })
     }
 
     createAnnotation = this.setupAnnotationSteps('annotation')

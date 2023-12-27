@@ -24,6 +24,7 @@ import { DeviceDetails } from 'src/features/page-share/ui/screens/share-modal/ut
 
 interface CreateHighlightArgs {
     anchor: Anchor
+    videoTimestamp?: [string, string]
     renderHighlight: (h: Highlight) => void
 }
 
@@ -271,7 +272,11 @@ export default class Logic extends UILogic<State, Event> {
         event,
         previousState,
     }) => {
-        await this._createHighlight({ ...event, previousState })
+        await this._createHighlight({
+            previousState,
+            anchor: event.anchor,
+            renderHighlight: event.renderHighlight,
+        })
     }
 
     createAnnotation: EventHandler<'createAnnotation'> = async ({
@@ -279,8 +284,9 @@ export default class Logic extends UILogic<State, Event> {
         previousState,
     }) => {
         const highlight = await this._createHighlight({
-            ...event,
             previousState,
+            anchor: event.anchor,
+            renderHighlight: event.renderHighlight,
         })
 
         this.props.navigation.navigate('NoteEditor', {
@@ -288,6 +294,7 @@ export default class Logic extends UILogic<State, Event> {
             highlightText: event.anchor.quote,
             anchor: event.anchor,
             noteUrl: highlight.url,
+            videoTimestamp: event.videoTimestamp,
             spaces: [],
         })
     }

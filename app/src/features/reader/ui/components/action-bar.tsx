@@ -26,12 +26,12 @@ export interface Props
     deviceInfo: DeviceDetails | null
 }
 
-interface State {
+interface LocalState {
     showHighlightNotif: boolean
 }
 
-class ActionBar extends React.PureComponent<Props, State> {
-    state = {
+class ActionBar extends React.PureComponent<Props, LocalState> {
+    state: LocalState = {
         showHighlightNotif: false,
     }
     private get BookmarkBtn(): actionBtns.ActionBtnComponent {

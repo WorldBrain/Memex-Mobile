@@ -58,13 +58,15 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 })
             case 'highlight':
                 return this.processEvent('createHighlight', {
-                    anchor: message.payload,
+                    anchor: message.payload.anchor,
+                    videoTimestamp: message.payload.videoTimestamp,
                     renderHighlight: (h) =>
                         this.runFnInWebView('renderHighlight', h),
                 })
             case 'annotation':
                 return this.processEvent('createAnnotation', {
-                    anchor: message.payload,
+                    anchor: message.payload.anchor,
+                    videoTimestamp: message.payload.videoTimestamp,
                     renderHighlight: (h) =>
                         this.runFnInWebView('renderHighlight', h),
                 })
@@ -134,7 +136,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         if (errorCode === -1023 || errorCode === -1200) {
             return (
                 <ErrorScreen>
-                    <SectionCircle size={60} icon={icons.Lock} />
+                    <SectionCircle size="60px" />
                     <Header>HTTP pages not supported</Header>
                     <ErrorMessage>
                         Please save and open a HTTPS version of this page
