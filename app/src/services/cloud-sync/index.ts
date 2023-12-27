@@ -31,24 +31,21 @@ export class CloudSyncService implements CloudSyncAPI {
     private shouldInterruptStream = false
     private stats: SyncStats = {
         totalDownloads: null,
-        pendingDownloads: 0,
+        downloadProgress: 0,
     }
 
     constructor(private props: Props) {
         props.backend.events.on('incomingChangesPending', (event) => {
+            console.log('incomingChangesPending', event.changeCountDelta)
             this._modifyStats({
                 totalDownloads: event.changeCountDelta,
-                pendingDownloads:
-                    this.stats.pendingDownloads != null &&
-                    this.stats.pendingDownloads < 0
-                        ? event.changeCountDelta + this.stats.pendingDownloads // this case is when 'incomingChangesProcessed' fires first
-                        : event.changeCountDelta,
+                downloadProgress: 0,
             })
         })
         props.backend.events.on('incomingChangesProcessed', (event) => {
             this._modifyStats({
-                pendingDownloads:
-                    (this.stats.pendingDownloads ?? 0) + event.count,
+                downloadProgress:
+                    (this.stats.downloadProgress ?? 0) + event.count,
             })
         })
     }
@@ -69,7 +66,7 @@ export class CloudSyncService implements CloudSyncAPI {
     private resetSyncStats() {
         this.stats = {
             totalDownloads: null,
-            pendingDownloads: null,
+            downloadProgress: null,
         }
     }
 

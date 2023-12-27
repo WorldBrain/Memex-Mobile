@@ -13,6 +13,6 @@ export interface CloudSyncAPI {
 
 export interface SyncStats {
     totalDownloads: number | null
-    pendingDownloads: number | null
+    downloadProgress: number | null
     // pendingUploads: number
 }

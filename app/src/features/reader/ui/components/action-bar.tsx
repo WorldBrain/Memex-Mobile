@@ -20,6 +20,7 @@ export interface Props
     onHighlightBtnPress: TouchEventHandler
     onAnnotateBtnPress: TouchEventHandler
     onCommentBtnPress: TouchEventHandler
+    onAIButtonPress: TouchEventHandler
     onListBtnPress: TouchEventHandler
     spaceCount: number
     pageUrl: string
@@ -100,6 +101,16 @@ class ActionBar extends React.PureComponent<Props, State> {
                         <FooterActionText>Spaces</FooterActionText>
                     </FooterActionBtn>
                 </LeftSideActions>
+                <FooterActionBtn onPress={this.props.onAIButtonPress}>
+                    <Icon
+                        icon={icons.Feed}
+                        strokeWidth="0"
+                        heightAndWidth="18px"
+                        color="greyScale5"
+                        fill
+                    />
+                    <FooterActionText>Ask</FooterActionText>
+                </FooterActionBtn>
                 <RightSideActions>
                     {this.state.showHighlightNotif ? (
                         <ShowHighlightNotifText>

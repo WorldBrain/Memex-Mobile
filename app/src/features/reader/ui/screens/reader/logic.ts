@@ -19,6 +19,9 @@ import { EditorMode } from 'src/features/page-editor/types'
 import { UIPageWithNotes } from 'src/features/overview/types'
 import type { List } from 'src/features/meta-picker/types'
 import { DeviceDetails } from 'src/features/page-share/ui/screens/share-modal/util'
+import { SummarizationService } from '@worldbrain/memex-common/lib/summarization'
+import { CLOUDFLARE_WORKER_URLS } from '@worldbrain/memex-common/lib/content-sharing/storage/constants'
+
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
@@ -41,6 +44,8 @@ export interface State {
     error?: Error
     isErrorReported: boolean
     highlights: Highlight[]
+    AIsummaryText: string
+    showAIResults: boolean
 }
 
 export type Event = UIEvent<{
@@ -53,6 +58,8 @@ export type Event = UIEvent<{
     navToPageEditor: { mode: EditorMode }
     toggleBookmark: null
     goBack: null
+    onAIButtonPress: null
+    onAIQuerySubmit: { fullPageUrl: string; prompt: string }
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -74,6 +81,7 @@ export interface Props extends MainNavProps<'Reader'> {
     deviceInfo: DeviceDetails | null
     closeModal?: () => void
     location?: 'mainApp' | 'shareExt'
+    keyboardHeight?: number | null
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -88,6 +96,13 @@ export default class Logic extends UILogic<State, Event> {
     constructor(private props: Props) {
         super()
     }
+
+    private summarizationService = new SummarizationService({
+        serviceURL:
+            process.env.NODE_ENV === 'production'
+                ? CLOUDFLARE_WORKER_URLS.production
+                : CLOUDFLARE_WORKER_URLS.staging,
+    })
 
     getInitialState(): State {
         const { params } = this.props.route
@@ -112,6 +127,8 @@ export default class Logic extends UILogic<State, Event> {
             hasNotes: false,
             highlights: [],
             spaces: [],
+            showAIResults: false,
+            AIsummaryText: '',
         }
     }
 
@@ -232,6 +249,65 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
+    onAIButtonPress: EventHandler<'onAIButtonPress'> = async ({
+        event,
+        previousState,
+    }) => {
+        this.emitMutation({
+            showAIResults: { $set: !previousState.showAIResults },
+        })
+    }
+
+    onAIQuerySubmit: EventHandler<'onAIQuerySubmit'> = async ({
+        event,
+        previousState,
+    }) => {
+        console.log('submitting AI query', this.summarizationService)
+        let summaryText = ''
+
+        const urlToFetchFrom =
+            process.env.NODE_ENV === 'production'
+                ? CLOUDFLARE_WORKER_URLS.production
+                : CLOUDFLARE_WORKER_URLS.staging + '/summarize'
+
+        console.log('urlToFetchFrom', urlToFetchFrom)
+
+        // fetch(urlToFetchFrom, {
+        //     method: 'POST', // or 'PUT'
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //         originalUrl: event.fullPageUrl,
+        //         queryPrompt: event.prompt,
+        //     }),
+        // })
+        //     .then((response) => {
+        //         const json = response.json()
+
+        //         const text = json.choices[0].text
+        //         console.log('text', text)
+        //     })
+        //     .then((stream) => null)
+
+        // for await (const result of this.summarizationService.queryAI(
+        //     event.fullPageUrl,
+        //     //textToProcess,
+        //     event.prompt,
+        //     // apiKey,
+        //     // undefined,
+        //     // AImodel,
+        //     // isContentSearch,
+        // )) {
+        //     console.log('result', result)
+        //     summaryText += result
+
+        //     this.emitMutation({
+        //         AIsummaryText: { $set: summaryText },
+        //     })
+        // }
+    }
+
     //
     // Webview content-script event handlers
     //
@@ -349,6 +425,10 @@ export default class Logic extends UILogic<State, Event> {
         event: { mode },
         previousState,
     }) => {
+        this.emitMutation({
+            showAIResults: { $set: false },
+        })
+
         this.props.navigation.navigate('PageEditor', {
             pageUrl: previousState.url,
             mode,

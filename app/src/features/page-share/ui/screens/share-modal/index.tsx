@@ -310,6 +310,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                 deviceInfo={this.state.deviceInfo ?? null}
                 closeModal={this.handleModalClose}
                 location="shareExt"
+                keyboardHeight={this.state.keyboardHeight}
             />
         )
     }

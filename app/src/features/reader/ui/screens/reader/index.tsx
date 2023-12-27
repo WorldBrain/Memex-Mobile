@@ -173,6 +173,25 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         )
     }
 
+    private renderAIResults = () => {
+        return (
+            <AIResultsContainer>
+                <AIQueryField
+                    keyboardHeight={this.props.keyboardHeight}
+                    onSubmitEditing={(event) => {
+                        this.processEvent('onAIQuerySubmit', {
+                            prompt: event.nativeEvent.text,
+                            fullPageUrl: this.props.pageUrl,
+                        })
+                    }}
+                />
+                {this.state.AIsummaryText.length > 0 && (
+                    <AIResultsText>{this.state.AIsummaryText}</AIResultsText>
+                )}
+            </AIResultsContainer>
+        )
+    }
+
     private renderWebView() {
         if (this.state.loadState === 'running') {
             return this.renderLoading()
