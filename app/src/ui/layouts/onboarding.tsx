@@ -39,7 +39,7 @@ const OnboardingLayout: React.StatelessComponent<Props> = (props) => (
                     </LeftArea>
                     <CenterArea>
                         <PrimaryAction
-                            label="Sign Up"
+                            label="Login"
                             onPress={props.onSkipPress}
                             type="tertiary"
                             size="large"

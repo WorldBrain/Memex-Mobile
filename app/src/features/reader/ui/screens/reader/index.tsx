@@ -18,7 +18,7 @@ import Navigation, {
 import * as icons from 'src/ui/components/icons/icons-list'
 import styled, { css } from 'styled-components/native'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, Text } from 'react-native'
 
 const ActionBarHeight = 60
 export default class Reader extends StatefulUIElement<Props, State, Event> {
@@ -114,7 +114,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
     }
 
     private renderLoading = () => (
-        <WebViewContainer
+        <LoadingContainer
             deviceOrientation={
                 this.props.deviceInfo?.deviceOrientation ?? 'portrait'
             }
@@ -122,7 +122,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
             isLoading
         >
             <LoadingBalls />
-        </WebViewContainer>
+        </LoadingContainer>
     )
 
     private renderError = (
@@ -173,10 +173,97 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         )
     }
 
+    private renderAIResults = () => {
+        return (
+            <AIResultsContainer showAIResults={this.state.showAIResults}>
+                <TextInputContainer
+                    AIQueryTextFieldHeight={
+                        this.state.AIQueryTextFieldHeight ?? 24
+                    }
+                >
+                    <Icon
+                        icon={icons.Stars}
+                        heightAndWidth={'22px'}
+                        strokeWidth={'0px'}
+                        fill
+                        height={'50px'}
+                    />
+                    <AIQueryField
+                        onSubmitEditing={(event) => {
+                            this.processEvent('onAIQuerySubmit', {
+                                prompt: event.nativeEvent.text,
+                                fullPageUrl:
+                                    this.props.pageUrl || this.state.url,
+                            })
+                        }}
+                        onPressIn={() => {
+                            this.processEvent('clearAIquery', null)
+                        }}
+                        onContentSizeChange={(event) => {
+                            this.processEvent(
+                                'setAIQueryTextFieldHeight',
+                                event.nativeEvent.contentSize.height,
+                            )
+                        }}
+                        // numberOfLines={
+                        //     this.state.AIQueryTextFieldHeight ?? 24 / 24
+                        // }
+                        placeholder="Ask a question about this page"
+                        placeholderTextColor={'#A9A9B1'}
+                        multiline
+                    />
+                </TextInputContainer>
+                {this.state.AISummaryLoading === 'running' ? (
+                    <LoadingBalls />
+                ) : this.state.AIsummaryText.length > 0 ? (
+                    <AIResultsTextContainer>
+                        <AIResultsText selectable={true}>
+                            {this.state.AIsummaryText}
+                        </AIResultsText>
+                    </AIResultsTextContainer>
+                ) : (
+                    this.renderAIquerySuggestions()
+                )}
+            </AIResultsContainer>
+        )
+    }
+
+    private renderAIquerySuggestions = () => {
+        const querySuggestions = [
+            'Summarize this for me',
+            'Tell me the key takeaways',
+            `Explain this to me in simple terms`,
+            `Translate this into English`,
+        ]
+
+        return (
+            <AIquerySuggestionsContainer>
+                <AIquerySuggestionsTitle>
+                    Prompt Suggestions
+                </AIquerySuggestionsTitle>
+                {querySuggestions.map((query) => (
+                    <AiQuerySuggestionsItem
+                        onPress={() => {
+                            this.processEvent('onAIQuerySubmit', {
+                                prompt: query,
+                                fullPageUrl:
+                                    this.props.pageUrl || this.state.url,
+                            })
+                        }}
+                    >
+                        <AiQuerySuggestionsItemText>
+                            {query}
+                        </AiQuerySuggestionsItemText>
+                    </AiQuerySuggestionsItem>
+                ))}
+            </AIquerySuggestionsContainer>
+        )
+    }
+
     private renderWebView() {
-        if (this.state.loadState === 'running') {
-            return this.renderLoading()
-        }
+        // if (this.state.loadState === 'running') {
+        //     return this.renderLoading()
+        // }
 
         if (this.state.error) {
             return (
@@ -198,6 +285,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     this.props.deviceInfo?.deviceOrientation ?? 'portrait'
                 }
                 os={this.props.deviceInfo?.isIos ? 'iOS' : 'Android'}
+                AIuiShown={this.state.showAIResults}
             >
                 <WebView
                     mediaPlaybackRequiresUserAction={true}
@@ -209,12 +297,23 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     htmlSource={this.state.htmlSource!}
                     injectedJavaScript={this.generateInitialJSToInject()}
                     onNavigationStateChange={this.handleNavStateChange}
+                    style={{
+                        backgroundColor:
+                            this.state.loadState === 'running'
+                                ? '#1E1F26'
+                                : 'transparent',
+                        height: '100%',
+                    }}
                     startInLoadingState
                     // This flag needs to be set to afford text selection on iOS.
                     //   https://github.com/react-native-community/react-native-webview/issues/1275
                     allowsLinkPreview
                     renderError={this.renderError}
-                    renderLoading={this.renderLoading}
+                    renderLoading={() => (
+                        <LoadingBox>
+                            <LoadingBalls />
+                        </LoadingBox>
+                    )}
                     ref={(ref) => (this.webView = ref!)}
                     onMessage={({ nativeEvent }) => {
                         this.handleWebViewMessageReceived(nativeEvent.data)
@@ -248,6 +347,8 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     this.props.deviceInfo?.deviceOrientation ?? 'portrait'
                 }
                 os={this.props.deviceInfo?.isIos ? 'iOS' : 'Android'}
+                deviceHeight={this.props.deviceInfo?.height}
+                statusBarHeight={this.state.statusBarHeight ?? 0}
             >
                 {!this.props.hideNavigation && (
                     <Navigation
@@ -263,6 +364,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     />
                 )}
                 {this.renderWebView()}
+                {this.renderAIResults()}
                 <ActionBarContainer>
                     {this.props.location === 'shareExt' && (
                         <PageClosePill onPress={this.props.closeModal}>
@@ -295,6 +397,16 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                                 mode: 'collections',
                             })
                         }
+                        onAIButtonPress={() => {
+                            this.processEvent('onAIButtonPress', null)
+                            // if (this.state.AIsummaryText.length === 0) {
+                            //     this.processEvent('onAIQuerySubmit', {
+                            //         prompt: 'Summarise this page for me',
+                            //         fullPageUrl:
+                            //             this.state.url || this.props.pageUrl,
+                            //     })
+                            // }
+                        }}
                         onCommentBtnPress={() =>
                             this.processEvent('navToPageEditor', {
                                 mode: 'notes',
@@ -309,6 +421,131 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         )
     }
 }
+
+const AIquerySuggestionsTitle = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale5};
+    font-size: 16px;
+    padding: 5px 0;
+    margin-bottom: 10px;
+`
+
+const AIquerySuggestionsContainer = styled.View`
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 20px 0 20px;
+`
+
+const AiQuerySuggestionsItem = styled(TouchableOpacity)`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    padding: 5px;
+    background: ${(props) => props.theme.colors.greyScale2};
+`
+
+const AiQuerySuggestionsItemText = styled.Text`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${(props) => props.theme.colors.greyScale6};
+    font-size: 14px;
+    font-weight: 400;
+`
+
+const LoadingBox = styled.SafeAreaView<{}>`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 600px;
+    height: 100%;
+    flex: 1;
+`
+
+const TextInputContainer = styled.View<{
+    AIQueryTextFieldHeight: number
+}>`
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 50px;
+    height: ${(props) => props.AIQueryTextFieldHeight + 30}px;
+    border-radius: 8px;
+    padding: 0 15px;
+    margin: 10px;
+    border-width: 1px;
+    border-radius: 8px;
+    border-color: ${(props) => props.theme.colors.greyScale2};
+    background: ${(props) => props.theme.colors.greyScale2};
+
+    &:focus-within {
+        border-color: ${(props) => props.theme.colors.greyScale3};
+    }
+`
+
+const AIQueryField = styled.TextInput<{}>`
+    background: transparent;
+    flex: 1;
+    color: ${(props) => props.theme.colors.greyScale6};
+    padding: 17px 0 10px 0;
+    padding-left: 10px;
+    height: 100%;
+    min-height: 50px;
+    display: flex;
+    align-items: flex-start;
+    align-self: flex-start;
+`
+
+const AIResultsContainer = styled.View<{
+    showAIResults: boolean
+}>`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    position: relative;
+    min-height: 30%;
+    flex: 1;
+    z-index: 1000;
+    background: ${(props) => props.theme.colors.greyScale1};
+
+    ${(props) =>
+        !props.showAIResults &&
+        css<any>`
+            position: absolute;
+            height: 0px;
+            top: 0;
+            opacity: 0;
+            z-index: -1;
+        `};
+`
+
+const AIResultsTextContainer = styled.ScrollView`
+    flex: 1;
+    width: 100%;
+    height: 300px;
+    padding: 0 20px;
+`
+
+const AIResultsText = styled(Text)`
+    color: ${(props) => props.theme.colors.greyScale7};
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    font-family: 'Satoshi';
+    min-height: 30px;
+    flex: 1;
+    width: 100%;
+    line-height: 24px;
+    min-height: 100px;
+    overflow: scroll;
+`
 
 const PageClosePill = styled(TouchableOpacity)`
     display: flex;
@@ -336,8 +573,7 @@ const PageCloseText = styled.Text`
 `
 
 const ActionBarContainer = styled.View`
-    position: absolute;
-    padding-bottom: 5px;
+    position: relative;
     bottom: 0px;
     width: 100%;
     display: flex;
@@ -348,11 +584,19 @@ const ActionBarContainer = styled.View`
 const Container = styled.SafeAreaView<{
     deviceOrientation: 'portrait' | 'landscape'
     os: 'iOS' | 'Android'
+    deviceHeight?: number
+    statusBarHeight?: number
 }>`
-    height: 100%;
+    min-height: 30px;
     display: flex;
+    position: absolute;
+    top: 0px;
     align-items: center;
     background: ${(props) => props.theme.colors.greyScale1};
+    position: relative;
+    height: ${(props) =>
+        props.deviceHeight ?? 0 - props.statusBarHeight! ?? 0}px;
+    flex: 1;
 
     ${(props) =>
         props.os === 'iOS' &&
@@ -375,28 +619,31 @@ const Container = styled.SafeAreaView<{
             ${(props) =>
                 props.deviceOrientation === 'portrait' &&
                 css<any>`
-                    border-radius: 8px;
+                    border-radius: 0px;
                     overflow: hidden;
                 `};
             ${(props) =>
                 props.deviceOrientation === 'landscape' &&
                 css<any>`
-                    border-radius: 8px;
+                    border-radius: 0px;
                     overflow: hidden;
                 `};
         `};
 `
 
-const WebViewContainer = styled.SafeAreaView<{
+const LoadingContainer = styled.SafeAreaView<{
     deviceOrientation?: 'portrait' | 'landscape'
     isLoading?: boolean
     os: 'iOS' | 'Android'
+    AIuiShown?: boolean
+    deviceHeight?: number
 }>`
     background: ${(props) => props.theme.colors.greyScale1};
     width: 100%;
     display: flex;
-    height: 96%;
-
+    position: relative;
+    min-height: 30px;
+    flex: 1;
     ${(props) =>
         props.isLoading
             ? `
@@ -432,6 +679,68 @@ const WebViewContainer = styled.SafeAreaView<{
                 css<any>`
                     width: 110%;
                 `};
+        `};
+`
+
+const WebViewContainer = styled.SafeAreaView<{
+    deviceOrientation?: 'portrait' | 'landscape'
+    isLoading?: boolean
+    os: 'iOS' | 'Android'
+    AIuiShown?: boolean
+    deviceHeight?: number
+}>`
+    background: ${(props) => props.theme.colors.greyScale1};
+    width: 100%;
+    display: flex;
+    position: relative;
+    min-height: 30px;
+    flex: 1;
+    opacity: 1;
+    z-index: 0
+        ${(props) =>
+            props.isLoading
+                ? `
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 0px;
+    `
+                : ''}
+        ${(props) =>
+            props.os === 'iOS' &&
+            css<any>`
+                ${(props) =>
+                    props.deviceOrientation === 'portrait' &&
+                    css<any>`
+                        border-radius: 10px;
+                    `};
+                ${(props) =>
+                    props.deviceOrientation === 'landscape' &&
+                    css<any>`
+                        border-radius: 50px;
+                        width: 110%;
+                    `};
+            `};
+    ${(props) =>
+        props.os === 'Android' &&
+        css<any>`
+            ${(props) => props.deviceOrientation === 'portrait' && css<any>``};
+            ${(props) =>
+                props.deviceOrientation === 'landscape' &&
+                css<any>`
+                    width: 110%;
+                `};
+        `};
+
+    ${(props) =>
+        props.AIuiShown &&
+        css<any>`
+            position: absolute;
+            height: 0px;
+            top: 0;
+            opacity: 0;
+            z-index: -1;
         `};
 `
 

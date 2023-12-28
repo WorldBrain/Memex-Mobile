@@ -19,6 +19,14 @@ import { EditorMode } from 'src/features/page-editor/types'
 import { UIPageWithNotes } from 'src/features/overview/types'
 import type { List } from 'src/features/meta-picker/types'
 import { DeviceDetails } from 'src/features/page-share/ui/screens/share-modal/util'
+import { SummarizationService } from '@worldbrain/memex-common/lib/summarization'
+import { CLOUDFLARE_WORKER_URLS } from '@worldbrain/memex-common/lib/content-sharing/storage/constants'
+import { polyfill as polyfillReadableStream } from 'react-native-polyfill-globals/src/readable-stream'
+import { TaskState } from 'firebase/storage'
+import { StatusBar } from 'react-native'
+
+polyfillReadableStream()
+
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
@@ -41,6 +49,11 @@ export interface State {
     error?: Error
     isErrorReported: boolean
     highlights: Highlight[]
+    AIsummaryText: string
+    AISummaryLoading: UITaskState
+    showAIResults: boolean
+    statusBarHeight?: number
+    AIQueryTextFieldHeight?: number
 }
 
 export type Event = UIEvent<{
@@ -53,6 +66,10 @@ export type Event = UIEvent<{
     navToPageEditor: { mode: EditorMode }
     toggleBookmark: null
     goBack: null
+    onAIButtonPress: null
+    onAIQuerySubmit: { fullPageUrl: string; prompt: string }
+    clearAIquery: null
+    setAIQueryTextFieldHeight: number
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -74,6 +91,7 @@ export interface Props extends MainNavProps<'Reader'> {
     deviceInfo: DeviceDetails | null
     closeModal?: () => void
     location?: 'mainApp' | 'shareExt'
+    keyboardHeight?: number | null
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -112,10 +130,17 @@ export default class Logic extends UILogic<State, Event> {
             hasNotes: false,
             highlights: [],
             spaces: [],
+            showAIResults: false,
+            AIsummaryText: '',
+            AISummaryLoading: 'pristine',
+            AIQueryTextFieldHeight: 24,
         }
     }
 
     async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
+        this.emitMutation({
+            statusBarHeight: { $set: StatusBar.currentHeight },
+        })
         await loadInitial<State>(this, async () => {
             try {
                 await this.loadPageState(previousState.url)
@@ -232,9 +257,107 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
+    onAIButtonPress: EventHandler<'onAIButtonPress'> = async ({
+        event,
+        previousState,
+    }) => {
+        this.emitMutation({
+            showAIResults: { $set: !previousState.showAIResults },
+        })
+    }
+    clearAIquery: EventHandler<'clearAIquery'> = async ({
+        event,
+        previousState,
+    }) => {
+        this.emitMutation({
+            AIsummaryText: { $set: '' },
+            AISummaryLoading: { $set: 'pristine' },
+        })
+    }
+    setAIQueryTextFieldHeight: EventHandler<
+        'setAIQueryTextFieldHeight'
+    > = async ({ event, previousState }) => {
+        this.emitMutation({
+            AIQueryTextFieldHeight: { $set: event },
+        })
+    }
+
+    onAIQuerySubmit: EventHandler<'onAIQuerySubmit'> = async ({
+        event,
+        previousState,
+    }) => {
+        let summaryText = ''
+        this.emitMutation({
+            AISummaryLoading: { $set: 'running' },
+        })
+
+        const urlToFetchFrom =
+            process.env.NODE_ENV === 'production'
+                ? CLOUDFLARE_WORKER_URLS.production
+                : CLOUDFLARE_WORKER_URLS.staging + '/summarize'
+
+        await fetch(urlToFetchFrom, {
+            reactNative: { textStreaming: true },
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                originalUrl: event.fullPageUrl,
+                queryPrompt: event.prompt,
+            }),
+            stream: true,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok')
+                }
+                return response.text() // get the response text
+            })
+            .then((text) => {
+                console.log('text', text)
+                summaryText = this.processChunk(text) || ''
+                this.emitMutation({
+                    AIsummaryText: { $set: JSON.parse(summaryText)['t'] },
+                    AISummaryLoading: { $set: 'done' },
+                })
+            })
+            .catch((error) => console.error('Error:', error))
+    }
+
     //
     // Webview content-script event handlers
     //
+
+    processChunk(chunk: string) {
+        var regex = /"t":"([^"]*)"/g
+        var matches = chunk.match(regex)
+
+        var concatenatedString = ''
+
+        if (matches && matches.length > 0) {
+            var values = matches.map(function (match) {
+                return match.split('":"')[1].slice(0, -1)
+            })
+
+            for (var i = 0; i < values.length; i++) {
+                if (values[i].length > 0) {
+                    concatenatedString += values[i]
+                }
+            }
+            if (concatenatedString.length > 0) {
+                concatenatedString = concatenatedString
+                    .replace(/([^\\n])\\(?!n)/g, '')
+                    .replace(/\n/g, '\\n')
+
+                concatenatedString = '{"t":"' + concatenatedString + '"}'
+                concatenatedString = (concatenatedString + '\n\n').toString()
+                return concatenatedString
+            } else {
+                return null
+            }
+        }
+    }
     setTextSelection: EventHandler<'setTextSelection'> = ({ event }) => {
         const selectedText = event.text?.length ? event.text.trim() : undefined
         return this.emitMutation({ selectedText: { $set: selectedText } })
@@ -349,6 +472,10 @@ export default class Logic extends UILogic<State, Event> {
         event: { mode },
         previousState,
     }) => {
+        this.emitMutation({
+            showAIResults: { $set: false },
+        })
+
         this.props.navigation.navigate('PageEditor', {
             pageUrl: previousState.url,
             mode,

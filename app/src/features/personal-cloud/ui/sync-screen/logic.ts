@@ -15,7 +15,7 @@ export interface State {
     syncState: UITaskState
     errorMessage: string | null
     totalDownloads: number | null
-    pendingDownloads: number | null
+    downloadProgress: number | null
 }
 
 export type Event = UIEvent<{
@@ -44,7 +44,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
             syncState: 'pristine',
             errorMessage: null,
             totalDownloads: null,
-            pendingDownloads: null,
+            downloadProgress: 0,
         }
     }
 
@@ -66,7 +66,7 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
             'syncStatsChanged',
             ({ stats }) => {
                 this.emitMutation({
-                    pendingDownloads: { $set: stats.pendingDownloads },
+                    downloadProgress: { $set: stats.downloadProgress },
                     // This should only set it the first time
                     totalDownloads: {
                         $apply: (prev) => prev ?? stats.totalDownloads,

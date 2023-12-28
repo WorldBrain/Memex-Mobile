@@ -176,7 +176,7 @@ describe('cloud sync UI logic tests', () => {
             const cloudSyncService = context.services
                 .cloudSync as CloudSyncService
             cloudSyncService['_modifyStats']({
-                pendingDownloads: 10,
+                downloadProgress: 10,
                 totalDownloads: 10,
             })
 
@@ -188,7 +188,7 @@ describe('cloud sync UI logic tests', () => {
                 }),
             ).not.toEqual(0)
             expect(cloudSyncService['stats']).toEqual({
-                pendingDownloads: 10,
+                downloadProgress: 10,
                 totalDownloads: 10,
             })
 
@@ -201,7 +201,7 @@ describe('cloud sync UI logic tests', () => {
                 }),
             ).toEqual(0)
             expect(cloudSyncService['stats']).toEqual({
-                pendingDownloads: null,
+                downloadProgress: null,
                 totalDownloads: null,
             })
         },
