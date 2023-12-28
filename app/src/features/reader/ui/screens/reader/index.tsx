@@ -196,6 +196,10 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                                     this.props.pageUrl || this.state.url,
                             })
                         }}
+                        style={{
+                            textAlignVertical: 'top',
+                            alignSelf: 'flex-start',
+                        }}
                         onPressIn={() => {
                             this.processEvent('clearAIquery', null)
                         }}
@@ -474,31 +478,44 @@ const TextInputContainer = styled.View<{
     align-items: flex-start;
     justify-content: flex-start;
     min-height: 50px;
-    height: ${(props) => props.AIQueryTextFieldHeight + 30}px;
+    height: ${(props) => props.AIQueryTextFieldHeight}px;
     border-radius: 8px;
-    padding: 0 15px;
+    padding: 0 10px;
     margin: 10px;
     border-width: 1px;
     border-radius: 8px;
     border-color: ${(props) => props.theme.colors.greyScale2};
     background: ${(props) => props.theme.colors.greyScale2};
 
+    ${(props) =>
+        props.AIQueryTextFieldHeight > 50 &&
+        css<any>`
+            height: ${(props) => props.AIQueryTextFieldHeight + 20}px;
+        `};
+
     &:focus-within {
         border-color: ${(props) => props.theme.colors.greyScale3};
     }
 `
 
-const AIQueryField = styled.TextInput<{}>`
+const AIQueryField = styled.TextInput<{
+    AIQueryTextFieldHeight: number
+}>`
     background: transparent;
     flex: 1;
     color: ${(props) => props.theme.colors.greyScale6};
-    padding: 17px 0 10px 0;
+    padding: 15px 0 10px 0;
     padding-left: 10px;
     height: 100%;
-    min-height: 50px;
     display: flex;
     align-items: flex-start;
     align-self: flex-start;
+
+    ${(props) =>
+        props.AIQueryTextFieldHeight > 50 &&
+        css<any>`
+            padding: 0 25px;
+        `};
 `
 
 const AIResultsContainer = styled.View<{
