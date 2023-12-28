@@ -21,6 +21,11 @@ import type { List } from 'src/features/meta-picker/types'
 import { DeviceDetails } from 'src/features/page-share/ui/screens/share-modal/util'
 import { SummarizationService } from '@worldbrain/memex-common/lib/summarization'
 import { CLOUDFLARE_WORKER_URLS } from '@worldbrain/memex-common/lib/content-sharing/storage/constants'
+import { polyfill as polyfillReadableStream } from 'react-native-polyfill-globals/src/readable-stream'
+import { TaskState } from 'firebase/storage'
+import { StatusBar } from 'react-native'
+
+polyfillReadableStream()
 
 // import { createHtmlStringFromTemplate } from 'src/features/reader/utils/in-page-html-template'
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
@@ -45,7 +50,10 @@ export interface State {
     isErrorReported: boolean
     highlights: Highlight[]
     AIsummaryText: string
+    AISummaryLoading: UITaskState
     showAIResults: boolean
+    statusBarHeight?: number
+    AIQueryTextFieldHeight?: number
 }
 
 export type Event = UIEvent<{
@@ -60,6 +68,8 @@ export type Event = UIEvent<{
     goBack: null
     onAIButtonPress: null
     onAIQuerySubmit: { fullPageUrl: string; prompt: string }
+    clearAIquery: null
+    setAIQueryTextFieldHeight: number
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -97,13 +107,6 @@ export default class Logic extends UILogic<State, Event> {
         super()
     }
 
-    private summarizationService = new SummarizationService({
-        serviceURL:
-            process.env.NODE_ENV === 'production'
-                ? CLOUDFLARE_WORKER_URLS.production
-                : CLOUDFLARE_WORKER_URLS.staging,
-    })
-
     getInitialState(): State {
         const { params } = this.props.route
         let insertedUrl
@@ -129,10 +132,15 @@ export default class Logic extends UILogic<State, Event> {
             spaces: [],
             showAIResults: false,
             AIsummaryText: '',
+            AISummaryLoading: 'pristine',
+            AIQueryTextFieldHeight: 24,
         }
     }
 
     async init({ previousState }: IncomingUIEvent<State, Event, 'init'>) {
+        this.emitMutation({
+            statusBarHeight: { $set: StatusBar.currentHeight },
+        })
         await loadInitial<State>(this, async () => {
             try {
                 await this.loadPageState(previousState.url)
@@ -257,60 +265,99 @@ export default class Logic extends UILogic<State, Event> {
             showAIResults: { $set: !previousState.showAIResults },
         })
     }
+    clearAIquery: EventHandler<'clearAIquery'> = async ({
+        event,
+        previousState,
+    }) => {
+        this.emitMutation({
+            AIsummaryText: { $set: '' },
+            AISummaryLoading: { $set: 'pristine' },
+        })
+    }
+    setAIQueryTextFieldHeight: EventHandler<
+        'setAIQueryTextFieldHeight'
+    > = async ({ event, previousState }) => {
+        this.emitMutation({
+            AIQueryTextFieldHeight: { $set: event },
+        })
+    }
 
     onAIQuerySubmit: EventHandler<'onAIQuerySubmit'> = async ({
         event,
         previousState,
     }) => {
-        console.log('submitting AI query', this.summarizationService)
         let summaryText = ''
+        this.emitMutation({
+            AISummaryLoading: { $set: 'running' },
+        })
 
         const urlToFetchFrom =
             process.env.NODE_ENV === 'production'
                 ? CLOUDFLARE_WORKER_URLS.production
                 : CLOUDFLARE_WORKER_URLS.staging + '/summarize'
 
-        console.log('urlToFetchFrom', urlToFetchFrom)
-
-        // fetch(urlToFetchFrom, {
-        //     method: 'POST', // or 'PUT'
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         originalUrl: event.fullPageUrl,
-        //         queryPrompt: event.prompt,
-        //     }),
-        // })
-        //     .then((response) => {
-        //         const json = response.json()
-
-        //         const text = json.choices[0].text
-        //         console.log('text', text)
-        //     })
-        //     .then((stream) => null)
-
-        // for await (const result of this.summarizationService.queryAI(
-        //     event.fullPageUrl,
-        //     //textToProcess,
-        //     event.prompt,
-        //     // apiKey,
-        //     // undefined,
-        //     // AImodel,
-        //     // isContentSearch,
-        // )) {
-        //     console.log('result', result)
-        //     summaryText += result
-
-        //     this.emitMutation({
-        //         AIsummaryText: { $set: summaryText },
-        //     })
-        // }
+        await fetch(urlToFetchFrom, {
+            reactNative: { textStreaming: true },
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                originalUrl: event.fullPageUrl,
+                queryPrompt: event.prompt,
+            }),
+            stream: true,
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok')
+                }
+                return response.text() // get the response text
+            })
+            .then((text) => {
+                console.log('text', text)
+                summaryText = this.processChunk(text) || ''
+                this.emitMutation({
+                    AIsummaryText: { $set: JSON.parse(summaryText)['t'] },
+                    AISummaryLoading: { $set: 'done' },
+                })
+            })
+            .catch((error) => console.error('Error:', error))
     }
 
     //
     // Webview content-script event handlers
     //
+
+    processChunk(chunk: string) {
+        var regex = /"t":"([^"]*)"/g
+        var matches = chunk.match(regex)
+
+        var concatenatedString = ''
+
+        if (matches && matches.length > 0) {
+            var values = matches.map(function (match) {
+                return match.split('":"')[1].slice(0, -1)
+            })
+
+            for (var i = 0; i < values.length; i++) {
+                if (values[i].length > 0) {
+                    concatenatedString += values[i]
+                }
+            }
+            if (concatenatedString.length > 0) {
+                concatenatedString = concatenatedString
+                    .replace(/([^\\n])\\(?!n)/g, '')
+                    .replace(/\n/g, '\\n')
+
+                concatenatedString = '{"t":"' + concatenatedString + '"}'
+                concatenatedString = (concatenatedString + '\n\n').toString()
+                return concatenatedString
+            } else {
+                return null
+            }
+        }
+    }
     setTextSelection: EventHandler<'setTextSelection'> = ({ event }) => {
         const selectedText = event.text?.length ? event.text.trim() : undefined
         return this.emitMutation({ selectedText: { $set: selectedText } })
