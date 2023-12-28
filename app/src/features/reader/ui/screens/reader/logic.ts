@@ -293,7 +293,7 @@ export default class Logic extends UILogic<State, Event> {
 
         const urlToFetchFrom =
             process.env.NODE_ENV === 'production'
-                ? CLOUDFLARE_WORKER_URLS.production
+                ? CLOUDFLARE_WORKER_URLS.production + '/summarize'
                 : CLOUDFLARE_WORKER_URLS.staging + '/summarize'
 
         await fetch(urlToFetchFrom, {
