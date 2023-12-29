@@ -1,8 +1,8 @@
 {
     "name": "memex-mobile",
-    "version": "1.12.9",
-    "versionCode": "116",
-    "versionCodeDev": "116",
+    "version": "1.12.10",
+    "versionCode": "117",
+    "versionCodeDev": "117",
     "private": true,
     "scripts": {
         "start": "react-native start",
