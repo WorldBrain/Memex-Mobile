@@ -20,6 +20,7 @@ export interface Props
     onHighlightBtnPress: TouchEventHandler
     onAnnotateBtnPress: TouchEventHandler
     onCommentBtnPress: TouchEventHandler
+    onAIButtonPress: TouchEventHandler
     onListBtnPress: TouchEventHandler
     spaceCount: number
     pageUrl: string
@@ -100,6 +101,16 @@ class ActionBar extends React.PureComponent<Props, LocalState> {
                         <FooterActionText>Spaces</FooterActionText>
                     </FooterActionBtn>
                 </LeftSideActions>
+                <FooterActionBtn onPress={this.props.onAIButtonPress}>
+                    <Icon
+                        icon={icons.Feed}
+                        strokeWidth="0"
+                        heightAndWidth="18px"
+                        color="greyScale5"
+                        fill
+                    />
+                    <FooterActionText>Ask</FooterActionText>
+                </FooterActionBtn>
                 <RightSideActions>
                     {this.state.showHighlightNotif ? (
                         <ShowHighlightNotifText>
@@ -226,6 +237,9 @@ const FooterActionBtn = styled.TouchableOpacity`
     display: flex;
     padding: 10px;
     position: relative;
+    width: 75px;
+    justify-content: center;
+    align-items: center;
 `
 const FooterActionBar = styled.View<{
     os: 'ios' | 'android'
@@ -234,7 +248,7 @@ const FooterActionBar = styled.View<{
 }>`
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     background: ${(props) => props.theme.colors.greyScale1};
     border-style: solid;
     border-top-width: 1px;
