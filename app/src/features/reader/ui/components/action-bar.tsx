@@ -55,6 +55,10 @@ class ActionBar extends React.PureComponent<Props, LocalState> {
             : actionBtns.AnnotateBtn
     }
 
+    private isYoutubeLink(url: string): boolean {
+        return url.includes('youtube.com') || url.includes('youtu.be')
+    }
+
     render() {
         return (
             <FooterActionBar
@@ -134,9 +138,7 @@ class ActionBar extends React.PureComponent<Props, LocalState> {
                         </ShowHighlightNotifText>
                     ) : (
                         <>
-                            {this.props.pageUrl?.includes(
-                                'youtube.com/watch',
-                            ) ? (
+                            {this.isYoutubeLink(this.props.pageUrl) ? (
                                 <>
                                     <FooterActionBtn></FooterActionBtn>
                                     <FooterActionBtn

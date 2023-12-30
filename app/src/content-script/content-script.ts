@@ -29,6 +29,10 @@ export class WebViewContentScript {
         })
     }
 
+    private isYoutubeLink(url: string): boolean {
+        return url.includes('youtube.com') || url.includes('youtu.be')
+    }
+
     private get document(): Document {
         return this.window.document
     }
@@ -56,7 +60,7 @@ export class WebViewContentScript {
         type: 'highlight' | 'annotation',
     ) => async () => {
         const url = window.location.href
-        if (!url.includes('youtube.com')) {
+        if (!this.isYoutubeLink(url)) {
             const selection = this.getDOMSelection()
             if (selection) {
                 const anchor = await this.extractAnchorSelection(selection)

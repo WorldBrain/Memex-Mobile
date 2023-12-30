@@ -110,6 +110,10 @@ export default class Logic extends UILogic<State, Event> {
         super()
     }
 
+    private isYoutubeLink(url: string): boolean {
+        return url.includes('youtube.com') || url.includes('youtu.be')
+    }
+
     getInitialState(): State {
         const { params } = this.props.route
         let insertedUrl
@@ -341,7 +345,7 @@ export default class Logic extends UILogic<State, Event> {
 
         let prompt = event.prompt
 
-        if (previousState.url.includes('youtube.com')) {
+        if (this.isYoutubeLink(previousState.url)) {
             prompt =
                 prompt +
                 'include inline timestamps to the referenced sections whenever possible'
@@ -463,7 +467,7 @@ export default class Logic extends UILogic<State, Event> {
         event,
         previousState,
     }) => {
-        if (previousState.url.includes('youtube.com')) {
+        if (this.isYoutubeLink(previousState.url)) {
             const timestamps = event.videoTimestamp
 
             this.props.navigation.navigate('NoteEditor', {
