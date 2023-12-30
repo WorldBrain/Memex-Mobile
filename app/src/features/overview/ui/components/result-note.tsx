@@ -213,7 +213,7 @@ const RightSide = styled.View`
     justify-content: flex-end;
 `
 
-const NoteRenderBox = styled.Text`
+const NoteRenderBox = styled.View`
     width: 100%;
     margin: 0 15px;
     flex: 1;

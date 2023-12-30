@@ -3,6 +3,8 @@ import styled from 'styled-components/native'
 import QuillEditor, { QuillToolbar } from 'react-native-cn-quill'
 import { StyleSheet } from 'react-native'
 import LoadingBalls from 'src/ui/components/loading-balls'
+import { theme } from 'src/ui/components/theme/theme'
+
 const LoadingBox = styled.View`
     margin-top: 40px;
 `
@@ -26,6 +28,19 @@ const NoteInput: React.StatelessComponent<Props> = (props) => {
 
         return () => clearTimeout(timer) // cleanup on unmount
     }, [])
+
+    const styles = StyleSheet.create({
+        editor: {
+            flex: 1,
+            padding: 0,
+            borderColor: 'gray',
+            borderWidth: 1,
+            marginHorizontal: 30,
+            marginVertical: 5,
+            backgroundColor: 'white',
+            fontSize: 16,
+        },
+    })
 
     return (
         <Container>
@@ -51,6 +66,18 @@ const NoteInput: React.StatelessComponent<Props> = (props) => {
                             },
                             placeholder: 'Write your note here!',
                         }}
+                        customStyles={[
+                            `a { color: ${theme.colors.prime1}; text-decoration-line: none; }`,
+                            `p { color: ${theme.colors.black}; font-size: 16px; }`,
+                            `h1 { font-size: 20px; }`,
+                            `h2 { font-size: 18px; }`,
+                            `h3 { font-size: 14px; }`,
+                            `h4 { font-size: 12px; }`,
+                            `h5 { font-size: 12px; }`,
+                            `table { border-radius: 8px; border-color: ${theme.colors.greyScale2}; border-width: 1px; width: 100%; }`,
+                            `th { padding: 8px 10px; color: ${theme.colors.black}; border-bottom-color: ${theme.colors.greyScale2}; border-bottom-width: 1px; }`,
+                            `td { padding: 8px 10px; color: ${theme.colors.black}; border-bottom-color: ${theme.colors.greyScale2}; border-bottom-width: 1px; border-left-color: ${theme.colors.greyScale2}; border-left-width: 1px; }`,
+                        ]}
                     />
                 ) : (
                     <LoadingBox>
