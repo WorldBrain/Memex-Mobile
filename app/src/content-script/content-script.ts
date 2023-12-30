@@ -25,7 +25,6 @@ export class WebViewContentScript {
             renderHighlights: this.renderHighlights,
             renderHighlight: this.renderHighlight,
         })
-        console.log('constructor')
     }
 
     private get document(): Document {
@@ -55,9 +54,7 @@ export class WebViewContentScript {
         type: 'highlight' | 'annotation',
     ) => async () => {
         const selection = this.getDOMSelection()
-        console.log('selection1', selection)
         const anchor = await this.extractAnchorSelection(selection)
-        console.log('anchor', anchor)
         this.props.postMessageToRN({ type, payload: anchor })
     }
 
@@ -95,9 +92,15 @@ export class WebViewContentScript {
     }
 
     renderHighlights = async (highlights: Highlight[]) => {
-        console.log('renderHighlights', highlights)
         for (const highlight of highlights) {
-            await this.renderHighlight(highlight)
+            try {
+                await this.renderHighlight(highlight)
+            } catch (err) {
+                this.props.postMessageToRN({
+                    type: 'error',
+                    payload: err as Error,
+                })
+            }
         }
     }
 

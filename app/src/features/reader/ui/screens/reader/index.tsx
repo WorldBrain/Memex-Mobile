@@ -51,6 +51,10 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 `Received malformed message from WebView: ${serialized}`,
             )
         }
+        // Errors need to be doubly parsed
+        if (message.type === 'error') {
+            message.payload = new Error(JSON.parse(message.payload as any))
+        }
 
         switch (message.type) {
             case 'selection':
@@ -72,6 +76,10 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
             case 'highlightClicked':
                 return this.processEvent('editHighlight', {
                     highlightUrl: message.payload,
+                })
+            case 'error':
+                return this.processEvent('reportError', {
+                    error: message.payload,
                 })
             default:
                 console.warn(
@@ -294,7 +302,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     url={this.state.url}
                     message={this.state.error.message}
                     alreadyReported={this.state.isErrorReported}
-                    onErrorReport={() => this.processEvent('reportError', null)}
+                    onErrorReport={() => this.processEvent('reportError', {})}
                 />
             )
         }

@@ -18,6 +18,7 @@ export type Message =
     | HighlightMessage
     | AnnotationMessage
     | HighlightClickedMessage
+    | ErrorMessage
     | DebugMessage
 
 // TODO: Better way to do this with TS type system?
@@ -36,6 +37,10 @@ export interface AnnotationMessage {
 export interface HighlightClickedMessage {
     type: 'highlightClicked'
     payload: string
+}
+export interface ErrorMessage {
+    type: 'error'
+    payload: Error
 }
 export interface DebugMessage {
     type: 'debug'

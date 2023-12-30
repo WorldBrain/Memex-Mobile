@@ -4,7 +4,6 @@ import {
     IncomingUIEvent,
     UIEventHandler,
 } from 'ui-logic-core'
-
 import {
     UITaskState,
     UIStorageModules,
@@ -12,17 +11,14 @@ import {
     MainNavProps,
 } from 'src/ui/types'
 import { loadInitial } from 'src/ui/utils'
-import { ReadabilityArticle } from 'src/services/readability/types'
 import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
 import type { Anchor, Highlight } from 'src/content-script/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import { UIPageWithNotes } from 'src/features/overview/types'
 import type { List } from 'src/features/meta-picker/types'
 import { DeviceDetails } from 'src/features/page-share/ui/screens/share-modal/util'
-import { SummarizationService } from '@worldbrain/memex-common/lib/summarization'
 import { CLOUDFLARE_WORKER_URLS } from '@worldbrain/memex-common/lib/content-sharing/storage/constants'
 import { polyfill as polyfillReadableStream } from 'react-native-polyfill-globals/src/readable-stream'
-import { TaskState } from 'firebase/storage'
 import { StatusBar } from 'react-native'
 
 polyfillReadableStream()
@@ -57,8 +53,8 @@ export interface State {
 }
 
 export type Event = UIEvent<{
-    reportError: null
     setError: { error?: Error }
+    reportError: { error?: Error }
     editHighlight: { highlightUrl: string }
     createHighlight: CreateHighlightArgs
     createAnnotation: CreateHighlightArgs
@@ -483,10 +479,9 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    reportError: EventHandler<'reportError'> = ({ previousState }) => {
+    reportError: EventHandler<'reportError'> = ({ previousState, event }) => {
         const { errorTracker } = this.props.services
-
-        errorTracker.track(previousState.error!)
+        errorTracker.track(event.error ?? previousState.error!)
 
         this.emitMutation({ isErrorReported: { $set: true } })
     }
