@@ -28,6 +28,7 @@ polyfillReadableStream()
 
 interface CreateHighlightArgs {
     anchor: Anchor
+    videoTimestamp?: [string, string]
     renderHighlight: (h: Highlight) => void
 }
 
@@ -50,6 +51,9 @@ export interface State {
     showAIResults: boolean
     statusBarHeight?: number
     AIQueryTextFieldHeight?: number
+    summaryHalfScreen?: boolean
+    displaySplitHeight?: number
+    prompt?: string | null
 }
 
 export type Event = UIEvent<{
@@ -58,6 +62,7 @@ export type Event = UIEvent<{
     editHighlight: { highlightUrl: string }
     createHighlight: CreateHighlightArgs
     createAnnotation: CreateHighlightArgs
+    createYoutubeTimestamp: any
     setTextSelection: { text?: string }
     navToPageEditor: { mode: EditorMode }
     toggleBookmark: null
@@ -66,6 +71,8 @@ export type Event = UIEvent<{
     onAIQuerySubmit: { fullPageUrl: string; prompt: string }
     clearAIquery: null
     setAIQueryTextFieldHeight: number
+    makeSummaryHalfScreen: null
+    updateDisplaySplitHeight: number
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -130,6 +137,9 @@ export default class Logic extends UILogic<State, Event> {
             AIsummaryText: '',
             AISummaryLoading: 'pristine',
             AIQueryTextFieldHeight: 24,
+            summaryHalfScreen: false,
+            displaySplitHeight: 0,
+            prompt: null,
         }
     }
 
@@ -253,6 +263,13 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
+    updateDisplaySplitHeight: EventHandler<
+        'updateDisplaySplitHeight'
+    > = async ({ event, previousState }) => {
+        this.emitMutation({
+            displaySplitHeight: { $set: Math.floor(event) },
+        })
+    }
     onAIButtonPress: EventHandler<'onAIButtonPress'> = async ({
         event,
         previousState,
@@ -260,6 +277,34 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             showAIResults: { $set: !previousState.showAIResults },
         })
+
+        if (previousState.showAIResults) {
+            this.emitMutation({
+                displaySplitHeight: { $set: 0 },
+            })
+        } else {
+            this.emitMutation({
+                displaySplitHeight: { $set: 300 },
+            })
+        }
+    }
+    makeSummaryHalfScreen: EventHandler<'makeSummaryHalfScreen'> = async ({
+        event,
+        previousState,
+    }) => {
+        this.emitMutation({
+            summaryHalfScreen: { $set: !previousState.summaryHalfScreen },
+        })
+
+        if (previousState.summaryHalfScreen) {
+            this.emitMutation({
+                displaySplitHeight: { $set: 0 },
+            })
+        } else {
+            this.emitMutation({
+                displaySplitHeight: { $set: 300 },
+            })
+        }
     }
     clearAIquery: EventHandler<'clearAIquery'> = async ({
         event,
@@ -268,6 +313,7 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             AIsummaryText: { $set: '' },
             AISummaryLoading: { $set: 'pristine' },
+            prompt: { $set: null },
         })
     }
     setAIQueryTextFieldHeight: EventHandler<
@@ -285,12 +331,21 @@ export default class Logic extends UILogic<State, Event> {
         let summaryText = ''
         this.emitMutation({
             AISummaryLoading: { $set: 'running' },
+            prompt: { $set: event.prompt },
         })
 
         const urlToFetchFrom =
             process.env.NODE_ENV === 'production'
                 ? CLOUDFLARE_WORKER_URLS.production + '/summarize'
                 : CLOUDFLARE_WORKER_URLS.staging + '/summarize'
+
+        let prompt = event.prompt
+
+        if (previousState.url.includes('youtube.com')) {
+            prompt =
+                prompt +
+                'include inline timestamps to the referenced sections whenever possible'
+        }
 
         await fetch(urlToFetchFrom, {
             reactNative: { textStreaming: true },
@@ -311,14 +366,21 @@ export default class Logic extends UILogic<State, Event> {
                 return response.text() // get the response text
             })
             .then((text) => {
-                console.log('text', text)
                 summaryText = this.processChunk(text) || ''
+
+                summaryText = summaryText
+                    .replace(/{"t":"/g, '')
+                    .replace(/"}/g, '')
+                    .replace(/\\n/g, '\n')
+
                 this.emitMutation({
-                    AIsummaryText: { $set: JSON.parse(summaryText)['t'] },
+                    AIsummaryText: { $set: summaryText },
                     AISummaryLoading: { $set: 'done' },
                 })
             })
-            .catch((error) => console.error('Error:', error))
+            .catch((error) => {
+                console.error('Error:', error)
+            })
     }
 
     //
@@ -386,11 +448,38 @@ export default class Logic extends UILogic<State, Event> {
         return newHighlight
     }
 
+    createYoutubeTimestamp: EventHandler<'createYoutubeTimestamp'> = async ({
+        event,
+        previousState,
+    }) => {
+        this.props.navigation.navigate('NoteEditor', {
+            mode: 'create',
+            pageUrl: previousState.url,
+            noteText: event.videoTimestamp,
+        })
+    }
+
     createHighlight: EventHandler<'createHighlight'> = async ({
         event,
         previousState,
     }) => {
-        await this._createHighlight({ ...event, previousState })
+        if (previousState.url.includes('youtube.com')) {
+            const timestamps = event.videoTimestamp
+
+            this.props.navigation.navigate('NoteEditor', {
+                mode: 'create',
+                pageUrl: previousState.url,
+                noteText: timestamps
+                    ? `<a href="${timestamps[0]}">${timestamps[1]}</a> `
+                    : '',
+            })
+        } else {
+            await this._createHighlight({
+                previousState,
+                anchor: event.anchor,
+                renderHighlight: event.renderHighlight,
+            })
+        }
     }
 
     createAnnotation: EventHandler<'createAnnotation'> = async ({
@@ -398,8 +487,9 @@ export default class Logic extends UILogic<State, Event> {
         previousState,
     }) => {
         const highlight = await this._createHighlight({
-            ...event,
             previousState,
+            anchor: event.anchor,
+            renderHighlight: event.renderHighlight,
         })
 
         this.props.navigation.navigate('NoteEditor', {
@@ -407,6 +497,7 @@ export default class Logic extends UILogic<State, Event> {
             highlightText: event.anchor.quote,
             anchor: event.anchor,
             noteUrl: highlight.url,
+            videoTimestamp: event.videoTimestamp,
             spaces: [],
         })
     }

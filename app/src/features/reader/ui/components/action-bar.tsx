@@ -18,6 +18,7 @@ export interface Props
     onBackBtnPress: TouchEventHandler
     onBookmarkBtnPress: TouchEventHandler
     onHighlightBtnPress: TouchEventHandler
+    createYoutubeTimestamp: TouchEventHandler
     onAnnotateBtnPress: TouchEventHandler
     onCommentBtnPress: TouchEventHandler
     onAIButtonPress: TouchEventHandler
@@ -25,14 +26,15 @@ export interface Props
     spaceCount: number
     pageUrl: string
     deviceInfo: DeviceDetails | null
+    AIisOpen: boolean
 }
 
-interface State {
+interface LocalState {
     showHighlightNotif: boolean
 }
 
-class ActionBar extends React.PureComponent<Props, State> {
-    state = {
+class ActionBar extends React.PureComponent<Props, LocalState> {
+    state: LocalState = {
         showHighlightNotif: false,
     }
     private get BookmarkBtn(): actionBtns.ActionBtnComponent {
@@ -101,14 +103,28 @@ class ActionBar extends React.PureComponent<Props, State> {
                         <FooterActionText>Spaces</FooterActionText>
                     </FooterActionBtn>
                 </LeftSideActions>
-                <FooterActionBtn onPress={this.props.onAIButtonPress}>
-                    <Icon
-                        icon={icons.Feed}
-                        strokeWidth="0"
-                        heightAndWidth="18px"
-                        color="greyScale5"
-                        fill
-                    />
+                <FooterActionBtn
+                    width={'70px'}
+                    onPress={this.props.onAIButtonPress}
+                >
+                    {this.props.AIisOpen ? (
+                        <Icon
+                            icon={icons.BackArrow}
+                            strokeWidth="0"
+                            heightAndWidth="18px"
+                            color="greyScale5"
+                            fill
+                            rotate="270deg"
+                        />
+                    ) : (
+                        <Icon
+                            icon={icons.Feed}
+                            strokeWidth="0"
+                            heightAndWidth="18px"
+                            color="greyScale5"
+                            fill
+                        />
+                    )}
                     <FooterActionText>Ask</FooterActionText>
                 </FooterActionBtn>
                 <RightSideActions>
@@ -118,56 +134,92 @@ class ActionBar extends React.PureComponent<Props, State> {
                         </ShowHighlightNotifText>
                     ) : (
                         <>
-                            <FooterActionBtn
-                                onPress={(e) => {
-                                    if (this.props.selectedText == null) {
-                                        this.setState({
-                                            showHighlightNotif: true,
-                                        })
-                                        setTimeout(() => {
-                                            this.setState({
-                                                showHighlightNotif: false,
-                                            })
-                                        }, 2000)
-                                    } else {
-                                        this.props.onHighlightBtnPress(e)
-                                    }
-                                }}
-                            >
-                                <Icon
-                                    icon={icons.Highlighter}
-                                    strokeWidth="0"
-                                    heightAndWidth="18px"
-                                    color="greyScale5"
-                                    fill
-                                />
-                                <FooterActionText>Highlight</FooterActionText>
-                            </FooterActionBtn>
-                            <FooterActionBtn
-                                onPress={(e) => {
-                                    if (this.props.selectedText == null) {
-                                        this.setState({
-                                            showHighlightNotif: true,
-                                        })
-                                        setTimeout(() => {
-                                            this.setState({
-                                                showHighlightNotif: false,
-                                            })
-                                        }, 2000)
-                                    } else {
-                                        this.props.onAnnotateBtnPress(e)
-                                    }
-                                }}
-                            >
-                                <Icon
-                                    icon={icons.AddNote}
-                                    strokeWidth="0"
-                                    heightAndWidth="18px"
-                                    color="greyScale5"
-                                    fill
-                                />
-                                <FooterActionText>Annotate</FooterActionText>
-                            </FooterActionBtn>
+                            {this.props.pageUrl?.includes(
+                                'youtube.com/watch',
+                            ) ? (
+                                <>
+                                    <FooterActionBtn></FooterActionBtn>
+                                    <FooterActionBtn
+                                        onPress={(e) => {
+                                            this.props.onHighlightBtnPress(e)
+                                        }}
+                                    >
+                                        <Icon
+                                            icon={icons.Highlighter}
+                                            strokeWidth="0"
+                                            heightAndWidth="18px"
+                                            color="greyScale5"
+                                            fill
+                                        />
+                                        <FooterActionText>
+                                            Highlight
+                                        </FooterActionText>
+                                    </FooterActionBtn>
+                                </>
+                            ) : (
+                                <>
+                                    <FooterActionBtn
+                                        onPress={(e) => {
+                                            if (
+                                                this.props.selectedText == null
+                                            ) {
+                                                this.setState({
+                                                    showHighlightNotif: true,
+                                                })
+                                                setTimeout(() => {
+                                                    this.setState({
+                                                        showHighlightNotif: false,
+                                                    })
+                                                }, 2000)
+                                            } else {
+                                                this.props.onHighlightBtnPress(
+                                                    e,
+                                                )
+                                            }
+                                        }}
+                                    >
+                                        <Icon
+                                            icon={icons.Highlighter}
+                                            strokeWidth="0"
+                                            heightAndWidth="18px"
+                                            color="greyScale5"
+                                            fill
+                                        />
+                                        <FooterActionText>
+                                            Highlight
+                                        </FooterActionText>
+                                    </FooterActionBtn>
+                                    <FooterActionBtn
+                                        onPress={(e) => {
+                                            if (
+                                                this.props.selectedText == null
+                                            ) {
+                                                this.setState({
+                                                    showHighlightNotif: true,
+                                                })
+                                                setTimeout(() => {
+                                                    this.setState({
+                                                        showHighlightNotif: false,
+                                                    })
+                                                }, 2000)
+                                            } else {
+                                                this.props.onAnnotateBtnPress(e)
+                                            }
+                                        }}
+                                    >
+                                        <Icon
+                                            icon={icons.AddNote}
+                                            strokeWidth="0"
+                                            heightAndWidth="18px"
+                                            color="greyScale5"
+                                            fill
+                                        />
+                                        <FooterActionText>
+                                            Annotate
+                                        </FooterActionText>
+                                    </FooterActionBtn>
+                                </>
+                            )}
                         </>
                     )}
                 </RightSideActions>
@@ -233,11 +285,11 @@ const SpaceCounterPillText = styled.Text`
     font-weight: 600;
 `
 
-const FooterActionBtn = styled.TouchableOpacity`
+const FooterActionBtn = styled.TouchableOpacity<{ width?: string }>`
     display: flex;
     padding: 10px;
     position: relative;
-    width: 75px;
+    width: ${(props) => (props.width ? props.width : '78px')};
     justify-content: center;
     align-items: center;
 `

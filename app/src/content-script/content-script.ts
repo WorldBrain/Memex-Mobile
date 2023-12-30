@@ -1,12 +1,13 @@
-import { EventEmitter } from 'events'
+import type { EventEmitter } from 'events'
 import {
     selectionToDescriptor,
     descriptorToRange,
     markRange,
 } from '@worldbrain/memex-common/lib/annotations'
-
+import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
+import { getHTML5VideoTimestamp } from '@worldbrain/memex-common/lib/editor/utils'
 import { setupRemoteFunctions } from './remote-functions'
-import { Anchor, MessagePoster, Highlight } from './types'
+import type { Anchor, MessagePoster, Highlight } from './types'
 import { HIGHLIGHT_CLASS } from './constants'
 import { getSelectionHtml } from '@worldbrain/memex-common/lib/annotations/utils'
 
@@ -24,6 +25,7 @@ export class WebViewContentScript {
             createAnnotation: this.createAnnotation,
             renderHighlights: this.renderHighlights,
             renderHighlight: this.renderHighlight,
+            jumpToTimestamp: (url: string) => this.jumpToTimestamp(url),
         })
     }
 
@@ -53,9 +55,55 @@ export class WebViewContentScript {
     private setupAnnotationSteps = (
         type: 'highlight' | 'annotation',
     ) => async () => {
-        const selection = this.getDOMSelection()
-        const anchor = await this.extractAnchorSelection(selection)
-        this.props.postMessageToRN({ type, payload: anchor })
+        const url = window.location.href
+        if (!url.includes('youtube.com')) {
+            const selection = this.getDOMSelection()
+            if (selection) {
+                const anchor = await this.extractAnchorSelection(selection)
+                this.props.postMessageToRN({
+                    type,
+                    payload: {
+                        anchor: anchor ?? null,
+                        videoTimestamp: null,
+                    } as any,
+                })
+            }
+        } else {
+            const videoTimestamp = isUrlYTVideo(this.window.location.href)
+                ? getHTML5VideoTimestamp(0)
+                : undefined
+            this.props.postMessageToRN({
+                type,
+                payload: {
+                    videoTimestamp: videoTimestamp ?? null,
+                } as any,
+            })
+        }
+    }
+
+    jumpToTimestamp = async (url: string) => {
+        try {
+            const urlParams = new URLSearchParams(new URL(url).search)
+            const value = urlParams.get('t')
+
+            let video = document.getElementsByTagName('video')[0]
+            if (value) {
+                video.currentTime = parseFloat(value)
+            }
+            this.props.postMessageToRN({
+                type: 'debug',
+                payload: {
+                    message: 'successfully timestamped' + value,
+                } as any,
+            })
+        } catch (e) {
+            this.props.postMessageToRN({
+                type: 'debug',
+                payload: {
+                    error: e,
+                } as any,
+            })
+        }
     }
 
     createAnnotation = this.setupAnnotationSteps('annotation')

@@ -1,4 +1,4 @@
-import { MessagePoster } from './types'
+import type { MessagePoster } from './types'
 
 export const postMessageToRN: MessagePoster = (message) => {
     let serialized

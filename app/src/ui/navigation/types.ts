@@ -36,6 +36,7 @@ export type MainNavigatorParamList = {
         noteText?: string
         privacyLevel?: AnnotationPrivacyLevels
         highlightText?: string
+        videoTimestamp?: [string, string]
     } & (
         | { mode: 'create'; pageUrl: string }
         | {
