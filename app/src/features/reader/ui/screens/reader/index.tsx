@@ -1,5 +1,5 @@
 import React from 'react'
-import { Linking, Dimensions, StyleSheet } from 'react-native'
+import { Linking, Dimensions, StyleSheet, View } from 'react-native'
 import { WebView, WebViewNavigation } from 'react-native-webview'
 
 import Logic, { State, Event, Props } from './logic'
@@ -20,11 +20,23 @@ import styled, { css } from 'styled-components/native'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import { TouchableOpacity, Text } from 'react-native'
 import Markdown from 'react-native-markdown-display'
+import SplitPane from './splitPane'
+import { getBaseTextHighlightStyles } from '@worldbrain/memex-common/lib/in-page-ui/highlighting/highlight-styles'
 
 const ActionBarHeight = 60
 export default class Reader extends StatefulUIElement<Props, State, Event> {
     constructor(props: Props) {
         super(props, new Logic(props))
+    }
+
+    onChangeSliderValue = (value, finish) => {
+        try {
+            if (finish === true) {
+                this.processEvent('updateDisplaySplitHeight', value)
+            }
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     private webView!: WebView
@@ -59,7 +71,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 })
             case 'highlight':
                 return this.processEvent('createHighlight', {
-                    anchor: message.payload.anchor,
+                    anchor: message.payload.anchor || null,
                     videoTimestamp: message.payload.videoTimestamp,
                     renderHighlight: (h) =>
                         this.runFnInWebView('renderHighlight', h),
@@ -75,6 +87,8 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 return this.processEvent('editHighlight', {
                     highlightUrl: message.payload,
                 })
+            case 'debug':
+                console.log('WebView debug:', message.payload)
             default:
                 console.warn(
                     'Unsupported message received from WebView:',
@@ -193,6 +207,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 fontSize: 16,
                 color: '#CACAD1', // Replace this with the actual color from your theme
                 lineHeight: 24,
+                paddingBottom: 40,
             },
             link: {
                 color: '#6AE394',
@@ -200,7 +215,11 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         })
 
         return (
-            <AIResultsContainer showAIResults={this.state.showAIResults}>
+            <AIResultsContainer
+                summaryHalfScreen={this.state.summaryHalfScreen}
+                showAIResults={this.state.showAIResults}
+                height={this.state.displaySplitHeight}
+            >
                 <TextInputContainer
                     AIQueryTextFieldHeight={
                         this.state.AIQueryTextFieldHeight ?? 24
@@ -237,16 +256,36 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         // numberOfLines={
                         //     this.state.AIQueryTextFieldHeight ?? 24 / 24
                         // }
-                        placeholder="Ask a question about this page"
+                        placeholder={
+                            this.state.prompt
+                                ? this.state.prompt
+                                : 'Ask a question about this page'
+                        }
                         placeholderTextColor={'#A9A9B1'}
                         multiline
                     />
                 </TextInputContainer>
                 {this.state.AISummaryLoading === 'running' ? (
-                    <LoadingBalls />
+                    <LoadingContainer>
+                        <LoadingBalls />
+                    </LoadingContainer>
                 ) : this.state.AIsummaryText.length > 0 ? (
                     <AIResultsTextContainer>
-                        <Markdown style={markdownStyles}>
+                        <Markdown
+                            onLinkPress={(url) => {
+                                if (!this.state.summaryHalfScreen) {
+                                    this.processEvent(
+                                        'makeSummaryHalfScreen',
+                                        null,
+                                    )
+                                }
+                                return this.runFnInWebView(
+                                    'jumpToTimestamp',
+                                    url,
+                                )
+                            }}
+                            style={markdownStyles}
+                        >
                             {this.state.AIsummaryText}
                         </Markdown>
                     </AIResultsTextContainer>
@@ -315,9 +354,11 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 }
                 os={this.props.deviceInfo?.isIos ? 'iOS' : 'Android'}
                 AIuiShown={this.state.showAIResults}
+                summaryHalfScreen={this.state.summaryHalfScreen}
+                height={this.state.displaySplitHeight}
             >
                 <WebView
-                    mediaPlaybackRequiresUserAction={true}
+                    mediaPlaybackRequiresUserAction
                     source={{
                         uri: urlToRender,
                         // html: this.props.htmlSource,
@@ -392,8 +433,27 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         rightIconStrokeWidth="0px"
                     />
                 )}
-                {this.renderWebView()}
-                {this.renderAIResults()}
+                <SplitPaneContainer>
+                    <SplitPane
+                        splitSource={null}
+                        splitContainerStyle={{
+                            width: '100%',
+                            alignItems: 'center',
+                            zIndex: 2000,
+                        }}
+                        split="v"
+                        primary="first"
+                        value={Math.floor(this.state.displaySplitHeight || 0)}
+                        min={Dimensions.get('window').height * 0.05}
+                        max={this.props.deviceInfo.height - 300}
+                        onChange={this.onChangeSliderValue}
+                        onFinish={this.onChangeSliderValue}
+                        displayHeight={this.props.deviceInfo.height}
+                    >
+                        {this.renderWebView()}
+                        {this.renderAIResults()}
+                    </SplitPane>
+                </SplitPaneContainer>
                 <ActionBarContainer>
                     {this.props.location === 'shareExt' && (
                         <PageClosePill onPress={this.props.closeModal}>
@@ -436,6 +496,9 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                             //     })
                             // }
                         }}
+                        createYoutubeTimestamp={() => {
+                            this.runFnInWebView('createYoutubeTimestamp')
+                        }}
                         onCommentBtnPress={() =>
                             this.processEvent('navToPageEditor', {
                                 mode: 'notes',
@@ -444,12 +507,36 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         spaceCount={this.state.spaces.length}
                         pageUrl={this.state.url}
                         deviceInfo={this.props.deviceInfo}
+                        AIisOpen={this.state.showAIResults}
                     />
                 </ActionBarContainer>
             </Container>
         )
     }
 }
+
+const SplitPaneContainer = styled.View`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    position: relative;
+    top: 0;
+    min-height: 30%;
+    flex: 1;
+    z-index: 0;
+    background: ${(props) => props.theme.colors.greyScale1};
+    overflow: hidden;
+`
+
+const IconContainer = styled(TouchableOpacity)`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+`
 
 const AIquerySuggestionsTitle = styled.Text`
     color: ${(props) => props.theme.colors.greyScale5};
@@ -545,6 +632,8 @@ const AIQueryField = styled.TextInput<{
 
 const AIResultsContainer = styled.View<{
     showAIResults: boolean
+    summaryHalfScreen?: boolean
+    height?: number
 }>`
     display: flex;
     flex-direction: column;
@@ -552,27 +641,35 @@ const AIResultsContainer = styled.View<{
     justify-content: flex-start;
     width: 100%;
     position: relative;
-    min-height: 30%;
-    flex: 1;
     z-index: 1000;
     background: ${(props) => props.theme.colors.greyScale1};
+    min-height: 30px;
+    flex: 1;
 
     ${(props) =>
         !props.showAIResults &&
         css<any>`
             position: absolute;
             height: 0px;
-            top: 0;
+            bottom: 0;
             opacity: 0;
             z-index: -1;
+        `};
+    ${(props) =>
+        props.summaryHalfScreen &&
+        css<any>`
+            position: relative;
+            bottom: 0;
+            opacity: 1;
+            z-index: 1;
         `};
 `
 
 const AIResultsTextContainer = styled.ScrollView`
     flex: 1;
     width: 100%;
-    height: 300px;
-    padding: 0 20px;
+    min-height: 30px;
+    padding: 0 20px 0px 20px;
 `
 
 const AIResultsText = styled(Markdown)`
@@ -633,12 +730,13 @@ const Container = styled.SafeAreaView<{
     display: flex;
     position: absolute;
     top: 0px;
-    align-items: center;
+    align-items: flex-end;
     background: ${(props) => props.theme.colors.greyScale1};
     position: relative;
     height: ${(props) =>
         props.deviceHeight ?? 0 - props.statusBarHeight! ?? 0}px;
     flex: 1;
+    justify-content: center;
 
     ${(props) =>
         props.os === 'iOS' &&
@@ -676,7 +774,7 @@ const Container = styled.SafeAreaView<{
 const LoadingContainer = styled.SafeAreaView<{
     deviceOrientation?: 'portrait' | 'landscape'
     isLoading?: boolean
-    os: 'iOS' | 'Android'
+    os?: 'iOS' | 'Android'
     AIuiShown?: boolean
     deviceHeight?: number
 }>`
@@ -684,8 +782,9 @@ const LoadingContainer = styled.SafeAreaView<{
     width: 100%;
     display: flex;
     position: relative;
-    min-height: 30px;
-    flex: 1;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
     ${(props) =>
         props.isLoading
             ? `
@@ -730,6 +829,8 @@ const WebViewContainer = styled.SafeAreaView<{
     os: 'iOS' | 'Android'
     AIuiShown?: boolean
     deviceHeight?: number
+    summaryHalfScreen?: boolean
+    height?: number
 }>`
     background: ${(props) => props.theme.colors.greyScale1};
     width: 100%;
@@ -775,7 +876,7 @@ const WebViewContainer = styled.SafeAreaView<{
                 `};
         `};
 
-    ${(props) =>
+    /* ${(props) =>
         props.AIuiShown &&
         css<any>`
             position: absolute;
@@ -783,7 +884,16 @@ const WebViewContainer = styled.SafeAreaView<{
             top: 0;
             opacity: 0;
             z-index: -1;
-        `};
+        `}; */
+    /* ${(props) =>
+        props.summaryHalfScreen &&
+        css<any>`
+            position: relative;
+            min-height: ${props.height && props.height + 'px'};
+            top: 0;
+            opacity: 1;
+            z-index: 1;
+        `}; */
 `
 
 const ErrorScreen = styled.View`

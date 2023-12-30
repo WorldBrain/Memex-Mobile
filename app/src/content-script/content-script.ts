@@ -25,6 +25,7 @@ export class WebViewContentScript {
             createAnnotation: this.createAnnotation,
             renderHighlights: this.renderHighlights,
             renderHighlight: this.renderHighlight,
+            jumpToTimestamp: (url: string) => this.jumpToTimestamp(url),
         })
     }
 
@@ -54,17 +55,55 @@ export class WebViewContentScript {
     private setupAnnotationSteps = (
         type: 'highlight' | 'annotation',
     ) => async () => {
-        const selection = this.getDOMSelection()
-        const anchor = await this.extractAnchorSelection(selection)
+        const url = window.location.href
+        if (!url.includes('youtube.com')) {
+            const selection = this.getDOMSelection()
+            if (selection) {
+                const anchor = await this.extractAnchorSelection(selection)
+                this.props.postMessageToRN({
+                    type,
+                    payload: {
+                        anchor: anchor ?? null,
+                        videoTimestamp: null,
+                    } as any,
+                })
+            }
+        } else {
+            const videoTimestamp = isUrlYTVideo(this.window.location.href)
+                ? getHTML5VideoTimestamp(0)
+                : undefined
+            this.props.postMessageToRN({
+                type,
+                payload: {
+                    videoTimestamp: videoTimestamp ?? null,
+                } as any,
+            })
+        }
+    }
 
-        const videoTimestamp = isUrlYTVideo(this.window.location.href)
-            ? getHTML5VideoTimestamp(0)
-            : undefined
+    jumpToTimestamp = async (url: string) => {
+        try {
+            const urlParams = new URLSearchParams(new URL(url).search)
+            const value = urlParams.get('t')
 
-        this.props.postMessageToRN({
-            type,
-            payload: { anchor, videoTimestamp } as any,
-        })
+            let video = document.getElementsByTagName('video')[0]
+            if (value) {
+                video.currentTime = parseFloat(value)
+            }
+            this.props.postMessageToRN({
+                type: 'debug',
+                payload: {
+                    message: 'successfully timestamped' + value,
+                } as any,
+            })
+        } catch (e) {
+            this.props.postMessageToRN({
+                type: 'debug',
+                payload: {
+                    error: e,
+                } as any,
+            })
+        }
     }
 
     createAnnotation = this.setupAnnotationSteps('annotation')
@@ -101,7 +140,6 @@ export class WebViewContentScript {
     }
 
     renderHighlights = async (highlights: Highlight[]) => {
-        console.log('renderHighlights', highlights)
         for (const highlight of highlights) {
             await this.renderHighlight(highlight)
         }
