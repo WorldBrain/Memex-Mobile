@@ -1,5 +1,12 @@
 import React from 'react'
-import { Linking, Dimensions, StyleSheet, View } from 'react-native'
+import {
+    Linking,
+    Dimensions,
+    StyleSheet,
+    View,
+    Keyboard,
+    TouchableWithoutFeedback,
+} from 'react-native'
 import { WebView, WebViewNavigation } from 'react-native-webview'
 
 import Logic, { State, Event, Props } from './logic'
@@ -222,6 +229,17 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
             },
         })
 
+        const DismissKeyboard = ({ children }) => (
+            <TouchableWithoutFeedback
+                onPress={() => {
+                    console.log('etss')
+                    Keyboard.dismiss()
+                }}
+            >
+                {children}
+            </TouchableWithoutFeedback>
+        )
+
         return (
             <AIResultsContainer
                 summaryHalfScreen={this.state.summaryHalfScreen}
@@ -278,25 +296,28 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         <LoadingBalls />
                     </LoadingContainer>
                 ) : this.state.AIsummaryText.length > 0 ? (
-                    <AIResultsTextContainer>
-                        <Markdown
-                            onLinkPress={(url) => {
-                                if (!this.state.summaryHalfScreen) {
-                                    this.processEvent(
-                                        'makeSummaryHalfScreen',
-                                        null,
+                    <DismissKeyboard>
+                        <AIResultsTextContainer keyboardShouldPersistTaps="never">
+                            <Markdown
+                                keyboardShouldPersistTaps="never"
+                                onLinkPress={(url) => {
+                                    if (!this.state.summaryHalfScreen) {
+                                        this.processEvent(
+                                            'makeSummaryHalfScreen',
+                                            null,
+                                        )
+                                    }
+                                    return this.runFnInWebView(
+                                        'jumpToTimestamp',
+                                        url,
                                     )
-                                }
-                                return this.runFnInWebView(
-                                    'jumpToTimestamp',
-                                    url,
-                                )
-                            }}
-                            style={markdownStyles}
-                        >
-                            {this.state.AIsummaryText}
-                        </Markdown>
-                    </AIResultsTextContainer>
+                                }}
+                                style={markdownStyles}
+                            >
+                                {this.state.AIsummaryText}
+                            </Markdown>
+                        </AIResultsTextContainer>
+                    </DismissKeyboard>
                 ) : (
                     this.renderAIquerySuggestions()
                 )}
