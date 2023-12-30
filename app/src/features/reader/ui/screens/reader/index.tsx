@@ -288,10 +288,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
     }
 
     private renderWebView() {
-        // if (this.state.loadState === 'running') {
-        //     return this.renderLoading()
-        // }
-
         if (this.state.error) {
             return (
                 <ErrorView
@@ -303,9 +299,15 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
             )
         }
 
-        // TODO: sort out the type error here :S
+        if (this.state.loadState === 'running') {
+            return (
+                <LoadingBox>
+                    <LoadingBalls />
+                </LoadingBox>
+            )
+        }
 
-        const urlToRender = this.state.url || this.props.pageUrl
+        const urlToRender = this.state.url ?? this.props.pageUrl
         return (
             <WebViewContainer
                 deviceOrientation={
@@ -315,20 +317,12 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 AIuiShown={this.state.showAIResults}
             >
                 <WebView
-                    mediaPlaybackRequiresUserAction={true}
-                    source={{
-                        uri: urlToRender,
-                        // html: this.props.htmlSource,
-                        // baseUrl: this.props.url,
-                    }}
-                    htmlSource={this.state.htmlSource!}
+                    mediaPlaybackRequiresUserAction
+                    source={{ uri: urlToRender }}
                     injectedJavaScript={this.generateInitialJSToInject()}
                     onNavigationStateChange={this.handleNavStateChange}
                     style={{
-                        backgroundColor:
-                            this.state.loadState === 'running'
-                                ? '#1E1F26'
-                                : 'transparent',
+                        backgroundColor: 'transparent',
                         height: '100%',
                     }}
                     startInLoadingState
