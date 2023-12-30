@@ -1,5 +1,5 @@
 import React from 'react'
-import { Linking, Dimensions } from 'react-native'
+import { Linking, Dimensions, StyleSheet } from 'react-native'
 import { WebView, WebViewNavigation } from 'react-native-webview'
 
 import Logic, { State, Event, Props } from './logic'
@@ -19,6 +19,7 @@ import * as icons from 'src/ui/components/icons/icons-list'
 import styled, { css } from 'styled-components/native'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import { TouchableOpacity, Text } from 'react-native'
+import Markdown from 'react-native-markdown-display'
 
 const ActionBarHeight = 60
 export default class Reader extends StatefulUIElement<Props, State, Event> {
@@ -176,6 +177,28 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
     }
 
     private renderAIResults = () => {
+        const markdownStyles = StyleSheet.create({
+            heading1: {
+                fontSize: 32,
+                color: '#CACAD1', // Replace this with the actual color from your theme
+                minHeight: 40,
+                lineHeight: 40,
+            },
+            heading2: {
+                fontSize: 24,
+                color: '#CACAD1', // Replace this with the actual color from your theme
+                lineHeight: 35,
+            },
+            body: {
+                fontSize: 16,
+                color: '#CACAD1', // Replace this with the actual color from your theme
+                lineHeight: 24,
+            },
+            link: {
+                color: '#6AE394',
+            },
+        })
+
         return (
             <AIResultsContainer showAIResults={this.state.showAIResults}>
                 <TextInputContainer
@@ -223,9 +246,9 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     <LoadingBalls />
                 ) : this.state.AIsummaryText.length > 0 ? (
                     <AIResultsTextContainer>
-                        <AIResultsText selectable={true}>
+                        <Markdown style={markdownStyles}>
                             {this.state.AIsummaryText}
-                        </AIResultsText>
+                        </Markdown>
                     </AIResultsTextContainer>
                 ) : (
                     this.renderAIquerySuggestions()
@@ -552,7 +575,7 @@ const AIResultsTextContainer = styled.ScrollView`
     padding: 0 20px;
 `
 
-const AIResultsText = styled(Text)`
+const AIResultsText = styled(Markdown)`
     color: ${(props) => props.theme.colors.greyScale7};
     font-size: 16px;
     font-weight: 400;
