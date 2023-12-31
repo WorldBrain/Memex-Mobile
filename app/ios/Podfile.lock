@@ -686,7 +686,7 @@ PODS:
     - React-Core
   - react-native-sqlite-storage (4.1.0):
     - React
-  - react-native-webview (11.22.2):
+  - react-native-webview (13.6.3):
     - React-Core
   - React-perflogger (0.64.3)
   - React-RCTActionSheet (0.64.3):
@@ -1153,7 +1153,7 @@ SPEC CHECKSUMS:
   EXKeepAwake: 615c5a6fca5c2afedf611bb6f7f2ca323246de94
   EXPermissions: 9bc08859a675d291e89be9a0870155c27c16ac35
   FBLazyVector: c71c5917ec0ad2de41d5d06a5855f6d5eda06971
-  FBReactNativeSpec: 99a164d2a79363a79fe2ca7f9f0cb87443acdf52
+  FBReactNativeSpec: 3b16e1f4ef8bc3a8c6c276e6cfbe4047cf748e88
   Firebase: 54cdc8bc9c9b3de54f43dab86e62f5a76b47034f
   FirebaseAnalytics: 4751d6a49598a2b58da678cc07df696bcd809ab9
   FirebaseAuth: 8ef169751d795f20921d425f7b0131cc1c70935c
@@ -1204,7 +1204,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 34e23860273a23695342f58eed3ffd3ba10c31e0
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
   react-native-sqlite-storage: f06bfba10f67f989c00b6a699b9c2b80a816edbe
-  react-native-webview: 159034a856a6e95995f5bf2eed40d70b103d6572
+  react-native-webview: 88293a0f23eca8465c0433c023ec632930e644d0
   React-perflogger: cc76a4254d19640f1d8ad1c66fdee800414b805c
   React-RCTActionSheet: 7448f049318d8d7e8a9a1ebb742ada721757eea8
   React-RCTAnimation: fb9b3fa1a4a9f5e6ab01b3368693ce69860ba76a
@@ -1252,4 +1252,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 5661132181f4901136f830d17d35c021c0b758a9
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.11.3
