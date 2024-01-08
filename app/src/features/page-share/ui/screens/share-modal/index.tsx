@@ -23,6 +23,8 @@ import FeedActivityIndicator from 'src/features/activity-indicator'
 import { isInputDirty } from './util'
 import type { State, Event } from './types'
 import Reader from 'src/features/reader/ui/screens/reader'
+import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
+import { PrimaryAction } from 'src/ui/utils/ActionButtons'
 
 export interface Props extends Omit<Dependencies, 'keyboardAPI'> {}
 
@@ -302,6 +304,35 @@ export default class ShareModalScreen extends StatefulUIElement<
         if (!this.state.pageUrl) {
             return null // or return <LoadingComponent /> if you have one
         }
+
+        if (isUrlYTVideo(this.state.pageUrl)) {
+            return (
+                <YoutubeRedirectNotice>
+                    <Icon
+                        icon={icons.CheckMark}
+                        heightAndWidth="24px"
+                        strokeWidth="0"
+                        fill
+                        color="prime1"
+                        hoverOff
+                    />
+                    <YoutubeRedirectNoticeText>
+                        Video Saved!
+                    </YoutubeRedirectNoticeText>
+                    <YoutubeRedirectNoticeSubText>
+                        Go to the app to annotate & summarize YouTube videos.
+                        Improvement coming soon!
+                    </YoutubeRedirectNoticeSubText>
+                    <PrimaryAction
+                        onPress={this.handleModalClose}
+                        label="Go back"
+                        type="primary"
+                        size="small"
+                    />
+                </YoutubeRedirectNotice>
+            )
+        }
+
         return (
             <Reader
                 {...this.props}
@@ -421,4 +452,34 @@ const ReloadButton = styled.TouchableOpacity`
     justify-content: center;
     width: 60px;
     height: 40px;
+`
+
+const YoutubeRedirectNotice = styled.View`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    height: 100%;
+`
+
+const YoutubeRedirectNoticeText = styled.Text`
+    font-size: 16px;
+    font-weight: 500;
+    color: ${(props) => props.theme.colors.greyScale7};
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-family: 'Satoshi';
+    text-align: center;
+`
+
+const YoutubeRedirectNoticeSubText = styled.Text`
+    font-size: 14px;
+    font-weight: 500;
+    color: ${(props) => props.theme.colors.greyScale6};
+    margin-top: 10px;
+    margin-bottom: 30px;
+    font-family: 'Satoshi';
+    text-align: center;
 `
