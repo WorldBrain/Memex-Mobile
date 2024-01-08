@@ -214,7 +214,7 @@ const RightSide = styled.View`
 `
 
 const NoteRenderBox = styled.View`
-    width: 100%;
+    width: 95%;
     margin: 0 15px;
     flex: 1;
 `
