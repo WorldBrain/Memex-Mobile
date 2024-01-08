@@ -51,15 +51,17 @@ export default class LoginScreen extends StatefulUIElement<
                             <IntroTitle>Login to Memex</IntroTitle>
                             {Platform.OS === 'android' && (
                                 <IntroSubTitle>
-                                    Go to "My Account" in the extension and scan
-                                    the login code
+                                    Sign up right now only possible via the
+                                    extension. Go to "My Account" in the
+                                    extension and scan the login code
                                 </IntroSubTitle>
                             )}
                             {/* if iOS */}
                             {Platform.OS === 'ios' && (
                                 <IntroSubTitle>
-                                    Go to "My Account" in the extension and copy
-                                    the login code
+                                    Sign up right now only possible via the
+                                    extension. Go to "My Account" in the
+                                    extension and copy the login code
                                 </IntroSubTitle>
                             )}
                         </>
@@ -476,6 +478,7 @@ const LoginSignupContainer = styled.SafeAreaView`
     justify-content: center;
     align-items: center;
     background: ${(props) => props.theme.colors.black};
+    padding-bottom: 300px;
 `
 
 const LoginSignupBox = styled.View`
@@ -484,6 +487,7 @@ const LoginSignupBox = styled.View`
     width: 100%;
     align-items: center;
     padding: 20px 0px;
+    padding-bottom: 150px;
 `
 
 const TextInputContainer = styled.View`
