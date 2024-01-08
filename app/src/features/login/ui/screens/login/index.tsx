@@ -51,16 +51,16 @@ export default class LoginScreen extends StatefulUIElement<
                             <IntroTitle>Login to Memex</IntroTitle>
                             {Platform.OS === 'android' && (
                                 <IntroSubTitle>
-                                    Sign up right now only possible via the
-                                    extension. Go to "My Account" in the
+                                    Creating an account right now only possible
+                                    via the extension. Go to "My Account" in the
                                     extension and scan the login code
                                 </IntroSubTitle>
                             )}
                             {/* if iOS */}
                             {Platform.OS === 'ios' && (
                                 <IntroSubTitle>
-                                    Sign up right now only possible via the
-                                    extension. Go to "My Account" in the
+                                    Creating an account right now only possible
+                                    via the extension. Go to "My Account" in the
                                     extension and copy the login code
                                 </IntroSubTitle>
                             )}
