@@ -8,6 +8,7 @@ import type { CloudSyncAPI, SyncStats } from './types'
 import type { ErrorTrackingService } from '../error-tracking'
 import { COLLECTION_NAMES as ANNOTATIONS_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/storage/modules/annotations/constants'
 import { COLLECTION_NAMES as CONTENT_SHARING_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
+import { UserReference } from '@worldbrain/memex-common/lib/web-interface/types/users'
 
 export interface Props {
     backend: PersonalCloudBackend
@@ -105,8 +106,13 @@ export class CloudSyncService implements CloudSyncAPI {
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
 
+        const userId: string | number = await storage.loadUserId()
+        const params: UserReference = { type: 'user-reference', id: userId }
+
         let totalDownloads = 0
-        for await (const { totalCount } of backend.countChanges()) {
+        for await (const { totalCount } of backend.countChanges({
+            userReference: params,
+        })) {
             totalDownloads = totalCount
         }
         this._modifyStats({ totalDownloads })

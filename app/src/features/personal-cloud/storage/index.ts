@@ -80,6 +80,9 @@ export class PersonalCloudStorage {
             this.deviceId = null
         }
     }
+    async loadUserId() {
+        return (await this.dependencies.getUserId()) ?? null
+    }
 
     async pushAllQueuedUpdates(): Promise<void> {
         await this.actionQueue.executePendingActions()
