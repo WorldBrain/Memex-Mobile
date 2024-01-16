@@ -91,6 +91,7 @@ export interface Props extends MainNavProps<'Dashboard'> {
         | 'listSharing'
         | 'listKeys'
         | 'activityIndicator'
+        | 'keepAwake'
     >
     getNow?: () => number
     pageSize?: number
@@ -237,7 +238,9 @@ export default class Logic extends UILogic<State, Event> {
     }
 
     private async doSync() {
-        const { cloudSync } = this.props.services
+        const { cloudSync, keepAwake } = this.props.services
+
+        keepAwake.activate()
 
         let syncChanges = 0
         await executeUITask<State, 'syncState'>(this, 'syncState', async () => {
@@ -246,6 +249,8 @@ export default class Logic extends UILogic<State, Event> {
                 syncChanges = totalChanges
             } catch (err) {
                 handleSyncError(err, this.props)
+            } finally {
+                keepAwake.deactivate()
             }
         })
 
