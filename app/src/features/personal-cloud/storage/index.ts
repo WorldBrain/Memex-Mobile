@@ -97,6 +97,13 @@ export class PersonalCloudStorage {
 
         try {
             for (const update of updates) {
+                // Ignore specialized tree update types (for now...)
+                if (
+                    update.type === PersonalCloudUpdateType.ListTreeDelete ||
+                    update.type === PersonalCloudUpdateType.ListTreeMove
+                ) {
+                    continue
+                }
                 if (!CLOUD_SYNCED_COLLECTIONS.includes(update.collection)) {
                     continue
                 }
