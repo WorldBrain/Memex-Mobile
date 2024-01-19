@@ -30,6 +30,21 @@ import type {
     Tag,
 } from '../types'
 import { updateSuggestionsCache } from '@worldbrain/memex-common/lib/utils/suggestions-cache'
+import type { CustomListTree } from '@worldbrain/memex-common/lib/types/core-data-types/client'
+import { ROOT_NODE_PARENT_ID } from '@worldbrain/memex-common/lib/content-sharing/tree-utils'
+import {
+    buildMaterializedPath,
+    extractMaterializedPathIds,
+} from '@worldbrain/memex-common/lib/content-sharing/utils'
+import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
+
+const cleanListTree = (listTree: CustomListTree) => ({
+    ...listTree,
+    parentListId:
+        listTree.parentListId === ROOT_NODE_PARENT_ID
+            ? null
+            : listTree.parentListId,
+})
 
 export class MetaPickerStorage extends StorageModule {
     static TAG_COLL = TAG_COLL_NAMES.tag
@@ -199,6 +214,11 @@ export class MetaPickerStorage extends StorageModule {
                 args: {
                     listId: '$listId:number',
                 },
+            },
+            findListTreeByListId: {
+                collection: LIST_COLL_NAMES.listTrees,
+                operation: 'findObject',
+                args: { listId: '$listId:int' },
             },
             deleteList: {
                 operation: 'deleteObject',
@@ -902,6 +922,16 @@ export class MetaPickerStorage extends StorageModule {
         }
     }
 
+    async getTreeDataForList(params: {
+        localListId: number
+    }): Promise<CustomListTree | null> {
+        const currentNode: CustomListTree = await this.operation(
+            'findListTreeByListId',
+            { listId: params.localListId },
+        )
+        return currentNode ? cleanListTree(currentNode) : null
+    }
+
     async createInboxListEntry(args: { fullPageUrl: string }) {
         await this.createInboxListIfAbsent({})
 
@@ -909,5 +939,36 @@ export class MetaPickerStorage extends StorageModule {
             fullPageUrl: args.fullPageUrl,
             listId: SPECIAL_LIST_IDS.INBOX,
         })
+    }
+
+    async getAllNodesInTreeByList(params: {
+        rootLocalListId: number
+    }): Promise<CustomListTree[]> {
+        const listTree = await this.getTreeDataForList({
+            localListId: params.rootLocalListId,
+        })
+        if (!listTree) {
+            throw new Error('Could not find root data of tree to traverse')
+        }
+        // Link nodes are always leaves
+        if (listTree.linkTarget != null) {
+            return [listTree]
+        }
+
+        const materializedPath = buildMaterializedPath(
+            ...extractMaterializedPathIds(listTree.path ?? '', 'number'),
+            listTree.listId!,
+        )
+        const storageBackend = this.options.storageManager
+            .backend as TypeORMStorageBackend
+
+        const listTrees: CustomListTree[] = await storageBackend.findObjectsLike(
+            LIST_COLL_NAMES.listTrees,
+            'path',
+            `%${materializedPath}`,
+        )
+
+        // TODO: Maybe sort each level of siblings
+        return listTrees
     }
 }
