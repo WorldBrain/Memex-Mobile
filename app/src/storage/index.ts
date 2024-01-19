@@ -204,6 +204,14 @@ export async function setStorageMiddleware(options: {
     })
 
     options.storage.manager.setMiddleware([
+        new ListTreeMiddleware({
+            moveTree: (args) =>
+                options.storage.modules.metaPicker.updateListTreeParent(args),
+            deleteTree: (args) =>
+                options.storage.modules.metaPicker.performDeleteListAndAllAssociatedData(
+                    args,
+                ),
+        }),
         new ChangeWatchMiddleware({
             rawOperationWatchers,
             storageManager: options.storage.manager,
@@ -217,14 +225,6 @@ export async function setStorageMiddleware(options: {
                     options.extraPostChangeWatcher?.(event),
                 ])
             },
-        }),
-        new ListTreeMiddleware({
-            moveTree: (args) =>
-                options.storage.modules.metaPicker.updateListTreeParent(args),
-            deleteTree: (args) =>
-                options.storage.modules.metaPicker.performDeleteListAndAllAssociatedData(
-                    args,
-                ),
         }),
     ])
 }
