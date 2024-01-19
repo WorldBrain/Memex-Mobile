@@ -37,6 +37,7 @@ import {
     extractMaterializedPathIds,
 } from '@worldbrain/memex-common/lib/content-sharing/utils'
 import { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
+import { deleteListTreeAndAllAssociatedData } from '@worldbrain/memex-common/lib/content-sharing/storage/delete-tree'
 
 const cleanListTree = (listTree: CustomListTree) => ({
     ...listTree,
@@ -967,8 +968,36 @@ export class MetaPickerStorage extends StorageModule {
             'path',
             `%${materializedPath}`,
         )
-
+        listTrees.push(listTree) // Ensure root tree is included
         // TODO: Maybe sort each level of siblings
         return listTrees
     }
+
+    async performDeleteListAndAllAssociatedData(params: {
+        localListId: number
+    }): Promise<void> {
+        await deleteListTreeAndAllAssociatedData({
+            storageManager: this.options.storageManager,
+            getAllNodesInTree: async () => {
+                const listTrees = await this.getAllNodesInTreeByList({
+                    rootLocalListId: params.localListId,
+                })
+                const remoteListIds = await this.options.getSpaceRemoteIds(
+                    listTrees
+                        .filter((tree) => tree.listId != null)
+                        .map((tree) => tree.listId!),
+                )
+                return listTrees.map((tree) => ({
+                    ...tree,
+                    remoteListId: remoteListIds[tree.listId!] ?? null,
+                }))
+            },
+        })
+    }
+
+    async updateListTreeParent(params: {
+        localListId: number
+        newParentListId: number | null
+        now?: number
+    }): Promise<void> {}
 }
