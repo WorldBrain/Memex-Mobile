@@ -196,24 +196,24 @@ export async function setStorageMiddleware(options: {
     ) => void | Promise<void>
 }) {
     const watchedCollections = new Set(CLOUD_SYNCED_COLLECTIONS)
-    const rawOperationWatchers = initListTreeOperationWatchers({
+    const customOperationWatchers = initListTreeOperationWatchers({
         handleListTreeStorageChange: (update) =>
             options.storage.modules.personalCloud.handleListTreeStorageChange(
                 update,
             ),
     })
+    const listTreeMiddleware = new ListTreeMiddleware({
+        moveTree: (args) =>
+            options.storage.modules.metaPicker.updateListTreeParent(args),
+        deleteTree: (args) =>
+            options.storage.modules.metaPicker.performDeleteListAndAllAssociatedData(
+                args,
+            ),
+    })
 
     options.storage.manager.setMiddleware([
-        new ListTreeMiddleware({
-            moveTree: (args) =>
-                options.storage.modules.metaPicker.updateListTreeParent(args),
-            deleteTree: (args) =>
-                options.storage.modules.metaPicker.performDeleteListAndAllAssociatedData(
-                    args,
-                ),
-        }),
         new ChangeWatchMiddleware({
-            rawOperationWatchers,
+            customOperationWatchers,
             storageManager: options.storage.manager,
             shouldWatchCollection: (collection) =>
                 watchedCollections.has(collection),
@@ -226,6 +226,7 @@ export async function setStorageMiddleware(options: {
                 ])
             },
         }),
+        listTreeMiddleware,
     ])
 }
 
