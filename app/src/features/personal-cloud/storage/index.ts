@@ -16,6 +16,8 @@ import {
     PersonalCloudUpdateBatch,
     PersonalCloudUpdatePushBatch,
     PersonalCloudDeviceId,
+    PersonalCloudListTreeMoveUpdate,
+    PersonalCloudListTreeDeleteUpdate,
 } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import { getCurrentSchemaVersion } from '@worldbrain/memex-common/lib/storage/utils'
 
@@ -29,6 +31,8 @@ import {
     CLOUD_SYNCED_COLLECTIONS,
 } from './constants'
 import { PAGE_FETCH_DATA_FLAG } from '@worldbrain/memex-common/lib/page-indexing/constants'
+import { LIST_TREE_OPERATION_ALIASES } from '@worldbrain/memex-common/lib/content-sharing/storage/list-tree-middleware'
+import { COLLECTION_NAMES as LIST_COLL_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 
 export interface Dependencies {
     storageManager: StorageManager
@@ -80,6 +84,7 @@ export class PersonalCloudStorage {
             this.deviceId = null
         }
     }
+
     async loadUserId() {
         return (await this.dependencies.getUserId()) ?? null
     }
@@ -97,11 +102,32 @@ export class PersonalCloudStorage {
 
         try {
             for (const update of updates) {
-                if (!CLOUD_SYNCED_COLLECTIONS.includes(update.collection)) {
+                if (update.type === PersonalCloudUpdateType.ListTreeDelete) {
+                    await storageManager.operation(
+                        LIST_TREE_OPERATION_ALIASES.deleteTree,
+                        LIST_COLL_NAMES.listTrees,
+                        {
+                            localListId: update.rootNodeLocalListId,
+                        },
+                        { skipSync: true },
+                    )
+                } else if (
+                    update.type === PersonalCloudUpdateType.ListTreeMove
+                ) {
+                    await storageManager.operation(
+                        LIST_TREE_OPERATION_ALIASES.moveTree,
+                        LIST_COLL_NAMES.listTrees,
+                        {
+                            localListId: update.rootNodeLocalListId,
+                            newParentListId: update.parentLocalListId,
+                        },
+                        { skipSync: true },
+                    )
+                } else if (
+                    !CLOUD_SYNCED_COLLECTIONS.includes(update.collection)
+                ) {
                     continue
-                }
-
-                if (update.type === PersonalCloudUpdateType.Overwrite) {
+                } else if (update.type === PersonalCloudUpdateType.Overwrite) {
                     if (update.media) {
                         // We currently don't support media updates on mobile
                         continue
@@ -123,16 +149,14 @@ export class PersonalCloudStorage {
                         executeOperation: (...args) =>
                             storageManager.backend.operation(...args),
                     })
-
-                    updatesIntegrated++
                 } else if (update.type === PersonalCloudUpdateType.Delete) {
                     await storageManager.backend.operation(
                         'deleteObjects',
                         update.collection,
                         update.where,
                     )
-                    updatesIntegrated++
                 }
+                updatesIntegrated++
             }
         } catch (error) {
             console.error(error)
@@ -158,6 +182,26 @@ export class PersonalCloudStorage {
                 })),
             )
         }
+    }
+
+    async handleListTreeStorageChange(
+        update:
+            | PersonalCloudListTreeMoveUpdate
+            | PersonalCloudListTreeDeleteUpdate,
+    ) {
+        await this.actionQueue.scheduleAction(
+            {
+                type: PersonalCloudActionType.PushObject,
+                updates: [
+                    {
+                        ...update,
+                        deviceId: this.deviceId!,
+                        schemaVersion: this.currentSchemaVersion!,
+                    },
+                ],
+            },
+            { queueInteraction: 'queue-and-return' },
+        )
     }
 
     async handlePostStorageChange(event: StorageOperationEvent<'post'>) {

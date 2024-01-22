@@ -6,6 +6,10 @@ import {
     registerModuleMapCollections,
     _defaultOperationExecutor,
 } from '@worldbrain/storex-pattern-modules'
+import {
+    ListTreeMiddleware,
+    initListTreeOperationWatchers,
+} from '@worldbrain/memex-common/lib/content-sharing/storage/list-tree-middleware'
 import { ChangeWatchMiddleware } from '@worldbrain/storex-middleware-change-watcher'
 import { extractUrlParts, normalizeUrl } from '@worldbrain/memex-url-utils'
 import { createStorexPlugins } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/plugins'
@@ -192,9 +196,24 @@ export async function setStorageMiddleware(options: {
     ) => void | Promise<void>
 }) {
     const watchedCollections = new Set(CLOUD_SYNCED_COLLECTIONS)
+    const customOperationWatchers = initListTreeOperationWatchers({
+        handleListTreeStorageChange: (update) =>
+            options.storage.modules.personalCloud.handleListTreeStorageChange(
+                update,
+            ),
+    })
+    const listTreeMiddleware = new ListTreeMiddleware({
+        moveTree: (args) =>
+            options.storage.modules.metaPicker.updateListTreeParent(args),
+        deleteTree: (args) =>
+            options.storage.modules.metaPicker.performDeleteListAndAllAssociatedData(
+                args,
+            ),
+    })
 
     options.storage.manager.setMiddleware([
         new ChangeWatchMiddleware({
+            customOperationWatchers,
             storageManager: options.storage.manager,
             shouldWatchCollection: (collection) =>
                 watchedCollections.has(collection),
@@ -207,6 +226,7 @@ export async function setStorageMiddleware(options: {
                 ])
             },
         }),
+        listTreeMiddleware,
     ])
 }
 
