@@ -61,7 +61,7 @@
         "link-preview-js": "^2.1.10",
         "lodash": "^4.17.15",
         "moment": "^2.24.0",
-        "normalize-url": "4.3.0",
+        "normalize-url": "4.5.1",
         "openpgp": "^4.6.2",
         "pluralize": "^8.0.0",
         "queue-microtask": "^1.1.2",
