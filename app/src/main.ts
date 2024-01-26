@@ -78,6 +78,10 @@ export async function main() {
     const authService = new MemexGoAuthService({
         firebase: reactNativeFBToAuthFBDeps(firebase),
     })
+    authService.setupOnChangedListener((user) =>
+        errorTrackingService.setUser(user),
+    )
+
     const serverStorage = await createServerStorage(firebase)
 
     const createDeviceId = deviceIdCreatorFactory({
