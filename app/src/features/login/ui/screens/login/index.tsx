@@ -85,7 +85,8 @@ export default class LoginScreen extends StatefulUIElement<
                             </LoadingBox>
                         ) : (
                             <>
-                                {Platform.OS === 'ios' && (
+                                {(Platform.OS === 'ios' ||
+                                    process.env.NODE_ENV !== 'production') && (
                                     <TextInputContainer>
                                         <TextInputBox
                                             onChangeText={(text) => {
