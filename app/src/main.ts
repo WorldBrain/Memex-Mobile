@@ -31,7 +31,7 @@ import {
     createServerStorage,
 } from './storage'
 import { createServices } from './services'
-import { setupBackgroundSync, setupFirebaseAuth } from './services/setup'
+import { setupFirebaseAuth } from './services/setup'
 import { UI } from './ui'
 import { ErrorTrackingService } from './services/error-tracking'
 import { MemexGoAuthService } from './services/auth'
@@ -184,7 +184,9 @@ export async function main() {
 
     await storage.modules.personalCloud.setup()
     await setStorageMiddleware(dependencies)
-    await setupBackgroundSync(dependencies)
+    // NOTE: This never worked as expected on both platforms and on Android it was the cause of this bug where the
+    //  app would crash after ~10 mins because of a Java Double->String casting error.
+    // await setupBackgroundSync(dependencies)
     await setupFirebaseAuth(dependencies)
     await migrateSettings(services)
 
