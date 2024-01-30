@@ -11,13 +11,14 @@
 		019CE59DDBE74917B51819E0 /* Satoshi-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D87AE64030AE4BFDBFCF7D3F /* Satoshi-Bold.ttf */; };
 		03106C63C5504E268F7771D7 /* Satoshi-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 36502CA8676341B5AE3FABF3 /* Satoshi-Light.ttf */; };
 		033DAC5EB268420E8EC63F37 /* Satoshi-Black.woff in Resources */ = {isa = PBXBuildFile; fileRef = 7CD705D0BAAE4A2B8B1EFAD4 /* Satoshi-Black.woff */; };
+		0AA0095B36261ED9A86D3F62 /* Pods_app_MemexShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CE769192D02FF5B371F40C3 /* Pods_app_MemexShare.framework */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		144066E7631F40BB9FDBA048 /* Satoshi-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E330B80386774F868B83E912 /* Satoshi-Variable.ttf */; };
-		160A0DEFFE000E12E86FE520 /* libPods-app.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02114BA33390EE56BFA23212 /* libPods-app.a */; };
 		189D9989E49A428EA1C5B99E /* Satoshi-VariableItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 27CB812A30164394B9016C56 /* Satoshi-VariableItalic.ttf */; };
+		1DDF728D9CF3A9ADC1C8D91B /* Pods_app.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48BB60B7731C1CF489175D2A /* Pods_app.framework */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -29,7 +30,6 @@
 		2D02E4C81E0B4AEC006451C7 /* libRCTWebSocket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3E991DF850E9000B6D8A /* libRCTWebSocket-tvOS.a */; };
 		2D16E6881FA4F8E400B85C8A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6891FA4F8E400B85C8A /* libReact.a */; };
 		2DCD954D1E0B4F2C00145EB5 /* appTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* appTests.m */; };
-		3286661741779D7006E0A69E /* libPods-app-MemexShare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA1A52709FF1B7E8626BF85C /* libPods-app-MemexShare.a */; };
 		3BE6BC77160A4D7E9772F852 /* Satoshi-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C8C03B8F18F4D35A31AD86B /* Satoshi-BlackItalic.ttf */; };
 		404241296E574EA790655C60 /* Satoshi-BoldItalic.woff in Resources */ = {isa = PBXBuildFile; fileRef = B1F23C6A64D64CCCB520B6B1 /* Satoshi-BoldItalic.woff */; };
 		407F2AA3DE6D47779FF6F7A8 /* Satoshi-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34FF1F48B2954BD5BFFCE808 /* Satoshi-Black.ttf */; };
@@ -283,7 +283,6 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* appTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = appTests.m; sourceTree = "<group>"; };
 		0203D2B19F9140C9A3B2D199 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFirebase.a; sourceTree = "<group>"; };
-		02114BA33390EE56BFA23212 /* libPods-app.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-app.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = app.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -302,6 +301,7 @@
 		3156D479FBF84E6E83EB4A51 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		34FF1F48B2954BD5BFFCE808 /* Satoshi-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Black.ttf"; path = "../fonts/Satoshi/Satoshi-Black.ttf"; sourceTree = "<group>"; };
 		36502CA8676341B5AE3FABF3 /* Satoshi-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Light.ttf"; path = "../fonts/Satoshi/Satoshi-Light.ttf"; sourceTree = "<group>"; };
+		48BB60B7731C1CF489175D2A /* Pods_app.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_app.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		528CBCA09D1E49B3A28CE29A /* Satoshi-LightItalic.woff */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-LightItalic.woff"; path = "../fonts/Satoshi/Satoshi-LightItalic.woff"; sourceTree = "<group>"; };
 		530D720022AA523900E0F8D5 /* MemexShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MemexShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		530D720622AA523900E0F8D5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -315,6 +315,7 @@
 		53B87F3822D2E91300F5DB10 /* app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = app.entitlements; path = app/app.entitlements; sourceTree = "<group>"; };
 		55F97873E8C944B9A60B3994 /* Satoshi-VariableItalic.woff */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-VariableItalic.woff"; path = "../fonts/Satoshi/Satoshi-VariableItalic.woff"; sourceTree = "<group>"; };
 		570A001E774848E3917CE194 /* Satoshi-Regular.woff */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Regular.woff"; path = "../fonts/Satoshi/Satoshi-Regular.woff"; sourceTree = "<group>"; };
+		5CE769192D02FF5B371F40C3 /* Pods_app_MemexShare.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_app_MemexShare.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D6D5F9F73F44B69B190B042 /* Satoshi-Light.woff */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Light.woff"; path = "../fonts/Satoshi/Satoshi-Light.woff"; sourceTree = "<group>"; };
 		5E6B02555426DFF47FEEBCDC /* Pods-app.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-app.release.xcconfig"; path = "Target Support Files/Pods-app/Pods-app.release.xcconfig"; sourceTree = "<group>"; };
 		5FECBEACC46C408CAF789445 /* Satoshi-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Medium.ttf"; path = "../fonts/Satoshi/Satoshi-Medium.ttf"; sourceTree = "<group>"; };
@@ -334,7 +335,6 @@
 		AB8C95DF11E041E8A77E57CF /* Satoshi-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Regular.ttf"; path = "../fonts/Satoshi/Satoshi-Regular.ttf"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		B1F23C6A64D64CCCB520B6B1 /* Satoshi-BoldItalic.woff */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-BoldItalic.woff"; path = "../fonts/Satoshi/Satoshi-BoldItalic.woff"; sourceTree = "<group>"; };
-		BA1A52709FF1B7E8626BF85C /* libPods-app-MemexShare.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-app-MemexShare.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF7C23224D4B43479ED2F855 /* Satoshi-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-BoldItalic.ttf"; path = "../fonts/Satoshi/Satoshi-BoldItalic.ttf"; sourceTree = "<group>"; };
 		C5873439E53D4B0289927533 /* Satoshi-Variable.woff */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Satoshi-Variable.woff"; path = "../fonts/Satoshi/Satoshi-Variable.woff"; sourceTree = "<group>"; };
 		C9A4E16FDC9B8433508AA77C /* Pods-app.development.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-app.development.xcconfig"; path = "Target Support Files/Pods-app/Pods-app.development.xcconfig"; sourceTree = "<group>"; };
@@ -360,8 +360,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */,
-				160A0DEFFE000E12E86FE520 /* libPods-app.a in Frameworks */,
 				7A802DC863CE429AAF614CE6 /* libz.tbd in Frameworks */,
+				1DDF728D9CF3A9ADC1C8D91B /* Pods_app.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,7 +391,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				530D722422AA573400E0F8D5 /* JavaScriptCore.framework in Frameworks */,
-				3286661741779D7006E0A69E /* libPods-app-MemexShare.a in Frameworks */,
+				0AA0095B36261ED9A86D3F62 /* Pods_app_MemexShare.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -532,9 +532,9 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
-				02114BA33390EE56BFA23212 /* libPods-app.a */,
-				BA1A52709FF1B7E8626BF85C /* libPods-app-MemexShare.a */,
 				3156D479FBF84E6E83EB4A51 /* libz.tbd */,
+				48BB60B7731C1CF489175D2A /* Pods_app.framework */,
+				5CE769192D02FF5B371F40C3 /* Pods_app_MemexShare.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1250,12 +1250,10 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-app/Pods-app-frameworks.sh",
 				"${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL-Universal/OpenSSL.framework/OpenSSL",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
