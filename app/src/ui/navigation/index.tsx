@@ -20,6 +20,7 @@ import Login from 'src/features/login/ui/screens/login'
 import { MainNavigatorParamList } from './types'
 import { lightTheme } from './color-themes'
 import { getDeviceDetails } from 'src/features/page-share/ui/screens/share-modal/util'
+import { DEEP_LINK_SCHEME } from './deep-linking'
 
 export type NavigationContainerFactory = (state: CoreUIState) => JSX.Element
 
@@ -83,7 +84,7 @@ export const createMainNavigator: NavigationContainerFactory = ({
     ]
 
     const linking: LinkingOptions = {
-        prefixes: ['memex://'],
+        prefixes: [DEEP_LINK_SCHEME],
         config: {
             screens: {
                 Dashboard: 'dashboard/:openFeed?',

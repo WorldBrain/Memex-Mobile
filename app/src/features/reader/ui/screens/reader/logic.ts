@@ -89,7 +89,7 @@ export interface Props extends MainNavProps<'Reader'> {
         'readability' | 'resourceLoader' | 'errorTracker' | 'annotationSharing'
     >
     loadContentScript: ContentScriptLoader
-    pageUrl: string
+    pageUrl?: string
     hideNavigation?: boolean
     deviceInfo: DeviceDetails | null
     closeModal?: () => void

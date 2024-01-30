@@ -4,7 +4,7 @@ import ShareExtension from 'react-native-share-extension'
 import { URLNormalizer } from '@worldbrain/memex-url-utils'
 
 import { ShareAPI } from './types'
-import { READER_URL, DEEP_LINK_PREFIX } from 'src/ui/navigation/deep-linking'
+import { READER_URL, DEEP_LINK_SCHEME } from 'src/ui/navigation/deep-linking'
 
 export interface Props {
     shareAPI?: ShareAPI
@@ -42,13 +42,8 @@ export class ShareExtService {
 
     close = () => this.shareAPI.close()
 
-    openAppReader(args: { pageUrl: string }): void {
-        const normalized = this.normalizeUrl(args.pageUrl)
-        return this.openAppLink(READER_URL + normalized)
-    }
-
     openAppLink(url: string) {
-        const link = DEEP_LINK_PREFIX + url
+        const link = DEEP_LINK_SCHEME + url
         if (Platform.OS === 'ios') {
             this.shareAPI.openURL(link)
         } else {

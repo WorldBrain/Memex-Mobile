@@ -25,7 +25,11 @@ import SpacePill from 'src/ui/components/space-pill'
 import ListShareBtn from 'src/features/list-share-btn'
 import { ALL_SAVED_FILTER_ID } from './constants'
 import FeedActivityIndicator from 'src/features/activity-indicator'
-import { DEEP_LINK_PREFIX, FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
+import {
+    DEEP_LINK_SCHEME,
+    FEED_OPEN_URL,
+    READER_URL,
+} from 'src/ui/navigation/deep-linking'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import WebView from 'react-native-webview'
 import Navigation from 'src/features/overview/ui/components/navigation'
@@ -43,9 +47,48 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     componentDidMount() {
         super.componentDidMount()
 
+        const readerPattern = /memex:\/\/reader\/(.+)/
         Linking.addEventListener('url', async ({ url }) => {
-            if (url === DEEP_LINK_PREFIX + FEED_OPEN_URL) {
+            if (url === DEEP_LINK_SCHEME + FEED_OPEN_URL) {
                 await this.processEvent('maybeOpenFeed', null)
+            } else if (readerPattern.test(url)) {
+                const pageUrl = url.match(readerPattern)?.[1]!
+
+                const decoded = decodeURIComponent(decodeURIComponent(pageUrl))
+                if (pageUrl) {
+                    this.props.navigation.navigate('Reader', {
+                        url: decoded,
+                        updatePage: (page) =>
+                            this.processEvent('updatePage', { page }),
+                    })
+                } else {
+                    console.error(
+                        `Deep linking to the reader did not receive a URL`,
+                    )
+                }
+            }
+        })
+        Linking.getInitialURL().then(async (url) => {
+            if (url == null) {
+                return
+            }
+            if (url === DEEP_LINK_SCHEME + FEED_OPEN_URL) {
+                await this.processEvent('maybeOpenFeed', null)
+            } else if (readerPattern.test(url)) {
+                const pageUrl = url.match(readerPattern)?.[1]!
+
+                const decoded = decodeURIComponent(decodeURIComponent(pageUrl))
+                if (pageUrl) {
+                    this.props.navigation.navigate('Reader', {
+                        url: decoded,
+                        updatePage: (page) =>
+                            this.processEvent('updatePage', { page }),
+                    })
+                } else {
+                    console.error(
+                        `Deep linking to the reader did not receive a URL`,
+                    )
+                }
             }
         })
         this.unsubNavFocus = this.props.navigation.addListener('focus', () =>

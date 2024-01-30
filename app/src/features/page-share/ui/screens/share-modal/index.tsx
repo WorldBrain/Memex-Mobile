@@ -25,6 +25,7 @@ import type { State, Event } from './types'
 import Reader from 'src/features/reader/ui/screens/reader'
 import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
 import { PrimaryAction } from 'src/ui/utils/ActionButtons'
+import { READER_URL } from 'src/ui/navigation/deep-linking'
 
 export interface Props extends Omit<Dependencies, 'keyboardAPI'> {}
 
@@ -50,7 +51,10 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     private handleModalClose = () => {
-        this.processEvent('setModalVisible', { shown: false })
+        this.props.services.shareExt.openAppLink(
+            READER_URL + encodeURIComponent(this.state.pageUrl),
+        )
+        // this.processEvent('setModalVisible', { shown: false })
         // For whatever reason, calling this seems to result in a crash. Though it still closes as expected without calling it...
         // this.props.services.shareExt.close()
     }
