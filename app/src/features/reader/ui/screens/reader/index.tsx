@@ -394,7 +394,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     injectedJavaScript={this.generateInitialJSToInject()}
                     onNavigationStateChange={this.handleNavStateChange}
                     style={{
-                        backgroundColor: 'transparent',
+                        backgroundColor: 'white',
                         height: '100%',
                     }}
                     startInLoadingState
@@ -855,7 +855,7 @@ const WebViewContainer = styled.SafeAreaView<{
     summaryHalfScreen?: boolean
     height?: number
 }>`
-    background: ${(props) => props.theme.colors.greyScale1};
+    background: ${(props) => props.theme.colors.white};
     width: 100%;
     display: flex;
     position: relative;
