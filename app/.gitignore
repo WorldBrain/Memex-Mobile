@@ -72,5 +72,3 @@ android/sentry.properties
 
 # Reader content-script output dir
 dist/
-
-ios/.xcode.env.local
