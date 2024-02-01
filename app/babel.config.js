@@ -72,11 +72,5 @@ module.exports = {
             },
         ],
         '@babel/plugin-proposal-async-generator-functions',
-        [
-            'react-native-reanimated/plugin',
-            {
-                globals: ['__scanCodes'],
-            },
-        ],
     ],
 }

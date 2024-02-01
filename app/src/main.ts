@@ -1,4 +1,3 @@
-import 'react-native-reanimated'
 import 'react-native-gesture-handler'
 import { Platform } from 'react-native'
 import * as Sentry from '@sentry/react-native'
@@ -39,7 +38,7 @@ import { MockSentry } from './services/error-tracking/index.tests'
 import { KeychainPackage } from './services/keychain/keychain'
 import { migrateSettings } from 'src/utils/migrate-settings-for-cloud'
 import { createSelfTests } from 'src/tests/self-tests'
-import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake'
+// import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake'
 import type { UIDependencies } from './ui/types'
 import { initFirestoreSyncTriggerListener } from '@worldbrain/memex-common/lib/personal-cloud/backend/utils'
 import { deviceIdCreatorFactory } from '@worldbrain/memex-common/lib/personal-cloud/storage/device-id'
@@ -167,8 +166,10 @@ export async function main() {
     const services = await createServices({
         keychain: new KeychainPackage({ server: 'worldbrain.io' }),
         keepAwakeLib: {
-            activate: activateKeepAwake,
-            deactivate: deactivateKeepAwake,
+            // activate: activateKeepAwake,
+            // deactivate: deactivateKeepAwake,
+            activate: () => null,
+            deactivate: () => null,
         },
         auth: authService,
         normalizeUrl,

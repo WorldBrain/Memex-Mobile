@@ -180,8 +180,6 @@ android {
     }
 }
 
-apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
-
 dependencies {
     implementation project(':react-native-safe-area-context')
     implementation project(':react-native-webview')
@@ -206,8 +204,6 @@ dependencies {
     implementation "io.grpc:grpc-okhttp:1.32.2"
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
     implementation("com.squareup.okhttp3:okhttp-urlconnection:4.9.1")
-
-    addUnimodulesDependencies()
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {

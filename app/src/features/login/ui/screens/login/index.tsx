@@ -1,12 +1,12 @@
 import React from 'react'
-import { TextInput, Dimensions, Platform } from 'react-native'
+import { TextInput, Dimensions, Platform, Text } from 'react-native'
 import styled from 'styled-components/native'
 
 import { StatefulUIElement } from 'src/ui/types'
 import Logic, { Props, State, Event } from './logic'
 import * as icons from 'src/ui/components/icons/icons-list'
 import styles from '../../components/login.styles'
-import { QRCodeScanner } from '../../components/qr-scanner'
+// import { QRCodeScanner } from '../../components/qr-scanner'
 import LoadingBalls from 'src/ui/components/loading-balls'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import { PrimaryAction } from 'src/ui/utils/ActionButtons'
@@ -106,7 +106,8 @@ export default class LoginScreen extends StatefulUIElement<
                                 )}
                                 {Platform.OS === 'android' && (
                                     <QRCodeContainer>
-                                        <QRCodeScanner
+                                        <Text>TODO: PUT QR SCANNER HERE</Text>
+                                        {/* <QRCodeScanner
                                             onQRCodeScan={(token) =>
                                                 this.processEvent(
                                                     'submitLogin',
@@ -115,7 +116,7 @@ export default class LoginScreen extends StatefulUIElement<
                                                     },
                                                 )
                                             }
-                                        />
+                                        /> */}
                                     </QRCodeContainer>
                                 )}
                                 <ORtext>Or use your email address</ORtext>

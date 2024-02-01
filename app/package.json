@@ -85,7 +85,6 @@
         "react-native-markdown-display": "^7.0.2",
         "react-native-modalbox": "^1.7.1",
         "react-native-polyfill-globals": "^2.0.0",
-        "react-native-reanimated": "2.2.0",
         "react-native-render-html": "^6.3.4",
         "react-native-responsive-screen": "^1.4.2",
         "react-native-safe-area-context": "^3.1.8",
@@ -95,7 +94,6 @@
         "react-native-stream": "^0.1.9",
         "react-native-svg": "^9.13.6",
         "react-native-unimodules": "^0.7.0",
-        "react-native-vision-camera": "2.13.0",
         "react-native-webview": "^13.6.3",
         "readability-node": "^0.1.0",
         "remove-stopwords": "^1.0.3",
@@ -115,7 +113,6 @@
         "url-parse": "^1.4.7",
         "url-regex": "^5.0.0",
         "user-logic": "^0.0.1",
-        "vision-camera-code-scanner": "^0.2.0",
         "web-streams-polyfill": "^3.2.1",
         "whatwg-url": "^7.1.0",
         "xmldom-silent": "^0.1.19"

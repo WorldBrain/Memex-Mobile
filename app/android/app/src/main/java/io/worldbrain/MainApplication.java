@@ -1,19 +1,10 @@
 package io.worldbrain;
 
-import io.worldbrain.generated.BasePackageList;
-
 import android.app.Application;
 import android.content.Context;
 
-import org.unimodules.adapters.react.ModuleRegistryAdapter;
-import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import org.unimodules.core.interfaces.SingletonModule;
-
 import com.oblador.keychain.KeychainPackage;
 import com.facebook.react.ReactApplication;
-import com.swmansion.reanimated.ReanimatedPackage;
-import com.visioncameracodescanner.VisionCameraCodeScannerPluginPackage;
-import com.mrousavy.camera.CameraPackage;
 import io.sentry.react.RNSentryPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
@@ -41,8 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
-   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), Arrays.<SingletonModule>asList());
-
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
     public boolean getUseDeveloperSupport() {
@@ -54,9 +43,6 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
         new SQLitePluginPackage(),   // register SQLite Plugin here
         new MainReactPackage(),
-            new ReanimatedPackage(),
-            new VisionCameraCodeScannerPluginPackage(),
-            new CameraPackage(),
         new RNSentryPackage(),
         new SafeAreaContextPackage(),
         new RNCWebViewPackage(),
@@ -71,7 +57,6 @@ public class MainApplication extends Application implements ReactApplication {
         new RNGestureHandlerPackage(),
         new RNBackgroundFetchPackage(),
         new SharePackage(),  // register `react-native-share-extension` plugin here
-        new ModuleRegistryAdapter(mModuleRegistryProvider),
         new SvgPackage()
       );
     }
