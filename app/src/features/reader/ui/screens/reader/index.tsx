@@ -391,6 +391,12 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
             >
                 <WebView
                     mediaPlaybackRequiresUserAction
+                    allowsFullscreenVideo={
+                        this.props.deviceInfo?.deviceOrientation === 'landscape'
+                            ? true
+                            : false
+                    }
+                    allowsInlineMediaPlayback
                     source={{ uri: urlToRender }}
                     injectedJavaScript={this.generateInitialJSToInject()}
                     onNavigationStateChange={this.handleNavStateChange}
