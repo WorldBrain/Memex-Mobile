@@ -124,12 +124,14 @@ export default class Logic extends UILogic<State, Event> {
         if (!params?.url && !insertedUrl) {
             throw new Error("Navigation error: reader didn't receive URL")
         }
-
         return {
             title: 'test',
+            // TODO: Why does the route param's URL need to be decoded twice???
             url: insertedUrl
                 ? Logic.formUrl(insertedUrl)
-                : Logic.formUrl(params.url),
+                : Logic.formUrl(
+                      decodeURIComponent(decodeURIComponent(params.url)),
+                  ),
             loadState: 'pristine',
             isErrorReported: false,
             isBookmarked: false,

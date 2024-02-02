@@ -4,8 +4,7 @@ import {
     UIEventHandler,
     UIMutation,
 } from 'ui-logic-core'
-
-import { Dimensions } from 'react-native'
+import { Platform, Dimensions } from 'react-native'
 import { EmitterSubscription, KeyboardStatic } from 'react-native'
 import type { UIServices, UIStorageModules, ShareNavProps } from 'src/ui/types'
 import { loadInitial, executeUITask } from 'src/ui/utils'
@@ -15,8 +14,9 @@ import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import type { State, Event } from './types'
 import { isInputDirty, initValues, getDeviceDetails } from './util'
-import { FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
+import { FEED_OPEN_URL, READER_URL } from 'src/ui/navigation/deep-linking'
 import { ContentScriptLoader } from 'src/features/reader/utils/load-content-script'
+import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
 
 export interface Dependencies extends ShareNavProps<'Reader'> {
     services: UIServices<
@@ -141,7 +141,21 @@ export default class Logic extends UILogic<State, Event> {
         this.keyboardHideListener.remove()
     }
 
-    init: EventHandler<'init'> = async ({}) => {
+    private async maybeOpenInReader(
+        state: State,
+    ): Promise<{ openInReader: boolean }> {
+        if (Platform.OS !== 'ios' || !isUrlYTVideo(state.pageUrl)) {
+            return { openInReader: false }
+        }
+
+        await this.storePageInit(state)
+        this.deps.services.shareExt.openAppLink(
+            READER_URL + encodeURIComponent(state.pageUrl),
+        )
+        return { openInReader: true }
+    }
+
+    init: EventHandler<'init'> = async ({ previousState }) => {
         this.handleDimensionsChange()
         Dimensions.addEventListener('change', this.handleDimensionsChange)
         const { services, storage } = this.deps
@@ -154,7 +168,15 @@ export default class Logic extends UILogic<State, Event> {
             return
         }
 
-        this.emitMutation({ pageUrl: { $set: url } })
+        const mutation: UIMutation<State> = { pageUrl: { $set: url } }
+        const nextState = this.withMutation(previousState, mutation)
+        this.emitMutation(mutation)
+
+        const { openInReader } = await this.maybeOpenInReader(nextState)
+        if (openInReader) {
+            await this.deps.services.shareExt.close()
+            return
+        }
 
         this.keyboardShowListener = this.deps.keyboardAPI.addListener(
             'keyboardDidShow',
@@ -175,7 +197,7 @@ export default class Logic extends UILogic<State, Event> {
         // No need to do state hydration from DB if this is new page, just index it
         if (existingPage == null) {
             await loadInitial<State>(this, async () => {
-                await this.storePageInit({ pageUrl: url } as State)
+                await this.storePageInit(nextState)
             })
             this.pageTitleFetchRunning = this.fetchAndWritePageTitle(url)
             return

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Linking, Keyboard, Dimensions } from 'react-native'
+import { Text, Linking, Keyboard, Dimensions, Platform } from 'react-native'
 
 import { supportEmail } from '../../../../../../app.json'
 import { StatefulUIElement } from 'src/ui/types'
@@ -51,10 +51,7 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     private handleModalClose = () => {
-        this.props.services.shareExt.openAppLink(
-            READER_URL + encodeURIComponent(this.state.pageUrl),
-        )
-        // this.processEvent('setModalVisible', { shown: false })
+        this.processEvent('setModalVisible', { shown: false })
         // For whatever reason, calling this seems to result in a crash. Though it still closes as expected without calling it...
         // this.props.services.shareExt.close()
     }
@@ -309,7 +306,7 @@ export default class ShareModalScreen extends StatefulUIElement<
             return null // or return <LoadingComponent /> if you have one
         }
 
-        if (isUrlYTVideo(this.state.pageUrl)) {
+        if (isUrlYTVideo(this.state.pageUrl) && Platform.OS === 'ios') {
             return (
                 <YoutubeRedirectNotice>
                     <Icon
@@ -324,8 +321,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                         Video Saved!
                     </YoutubeRedirectNoticeText>
                     <YoutubeRedirectNoticeSubText>
-                        Go to the app to annotate & summarize YouTube videos.
-                        Improvement coming soon!
+                        Redirecting to the app to annotate & summarize...
                     </YoutubeRedirectNoticeSubText>
                     <PrimaryAction
                         onPress={this.handleModalClose}

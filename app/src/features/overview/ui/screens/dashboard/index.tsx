@@ -6,7 +6,6 @@ import {
     Linking,
     NativeSyntheticEvent,
     NativeScrollEvent,
-    Dimensions,
 } from 'react-native'
 import Logic, { State, Event, Props } from './logic'
 import { StatefulUIElement } from 'src/ui/types'
@@ -25,11 +24,7 @@ import SpacePill from 'src/ui/components/space-pill'
 import ListShareBtn from 'src/features/list-share-btn'
 import { ALL_SAVED_FILTER_ID } from './constants'
 import FeedActivityIndicator from 'src/features/activity-indicator'
-import {
-    DEEP_LINK_SCHEME,
-    FEED_OPEN_URL,
-    READER_URL,
-} from 'src/ui/navigation/deep-linking'
+import { DEEP_LINK_SCHEME, FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import WebView from 'react-native-webview'
 import Navigation from 'src/features/overview/ui/components/navigation'
@@ -38,67 +33,55 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
     private unsubNavFocus!: () => void
 
-    private flatList!: FlatList
-
     constructor(props: Props) {
         super(props, new Logic(props))
     }
 
-    componentDidMount() {
-        super.componentDidMount()
-
-        const readerPattern = /memex:\/\/reader\/(.+)/
-        Linking.addEventListener('url', async ({ url }) => {
-            if (url === DEEP_LINK_SCHEME + FEED_OPEN_URL) {
-                await this.processEvent('maybeOpenFeed', null)
-            } else if (readerPattern.test(url)) {
-                const pageUrl = url.match(readerPattern)?.[1]!
-
-                const decoded = decodeURIComponent(decodeURIComponent(pageUrl))
-                if (pageUrl) {
-                    this.props.navigation.navigate('Reader', {
-                        url: decoded,
-                        updatePage: (page) =>
-                            this.processEvent('updatePage', { page }),
-                    })
-                } else {
-                    console.error(
-                        `Deep linking to the reader did not receive a URL`,
-                    )
-                }
-            }
+    async componentDidMount() {
+        Linking.addEventListener('url', this.handleReceivedDeepLink)
+        Linking.getInitialURL().then((url) => {
+            return this.handleReceivedDeepLink({ url })
         })
-        Linking.getInitialURL().then(async (url) => {
-            if (url == null) {
-                return
-            }
-            if (url === DEEP_LINK_SCHEME + FEED_OPEN_URL) {
-                await this.processEvent('maybeOpenFeed', null)
-            } else if (readerPattern.test(url)) {
-                const pageUrl = url.match(readerPattern)?.[1]!
+        await super.componentDidMount()
 
-                const decoded = decodeURIComponent(decodeURIComponent(pageUrl))
-                if (pageUrl) {
-                    this.props.navigation.navigate('Reader', {
-                        url: decoded,
-                        updatePage: (page) =>
-                            this.processEvent('updatePage', { page }),
-                    })
-                } else {
-                    console.error(
-                        `Deep linking to the reader did not receive a URL`,
-                    )
-                }
-            }
-        })
         this.unsubNavFocus = this.props.navigation.addListener('focus', () =>
             this.processEvent('focusFromNavigation', this.props.route.params),
         )
     }
 
-    componentWillUnmount() {
-        super.componentWillUnmount()
+    async componentWillUnmount() {
         this.unsubNavFocus()
+        Linking.removeEventListener('url', this.handleReceivedDeepLink)
+        await super.componentWillUnmount()
+    }
+
+    private handleReceivedDeepLink = async (event: {
+        url: string | null
+    }): Promise<void> => {
+        if (event.url == null) {
+            return
+        }
+        const readerPattern = /memex:\/\/reader\/(.+)/
+        if (event.url === DEEP_LINK_SCHEME + FEED_OPEN_URL) {
+            await this.processEvent('maybeOpenFeed', null)
+        } else if (readerPattern.test(event.url)) {
+            const pageUrl = event.url.match(readerPattern)?.[1]!
+            // TODO: Why does the route param's URL need to be decoded twice???
+            const decodedPageUrl = decodeURIComponent(
+                decodeURIComponent(pageUrl),
+            )
+            if (pageUrl) {
+                this.props.navigation.navigate('Reader', {
+                    url: decodedPageUrl,
+                    updatePage: (page) =>
+                        this.processEvent('updatePage', { page }),
+                })
+            } else {
+                console.error(
+                    `Deep linking to the reader did not receive a URL`,
+                )
+            }
+        }
     }
 
     private navToPageEditor = ({ fullUrl }: UIPage, mode: EditorMode) => () => {
