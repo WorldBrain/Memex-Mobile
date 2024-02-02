@@ -29,6 +29,7 @@ import { TouchableOpacity, Text } from 'react-native'
 import Markdown from 'react-native-markdown-display'
 import SplitPane from './splitPane'
 import { getBaseTextHighlightStyles } from '@worldbrain/memex-common/lib/in-page-ui/highlighting/highlight-styles'
+import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
 
 const ActionBarHeight = 60
 export default class Reader extends StatefulUIElement<Props, State, Event> {
@@ -82,14 +83,14 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 })
             case 'highlight':
                 return this.processEvent('createHighlight', {
-                    anchor: message.payload.anchor || null,
+                    anchor: message.payload.anchor ?? null,
                     videoTimestamp: message.payload.videoTimestamp,
                     renderHighlight: (h) =>
                         this.runFnInWebView('renderHighlight', h),
                 })
             case 'annotation':
                 return this.processEvent('createAnnotation', {
-                    anchor: message.payload.anchor,
+                    anchor: message.payload.anchor ?? null,
                     videoTimestamp: message.payload.videoTimestamp,
                     renderHighlight: (h) =>
                         this.runFnInWebView('renderHighlight', h),
@@ -411,10 +412,14 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     onMessage={({ nativeEvent }) => {
                         this.handleWebViewMessageReceived(nativeEvent.data)
                     }}
-                    menuItems={[
-                        { label: 'Highlight', key: 'highlight' },
-                        { label: 'Add Note', key: 'annotate' },
-                    ]}
+                    menuItems={
+                        isUrlYTVideo(urlToRender)
+                            ? [{ label: 'Add Note', key: 'highlight' }]
+                            : [
+                                  { label: 'Highlight', key: 'highlight' },
+                                  { label: 'Add Note', key: 'annotate' },
+                              ]
+                    }
                     onCustomMenuSelection={(webViewEvent) => {
                         if (
                             (webViewEvent.nativeEvent as any).key ===
