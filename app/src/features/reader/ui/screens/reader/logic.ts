@@ -238,8 +238,13 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    goBack: EventHandler<'goBack'> = async ({ previousState }) => {
-        this.props.navigation.goBack()
+    goBack: EventHandler<'goBack'> = async ({}) => {
+        const { navigation } = this.props
+        if (navigation.canGoBack()) {
+            navigation.goBack()
+        } else {
+            navigation.replace('Dashboard', { skipDeepLinkCheck: true })
+        }
     }
 
     toggleBookmark: EventHandler<'toggleBookmark'> = async ({

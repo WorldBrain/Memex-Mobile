@@ -40,6 +40,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     async componentDidMount() {
         Linking.addEventListener('url', this.handleReceivedDeepLink)
         Linking.getInitialURL().then((url) => {
+            if (this.props.route.params?.skipDeepLinkCheck) {
+                return
+            }
             return this.handleReceivedDeepLink({ url })
         })
         await super.componentDidMount()
