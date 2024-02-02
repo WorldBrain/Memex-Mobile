@@ -100,9 +100,21 @@ export class PersonalCloudStorage {
         const { storageManager } = this.dependencies
         let updatesIntegrated = 0
 
+        const doesListExist = async (id: number): Promise<boolean> => {
+            const existing = await storageManager
+                .collection('customLists')
+                .findOneObject({ id })
+            return !!existing
+        }
+
         try {
             for (const update of updates) {
                 if (update.type === PersonalCloudUpdateType.ListTreeDelete) {
+                    // Skip op if lists don't exist (most likely been deleted)
+                    if (!(await doesListExist(update.rootNodeLocalListId))) {
+                        continue
+                    }
+
                     await storageManager.operation(
                         LIST_TREE_OPERATION_ALIASES.deleteTree,
                         LIST_COLL_NAMES.listTrees,
@@ -114,6 +126,16 @@ export class PersonalCloudStorage {
                 } else if (
                     update.type === PersonalCloudUpdateType.ListTreeMove
                 ) {
+                    // Skip op if lists don't exist (most likely been deleted)
+                    if (
+                        !(await doesListExist(update.rootNodeLocalListId)) ||
+                        !(update.parentLocalListId != null
+                            ? await doesListExist(update.parentLocalListId)
+                            : true)
+                    ) {
+                        continue
+                    }
+
                     await storageManager.operation(
                         LIST_TREE_OPERATION_ALIASES.moveTree,
                         LIST_COLL_NAMES.listTrees,
