@@ -28,6 +28,8 @@
 		<true/>
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
+		<key>NSExceptionAllowsInsecureHTTPLoads</key>
+		<true/>
 	</dict>
 	<key>NSExtension</key>
 	<dict>
