@@ -148,7 +148,10 @@ export default class Logic extends UILogic<State, Event> {
             return { openInReader: false }
         }
 
-        await this.storePageInit(state)
+        await loadInitial(this, async () => {
+            await this.storePageInit(state)
+            await this.fetchAndWritePageTitle(state.pageUrl)
+        })
         this.deps.services.shareExt.openAppLink(
             READER_URL + encodeURIComponent(state.pageUrl),
         )
@@ -196,7 +199,7 @@ export default class Logic extends UILogic<State, Event> {
 
         // No need to do state hydration from DB if this is new page, just index it
         if (existingPage == null) {
-            await loadInitial<State>(this, async () => {
+            await loadInitial(this, async () => {
                 await this.storePageInit(nextState)
             })
             this.pageTitleFetchRunning = this.fetchAndWritePageTitle(url)

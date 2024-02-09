@@ -25,7 +25,7 @@ import type { State, Event } from './types'
 import Reader from 'src/features/reader/ui/screens/reader'
 import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
 import { PrimaryAction } from 'src/ui/utils/ActionButtons'
-import { READER_URL } from 'src/ui/navigation/deep-linking'
+import LoadingBalls from 'src/ui/components/loading-balls'
 
 export interface Props extends Omit<Dependencies, 'keyboardAPI'> {}
 
@@ -320,9 +320,14 @@ export default class ShareModalScreen extends StatefulUIElement<
                     <YoutubeRedirectNoticeText>
                         Video Saved!
                     </YoutubeRedirectNoticeText>
-                    <YoutubeRedirectNoticeSubText>
-                        Redirecting to the app to annotate & summarize...
-                    </YoutubeRedirectNoticeSubText>
+                    <YoutubeRedirectNoticeSubView>
+                        <YoutubeRedirectNoticeSubText>
+                            Redirecting to the app to annotate & summarize...
+                        </YoutubeRedirectNoticeSubText>
+                        {this.state.loadState === 'running' && (
+                            <LoadingBalls size={16} />
+                        )}
+                    </YoutubeRedirectNoticeSubView>
                     <PrimaryAction
                         onPress={this.handleModalClose}
                         label="Go back"
@@ -462,6 +467,14 @@ const YoutubeRedirectNotice = styled.View`
     width: 100%;
     padding: 20px;
     height: 100%;
+`
+
+const YoutubeRedirectNoticeSubView = styled.View`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 140px;
 `
 
 const YoutubeRedirectNoticeText = styled.Text`
