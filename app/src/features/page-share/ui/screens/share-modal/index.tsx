@@ -26,6 +26,8 @@ import Reader from 'src/features/reader/ui/screens/reader'
 import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
 import { PrimaryAction } from 'src/ui/utils/ActionButtons'
 import LoadingBalls from 'src/ui/components/loading-balls'
+import { READER_URL } from 'src/ui/navigation/deep-linking'
+import { useWindowDimensions } from 'react-native'
 
 export interface Props extends Omit<Dependencies, 'keyboardAPI'> {}
 
@@ -371,12 +373,13 @@ export default class ShareModalScreen extends StatefulUIElement<
 
     render() {
         let editorHeight = Dimensions.get('screen').height
+
         return (
             <ShareModal
                 isModalShown={this.state.isModalShown}
                 onClosed={this.props.services.shareExt.close}
                 stretched={!!this.state.isSpacePickerShown}
-                height={editorHeight}
+                height={950}
                 deviceInfo={this.state.deviceInfo ?? null}
             >
                 {this.state.pageSaveFinished && (

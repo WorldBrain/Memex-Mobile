@@ -20,6 +20,7 @@ const ShareModal: React.StatelessComponent<Props> = (props) => (
         isOpen={props.isModalShown}
         backdropPressToClose={false}
         swipeToClose={false}
+        height={1000}
     >
         <ModalContent
             deviceOrientation={
@@ -38,8 +39,15 @@ const ShareModal: React.StatelessComponent<Props> = (props) => (
     </ModalContainer>
 )
 
-const ModalContainer = styled(Modal)`
+const ModalContainer = styled(Modal)<{ height: number }>`
     background: ${(props) => props.theme.colors.greyScale1};
+    ${(props) =>
+        props.height
+            ? css`
+                  max-height: ${props.height}px;
+              `
+            : undefined}
+    max-height: 1000px;
 `
 
 // if portrait, full height
@@ -61,6 +69,7 @@ const ModalContent = styled.View<{
     top: 5px;
     overflow: hidden;
     border: none;
+    max-height: 950px;
 
     ${(props) =>
         props.os === 'iOS' &&

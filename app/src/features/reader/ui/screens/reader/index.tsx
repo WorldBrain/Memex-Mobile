@@ -403,6 +403,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     style={{
                         backgroundColor: 'white',
                         height: '100%',
+                        maxHeight: '950px',
                     }}
                     startInLoadingState
                     // This flag needs to be set to afford text selection on iOS.
@@ -764,11 +765,12 @@ const Container = styled.SafeAreaView<{
     display: flex;
     position: absolute;
     top: 0px;
+    max-height: 950px;
     align-items: flex-end;
     background: ${(props) => props.theme.colors.greyScale1};
     position: relative;
-    height: ${(props) =>
-        props.deviceHeight ?? 0 - props.statusBarHeight! ?? 0}px;
+    /* height: ${(props) =>
+        props.deviceHeight ?? 0 - props.statusBarHeight! ?? 0}px; */
     flex: 1;
     justify-content: center;
 
@@ -871,6 +873,7 @@ const WebViewContainer = styled.SafeAreaView<{
     display: flex;
     position: relative;
     min-height: 30px;
+    max-height: 950px;
     flex: 1;
     opacity: 1;
     z-index: 0
