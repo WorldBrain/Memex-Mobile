@@ -649,10 +649,10 @@ export default class Logic extends UILogic<State, Event> {
         )
     }
 
-    toggleResultPress({
+    toggleResultPress: EventHandler<'toggleResultPress'> = ({
         event,
         previousState,
-    }: IncomingUIEvent<State, Event, 'toggleResultPress'>): UIMutation<State> {
+    }) => {
         let url = normalize(event.fullUrl)
 
         this.props.services.actionSheet.show({
@@ -667,7 +667,9 @@ export default class Logic extends UILogic<State, Event> {
                         await Share.share({
                             url: event.fullUrl,
                             message:
-                                Platform.OS === 'ios' ? undefined : event.url,
+                                Platform.OS === 'ios'
+                                    ? undefined
+                                    : event.fullUrl,
                         })
                     },
                 },
