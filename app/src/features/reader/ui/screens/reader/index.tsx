@@ -403,7 +403,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     style={{
                         backgroundColor: 'white',
                         height: '100%',
-                        maxHeight: '950px',
+                        maxHeight: 950,
                     }}
                     startInLoadingState
                     // This flag needs to be set to afford text selection on iOS.
