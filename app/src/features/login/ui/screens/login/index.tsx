@@ -338,50 +338,6 @@ export default class LoginScreen extends StatefulUIElement<
                                 </WarningText>
                             </WarningBox>
                         )}
-
-                        {/* {
-                            this.props.mode === 'login' && (
-                                <Button
-                                    title="Forgot?"
-                                    style={
-                                        aspectRatio > 1.6
-                                            ? styles.forgotPasswordButton
-                                            : styles.ipadForgotPasswordButton
-                                    }
-                                    onPress={this.props.onPasswordForgot}
-                                    empty
-                                />
-                            )
-                        } */}
-                        {/* <View
-                            style={
-                                aspectRatio > 1.6
-                                    ? styles.extraContainer
-                                    : {
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        justifyContent: 'center',
-                                    }
-                            }
-                        >
-                            {this.props.isLoading && <LoadingBalls />}
-                            {this.props.hasError && (
-                                <Text
-                                    style={
-                                        aspectRatio > 1.6
-                                            ? styles.errorTitle
-                                            : {
-                                                fontSize: 14,
-                                                paddingHorizontal: 30,
-                                                textAlign: 'center',
-                                            }
-                                    }
-                                >
-                                    Your email or password was incorrect - please try
-                                    again
-                                </Text>
-                            )}
-                        </View> */}
                     </LoginSignupBox>
                 </LoginSignupScreen>
             </LoginSignupContainer>
@@ -479,7 +435,6 @@ const LoginSignupContainer = styled.SafeAreaView`
     justify-content: center;
     align-items: center;
     background: ${(props) => props.theme.colors.black};
-    padding-bottom: 300px;
 `
 
 const LoginSignupBox = styled.View`
