@@ -105,7 +105,10 @@ export class CloudSyncService implements CloudSyncAPI {
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
 
-        const userId: string | number = await storage.loadUserId()
+        const userId = await storage.loadUserId()
+        if (!userId) {
+            throw new Error('Cannot start sync strema as user not logged in')
+        }
         const params: UserReference = { type: 'user-reference', id: userId }
 
         let totalDownloads = 0
@@ -118,7 +121,7 @@ export class CloudSyncService implements CloudSyncAPI {
 
         try {
             for await (const { batch, lastSeen } of backend.streamUpdates({
-                skipUserChangeListening: true,
+                mode: 'single-invocation',
             })) {
                 this.maybeInterruptSyncStream()
                 await storage.integrateUpdates(batch)
