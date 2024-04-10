@@ -180,8 +180,6 @@ export class PersonalCloudStorage {
                 }
                 updatesIntegrated++
             }
-        } catch (error) {
-            console.error(error)
         } finally {
             releaseMutex()
         }
