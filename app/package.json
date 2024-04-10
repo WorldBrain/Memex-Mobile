@@ -18,6 +18,7 @@
         "build:deptree": "depcruise --exclude '^node_modules' --output-type dot ./src | dot -T svg > /tmp/dependencygraph.svg",
         "build:android-release": "sh build-android-release.sh",
         "format": "prettier --config prettier.config.js --write '**/*.{ts,js,tsx,jsx,css,md}'",
+        "android:clean": "android/gradlew clean",
         "android:prod": "bundle exec fastlane android production",
         "android:dev": "bundle exec fastlane android development",
         "android-device": "react-native run-android --variant=ProdDebug",
