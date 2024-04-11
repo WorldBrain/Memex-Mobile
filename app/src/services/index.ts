@@ -170,6 +170,10 @@ export async function createServices(
                     key: storageKeys.retroSyncLastProcessedTime,
                     value,
                 }),
+            getRetroSyncLastProcessedTime: () =>
+                storageModules.localSettings.getSetting({
+                    key: storageKeys.retroSyncLastProcessedTime,
+                }),
             setSyncLastProcessedTime: (value) =>
                 storageModules.localSettings.setSetting({
                     key: storageKeys.syncLastProcessedTime,

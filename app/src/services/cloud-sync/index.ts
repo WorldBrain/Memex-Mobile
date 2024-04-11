@@ -9,6 +9,10 @@ import type { ErrorTrackingService } from '../error-tracking'
 import { COLLECTION_NAMES as ANNOTATIONS_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/storage/modules/annotations/constants'
 import { COLLECTION_NAMES as CONTENT_SHARING_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
 import { UserReference } from '@worldbrain/memex-common/lib/web-interface/types/users'
+import {
+    CITATIONS_FEATURE_BUG_FIX_RELEASE,
+    CITATIONS_FEATURE_RELEASE,
+} from './constants'
 
 export interface Props {
     backend: PersonalCloudBackend
@@ -17,6 +21,7 @@ export interface Props {
     errorTrackingService: ErrorTrackingService
     setSyncLastProcessedTime(time: number): Promise<void>
     setRetroSyncLastProcessedTime(time: number): Promise<void>
+    getRetroSyncLastProcessedTime(): Promise<number | null>
 }
 
 export class SyncStreamInterruptError extends Error {
@@ -99,9 +104,7 @@ export class CloudSyncService implements CloudSyncAPI {
 
     syncStream: CloudSyncAPI['syncStream'] = async () => {
         const { storage, backend, setSyncLastProcessedTime } = this.props
-
         const { releaseMutex } = await this.syncStreamMutex.lock()
-
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
 
@@ -136,24 +139,32 @@ export class CloudSyncService implements CloudSyncAPI {
     }
 
     retrospectiveSync: CloudSyncAPI['retrospectiveSync'] = async () => {
-        const { storage, backend, setRetroSyncLastProcessedTime } = this.props
-
-        const collectionsToRetroSync = [
-            ANNOTATIONS_COLLECTION_NAMES.listEntry,
-            CONTENT_SHARING_COLLECTION_NAMES.listMetadata,
-            CONTENT_SHARING_COLLECTION_NAMES.annotationPrivacy,
-            CONTENT_SHARING_COLLECTION_NAMES.annotationMetadata,
-        ]
+        const {
+            storage,
+            backend,
+            getRetroSyncLastProcessedTime,
+            setRetroSyncLastProcessedTime,
+        } = this.props
         const { releaseMutex } = await this.syncStreamMutex.lock()
         await storage.loadDeviceId()
+        await storage.pushAllQueuedUpdates()
+
+        // NOTE these founds are specific to dates when a bug was released and then fixed. They should be changed
+        //  before using this for other scenarios
+        const lowerBound = Math.max(
+            (await getRetroSyncLastProcessedTime()) ?? 0,
+            CITATIONS_FEATURE_RELEASE,
+        )
+        const upperBound = CITATIONS_FEATURE_BUG_FIX_RELEASE
 
         try {
-            for await (const {
-                batch,
-                lastSeen,
-            } of backend.streamCollectionData({
-                collectionNames: collectionsToRetroSync,
+            for await (const { batch, lastSeen } of backend.streamUpdates({
+                mode: 'single-invocation',
+                startTime: lowerBound,
             })) {
+                if (lastSeen > upperBound) {
+                    break
+                }
                 this.maybeInterruptSyncStream()
                 await storage.integrateUpdates(batch)
                 await setRetroSyncLastProcessedTime(lastSeen)
@@ -164,6 +175,8 @@ export class CloudSyncService implements CloudSyncAPI {
         } finally {
             releaseMutex()
         }
+
+        await setRetroSyncLastProcessedTime(Date.now())
     }
 
     interruptSyncStream: CloudSyncAPI['interruptSyncStream'] = async () => {
