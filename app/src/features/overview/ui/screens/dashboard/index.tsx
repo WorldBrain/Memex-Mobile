@@ -275,6 +275,25 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
         return (
             <ResultListContainer>
+                {this.state.shouldShowRetroSyncNotif && (
+                    <RetroSyncBtn
+                        onPress={() =>
+                            this.processEvent(
+                                'performRetroSyncToDLMissingChanges',
+                                null,
+                            )
+                        }
+                    >
+                        <Icon
+                            icon={icons.Alert}
+                            strokeWidth="0"
+                            heightAndWidth="18px"
+                            color="greyScale5"
+                            fill
+                        />
+                        <RetroSyncBtnText>Run sync fix</RetroSyncBtnText>
+                    </RetroSyncBtn>
+                )}
                 <ResultsList
                     data={preparedData}
                     ref={(ref) => (this.flatList = ref!)}
@@ -646,6 +665,10 @@ const FeedActivityIndicatorBox = styled.View`
 const LastItemEmpty = styled.View`
     height: 100px;
 `
+
+const RetroSyncBtn = styled.TouchableOpacity``
+
+const RetroSyncBtnText = styled.Text``
 
 const ResultsExhaustedContainer = styled.View`
     display: flex;

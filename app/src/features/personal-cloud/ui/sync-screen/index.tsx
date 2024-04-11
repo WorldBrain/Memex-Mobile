@@ -48,50 +48,41 @@ export default class CloudSyncScreen extends StatefulUIElement<
     }
 
     private renderStats() {
-        // if (this.props.route.params?.shouldRetrospectiveSync) {
-        //     return null
-        // }
-
         if (
-            this.state.totalDownloads != null &&
-            this.state.downloadProgress != null
+            this.state.totalDownloads == null ||
+            this.state.downloadProgress == null
         ) {
-            return (
-                <SyncInfoContainer>
-                    <InfoText>
-                        {this.state.totalDownloads != null && (
-                            <>
-                                {this.state.downloadProgress &&
-                                    this.state.downloadProgress}{' '}
-                                / {this.state.totalDownloads}
-                            </>
-                        )}
-                    </InfoText>
-                    <ProgressExplainer>
-                        Changes already synced
-                    </ProgressExplainer>
-                    <ProgressBarContainer>
-                        <ProgressBar>
-                            <ProgressBarInner
-                                percentageComplete={calcPercComplete(
-                                    this.state,
-                                )}
-                            />
-                        </ProgressBar>
-                        <ProgressBarHelperTextContainer>
-                            <ProgressBarHelperTextLeft>
-                                Progress
-                            </ProgressBarHelperTextLeft>
-                            <ProgressBarHelperTextRight>
-                                {calcPercComplete(this.state)}%
-                            </ProgressBarHelperTextRight>
-                        </ProgressBarHelperTextContainer>
-                    </ProgressBarContainer>
-                </SyncInfoContainer>
-            )
-        } else {
-            return undefined
+            return null
         }
+        return (
+            <SyncInfoContainer>
+                <InfoText>
+                    {this.state.totalDownloads != null && (
+                        <>
+                            {this.state.downloadProgress &&
+                                this.state.downloadProgress}{' '}
+                            / {this.state.totalDownloads}
+                        </>
+                    )}
+                </InfoText>
+                <ProgressExplainer>Changes already synced</ProgressExplainer>
+                <ProgressBarContainer>
+                    <ProgressBar>
+                        <ProgressBarInner
+                            percentageComplete={calcPercComplete(this.state)}
+                        />
+                    </ProgressBar>
+                    <ProgressBarHelperTextContainer>
+                        <ProgressBarHelperTextLeft>
+                            Progress
+                        </ProgressBarHelperTextLeft>
+                        <ProgressBarHelperTextRight>
+                            {calcPercComplete(this.state)}%
+                        </ProgressBarHelperTextRight>
+                    </ProgressBarHelperTextContainer>
+                </ProgressBarContainer>
+            </SyncInfoContainer>
+        )
     }
 
     private renderSyncingScreen() {
@@ -154,13 +145,15 @@ export default class CloudSyncScreen extends StatefulUIElement<
                 <View>
                     <HeadingText>Sync successful</HeadingText>
                 </View>
-                <View>
-                    <SecondaryText>
-                        If you see no data in the dashboard, make sure you
-                        synced on at least one of your other devices first then
-                        restart the app.
-                    </SecondaryText>
-                </View>
+                {!this.props.route.params?.shouldRetrospectiveSync && (
+                    <View>
+                        <SecondaryText>
+                            If you see no data in the dashboard, make sure you
+                            synced on at least one of your other devices first
+                            then restart the app.
+                        </SecondaryText>
+                    </View>
+                )}
                 <PrimaryAction
                     label="Go to Dashboard"
                     onPress={() => this.processEvent('goToDashboard', null)}

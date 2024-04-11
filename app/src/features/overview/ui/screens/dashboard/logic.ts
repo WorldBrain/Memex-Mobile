@@ -38,6 +38,10 @@ import {
 import { getFeedUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
 import { Copy, Trash } from 'src/ui/components/icons/icons-list'
 import { normalizeUrl } from '@worldbrain/memex-common/lib/url-utils/normalize'
+import {
+    CITATIONS_FEATURE_BUG_FIX_RELEASE,
+    CITATIONS_FEATURE_RELEASE,
+} from 'src/services/cloud-sync/constants'
 
 export interface State {
     syncState: UITaskState
@@ -47,6 +51,7 @@ export interface State {
     listNameLoadState: UITaskState
     couldHaveMore: boolean
     shouldShowSyncRibbon: boolean
+    shouldShowRetroSyncNotif: boolean
     pages: NormalizedState<UIPage>
     selectedListId: number | undefined
     action?: 'delete' | 'togglePageStar'
@@ -70,6 +75,7 @@ export type Event = UIEvent<{
     setFilteredListId: { id: number }
     shareSelectedList: { remoteListId: string }
     focusFromNavigation: MainNavigatorParamList['Dashboard']
+    performRetroSyncToDLMissingChanges: null
     toggleFeed: null
 }>
 
@@ -131,6 +137,7 @@ export default class Logic extends UILogic<State, Event> {
             couldHaveMore: true,
             actionState: 'pristine',
             shouldShowSyncRibbon: false,
+            shouldShowRetroSyncNotif: false,
             actionFinishedAt: 0,
             pages: initNormalizedState(),
             selectedListId,
@@ -153,20 +160,6 @@ export default class Logic extends UILogic<State, Event> {
         )
         if (showOnboarding) {
             navigation.navigate('Onboarding')
-            return
-        }
-
-        // Nav to sync to do reprospective sync if needed (annotation spaces support feature)
-        // NOTE: retro sync flag should be set post-init sync, so this will only trigger for
-        //   existing users who did init-sync in earlier versions (where it didn't set that flag)
-        const initSyncDone = await services.localStorage.get(
-            storageKeys.initSyncFlag,
-        )
-        const retrospectiveSyncDone = await services.localStorage.get(
-            storageKeys.retroSyncFlag,
-        )
-        if (initSyncDone && !retrospectiveSyncDone) {
-            navigation.navigate('CloudSync', { shouldRetrospectiveSync: true })
             return
         }
 
@@ -201,8 +194,19 @@ export default class Logic extends UILogic<State, Event> {
 
         await loadInitial<State>(this, async () => {
             await this.doLoadMore(this.getInitialState())
-        }),
-            this.emitMutation({ reloadState: { $set: 'pristine' } })
+            const retroSyncProcessedTime =
+                (await services.localStorage.get(
+                    storageKeys.retroSyncLastProcessedTime,
+                )) ?? 0
+            this.emitMutation({
+                reloadState: { $set: 'pristine' }, // TODO: Why is this being set here?
+                shouldShowRetroSyncNotif: {
+                    $set:
+                        retroSyncProcessedTime <
+                        CITATIONS_FEATURE_BUG_FIX_RELEASE,
+                },
+            })
+        })
         await this.doSync()
     }
 
@@ -413,13 +417,16 @@ export default class Logic extends UILogic<State, Event> {
     ) => {
         const { metaPicker } = this.props.storage.modules
 
-        let listEntries: ListEntry[] = await metaPicker.findRecentListEntries(
-            prevState.selectedListId,
-            {
-                skip: prevState.pages.allIds.length,
-                limit: this.pageSize,
-            },
-        )
+        let listEntries: ListEntry[] =
+            prevState.selectedListId != null
+                ? await metaPicker.findRecentListEntries(
+                      prevState.selectedListId,
+                      {
+                          skip: prevState.pages.allIds.length,
+                          limit: this.pageSize,
+                      },
+                  )
+                : []
 
         listEntries = listEntries.filter((entry) => !!entry.pageUrl)
 
@@ -647,6 +654,14 @@ export default class Logic extends UILogic<State, Event> {
                 }
             },
         )
+    }
+
+    performRetroSyncToDLMissingChanges: EventHandler<
+        'performRetroSyncToDLMissingChanges'
+    > = ({ event, previousState }) => {
+        this.props.navigation.navigate('CloudSync', {
+            shouldRetrospectiveSync: true,
+        })
     }
 
     toggleResultPress: EventHandler<'toggleResultPress'> = ({

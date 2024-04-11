@@ -6,9 +6,7 @@ import type { PersonalCloudStorage } from 'src/features/personal-cloud/storage'
 import type { PersonalCloudBackend } from '@worldbrain/memex-common/lib/personal-cloud/backend/types'
 import type { CloudSyncAPI, SyncStats } from './types'
 import type { ErrorTrackingService } from '../error-tracking'
-import { COLLECTION_NAMES as ANNOTATIONS_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/storage/modules/annotations/constants'
-import { COLLECTION_NAMES as CONTENT_SHARING_COLLECTION_NAMES } from '@worldbrain/memex-common/lib/content-sharing/client-storage'
-import { UserReference } from '@worldbrain/memex-common/lib/web-interface/types/users'
+import type { UserReference } from '@worldbrain/memex-common/lib/web-interface/types/users'
 import {
     CITATIONS_FEATURE_BUG_FIX_RELEASE,
     CITATIONS_FEATURE_RELEASE,
@@ -166,7 +164,17 @@ export class CloudSyncService implements CloudSyncAPI {
                     break
                 }
                 this.maybeInterruptSyncStream()
-                await storage.integrateUpdates(batch)
+                try {
+                    await storage.integrateUpdates(batch)
+                } catch (err) {
+                    // This is here as `pageMetadata` don't DL from sync with unique IDs. They just get IDs assigned at the client side,
+                    //  while the actual "identifier" index, which lookups are performed on, is the pages coll FK. This is unique and,
+                    //  as we're doing a retro sync, there could already be these docs stored locally and thus will error out when attempted
+                    //  to be written again with the same pages coll FK
+                    if (!err.message.includes('UNIQUE constraint failed')) {
+                        throw err
+                    }
+                }
                 await setRetroSyncLastProcessedTime(lastSeen)
                 this.maybeInterruptSyncStream()
             }
