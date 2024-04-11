@@ -1,6 +1,4 @@
 import expect from 'expect'
-import { extractUrlParts } from '@worldbrain/memex-url-utils'
-
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'
 import type { Page } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/overview/types'
@@ -10,6 +8,7 @@ import {
     LocationSchemeType,
     ContentLocatorFormat,
 } from '@worldbrain/memex-common/lib/personal-cloud/storage/types'
+import { extractUrlParts } from '@worldbrain/memex-common/lib/url-utils/extract-parts'
 
 const it = makeStorageTestFactory()
 

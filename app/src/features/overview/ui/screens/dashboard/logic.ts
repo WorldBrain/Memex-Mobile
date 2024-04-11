@@ -37,7 +37,7 @@ import {
 } from '@worldbrain/memex-common/lib/common-ui/utils/normalized-state'
 import { getFeedUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
 import { Copy, Trash } from 'src/ui/components/icons/icons-list'
-import normalize from '@worldbrain/memex-url-utils/ts/normalize'
+import { normalizeUrl } from '@worldbrain/memex-common/lib/url-utils/normalize'
 
 export interface State {
     syncState: UITaskState
@@ -653,7 +653,7 @@ export default class Logic extends UILogic<State, Event> {
         event,
         previousState,
     }) => {
-        let url = normalize(event.fullUrl)
+        let url = normalizeUrl(event.fullUrl)
 
         this.props.services.actionSheet.show({
             hideOnSelection: true,

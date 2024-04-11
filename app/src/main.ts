@@ -2,7 +2,7 @@ import 'react-native-reanimated'
 import 'react-native-gesture-handler'
 import { Platform } from 'react-native'
 import * as Sentry from '@sentry/react-native'
-import { normalizeUrl } from '@worldbrain/memex-url-utils'
+import { normalizeUrl } from '@worldbrain/memex-common/lib/url-utils/normalize'
 import FirebasePersonalCloudBackend from '@worldbrain/memex-common/lib/personal-cloud/backend/firebase'
 import type {
     PersonalCloudDeviceId,

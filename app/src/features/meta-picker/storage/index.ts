@@ -4,7 +4,6 @@ import {
     StorageModuleConstructorArgs,
 } from '@worldbrain/storex-pattern-modules'
 import type { OperationBatch } from '@worldbrain/storex'
-import type { URLNormalizer } from '@worldbrain/memex-url-utils'
 import {
     COLLECTION_DEFINITIONS as TAG_COLL_DEFINITIONS,
     COLLECTION_NAMES as TAG_COLL_NAMES,
@@ -44,6 +43,7 @@ import {
     insertOrderedItemBeforeIndex,
     pushOrderedItem,
 } from '@worldbrain/memex-common/lib/utils/item-ordering'
+import type { URLNormalizer } from '@worldbrain/memex-common/lib/url-utils/normalize/types'
 
 const cleanListTree = (listTree: CustomListTree) => ({
     ...listTree,

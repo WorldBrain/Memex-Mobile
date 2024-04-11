@@ -1,4 +1,3 @@
-import type { URLNormalizer } from '@worldbrain/memex-url-utils'
 import type { AuthService } from '@worldbrain/memex-common/lib/authentication/types'
 import { storageKeys } from '../../app.json'
 import type { ReactNativeFirebase } from '@react-native-firebase/app'
@@ -27,7 +26,7 @@ import ListSharingService from '@worldbrain/memex-common/lib/content-sharing/ser
 import FirebaseFunctionsActivityStreamsService from '@worldbrain/memex-common/lib/activity-streams/services/firebase-functions/client'
 import MemoryStreamsService from '@worldbrain/memex-common/lib/activity-streams/services/memory'
 import ActivityIndicatorService from '@worldbrain/memex-common/lib/activity-streams/services/activity-indicator'
-// import { reactNativeFBToAuthFBDeps } from 'src/firebase'
+import type { URLNormalizer } from '@worldbrain/memex-common/lib/url-utils/normalize/types'
 
 export interface CreateServicesOptions {
     auth: AuthService
@@ -48,7 +47,6 @@ export async function createServices(
     const { modules: storageModules } = options.storage
     const { modules: serverStorageModules } = options.serverStorage
     const auth = options.auth as MemexGoAuthService
-    // new MemexGoAuthService({ firebase: reactNativeFBToAuthFBDeps(options.firebase)})
     const pageFetcher = new PageFetcherService()
     const listKeys = new ListKeysService({
         serverStorage: serverStorageModules.contentSharing,

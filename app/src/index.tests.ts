@@ -1,4 +1,3 @@
-import { normalizeUrl } from '@worldbrain/memex-url-utils'
 import { MemoryAuthService } from '@worldbrain/memex-common/lib/authentication/memory'
 import { TEST_USER } from '@worldbrain/memex-common/lib/authentication/dev'
 import { getStorageContents } from '@worldbrain/memex-common/lib/storage/utils'
@@ -38,6 +37,7 @@ import type {
 import { storageKeys } from '../app.json'
 import { createServerServices } from './services/server'
 import type { RouteProp } from '@react-navigation/native'
+import { normalizeUrl } from '@worldbrain/memex-common/lib/url-utils/normalize'
 
 /*
  * Multiple tests throw errors running on the same TypeORM connection. So give each test a different

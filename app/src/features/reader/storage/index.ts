@@ -7,7 +7,7 @@ import {
     COLLECTION_DEFINITIONS,
     COLLECTION_NAMES,
 } from '@worldbrain/memex-common/lib/storage/modules/reader/constants'
-import { URLNormalizer } from '@worldbrain/memex-url-utils'
+import type { URLNormalizer } from '@worldbrain/memex-common/lib/url-utils/normalize/types'
 
 import { ReadablePageData } from './types'
 

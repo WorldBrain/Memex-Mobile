@@ -69,9 +69,6 @@
             "@worldbrain/memex-common/lib/*": [
                 "external/@worldbrain/memex-common/ts/*"
             ],
-            "@worldbrain/memex-url-utils": [
-                "external/@worldbrain/memex-url-utils/ts"
-            ],
             "user-logic": ["external/user-logic/ts"],
             "user-logic/lib/*": ["external/user-logic/ts/*"],
             "simple-signalling": ["external/simple-signalling/ts"],

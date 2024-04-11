@@ -11,7 +11,8 @@ import {
     initListTreeOperationWatchers,
 } from '@worldbrain/memex-common/lib/content-sharing/storage/list-tree-middleware'
 import { ChangeWatchMiddleware } from '@worldbrain/storex-middleware-change-watcher'
-import { extractUrlParts, normalizeUrl } from '@worldbrain/memex-url-utils'
+import { normalizeUrl } from '@worldbrain/memex-common/lib/url-utils/normalize'
+import { extractUrlParts } from '@worldbrain/memex-common/lib/url-utils/extract-parts'
 import { createStorexPlugins } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/plugins'
 import UserStorage from '@worldbrain/memex-common/lib/user-management/storage'
 import { OverviewStorage } from '@worldbrain/memex-common/lib/storage/modules/mobile-app/features/overview/storage'

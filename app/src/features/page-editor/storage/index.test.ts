@@ -1,5 +1,5 @@
 import expect from 'expect'
-import { normalizeUrl } from '@worldbrain/memex-url-utils'
+import { normalizeUrl } from '@worldbrain/memex-common/lib/url-utils/normalize'
 
 import { makeStorageTestFactory } from 'src/index.tests'
 import * as data from './index.test.data'

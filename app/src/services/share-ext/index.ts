@@ -1,7 +1,7 @@
 import { Platform, Linking } from 'react-native'
 import ShareExtension from 'react-native-share-extension'
 
-import { URLNormalizer } from '@worldbrain/memex-url-utils'
+import type { URLNormalizer } from '@worldbrain/memex-common/lib/url-utils/normalize/types'
 
 import { ShareAPI } from './types'
 import { READER_URL, DEEP_LINK_SCHEME } from 'src/ui/navigation/deep-linking'
