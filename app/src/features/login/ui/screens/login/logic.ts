@@ -134,6 +134,12 @@ export default class Logic extends UILogic<State, Event> {
 
         const { userHasChanged } = await this.rememberUserDetails()
 
+        // Set the retro sync timestamp so that newly logged in users won't get the retro sync btn on the dashboard
+        await this.props.services.localStorage.set(
+            storageKeys.retroSyncLastProcessedTime,
+            Date.now(),
+        )
+
         // If the user who just logged-in is different from the previous, we need to re-sync
         if (userHasChanged) {
             navigation.navigate('CloudSync', { shouldWipeDBFirst: true })
