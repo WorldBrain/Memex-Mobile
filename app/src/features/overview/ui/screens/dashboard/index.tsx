@@ -276,23 +276,33 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         return (
             <ResultListContainer>
                 {this.state.shouldShowRetroSyncNotif && (
-                    <RetroSyncBtn
-                        onPress={() =>
-                            this.processEvent(
-                                'performRetroSyncToDLMissingChanges',
-                                null,
-                            )
-                        }
-                    >
-                        <Icon
-                            icon={icons.Alert}
-                            strokeWidth="0"
-                            heightAndWidth="18px"
-                            color="greyScale5"
-                            fill
-                        />
-                        <RetroSyncBtnText>Run sync fix</RetroSyncBtnText>
-                    </RetroSyncBtn>
+                    <RetroSyncNotif>
+                        <RetroSyncNotifText>
+                            There were some sync issues in a past release
+                            leading to some missing data. {'\n'}
+                            Run the sync now and you should be back on track in
+                            a few minutes. {'\n'} Leave the app open while
+                            syncing.
+                        </RetroSyncNotifText>
+                        <RetroSyncBtn
+                            onPress={() =>
+                                this.processEvent(
+                                    'performRetroSyncToDLMissingChanges',
+                                    null,
+                                )
+                            }
+                        >
+                            <Icon
+                                icon={icons.Alert}
+                                strokeWidth="2"
+                                heightAndWidth="18px"
+                                color="greyScale1"
+                            />
+                            <RetroSyncBtnText>
+                                Sync missing data
+                            </RetroSyncBtnText>
+                        </RetroSyncBtn>
+                    </RetroSyncNotif>
                 )}
                 <ResultsList
                     data={preparedData}
@@ -666,9 +676,37 @@ const LastItemEmpty = styled.View`
     height: 100px;
 `
 
-const RetroSyncBtn = styled.TouchableOpacity``
+const RetroSyncNotif = styled.View`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 5px;
+    background: ${(props) => props.theme.colors.greyScale1};
+`
 
-const RetroSyncBtnText = styled.Text``
+const RetroSyncNotifText = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale7};
+    font-size: 16px;
+    text-align: center;
+`
+
+const RetroSyncBtn = styled.TouchableOpacity`
+    background: ${(props) => props.theme.colors.prime1};
+    border-radius: 6px;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+`
+
+const RetroSyncBtnText = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale1};
+    margin-left: 10px;
+`
 
 const ResultsExhaustedContainer = styled.View`
     display: flex;
