@@ -682,6 +682,7 @@ const RetroSyncNotif = styled.View`
     justify-content: center;
     align-items: center;
     padding: 20px;
+    margin-top: 5px;
     border-radius: 5px;
     background: ${(props) => props.theme.colors.greyScale1};
 `

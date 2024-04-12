@@ -659,6 +659,7 @@ export default class Logic extends UILogic<State, Event> {
     performRetroSyncToDLMissingChanges: EventHandler<
         'performRetroSyncToDLMissingChanges'
     > = ({ event, previousState }) => {
+        this.emitMutation({ shouldShowRetroSyncNotif: { $set: false } })
         this.props.navigation.navigate('CloudSync', {
             shouldRetrospectiveSync: true,
         })
