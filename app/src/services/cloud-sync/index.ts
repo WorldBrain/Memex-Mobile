@@ -164,17 +164,7 @@ export class CloudSyncService implements CloudSyncAPI {
                     break
                 }
                 this.maybeInterruptSyncStream()
-                try {
-                    await storage.integrateUpdates(batch)
-                } catch (err) {
-                    // This is here as `pageMetadata` don't DL from sync with unique IDs. They just get IDs assigned at the client side,
-                    //  while the actual "identifier" index, which lookups are performed on, is the pages coll FK. This is unique and,
-                    //  as we're doing a retro sync, there could already be these docs stored locally and thus will error out when attempted
-                    //  to be written again with the same pages coll FK
-                    if (!err.message.includes('UNIQUE constraint failed')) {
-                        throw err
-                    }
-                }
+                await storage.integrateUpdates(batch, { continueOnError: true })
                 await setRetroSyncLastProcessedTime(lastSeen)
                 this.maybeInterruptSyncStream()
             }

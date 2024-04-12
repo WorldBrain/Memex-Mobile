@@ -95,6 +95,7 @@ export class PersonalCloudStorage {
 
     async integrateUpdates(
         updates: PersonalCloudUpdateBatch,
+        opts?: { continueOnError?: boolean },
     ): Promise<UpdateIntegrationResult> {
         const { releaseMutex } = await this.pullMutex.lock()
         const { storageManager } = this.dependencies
@@ -109,76 +110,90 @@ export class PersonalCloudStorage {
 
         try {
             for (const update of updates) {
-                if (update.type === PersonalCloudUpdateType.ListTreeDelete) {
-                    // Skip op if lists don't exist (most likely been deleted)
-                    if (!(await doesListExist(update.rootNodeLocalListId))) {
-                        continue
-                    }
-
-                    await storageManager.operation(
-                        LIST_TREE_OPERATION_ALIASES.deleteTree,
-                        LIST_COLL_NAMES.listTrees,
-                        {
-                            localListId: update.rootNodeLocalListId,
-                        },
-                        { skipSync: true },
-                    )
-                } else if (
-                    update.type === PersonalCloudUpdateType.ListTreeMove
-                ) {
-                    // Skip op if lists don't exist (most likely been deleted)
+                try {
                     if (
-                        !(await doesListExist(update.rootNodeLocalListId)) ||
-                        !(update.parentLocalListId != null
-                            ? await doesListExist(update.parentLocalListId)
-                            : true)
+                        update.type === PersonalCloudUpdateType.ListTreeDelete
+                    ) {
+                        // Skip op if lists don't exist (most likely been deleted)
+                        if (
+                            !(await doesListExist(update.rootNodeLocalListId))
+                        ) {
+                            continue
+                        }
+
+                        await storageManager.operation(
+                            LIST_TREE_OPERATION_ALIASES.deleteTree,
+                            LIST_COLL_NAMES.listTrees,
+                            {
+                                localListId: update.rootNodeLocalListId,
+                            },
+                            { skipSync: true },
+                        )
+                    } else if (
+                        update.type === PersonalCloudUpdateType.ListTreeMove
+                    ) {
+                        // Skip op if lists don't exist (most likely been deleted)
+                        if (
+                            !(await doesListExist(
+                                update.rootNodeLocalListId,
+                            )) ||
+                            !(update.parentLocalListId != null
+                                ? await doesListExist(update.parentLocalListId)
+                                : true)
+                        ) {
+                            continue
+                        }
+
+                        await storageManager.operation(
+                            LIST_TREE_OPERATION_ALIASES.moveTree,
+                            LIST_COLL_NAMES.listTrees,
+                            {
+                                localListId: update.rootNodeLocalListId,
+                                newParentListId: update.parentLocalListId,
+                            },
+                            { skipSync: true },
+                        )
+                    } else if (
+                        !CLOUD_SYNCED_COLLECTIONS.includes(update.collection)
                     ) {
                         continue
+                    } else if (
+                        update.type === PersonalCloudUpdateType.Overwrite
+                    ) {
+                        if (update.media) {
+                            // We currently don't support media updates on mobile
+                            continue
+                        }
+
+                        const object = update.object
+                        preprocessPulledObject({
+                            storageRegistry: storageManager.registry,
+                            collection: update.collection,
+                            object,
+                        })
+
+                        // WARNING: Keep in mind this skips all storage middleware
+                        await updateOrCreate({
+                            storageManager,
+                            collection: update.collection,
+                            updates: update.object,
+                            where: update.where,
+                            executeOperation: (...args) =>
+                                storageManager.backend.operation(...args),
+                        })
+                    } else if (update.type === PersonalCloudUpdateType.Delete) {
+                        await storageManager.backend.operation(
+                            'deleteObjects',
+                            update.collection,
+                            update.where,
+                        )
                     }
-
-                    await storageManager.operation(
-                        LIST_TREE_OPERATION_ALIASES.moveTree,
-                        LIST_COLL_NAMES.listTrees,
-                        {
-                            localListId: update.rootNodeLocalListId,
-                            newParentListId: update.parentLocalListId,
-                        },
-                        { skipSync: true },
-                    )
-                } else if (
-                    !CLOUD_SYNCED_COLLECTIONS.includes(update.collection)
-                ) {
-                    continue
-                } else if (update.type === PersonalCloudUpdateType.Overwrite) {
-                    if (update.media) {
-                        // We currently don't support media updates on mobile
-                        continue
+                    updatesIntegrated++
+                } catch (err) {
+                    if (!opts?.continueOnError) {
+                        throw err
                     }
-
-                    const object = update.object
-                    preprocessPulledObject({
-                        storageRegistry: storageManager.registry,
-                        collection: update.collection,
-                        object,
-                    })
-
-                    // WARNING: Keep in mind this skips all storage middleware
-                    await updateOrCreate({
-                        storageManager,
-                        collection: update.collection,
-                        updates: update.object,
-                        where: update.where,
-                        executeOperation: (...args) =>
-                            storageManager.backend.operation(...args),
-                    })
-                } else if (update.type === PersonalCloudUpdateType.Delete) {
-                    await storageManager.backend.operation(
-                        'deleteObjects',
-                        update.collection,
-                        update.where,
-                    )
                 }
-                updatesIntegrated++
             }
         } finally {
             releaseMutex()
