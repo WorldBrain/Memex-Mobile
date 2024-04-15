@@ -34,6 +34,11 @@ import { PAGE_FETCH_DATA_FLAG } from '@worldbrain/memex-common/lib/page-indexing
 import { LIST_TREE_OPERATION_ALIASES } from '@worldbrain/memex-common/lib/content-sharing/storage/list-tree-middleware'
 import { COLLECTION_NAMES as LIST_COLL_NAMES } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 
+const BAD_ID_COLLECTION_NAMES = [
+    PAGES_COLLECTION_NAMES.pageMetadata,
+    PAGES_COLLECTION_NAMES.pageEntity,
+]
+
 export interface Dependencies {
     storageManager: StorageManager
     uploadClientUpdates: (
@@ -190,7 +195,18 @@ export class PersonalCloudStorage {
                     }
                     updatesIntegrated++
                 } catch (err) {
-                    if (!opts?.continueOnError) {
+                    // These collections have dynamically generated IDs on the client-side when sync DL'd,
+                    //  thus they can't be easily deduped against existing data by the main sync's `updateOrCreate` queries.
+                    //  Instead they error out upon insertion as they have conflicting unique FKs, which
+                    //  we don't want blocking future updates.
+                    // TODO: Make sync more robust to handle collections like this.
+                    const isBadIdCollection =
+                        (update.type === PersonalCloudUpdateType.Delete ||
+                            update.type ===
+                                PersonalCloudUpdateType.Overwrite) &&
+                        BAD_ID_COLLECTION_NAMES.includes(update.collection)
+
+                    if (!opts?.continueOnError && !isBadIdCollection) {
                         throw err
                     }
                 }
