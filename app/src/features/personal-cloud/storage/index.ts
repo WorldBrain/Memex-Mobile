@@ -206,7 +206,15 @@ export class PersonalCloudStorage {
                                 PersonalCloudUpdateType.Overwrite) &&
                         BAD_ID_COLLECTION_NAMES.includes(update.collection)
 
-                    if (!opts?.continueOnError && !isBadIdCollection) {
+                    const isDeleteForNonExistingData =
+                        update.type === PersonalCloudUpdateType.Delete &&
+                        err.message.includes('FOREIGN KEY constraint')
+
+                    if (
+                        !opts?.continueOnError &&
+                        !isBadIdCollection &&
+                        !isDeleteForNonExistingData
+                    ) {
                         throw err
                     }
                 }
