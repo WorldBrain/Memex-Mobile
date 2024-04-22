@@ -97,11 +97,17 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    private async loadPageData(url: string): Promise<Page> {
+    private async loadPageData(urlInput: string): Promise<Page> {
         const { overview, pageEditor, metaPicker } = this.props.storage.modules
         const { annotationSharing } = this.props.services
-        const storedPage = await overview.findPage({ url })
+        let storedPage = null
+        let url = urlInput
+        storedPage = await overview.findPage({ url: url })
 
+        if (!storedPage) {
+            url = url.endsWith('/') ? url.slice(0, -1) : url
+            storedPage = await overview.findPage({ url })
+        }
         if (!storedPage) {
             throw new Error('No page found in DB for given route.')
         }
