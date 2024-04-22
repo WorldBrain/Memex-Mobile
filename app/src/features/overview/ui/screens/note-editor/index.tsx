@@ -211,7 +211,7 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                         />
                                     </SpaceBar>
                                     <RightSide>
-                                        <AnnotationPrivacyBtn
+                                        {/* <AnnotationPrivacyBtn
                                             actionSheetService={
                                                 this.props.services.actionSheet
                                             }
@@ -228,7 +228,7 @@ export default class extends StatefulUIElement<Props, State, Event> {
                                                     },
                                                 )
                                             }
-                                        />
+                                        /> */}
                                         <IconContainer
                                             onPress={
                                                 this.showSaveBtn

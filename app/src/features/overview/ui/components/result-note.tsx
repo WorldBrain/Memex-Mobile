@@ -80,12 +80,12 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
             <Section>
                 <ActionBar>
                     <LeftSide>
-                        <AnnotationPrivacyBtn
+                        {/* <AnnotationPrivacyBtn
                             level={props.privacyLevel}
                             hasSharedLists={props.hasSharedLists}
                             onPrivacyLevelChoice={props.onPrivacyLevelSet}
                             actionSheetService={props.actionSheetService}
-                        />
+                        /> */}
                         <DateBox>{props.date}</DateBox>
                     </LeftSide>
                     {/* {props.remoteId != null && (
@@ -205,6 +205,7 @@ const LeftSide = styled.View`
     align-items: center;
     flex-direction: row;
     justify-content: flex-start;
+    padding-left: 10px;
 `
 const RightSide = styled.View`
     display: flex;
