@@ -44,7 +44,6 @@ export const RenderHTML = (html: string) => {
                 lineHeight: 20,
                 fontWeight: '300',
                 color: `${theme.colors.white}`,
-                height: '100%',
             }}
             tagsStyles={{
                 a: {
