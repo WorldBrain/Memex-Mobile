@@ -200,10 +200,23 @@ export default class Logic extends UILogic<State, Event> {
 
         // No need to do state hydration from DB if this is new page, just index it
         if (existingPage == null) {
+            this.emitMutation({
+                spacesToAdd: {
+                    $set: [],
+                },
+                spacesState: { $set: 'done' },
+            })
+
+            this.initValues.spacesToAdd = []
             await loadInitial(this, async () => {
                 await this.storePageInit(nextState)
             })
             this.pageTitleFetchRunning = this.fetchAndWritePageTitle(url)
+            this.showPageSavedMessage()
+            this.emitMutation({
+                loadState: { $set: 'done' },
+                spacesState: { $set: 'done' },
+            })
             return
         }
 
@@ -222,15 +235,7 @@ export default class Logic extends UILogic<State, Event> {
             services.errorTracker.track(err)
         }
 
-        this.emitMutation({
-            pageSaveFinished: { $set: true },
-        })
-        setTimeout(() => {
-            this.emitMutation({
-                pageSaveFinished: { $set: false },
-            })
-        }, 4000)
-
+        this.showPageSavedMessage()
         const bookmarkP = executeUITask<State, 'bookmarkState', void>(
             this,
             'bookmarkState',
@@ -257,22 +262,23 @@ export default class Logic extends UILogic<State, Event> {
             async () => {
                 try {
                     this.emitMutation({ spacesState: { $set: 'running' } })
-                    const spaces = await storage.modules.metaPicker.findListsByPage(
-                        {
+                    const spaces =
+                        (await storage.modules.metaPicker.findListsByPage({
                             url,
                             includeRemoteIds: true,
-                        },
-                    )
-                    const spacesToAdd = spaces.map((c) => c.id)
+                        })) ?? []
+                    const spacesToAdd = spaces?.map((c) => c.id) ?? []
 
                     this.emitMutation({
                         spacesToAdd: {
                             $set: spacesToAdd,
                         },
-                        spacesState: { $set: 'done' },
                     })
 
                     this.initValues.spacesToAdd = spacesToAdd
+                    this.emitMutation({
+                        spacesState: { $set: 'done' },
+                    })
                 } catch (err) {
                     services.errorTracker.track(err)
                     throw err
@@ -289,6 +295,17 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             deviceInfo: { $set: deviceInfo },
         })
+    }
+
+    showPageSavedMessage() {
+        this.emitMutation({
+            pageSaveFinished: { $set: true },
+        })
+        setTimeout(() => {
+            this.emitMutation({
+                pageSaveFinished: { $set: false },
+            })
+        }, 4000)
     }
 
     async retrySync() {
