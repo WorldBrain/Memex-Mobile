@@ -489,7 +489,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     </SplitPane>
                 </SplitPaneContainer>
                 <ActionBarContainer>
-                    {this.props.location === 'shareExt' && (
+                    {/* {this.props.location === 'shareExt' && (
                         <PageClosePill onPress={this.props.closeModal}>
                             <Icon
                                 icon={icons.BackArrow}
@@ -501,7 +501,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                             />
                             <PageCloseText>Close Memex</PageCloseText>
                         </PageClosePill>
-                    )}
+                    )} */}
                     <ActionBar
                         isErrorView={this.state.error != null}
                         {...this.state}

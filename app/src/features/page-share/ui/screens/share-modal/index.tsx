@@ -26,6 +26,7 @@ import Reader from 'src/features/reader/ui/screens/reader'
 import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
 import { PrimaryAction } from 'src/ui/utils/ActionButtons'
 import LoadingBalls from 'src/ui/components/loading-balls'
+import AIResultsComponent from 'src/features/AI-interface'
 export interface Props extends Omit<Dependencies, 'keyboardAPI'> {}
 
 export default class ShareModalScreen extends StatefulUIElement<
@@ -319,8 +320,13 @@ export default class ShareModalScreen extends StatefulUIElement<
                 closeModal={this.handleModalClose}
                 location="shareExt"
                 keyboardHeight={this.state.keyboardHeight}
+                showAI={this.state.modalState === 'AI'}
             />
         )
+    }
+
+    private renderAI() {
+        return <AIResultsComponent url={this.state.pageUrl} />
     }
 
     private renderModalContent() {
@@ -338,7 +344,9 @@ export default class ShareModalScreen extends StatefulUIElement<
 
         return this.state.modalState === 'spacePicker'
             ? this.renderMetaPicker()
-            : this.renderWebView()
+            : this.state.modalState === 'reader'
+            ? this.renderWebView()
+            : this.renderAI()
     }
 
     render() {
@@ -407,9 +415,23 @@ export default class ShareModalScreen extends StatefulUIElement<
                                     state: 'reader',
                                 })
                             }
-                            label="Annotate Page"
+                            label="Annotate"
                             type={
                                 this.state.modalState === 'reader'
+                                    ? 'tertiary'
+                                    : 'forth'
+                            }
+                            size="small"
+                        />
+                        <PrimaryAction
+                            onPress={() =>
+                                this.processEvent('setModalState', {
+                                    state: 'AI',
+                                })
+                            }
+                            label="AI"
+                            type={
+                                this.state.modalState === 'AI'
                                     ? 'tertiary'
                                     : 'forth'
                             }
