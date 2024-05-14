@@ -66,7 +66,8 @@ class ResultPage extends React.PureComponent<Props> {
                                 <IconContainer
                                     onPress={this.props.onCommentPress}
                                 >
-                                    {this.props.notes.length > 0 ? (
+                                    {this.props.notes &&
+                                    this.props.notes?.length > 0 ? (
                                         <Icon
                                             icon={icons.CommentFull}
                                             strokeWidth="0"
