@@ -184,22 +184,13 @@ export default class ShareModalScreen extends StatefulUIElement<
                 <ActionBarContainer
                     onRightBtnPress={this.handleSave}
                     rightBtnText={
-                        isInputDirty(this.state) ? (
-                            <Icon
-                                icon={icons.CheckMark}
-                                heightAndWidth={'24px'}
-                                color={'prime1'}
-                                strokeWidth={'0px'}
-                                fill
-                            />
-                        ) : (
-                            <Icon
-                                icon={icons.CheckMark}
-                                heightAndWidth={'24px'}
-                                strokeWidth={'0px'}
-                                fill
-                            />
-                        )
+                        <Icon
+                            icon={icons.CheckMark}
+                            heightAndWidth={'24px'}
+                            color={'prime1'}
+                            strokeWidth={'0px'}
+                            fill
+                        />
                     }
                     rightArea={
                         this.state.noteText ? (
@@ -364,7 +355,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                     <PageSavedPill onPress={this.handleSave}>
                         <Icon
                             icon={icons.CheckMark}
-                            heightAndWidth="15px"
+                            heightAndWidth="18px"
                             strokeWidth="0"
                             fill
                             color="prime1"
@@ -376,22 +367,13 @@ export default class ShareModalScreen extends StatefulUIElement<
                 <ActionBar
                     onRightBtnPress={this.handleSave}
                     rightBtnText={
-                        isInputDirty(this.state) ? (
-                            <Icon
-                                icon={icons.CheckMark}
-                                heightAndWidth={'28px'}
-                                color={'prime1'}
-                                strokeWidth={'0px'}
-                                fill
-                            />
-                        ) : (
-                            <Icon
-                                icon={icons.CheckMark}
-                                heightAndWidth={'24px'}
-                                strokeWidth={'0px'}
-                                fill
-                            />
-                        )
+                        <Icon
+                            icon={icons.CheckMark}
+                            heightAndWidth={'28px'}
+                            color={'prime1'}
+                            strokeWidth={'0px'}
+                            fill
+                        />
                     }
                 >
                     <ActionBarContent>
@@ -458,7 +440,7 @@ const PageSavedPill = styled.TouchableOpacity`
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    width: 120px;
+    width: 100px;
     height: 30px;
     background: ${(props) => props.theme.colors.greyScale1};
     border: 1px solid ${(props) => props.theme.colors.greyScale3};
