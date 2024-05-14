@@ -95,6 +95,7 @@ export interface Props extends MainNavProps<'Reader'> {
     closeModal?: () => void
     location?: 'mainApp' | 'shareExt'
     keyboardHeight?: number | null
+    showAI?: boolean
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -355,7 +356,7 @@ export default class Logic extends UILogic<State, Event> {
         if (this.isYoutubeLink(previousState.url)) {
             prompt =
                 prompt +
-                'include inline timestamps to the referenced sections whenever possible'
+                '. Include inline timestamps to the referenced sections whenever possible'
         }
 
         await fetch(urlToFetchFrom, {

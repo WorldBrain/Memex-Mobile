@@ -60,6 +60,8 @@ export interface State {
     listData: { [listId: number]: List }
     showFeed: boolean
     resultsExhausted: boolean
+    totalDownloads: number
+    downloadProgress: number
 }
 
 export type Event = UIEvent<{
@@ -144,6 +146,8 @@ export default class Logic extends UILogic<State, Event> {
             listData: {},
             showFeed: false,
             resultsExhausted: false,
+            downloadProgress: 0,
+            totalDownloads: 0,
         }
     }
 
@@ -207,6 +211,33 @@ export default class Logic extends UILogic<State, Event> {
                 },
             })
         })
+
+        services.cloudSync.events.addListener(
+            'syncStatsChanged',
+            ({ stats }) => {
+                if (stats.totalDownloads === stats.downloadProgress) {
+                    this.emitMutation({
+                        downloadProgress: { $set: 0 },
+                        // This should only set it the first time
+                        totalDownloads: {
+                            $set: 0,
+                        },
+                    })
+                    this.emitMutation({
+                        shouldShowSyncRibbon: { $set: true },
+                    })
+                } else {
+                    this.emitMutation({
+                        downloadProgress: { $set: stats.downloadProgress },
+                        // This should only set it the first time
+                        totalDownloads: {
+                            $set: stats.totalDownloads,
+                        },
+                    })
+                }
+            },
+        )
+
         await this.doSync()
     }
 
@@ -249,8 +280,7 @@ export default class Logic extends UILogic<State, Event> {
         let syncChanges = 0
         await executeUITask<State, 'syncState'>(this, 'syncState', async () => {
             try {
-                let { totalChanges } = await cloudSync.sync()
-                syncChanges = totalChanges
+                await cloudSync.syncStream()
             } catch (err) {
                 handleSyncError(err, this.props)
             } finally {

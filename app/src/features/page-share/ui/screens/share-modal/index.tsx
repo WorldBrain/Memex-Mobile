@@ -26,9 +26,7 @@ import Reader from 'src/features/reader/ui/screens/reader'
 import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
 import { PrimaryAction } from 'src/ui/utils/ActionButtons'
 import LoadingBalls from 'src/ui/components/loading-balls'
-import { READER_URL } from 'src/ui/navigation/deep-linking'
-import { useWindowDimensions } from 'react-native'
-
+import AIResultsComponent from 'src/features/AI-interface'
 export interface Props extends Omit<Dependencies, 'keyboardAPI'> {}
 
 export default class ShareModalScreen extends StatefulUIElement<
@@ -135,52 +133,25 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     private renderMetaPicker() {
-        return (
-            <ShareModalContainer>
-                <MetaPicker
-                    onEntryPress={this.handleMetaPickerEntryPress}
-                    initSelectedEntries={this.state.spacesToAdd}
-                    ref={this.setMetaPickerRef}
-                    {...this.props}
-                />
-                <ActionBar
-                    leftBtnText={
-                        <Icon
-                            icon={icons.BackArrow}
-                            heightAndWidth={'24px'}
-                            strokeWidth={'0px'}
-                            fill
-                        />
-                    }
-                    onLeftBtnPress={this.setSpacePickerShown(false)}
-                    onRightBtnPress={
-                        this.state.isSpacePickerShown
-                            ? this.setSpacePickerShown(false)
-                            : this.handleSave
-                    }
-                    rightBtnText={
-                        isInputDirty(this.state) ? (
-                            <Icon
-                                icon={icons.CheckMark}
-                                heightAndWidth={'28px'}
-                                color={'prime1'}
-                                strokeWidth={'0px'}
-                                fill
-                            />
-                        ) : (
-                            <Icon
-                                icon={icons.CheckMark}
-                                heightAndWidth={'24px'}
-                                strokeWidth={'0px'}
-                                fill
-                            />
-                        )
-                    }
-                >
-                    {this.renderTitle()}
-                </ActionBar>
-            </ShareModalContainer>
-        )
+        if (this.state.spacesState === 'done') {
+            return (
+                <ShareModalContainer>
+                    <MetaPicker
+                        onEntryPress={this.handleMetaPickerEntryPress}
+                        initSelectedEntries={this.state.spacesToAdd}
+                        ref={this.setMetaPickerRef}
+                        url={this.state.pageUrl}
+                        {...this.props}
+                    />
+                </ShareModalContainer>
+            )
+        } else {
+            return (
+                <LoadingScreen>
+                    <LoadingBalls size={30} />
+                </LoadingScreen>
+            )
+        }
     }
 
     private renderInputs() {
@@ -251,7 +222,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                                     : 'Page'
                             } to Spaces`}
                             onPress={this.setSpacePickerShown(true)}
-                            spaceCount={this.state.spacesToAdd.length}
+                            spaceCount={this.state.spacesToAdd?.length ?? 0}
                         />
                     }
                     renderIndicator={() => (
@@ -349,8 +320,13 @@ export default class ShareModalScreen extends StatefulUIElement<
                 closeModal={this.handleModalClose}
                 location="shareExt"
                 keyboardHeight={this.state.keyboardHeight}
+                showAI={this.state.modalState === 'AI'}
             />
         )
+    }
+
+    private renderAI() {
+        return <AIResultsComponent url={this.state.pageUrl} />
     }
 
     private renderModalContent() {
@@ -366,9 +342,11 @@ export default class ShareModalScreen extends StatefulUIElement<
             return this.renderUnsupportedApp()
         }
 
-        return this.state.isSpacePickerShown
+        return this.state.modalState === 'spacePicker'
             ? this.renderMetaPicker()
-            : this.renderWebView()
+            : this.state.modalState === 'reader'
+            ? this.renderWebView()
+            : this.renderAI()
     }
 
     render() {
@@ -383,7 +361,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                 deviceInfo={this.state.deviceInfo ?? null}
             >
                 {this.state.pageSaveFinished && (
-                    <PageSavedPill>
+                    <PageSavedPill onPress={this.handleSave}>
                         <Icon
                             icon={icons.CheckMark}
                             heightAndWidth="15px"
@@ -395,13 +373,87 @@ export default class ShareModalScreen extends StatefulUIElement<
                         <PageSavedText>Page saved!</PageSavedText>
                     </PageSavedPill>
                 )}
+                <ActionBar
+                    onRightBtnPress={this.handleSave}
+                    rightBtnText={
+                        isInputDirty(this.state) ? (
+                            <Icon
+                                icon={icons.CheckMark}
+                                heightAndWidth={'28px'}
+                                color={'prime1'}
+                                strokeWidth={'0px'}
+                                fill
+                            />
+                        ) : (
+                            <Icon
+                                icon={icons.CheckMark}
+                                heightAndWidth={'24px'}
+                                strokeWidth={'0px'}
+                                fill
+                            />
+                        )
+                    }
+                >
+                    <ActionBarContent>
+                        <PrimaryAction
+                            onPress={() =>
+                                this.processEvent('setModalState', {
+                                    state: 'spacePicker',
+                                })
+                            }
+                            label="Add Spaces"
+                            type={
+                                this.state.modalState === 'spacePicker'
+                                    ? 'tertiary'
+                                    : 'forth'
+                            }
+                            size="small"
+                        />
+                        <PrimaryAction
+                            onPress={() =>
+                                this.processEvent('setModalState', {
+                                    state: 'reader',
+                                })
+                            }
+                            label="Annotate"
+                            type={
+                                this.state.modalState === 'reader'
+                                    ? 'tertiary'
+                                    : 'forth'
+                            }
+                            size="small"
+                        />
+                        <PrimaryAction
+                            onPress={() =>
+                                this.processEvent('setModalState', {
+                                    state: 'AI',
+                                })
+                            }
+                            label="AI"
+                            type={
+                                this.state.modalState === 'AI'
+                                    ? 'tertiary'
+                                    : 'forth'
+                            }
+                            size="small"
+                        />
+                    </ActionBarContent>
+                </ActionBar>
                 {this.renderModalContent()}
             </ShareModal>
         )
     }
 }
 
-const PageSavedPill = styled.View`
+const ActionBarContent = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+`
+
+const PageSavedPill = styled.TouchableOpacity`
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -413,8 +465,7 @@ const PageSavedPill = styled.View`
     border-radius: 15px;
     position: absolute;
     top: 10px;
-    left: 50%;
-    margin-left: -60px;
+    right: 10px;
     z-index: 1000;
 `
 
@@ -441,6 +492,13 @@ const ActionBarContainer = styled(ActionBar)`
     background: ${(props) => props.theme.colors.greyScale1};
 `
 
+const LoadingScreen = styled.View`
+    height: 150px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
 const LoadingIndicatorBox = styled.View`
     margin-right: 5px;
 `

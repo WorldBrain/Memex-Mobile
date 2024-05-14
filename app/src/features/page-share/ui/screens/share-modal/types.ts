@@ -25,6 +25,7 @@ export interface State {
     keyboardHeight: number
     pageSaveFinished: boolean
     deviceInfo?: DeviceDetails | null
+    modalState: 'reader' | 'spacePicker' | 'AI'
 }
 
 export type Event = UIEvent<{
@@ -43,6 +44,7 @@ export type Event = UIEvent<{
     setPageStar: { value: boolean }
     setStatusText: { value: string }
     setSpacesToAdd: { values: number[] }
+    setModalState: { state: 'reader' | 'spacePicker' | 'AI' }
     setPrivacyLevel: { value: AnnotationPrivacyLevels }
     clearSyncError: null
 }>

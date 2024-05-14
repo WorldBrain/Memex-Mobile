@@ -75,6 +75,7 @@ export default class Logic extends UILogic<State, Event> {
             keyboardHeight: 0,
             pageSaveFinished: false,
             deviceInfo: null,
+            modalState: 'spacePicker',
             ...initValues,
         }
     }
@@ -255,6 +256,7 @@ export default class Logic extends UILogic<State, Event> {
             'spacesState',
             async () => {
                 try {
+                    this.emitMutation({ spacesState: { $set: 'running' } })
                     const spaces = await storage.modules.metaPicker.findListsByPage(
                         {
                             url,
@@ -267,6 +269,7 @@ export default class Logic extends UILogic<State, Event> {
                         spacesToAdd: {
                             $set: spacesToAdd,
                         },
+                        spacesState: { $set: 'done' },
                     })
 
                     this.initValues.spacesToAdd = spacesToAdd
@@ -338,6 +341,9 @@ export default class Logic extends UILogic<State, Event> {
 
     setPrivacyLevel: EventHandler<'setPrivacyLevel'> = ({ event }) => {
         this.emitMutation({ privacyLevel: { $set: event.value } })
+    }
+    setModalState: EventHandler<'setModalState'> = ({ event }) => {
+        this.emitMutation({ modalState: { $set: event.state } })
     }
 
     toggleSpace(

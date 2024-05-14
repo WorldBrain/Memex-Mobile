@@ -12,16 +12,29 @@ import {
 } from 'react-native-indicators'
 
 import { theme } from 'src/ui/components/theme/theme'
+import styled from 'styled-components/native'
 
 export type Props = {
     size?: number
 }
 
 export const LoadingIndicator: React.StatelessComponent<Props> = (props) => {
-    return <MaterialIndicator size={props.size} color={theme.colors.prime1} />
+    return (
+        <LoadingIndicatorBox size={props.size ?? 0}>
+            <MaterialIndicator size={props.size} color={theme.colors.prime1} />
+        </LoadingIndicatorBox>
+    )
 }
 
 export default LoadingIndicator
+
+const LoadingIndicatorBox = styled.View<{ size: number }>`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: ${(props) => props.size}px;
+    width: ${(props) => props.size}px;
+`
 
 // import React from 'react'
 // import { View, Animated, StyleProp } from 'react-native'

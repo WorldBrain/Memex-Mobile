@@ -204,7 +204,17 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     <TopIconsContainer>
                         {allSavedMode && this.state.syncState === 'running' && (
                             <SyncingIconContainer>
-                                <SyncingText>syncing{'  '}</SyncingText>
+                                <SyncingText numberOfLines={1}>
+                                    syncing{'  '}
+                                    {this.state.totalDownloads > 0 ? (
+                                        <>
+                                            {this.state.totalDownloads -
+                                                this.state
+                                                    .downloadProgress}{' '}
+                                            changes
+                                        </>
+                                    ) : null}
+                                </SyncingText>
                                 <LoadingBalls size={16} />
                             </SyncingIconContainer>
                         )}
@@ -597,15 +607,16 @@ const SyncingText = styled.Text`
     color: ${(props) => props.theme.colors.greyScale6};
     font-weight: 500;
     font-family: 'Satoshi';
+    margin-right: 10px;
 `
 
 const SyncingIconContainer = styled.View`
     height: 30px;
-    width: 60px;
     margin-right: 8px;
+    width: 200px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
 `
 
