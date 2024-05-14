@@ -31,13 +31,13 @@ const ActionBar: React.StatelessComponent<Props> = ({
     <>
         <Container onTouchStart={() => Keyboard.dismiss()}>
             {props.leftArea && props.leftArea}
-            <ButtonContainer>
-                {props.onLeftBtnPress && (
+            {props.onLeftBtnPress && (
+                <ButtonContainer>
                     <ButtonBox onPress={props.onLeftBtnPress}>
                         {leftBtnText}
                     </ButtonBox>
-                )}
-            </ButtonContainer>
+                </ButtonContainer>
+            )}
             <View style={styles.mainContent}>{props.children}</View>
             {props.rightArea && props.rightArea}
             <ButtonContainer>
@@ -70,13 +70,14 @@ const Spacer10 = styled.View`
 const Container = styled.View`
     display: flex;
     justify-content: space-between;
-    padding: 0 10px;
+    padding: 0 10px 3px 10px;
     height: 50px;
     align-items: center;
     flex-direction: row;
     border-style: solid;
     border-top-width: 1px;
-    border-color: ${(props) => props.theme.colors.greyScale2};
+    border-color: ${(props) => props.theme.colors.greyScale3};
+    border-bottom-width: 1px;
     background: ${(props) => props.theme.colors.black};
 `
 
