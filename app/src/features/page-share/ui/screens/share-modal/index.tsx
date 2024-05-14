@@ -370,7 +370,7 @@ export default class ShareModalScreen extends StatefulUIElement<
                             color="prime1"
                             hoverOff
                         />
-                        <PageSavedText>Page saved!</PageSavedText>
+                        <PageSavedText>Saved!</PageSavedText>
                     </PageSavedPill>
                 )}
                 <ActionBar

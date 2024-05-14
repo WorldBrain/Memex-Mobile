@@ -30,15 +30,6 @@ const MetaPickerEntry: React.StatelessComponent<Props> = (props) => (
                         {props.name}
                     </EntryText>
                 </EntryTextBox>
-                {props.remoteId != null && (
-                    <Icon
-                        icon={icons.People}
-                        fill={true}
-                        color={'greyScale4'}
-                        strokeWidth="0px"
-                        heightAndWidth="22px"
-                    />
-                )}
             </TextContainer>
             <CheckMarkContainer checked={props.isChecked}>
                 {props.isChecked ? (
