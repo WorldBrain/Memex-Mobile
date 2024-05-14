@@ -38,7 +38,7 @@ export class AIResultsComponent extends StatefulUIElement<Props, State, Event> {
             },
         })
 
-        const DismissKeyboard = (children: any) => (
+        const DismissKeyboard = ({ children }) => (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 {children}
             </TouchableWithoutFeedback>
