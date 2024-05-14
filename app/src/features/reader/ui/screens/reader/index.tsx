@@ -233,7 +233,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         const DismissKeyboard = ({ children }) => (
             <TouchableWithoutFeedback
                 onPress={() => {
-                    console.log('etss')
                     Keyboard.dismiss()
                 }}
             >

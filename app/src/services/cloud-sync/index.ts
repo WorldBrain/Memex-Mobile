@@ -34,17 +34,11 @@ export class CloudSyncService implements CloudSyncAPI {
     private syncStreamMutex = new AsyncMutex()
     private shouldInterruptStream = false
     private stats: SyncStats = {
-        totalDownloads: null,
+        totalDownloads: 0,
         downloadProgress: 0,
     }
 
     constructor(private props: Props) {
-        props.backend.events.on('incomingChangesPending', (event) => {
-            this._modifyStats({
-                totalDownloads: event.changeCountDelta,
-                downloadProgress: 0,
-            })
-        })
         props.backend.events.on('incomingChangesProcessed', (event) => {
             this._modifyStats({
                 downloadProgress:
@@ -68,8 +62,8 @@ export class CloudSyncService implements CloudSyncAPI {
 
     private resetSyncStats() {
         this.stats = {
-            totalDownloads: null,
-            downloadProgress: null,
+            totalDownloads: 0,
+            downloadProgress: 0,
         }
     }
 
@@ -107,18 +101,25 @@ export class CloudSyncService implements CloudSyncAPI {
         await storage.pushAllQueuedUpdates()
 
         const userId = await storage.loadUserId()
+        let totalDownloads = 0
+        totalDownloads = await this.props.backend.countPendingUpdates({})
+        this.stats.totalDownloads = totalDownloads
+
+        if (totalDownloads === 0) {
+            releaseMutex()
+            return
+        }
+
+        this._modifyStats({
+            totalDownloads: totalDownloads,
+            downloadProgress: 0,
+        })
+
+        let downloadProgress = 0
+
         if (!userId) {
             throw new Error('Cannot start sync strema as user not logged in')
         }
-        const params: UserReference = { type: 'user-reference', id: userId }
-
-        let totalDownloads = 0
-        for await (const { totalCount } of backend.countChanges({
-            userReference: params,
-        })) {
-            totalDownloads = totalCount
-        }
-        this._modifyStats({ totalDownloads })
 
         try {
             for await (const { batch, lastSeen } of backend.streamUpdates({

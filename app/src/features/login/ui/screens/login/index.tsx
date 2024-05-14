@@ -459,7 +459,7 @@ const TextInputContainer = styled.View`
     border-width: 1px;
     border-radius: 8px;
     border-color: ${(props) => props.theme.colors.greyScale2};
-    background: ${(props) => props.theme.colors.greyScale2};
+    background: ${(props) => props.theme.colors.greyScale1};
 
     &:focus-within {
         border-color: ${(props) => props.theme.colors.greyScale3};

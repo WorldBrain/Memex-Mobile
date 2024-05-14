@@ -23,14 +23,12 @@ export const RenderHTML = (html: string) => {
         const originalSrc = match[1]
         // Assuming the src is an ID or can be converted to an ID for getImageUrl
         const id = originalSrc // Modify this line if the ID needs to be extracted differently
-        console.log('id:', id)
         try {
             const newSrc = getImageUrl({
                 id: id,
                 env: process.env.NODE_ENV ?? 'development',
             })
 
-            console.log('newSrc:', newSrc) // This should be the new URL for the image
             // Replace the original src with the new one in the processedHtml string
             processedHtml = processedHtml.replace(originalSrc, newSrc)
         } catch (error) {
