@@ -355,7 +355,7 @@ export default class Logic extends UILogic<State, Event> {
         if (this.isYoutubeLink(previousState.url)) {
             prompt =
                 prompt +
-                'include inline timestamps to the referenced sections whenever possible'
+                '. Include inline timestamps to the referenced sections whenever possible'
         }
 
         await fetch(urlToFetchFrom, {
