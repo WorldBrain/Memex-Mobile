@@ -24,10 +24,10 @@ const Container = styled.View`
 `
 
 const InnerContainer = styled.View`
-    height: 150px;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 150px;
 `
 
 const TitleText = styled.Text`
@@ -35,6 +35,7 @@ const TitleText = styled.Text`
     font-size: 20px;
     font-weight: 500;
     font-family: 'Satoshi';
+    padding-top: 30px;
 `
 
 export default SavingUpdates
