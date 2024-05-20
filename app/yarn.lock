@@ -10996,9 +10996,9 @@ react-native-screens@^2.11.0:
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.18.1.tgz#47b9991c6f762d00d0ed3233e5283d523e859885"
   integrity sha512-r5WZLpmx2hHjC1RgMdPq5YpSU9tEhBpUaZ5M1SUtNIONyiLqQVxabhRCINdebIk4depJiIl7yw2Q85zJyeX6fw==
 
-"react-native-share-extension@git+https://github.com/WorldBrain/react-native-share-extension#f0e9cd91bfc77dae402c35e23324ee1d81a54b62":
+"react-native-share-extension@git+https://github.com/WorldBrain/react-native-share-extension#f872d87115a2fe187eed28dd4e6152080685b93d":
   version "2.0.0"
-  resolved "git+https://github.com/WorldBrain/react-native-share-extension#f0e9cd91bfc77dae402c35e23324ee1d81a54b62"
+  resolved "git+https://github.com/WorldBrain/react-native-share-extension#f872d87115a2fe187eed28dd4e6152080685b93d"
 
 "react-native-sqlite-storage@git+https://github.com/WorldBrain/react-native-sqlite-storage#b1c5a50116d18c48eb71b067c36299ef0d50de6d":
   version "4.1.0"
