@@ -41,8 +41,7 @@ export class CloudSyncService implements CloudSyncAPI {
     constructor(private props: Props) {
         props.backend.events.on('incomingChangesProcessed', (event) => {
             this._modifyStats({
-                downloadProgress:
-                    (this.stats.downloadProgress ?? 0) + event.count,
+                downloadProgress: event.count,
             })
         })
     }

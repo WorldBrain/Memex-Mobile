@@ -66,7 +66,9 @@ export default class SyncScreenLogic extends UILogic<State, Event> {
             'syncStatsChanged',
             ({ stats }) => {
                 this.emitMutation({
-                    downloadProgress: { $set: stats.downloadProgress },
+                    downloadProgress: {
+                        $apply: (prev) => (prev ?? 0) + stats.downloadProgress,
+                    },
                     // This should only set it the first time
                     totalDownloads: {
                         $apply: (prev) => prev ?? stats.totalDownloads,

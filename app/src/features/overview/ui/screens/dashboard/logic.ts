@@ -228,7 +228,10 @@ export default class Logic extends UILogic<State, Event> {
                     })
                 } else {
                     this.emitMutation({
-                        downloadProgress: { $set: stats.downloadProgress },
+                        downloadProgress: {
+                            $apply: (prev) =>
+                                (prev ?? 0) + stats.downloadProgress,
+                        },
                         // This should only set it the first time
                         totalDownloads: {
                             $set: stats.totalDownloads,
