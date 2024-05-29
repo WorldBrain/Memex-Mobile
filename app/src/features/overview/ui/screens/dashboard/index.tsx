@@ -87,9 +87,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         }
     }
 
-    private navToPageEditor = ({ fullUrl }: UIPage, mode: EditorMode) => () => {
+    private navToPageEditor = ({ url }: UIPage, mode: EditorMode) => () => {
         this.props.navigation.navigate('PageEditor', {
-            pageUrl: fullUrl!,
+            pageUrl: 'https://' + url!, // TODO: Doing this as there's something wrong with the fullUrl - always results in a trailing / when normalized in there
             mode,
             updatePage: (page) => this.processEvent('updatePage', { page }),
         })

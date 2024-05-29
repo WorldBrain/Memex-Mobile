@@ -117,7 +117,7 @@ export default class Logic extends UILogic<State, Event> {
 
     getInitialState(): State {
         const { params } = this.props.route
-        let insertedUrl
+        let insertedUrl: string | undefined
         if (this.props.pageUrl) {
             insertedUrl = this.props.pageUrl
         }
