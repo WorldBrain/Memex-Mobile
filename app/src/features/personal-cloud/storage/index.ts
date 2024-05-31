@@ -229,7 +229,10 @@ export class PersonalCloudStorage {
     private executeAction: ActionExecutor<PersonalCloudAction> = async ({
         action,
     }) => {
-        if (!this.deviceId) {
+        if (
+            this.deviceId == null ||
+            (await this.dependencies.getUserId()) == null
+        ) {
             return { pauseAndRetry: true }
         }
 
