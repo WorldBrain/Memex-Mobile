@@ -1,0 +1,10 @@
+dist/
+extension/
+node_modules/
+.git/
+android/
+ios/
+external/
+yarn.lock
+content-script/
+package.json
