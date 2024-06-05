@@ -33,3 +33,18 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Bundle artifact
+*.jsbundle
+
+# Firebase keys
+android/app/google-services.json
+ios/app/GoogleService-Info.plist
+ios/MemexShare/GoogleService-Info.plist
+
+# Sentry secrets
+ios/sentry.properties
+android/sentry.properties
+
+# Reader content-script output dir
+dist/

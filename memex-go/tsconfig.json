@@ -1,6 +1,121 @@
 {
-    "extends": "expo/tsconfig.base",
-    "compilerOptions": {
-        "strict": true
+  "compilerOptions": {
+    "baseUrl": ".",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "jsx": "react-native",
+    "lib": [
+      "ES2020"
+    ],
+    "moduleResolution": "node",
+    "noEmit": true,
+    "strict": true,
+    "target": "esnext",
+    "resolveJsonModule": true,
+    "types": [
+      "node",
+      "jest"
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@worldbrain/storex": [
+        "external/@worldbrain/storex/ts"
+      ],
+      "@worldbrain/storex/lib/*": [
+        "external/@worldbrain/storex/ts/*"
+      ],
+      "@worldbrain/storex-backend-dexie": [
+        "external/@worldbrain/storex-backend-dexie/ts"
+      ],
+      "@worldbrain/storex-backend-dexie/lib/*": [
+        "external/@worldbrain/storex-backend-dexie/ts/*"
+      ],
+      "@worldbrain/storex-backend-typeorm": [
+        "external/@worldbrain/storex-backend-typeorm/ts"
+      ],
+      "@worldbrain/storex-backend-typeorm/lib/*": [
+        "external/@worldbrain/storex-backend-typeorm/ts/*"
+      ],
+      "@worldbrain/storex-backend-firestore": [
+        "external/@worldbrain/storex-backend-firestore/ts"
+      ],
+      "@worldbrain/storex-backend-firestore/lib/*": [
+        "external/@worldbrain/storex-backend-firestore/ts/*"
+      ],
+      "@worldbrain/storex-middleware-change-watcher": [
+        "external/@worldbrain/storex-middleware-change-watcher/ts"
+      ],
+      "@worldbrain/storex-middleware-change-watcher/lib/*": [
+        "external/@worldbrain/storex-middleware-change-watcher/ts/*"
+      ],
+      "@worldbrain/storex-sync": [
+        "external/@worldbrain/storex-sync/ts"
+      ],
+      "@worldbrain/storex-sync/lib/*": [
+        "external/@worldbrain/storex-sync/ts/*"
+      ],
+      "@worldbrain/storex-schema-migrations": [
+        "external/@worldbrain/storex-schema-migrations/ts"
+      ],
+      "@worldbrain/storex-schema-migrations/lib/*": [
+        "external/@worldbrain/storex-schema-migrations/ts/*"
+      ],
+      "@worldbrain/storex-pattern-modules": [
+        "external/@worldbrain/storex-pattern-modules/ts"
+      ],
+      "@worldbrain/storex-pattern-modules/lib/*": [
+        "external/@worldbrain/storex-pattern-modules/ts/*"
+      ],
+      "@worldbrain/memex-stemmer": [
+        "external/@worldbrain/memex-stemmer/ts"
+      ],
+      "@worldbrain/memex-stemmer/lib/*": [
+        "external/@worldbrain/memex-stemmer/ts/*"
+      ],
+      "@worldbrain/memex-common": [
+        "external/@worldbrain/memex-common/ts"
+      ],
+      "@worldbrain/memex-common/lib/*": [
+        "external/@worldbrain/memex-common/ts/*"
+      ],
+      "user-logic": [
+        "external/user-logic/ts"
+      ],
+      "user-logic/lib/*": [
+        "external/user-logic/ts/*"
+      ],
+      "simple-signalling": [
+        "external/simple-signalling/ts"
+      ],
+      "simple-signalling/lib/*": [
+        "external/simple-signalling/ts/*"
+      ],
+      "simple-peer": [
+        "external/simple-peer/ts"
+      ],
+      "simple-peer/lib/*": [
+        "external/simple-peer/ts/*"
+      ],
+      "dist/*": [
+        "dist/*"
+      ]
     }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "src/content-script"
+  ],
+  "extends": "expo/tsconfig.base"
 }

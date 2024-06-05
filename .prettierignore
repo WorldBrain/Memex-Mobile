@@ -8,3 +8,4 @@ external/
 yarn.lock
 content-script/
 package.json
+tsconfig.json
