@@ -1,48 +1,51 @@
 {
-    "expo": {
-        "name": "memex-go",
-        "slug": "memex-go",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/icon.png",
-        "userInterfaceStyle": "light",
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
-        },
-        "ios": {
-            "supportsTablet": true,
-            "bundleIdentifier": "io.worldbrain"
-        },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptive-icon.png",
-                "backgroundColor": "#ffffff"
-            },
-            "package": "io.worldbrain"
-        },
-        "web": {
-            "favicon": "./assets/favicon.png"
-        }
+  "expo": {
+    "name": "memex-go",
+    "slug": "memex-go",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     },
-    "shareExtName": "MemexShare",
-    "appGroup": "group.io.worldbrain.memex",
-    "supportEmail": "support@worldbrain.io",
-    "appIdPrefix": "5YUPQC9D96",
-    "sentryDsn": "https://efff674e8a664772b5c1b8689522e475@o138129.ingest.sentry.io/4461865",
-    "storageKeys": {
-        "mostRecentUser": "@MemexApp_most-recent-user",
-        "initSyncFlag": "@MemexApp_sync-key",
-        "retroSyncFlag": "@MemexApp_retrosync-completed",
-        "deviceId": "@MemexApp_device-id",
-        "showOnboarding": "@MemexApp_show-onboarding",
-        "syncLastProcessedTime": "@MemexApp_last-seen-update-time",
-        "retroSyncLastProcessedTime": "@MemexApp_last-seen-retro-sync-time",
-        "listSuggestionsCache": "@MemexApp_list-suggestions-cache",
-        "spaceSuggestionsCache": "@MemexApp_space-suggestions-cache",
-        "tagSuggestionsCache": "@MemexApp_tag-suggestions-cache",
-        "skipAutoSync": "@MemexApp_skip-auto-sync",
-        "cloudSettingsMigrationRun": "@MemexApp_run-cloud-settings-migration"
-    }
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "io.worldbrain"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "io.worldbrain"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "react-native-vision-camera"
+    ]
+  },
+  "shareExtName": "MemexShare",
+  "appGroup": "group.io.worldbrain.memex",
+  "supportEmail": "support@worldbrain.io",
+  "appIdPrefix": "5YUPQC9D96",
+  "sentryDsn": "https://efff674e8a664772b5c1b8689522e475@o138129.ingest.sentry.io/4461865",
+  "storageKeys": {
+    "mostRecentUser": "@MemexApp_most-recent-user",
+    "initSyncFlag": "@MemexApp_sync-key",
+    "retroSyncFlag": "@MemexApp_retrosync-completed",
+    "deviceId": "@MemexApp_device-id",
+    "showOnboarding": "@MemexApp_show-onboarding",
+    "syncLastProcessedTime": "@MemexApp_last-seen-update-time",
+    "retroSyncLastProcessedTime": "@MemexApp_last-seen-retro-sync-time",
+    "listSuggestionsCache": "@MemexApp_list-suggestions-cache",
+    "spaceSuggestionsCache": "@MemexApp_space-suggestions-cache",
+    "tagSuggestionsCache": "@MemexApp_tag-suggestions-cache",
+    "skipAutoSync": "@MemexApp_skip-auto-sync",
+    "cloudSettingsMigrationRun": "@MemexApp_run-cloud-settings-migration"
+  }
 }

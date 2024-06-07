@@ -16,3 +16,4 @@ travis.mobileprovision
 app/app.app.dSYM.zip
 
 .idea/
+app-old/
