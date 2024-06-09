@@ -92,7 +92,7 @@
         "react-native-safe-area-context": "^3.1.8",
         "react-native-screens": "^2.11.0",
         "react-native-share-extension": "git+https://github.com/WorldBrain/react-native-share-extension#f872d87115a2fe187eed28dd4e6152080685b93d",
-        "react-native-sqlite-storage": "git+https://github.com/WorldBrain/react-native-sqlite-storage#b1c5a50116d18c48eb71b067c36299ef0d50de6d",
+        "react-native-sqlite-storage": "^6.0.1",
         "react-native-stream": "^0.1.9",
         "react-native-svg": "^9.13.6",
         "react-native-unimodules": "^0.7.0",
