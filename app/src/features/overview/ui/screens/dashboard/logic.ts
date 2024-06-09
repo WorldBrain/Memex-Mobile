@@ -13,7 +13,7 @@ import {
     Platform,
     Share,
 } from 'react-native'
-
+import debounce from 'lodash/debounce'
 import { storageKeys } from '../../../../../../app.json'
 import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
 import {
@@ -38,10 +38,8 @@ import {
 import { getFeedUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
 import { Copy, Trash } from 'src/ui/components/icons/icons-list'
 import { normalizeUrl } from '@worldbrain/memex-common/lib/url-utils/normalize'
-import {
-    CITATIONS_FEATURE_BUG_FIX_RELEASE,
-    CITATIONS_FEATURE_RELEASE,
-} from 'src/services/cloud-sync/constants'
+import { CITATIONS_FEATURE_BUG_FIX_RELEASE } from 'src/services/cloud-sync/constants'
+import { sleepPromise } from '@worldbrain/memex-common/lib/common-ui/utils/promises'
 
 export interface State {
     syncState: UITaskState
@@ -49,11 +47,10 @@ export interface State {
     reloadState: UITaskState
     loadMoreState: UITaskState
     listNameLoadState: UITaskState
-    couldHaveMore: boolean
     shouldShowSyncRibbon: boolean
     shouldShowRetroSyncNotif: boolean
     pages: NormalizedState<UIPage>
-    selectedListId: number | undefined
+    selectedListId: number
     action?: 'delete' | 'togglePageStar'
     actionState: UITaskState
     actionFinishedAt: number
@@ -62,6 +59,7 @@ export interface State {
     resultsExhausted: boolean
     totalDownloads: number
     downloadProgress: number
+    searchQuery: string
 }
 
 export type Event = UIEvent<{
@@ -69,6 +67,7 @@ export type Event = UIEvent<{
     setSyncRibbonShow: { show: boolean }
     reload: { initListId?: number; triggerSync?: boolean }
     loadMore: {}
+    setSearchQuery: { query: string }
     setPages: { pages: UIPage[] }
     updatePage: { page: UIPage }
     deletePage: { url: string }
@@ -136,8 +135,8 @@ export default class Logic extends UILogic<State, Event> {
             reloadState: 'running',
             loadMoreState: 'pristine',
             listNameLoadState: 'pristine',
-            couldHaveMore: true,
             actionState: 'pristine',
+            searchQuery: '',
             shouldShowSyncRibbon: false,
             shouldShowRetroSyncNotif: false,
             actionFinishedAt: 0,
@@ -380,58 +379,82 @@ export default class Logic extends UILogic<State, Event> {
         )
     }
 
-    async doLoadMore(prevState: State) {
-        let couldHaveMore = prevState.couldHaveMore
-        if (!couldHaveMore) {
-            return
-        }
+    private async doLoadMore(prevState: State) {
+        let resultsExhausted = prevState.resultsExhausted
+        let isTermsSearch = prevState.searchQuery.trim().length > 0
+        let pages: UIPage[] = []
 
-        let entries: PageLookupEntry[]
-        const entryLoader = this.choosePageEntryLoader(prevState)
-
-        try {
-            entries = await entryLoader(prevState)
-        } catch (err) {
-            this.emitMutation({ couldHaveMore: { $set: false } })
-            return
-        }
-
-        if (entries.length < this.pageSize) {
-            couldHaveMore = false
-        }
-
-        const pages: UIPage[] = []
-
-        for (const entry of entries) {
-            try {
-                const page = await this.lookupPageForEntry(entry)
-                pages.push(page)
-            } catch (err) {
-                continue
-            }
-        }
-
-        this.emitMutation({
-            couldHaveMore: { $set: couldHaveMore },
-            pages: {
-                $set: initNormalizedState({
-                    getId: (page) => page.url,
-                    seedData: [
-                        ...normalizedStateToArray(prevState.pages),
-                        ...pages,
-                    ],
-                }),
-            },
-        })
-
-        if (!couldHaveMore) {
+        if (isTermsSearch) {
+            // This is the newer terms search logic, shared with extension
+            await sleepPromise(1000)
+            console.log(
+                'TODO: implement terms search:',
+                prevState.searchQuery.trim(),
+            )
+            resultsExhausted = true
             this.emitMutation({
-                resultsExhausted: { $set: true },
-                loadMoreState: { $set: 'done' },
+                resultsExhausted: { $set: resultsExhausted },
+                pages: {
+                    $set: initNormalizedState({
+                        getId: (page) => page.url,
+                        seedData: pages,
+                    }),
+                },
             })
         } else {
-            this.emitMutation({ resultsExhausted: { $set: false } })
+            // This is the old blank search logic
+            let entries: PageLookupEntry[]
+            const entryLoader = this.choosePageEntryLoader(prevState)
+
+            try {
+                entries = await entryLoader(prevState)
+            } catch (err) {
+                this.emitMutation({ resultsExhausted: { $set: true } })
+                return
+            }
+
+            if (entries.length < this.pageSize) {
+                resultsExhausted = true
+            }
+
+            for (const entry of entries) {
+                try {
+                    let page = await this.lookupPageForEntry(entry)
+                    pages.push(page)
+                } catch (err) {
+                    continue
+                }
+            }
+
+            this.emitMutation({
+                resultsExhausted: { $set: resultsExhausted },
+                pages: {
+                    $set: initNormalizedState({
+                        getId: (page) => page.url,
+                        seedData: [
+                            ...normalizedStateToArray(prevState.pages),
+                            ...pages,
+                        ],
+                    }),
+                },
+            })
         }
+    }
+
+    private search = debounce(
+        async (state: State) =>
+            executeUITask(this, 'reloadState', () => this.doLoadMore(state)),
+        300,
+    )
+
+    setSearchQuery: EventHandler<'setSearchQuery'> = async ({
+        event,
+        previousState,
+    }) => {
+        let mutation: UIMutation<State> = { searchQuery: { $set: event.query } }
+        this.emitMutation(mutation)
+        let nextState = this.withMutation(previousState, mutation)
+        await this.search(nextState)
     }
 
     private choosePageEntryLoader({
@@ -535,7 +558,6 @@ export default class Logic extends UILogic<State, Event> {
             titleText: page.fullTitle || page.url,
             isStarred: !!page.isStarred,
             date: timeFromNow(date),
-            tags: [],
             listIds: lists
                 .filter(
                     (list) =>

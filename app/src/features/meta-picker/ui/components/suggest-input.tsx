@@ -1,9 +1,5 @@
 import React from 'react'
-import { TextInput, View } from 'react-native'
 import styled from 'styled-components/native'
-import styles from './suggest-input.styles'
-import * as icons from 'src/ui/components/icons/icons-list'
-import { Icon } from 'src/ui/components/icons/icon-mobile'
 import { theme } from 'src/ui/components/theme/theme'
 
 export interface Props {

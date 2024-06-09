@@ -186,7 +186,6 @@ export default class Logic extends UILogic<State, Event> {
             ...storedPage,
             titleText: storedPage.fullTitle,
             date: 'a minute ago',
-            tags: [],
             listIds: pageListIds,
             pageUrl: storedPage.url,
             noteIds: notes.map((note) => note.url),

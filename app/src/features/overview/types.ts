@@ -9,24 +9,21 @@ export interface UICollection {
 }
 
 export interface UIResult {
-    domain?: string
-    url?: string
-    date?: string
+    domain: string
+    url: string
+    date: string
     isStarred?: boolean
-    fullUrl?: string
+    fullUrl: string
 }
 
 export interface UIPage extends UIResult {
-    notes?: UINote[]
-    pageUrl?: string
-    domain?: string
-    fullUrl?: string
+    notes: UINote[]
+    pageUrl: string
     favIcon?: string
     titleText: string
     isResultPressed?: boolean
-    tags?: string[]
-    listIds?: number[]
-    type?: 'pdf-local' | 'pdf-remote' | 'page'
+    listIds: number[]
+    type: 'pdf-local' | 'pdf-remote' | 'page'
 }
 
 export interface UIPageWithNotes extends UIPage {

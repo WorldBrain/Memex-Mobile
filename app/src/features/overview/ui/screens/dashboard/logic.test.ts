@@ -29,7 +29,6 @@ const UI_PAGE_1: UIPage = {
     titleText: 'This is a test page',
     date: 'a few seconds ago',
     isStarred: false,
-    tags: [],
     listIds: [],
     type: 'page',
 }
@@ -42,7 +41,6 @@ const UI_PAGE_2: UIPage = {
     titleText: 'This is another test page',
     date: 'a few seconds ago',
     isStarred: false,
-    tags: [],
     listIds: [],
     type: 'page',
 }

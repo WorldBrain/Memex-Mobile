@@ -28,6 +28,7 @@ import { DEEP_LINK_SCHEME, FEED_OPEN_URL } from 'src/ui/navigation/deep-linking'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import WebView from 'react-native-webview'
 import Navigation from 'src/features/overview/ui/components/navigation'
+import SuggestInput from 'src/features/meta-picker/ui/components/suggest-input'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -151,7 +152,10 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     private handleListEndReached = async (args: {
         distanceFromEnd: number
     }) => {
-        if (this.state.loadMoreState !== 'running') {
+        if (
+            this.state.loadMoreState !== 'running' &&
+            !this.state.resultsExhausted
+        ) {
             await this.processEvent('loadMore', {})
         }
     }
@@ -368,42 +372,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         )
     }
 
-    private renderNavTitle(): React.ReactNode {
-        // const selectedListData = this.state.listData[this.state.selectedListId]
-        // if (selectedListData == null) {
-        //     return ''
-        // }
-        // if (
-        //     [
-        //         ALL_SAVED_FILTER_ID,
-        //         SPECIAL_LIST_IDS.INBOX,
-        //         SPECIAL_LIST_IDS.INBOX,
-        //     ].includes(this.state.selectedListId)
-        // ) {
-        //     return selectedListData.name
-        // }
-        // return (
-        //     <NavTitleContainer>
-        //         <NavTitleText numberOfLines={1}>
-        //             {!this.state.showFeed ? selectedListData.name : 'Hive Feed'}
-        //         </NavTitleText>
-        //         {!this.state.showFeed && (
-        //             <ListShareBtn
-        //                 localListId={selectedListData.id}
-        //                 remoteListId={selectedListData.remoteId ?? null}
-        //                 services={this.props.services}
-        //                 onListShare={(remoteListId) =>
-        //                     this.processEvent('shareSelectedList', {
-        //                         remoteListId,
-        //                     })
-        //                 }
-        //             />
-        //         )}
-        //     </NavTitleContainer>
-        // )
-    }
-
-    renderNavigation() {
+    private renderNavigation() {
         const selectedListData = this.state.listData[this.state.selectedListId]
         if (
             this.state.selectedListId !== ALL_SAVED_FILTER_ID &&
@@ -423,7 +392,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         })
                         this.props.navigation.goBack()
                     }}
-                    titleText={this.renderNavTitle()}
                     rightArea={
                         <RightAreaContainer>
                             {this.state.listData[this.state.selectedListId]
@@ -494,7 +462,16 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             <Container>
                 {this.renderNavigation()}
                 {this.renderUpdatePill()}
-                <ResultsContainer>{this.renderList()}</ResultsContainer>
+                <ResultsContainer>
+                    <SuggestInput
+                        placeholder="Search what you saved"
+                        value={this.state.searchQuery}
+                        onChange={(query) =>
+                            this.processEvent('setSearchQuery', { query })
+                        }
+                    />
+                    {this.renderList()}
+                </ResultsContainer>
                 <FooterActionBar>
                     <FooterActionBtn
                         onPress={() => {
