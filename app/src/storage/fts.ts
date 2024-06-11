@@ -44,7 +44,7 @@ export async function setupFTSTables(backend: TypeORMStorageBackend) {
             END;
         `)
         await tx.query(`
-            CREATE TRIGGER IF NOT EXISTS pages_update_before_trigger AFTER UPDATE ON pages
+            CREATE TRIGGER IF NOT EXISTS pages_update_before_trigger BEFORE UPDATE ON pages
             BEGIN
                 DELETE FROM ${PAGE_FTS_TABLE}
                 WHERE docid = old.rowid;
@@ -170,9 +170,29 @@ export const queryPages = (
     }))
 }
 
-export const queryAnnotations = (): UnifiedTermsSearchParams['queryAnnotations'] => async (
+export const queryAnnotations = (
+    storageManager: StorageManager,
+): UnifiedTermsSearchParams['queryAnnotations'] => async (
     terms,
     phrases = [],
 ) => {
-    return []
+    let connection = getConnection(
+        storageManager.backend as TypeORMStorageBackend,
+    )
+    let quotedPhrases = phrases.map((p) => `"${p}"`)
+    let matchQuery = [...terms, ...quotedPhrases].join(' ')
+    let annotations: Pick<Annotation, 'url' | 'pageUrl' | 'lastEdited'>[] = []
+    await connection.transaction(async (tx) => {
+        let matches: Pick<Annotation, 'url'>[] = await tx.query(`
+            SELECT url FROM ${ANNOT_FTS_TABLE}
+            WHERE ${ANNOT_FTS_TABLE}
+            MATCH '${matchQuery}';
+        `)
+        annotations = await tx.query(`
+            SELECT url, pageUrl, lastEdited FROM annotations
+            WHERE url IN (${matches.map((a) => `'${a.url}'`).join(', ')})
+        `)
+    })
+
+    return annotations
 }
