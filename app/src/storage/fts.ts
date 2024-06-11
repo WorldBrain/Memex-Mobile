@@ -1,4 +1,12 @@
+import type StorageManager from '@worldbrain/storex'
 import type { TypeORMStorageBackend } from '@worldbrain/storex-backend-typeorm'
+import type { UnifiedTermsSearchParams } from '@worldbrain/memex-common/lib/search/types'
+import type {
+    Page,
+    Visit,
+    Bookmark,
+    Annotation,
+} from '@worldbrain/memex-common/lib/types/core-data-types/client'
 
 export const PAGE_FTS_TABLE = 'pages_fts'
 export const ANNOT_FTS_TABLE = 'annotations_fts'
@@ -11,7 +19,7 @@ function getConnection(backend: TypeORMStorageBackend) {
 }
 
 export async function setupFTSTables(backend: TypeORMStorageBackend) {
-    const connection = getConnection(backend)
+    let connection = getConnection(backend)
     await connection.transaction(async (tx) => {
         await tx.query(
             `CREATE VIRTUAL TABLE IF NOT EXISTS ${PAGE_FTS_TABLE} USING fts4(content="pages", url, fullTitle, text);`,
@@ -82,7 +90,7 @@ export async function setupFTSTables(backend: TypeORMStorageBackend) {
 }
 
 export async function seedFTSTables(backend: TypeORMStorageBackend) {
-    const connection = getConnection(backend)
+    let connection = getConnection(backend)
     await connection.transaction(async (tx) => {
         await tx.query(`
             INSERT OR IGNORE INTO ${PAGE_FTS_TABLE}(docid, url, fullTitle, text)
@@ -96,7 +104,7 @@ export async function seedFTSTables(backend: TypeORMStorageBackend) {
 }
 
 export async function dropFTSTables(backend: TypeORMStorageBackend) {
-    const connection = getConnection(backend)
+    let connection = getConnection(backend)
     await connection.transaction(async (tx) => {
         await tx.query(`DROP TABLE ${ANNOT_FTS_TABLE};`)
         await tx.query(`DROP TABLE ${PAGE_FTS_TABLE};`)
@@ -110,4 +118,61 @@ export async function dropFTSTables(backend: TypeORMStorageBackend) {
         await tx.query(`DROP TRIGGER annotations_update_before_trigger;`)
         await tx.query(`DROP TRIGGER annotations_update_after_trigger;`)
     })
+}
+
+export const queryPages = (
+    storageManager: StorageManager,
+): UnifiedTermsSearchParams['queryPages'] => async (terms, phrases = []) => {
+    let connection = getConnection(
+        storageManager.backend as TypeORMStorageBackend,
+    )
+    let matchingIds: string[] = []
+    let latestTimestampByPageUrl = new Map<string, number>()
+    let quotedPhrases = phrases.map((p) => `"${p}"`)
+    let matchQuery = [...terms, ...quotedPhrases].join(' AND ')
+
+    await connection.transaction(async (tx) => {
+        let pages: Pick<Page, 'url'>[] = await tx.query(`
+            SELECT url FROM ${PAGE_FTS_TABLE}
+            WHERE ${PAGE_FTS_TABLE}
+            MATCH ${matchQuery}
+        `)
+        if (!pages.length) {
+            return
+        }
+        matchingIds = pages.map((p) => p.url)
+        let pageIdsList = matchingIds.join(', ')
+
+        // Get latest visit/bm for each matched page
+        const trackLatestTimestamp = ({ url, time }: Visit | Bookmark) =>
+            latestTimestampByPageUrl.set(
+                url,
+                Math.max(time, latestTimestampByPageUrl.get(url) ?? 0),
+            )
+
+        let [visits, bookmarks]: [Visit[], Bookmark[]] = await Promise.all([
+            tx.query(`
+                SELECT url, time FROM visits
+                WHERE url IN (${pageIdsList})
+            `),
+            tx.query(`
+                SELECT url, time FROM bookmarks
+                WHERE url IN (${pageIdsList})
+            `),
+        ])
+        visits.forEach(trackLatestTimestamp)
+        bookmarks.forEach(trackLatestTimestamp)
+    })
+
+    return matchingIds.map((id) => ({
+        id,
+        latestTimestamp: latestTimestampByPageUrl.get(id) ?? 0,
+    }))
+}
+
+export const queryAnnotations = (): UnifiedTermsSearchParams['queryAnnotations'] => async (
+    terms,
+    phrases = [],
+) => {
+    return []
 }
