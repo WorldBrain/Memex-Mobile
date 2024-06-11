@@ -52,6 +52,7 @@ import ContentConversationStorage from '@worldbrain/memex-common/lib/content-con
 import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import ActivityStreamsStorage from '@worldbrain/memex-common/lib/activity-streams/storage'
+import { seedFTSTables, setupFTSTables } from './fts'
 
 export interface CreateStorageOptions {
     authService: AuthService
@@ -182,6 +183,9 @@ export async function createStorage({
     })
 
     await storageManager.finishInitialization()
+    let storexBackend = storageManager.backend as TypeORMStorageBackend
+    await setupFTSTables(storexBackend)
+    await seedFTSTables(storexBackend)
     await storageManager.backend.migrate()
 
     return {
