@@ -129,22 +129,22 @@ export const queryPages = (
     let matchingIds: string[] = []
     let latestTimestampByPageUrl = new Map<string, number>()
     let quotedPhrases = phrases.map((p) => `"${p}"`)
-    let matchQuery = [...terms, ...quotedPhrases].join(' AND ')
+    let matchQuery = [...terms, ...quotedPhrases].join(' ')
 
     await connection.transaction(async (tx) => {
         let pages: Pick<Page, 'url'>[] = await tx.query(`
             SELECT url FROM ${PAGE_FTS_TABLE}
             WHERE ${PAGE_FTS_TABLE}
-            MATCH ${matchQuery}
+            MATCH '${matchQuery}';
         `)
         if (!pages.length) {
             return
         }
         matchingIds = pages.map((p) => p.url)
-        let pageIdsList = matchingIds.join(', ')
+        let pageIdsList = matchingIds.map((id) => `'${id}'`).join(', ')
 
         // Get latest visit/bm for each matched page
-        const trackLatestTimestamp = ({ url, time }: Visit | Bookmark) =>
+        let trackLatestTimestamp = ({ url, time }: Visit | Bookmark) =>
             latestTimestampByPageUrl.set(
                 url,
                 Math.max(time, latestTimestampByPageUrl.get(url) ?? 0),
