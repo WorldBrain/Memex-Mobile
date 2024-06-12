@@ -115,6 +115,8 @@ type PageLookupEntryLoader = (prevState: State) => Promise<PageLookupEntry[]>
 interface PageLookupEntry {
     url: string
     date: Date
+    /** Fill this in to only look up certain annotations for this entry, instead of all. */
+    specificAnnotationIds?: string[]
 }
 
 export default class Logic extends UILogic<State, Event> {
@@ -417,15 +419,10 @@ export default class Logic extends UILogic<State, Event> {
             })
 
             entries = [...results.resultDataByPage.entries()].map(
-                ([
-                    pageUrl,
-                    {
-                        latestPageTimestamp,
-                        annotations, // TODO: Keep track of these annotations in state for display
-                    },
-                ]) => ({
+                ([pageUrl, { latestPageTimestamp, annotations }]) => ({
                     url: pageUrl,
                     date: new Date(latestPageTimestamp),
+                    specificAnnotationIds: annotations.map((a) => a.url),
                 }),
             )
             resultsExhausted = results.resultsExhausted
@@ -548,6 +545,7 @@ export default class Logic extends UILogic<State, Event> {
     private async lookupPageForEntry({
         url,
         date,
+        specificAnnotationIds,
     }: PageLookupEntry): Promise<UIPage> {
         const { overview, metaPicker, pageEditor } = this.props.storage.modules
 
@@ -560,7 +558,10 @@ export default class Logic extends UILogic<State, Event> {
             url,
             includeRemoteIds: true,
         })
-        const notes = await pageEditor.findNotesByPage({ url })
+        let notes =
+            specificAnnotationIds != null
+                ? await pageEditor.findNotes({ urls: specificAnnotationIds })
+                : await pageEditor.findNotesByPage({ url })
 
         // Add any new lists data to state
         this.emitMutation({
