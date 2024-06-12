@@ -183,65 +183,57 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
 
     private listKeyExtracter = (item: UIPage) => item.url
 
-    private SpaceTitleSection = () => {
+    private renderSpaceTitleSection = () => {
         const allSavedMode =
             this.state.listData[this.state.selectedListId!]?.id ===
             ALL_SAVED_FILTER_ID
-        if (this.state.selectedListId) {
-            return (
-                <SpaceTitleContainer>
-                    <SpaceTitleContent>
-                        <SpaceTitleText>
-                            {
-                                this.state.listData[this.state.selectedListId]
-                                    .name
+        return (
+            <SpaceTitleContainer>
+                <SpaceTitleContent>
+                    <SpaceTitleText>
+                        {this.state.listData[this.state.selectedListId].name}
+                    </SpaceTitleText>
+                    {this.state.listData[this.state.selectedListId]
+                        ?.description && (
+                        <SpaceDescription>
+                            {this.state.listData[this.state.selectedListId]
+                                ?.description ?? undefined}
+                        </SpaceDescription>
+                    )}
+                </SpaceTitleContent>
+                <TopIconsContainer>
+                    {allSavedMode && this.state.syncState === 'running' && (
+                        <SyncingIconContainer>
+                            <SyncingText numberOfLines={1}>
+                                syncing{'  '}
+                                {this.state.totalDownloads > 0 ? (
+                                    <>
+                                        {this.state.totalDownloads -
+                                            this.state.downloadProgress}{' '}
+                                        changes
+                                    </>
+                                ) : null}
+                            </SyncingText>
+                            <LoadingBalls size={16} />
+                        </SyncingIconContainer>
+                    )}
+                    {allSavedMode && (
+                        <IconContainer
+                            onPress={() =>
+                                this.props.navigation.navigate('SettingsMenu')
                             }
-                        </SpaceTitleText>
-                        {this.state.listData[this.state.selectedListId]
-                            ?.description && (
-                            <SpaceDescription>
-                                {this.state.listData[this.state.selectedListId]
-                                    ?.description ?? undefined}
-                            </SpaceDescription>
-                        )}
-                    </SpaceTitleContent>
-                    <TopIconsContainer>
-                        {allSavedMode && this.state.syncState === 'running' && (
-                            <SyncingIconContainer>
-                                <SyncingText numberOfLines={1}>
-                                    syncing{'  '}
-                                    {this.state.totalDownloads > 0 ? (
-                                        <>
-                                            {this.state.totalDownloads -
-                                                this.state
-                                                    .downloadProgress}{' '}
-                                            changes
-                                        </>
-                                    ) : null}
-                                </SyncingText>
-                                <LoadingBalls size={16} />
-                            </SyncingIconContainer>
-                        )}
-                        {allSavedMode && (
-                            <IconContainer
-                                onPress={() =>
-                                    this.props.navigation.navigate(
-                                        'SettingsMenu',
-                                    )
-                                }
-                            >
-                                <Icon
-                                    icon={icons.Settings}
-                                    heightAndWidth={'22px'}
-                                    strokeWidth={'0px'}
-                                    fill
-                                />
-                            </IconContainer>
-                        )}
-                    </TopIconsContainer>
-                </SpaceTitleContainer>
-            )
-        }
+                        >
+                            <Icon
+                                icon={icons.Settings}
+                                heightAndWidth={'22px'}
+                                strokeWidth={'0px'}
+                                fill
+                            />
+                        </IconContainer>
+                    )}
+                </TopIconsContainer>
+            </SpaceTitleContainer>
+        )
     }
 
     private renderList() {
@@ -320,7 +312,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                 )}
                 <ResultsList
                     data={preparedData}
-                    ref={(ref) => (this.flatList = ref!)}
                     renderItem={this.renderListPage}
                     keyExtractor={this.listKeyExtracter}
                     onScrollEndDrag={this.handleScrollToEnd}
@@ -331,9 +322,10 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     contentContainerStyle={{
                         paddingBottom: 100,
                     }}
-                    ListHeaderComponent={this.SpaceTitleSection()}
+                    ListHeaderComponent={this.renderSpaceTitleSection()}
                     ListEmptyComponent={
                         <EmptyResults
+                            searchQuery={this.state.searchQuery}
                             goToPairing={() =>
                                 this.props.navigation.navigate('CloudSync')
                             }

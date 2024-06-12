@@ -8,20 +8,34 @@ import styled from 'styled-components/native'
 import { SectionCircle } from 'src/ui/utils/SectionCircle'
 
 export interface Props {
+    searchQuery: string
     goToPairing: () => void
     goToTutorial: () => void
 }
 
-const EmptyResults: React.StatelessComponent<Props> = (props) => (
-    <Container>
-        {SectionCircle(40, icons.HeartIcon)}
-        <TitleText>Save your first page</TitleText>
-        <SubText>
-            Sync with the Memex browser extension {'\n'}or save a page with the
-            share menu of your phone.
-        </SubText>
-    </Container>
-)
+const EmptyResults: React.FunctionComponent<Props> = (props) => {
+    let isTermsSearch = props.searchQuery.trim().length > 0
+    return (
+        <Container>
+            {SectionCircle(40, isTermsSearch ? icons.Search : icons.HeartIcon)}
+            {isTermsSearch ? (
+                <>
+                    <TitleText>
+                        Nothing found for "{props.searchQuery}"
+                    </TitleText>
+                </>
+            ) : (
+                <>
+                    <TitleText>Save your first page</TitleText>
+                    <SubText>
+                        Sync with the Memex browser extension {'\n'}or save a
+                        page with the share menu of your phone.
+                    </SubText>
+                </>
+            )}
+        </Container>
+    )
+}
 
 export default EmptyResults
 
