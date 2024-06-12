@@ -184,9 +184,9 @@ export async function createStorage({
 
     await storageManager.finishInitialization()
     let storexBackend = storageManager.backend as TypeORMStorageBackend
+    await storageManager.backend.migrate()
     await setupFTSTables(storexBackend)
     await seedFTSTables(storexBackend)
-    await storageManager.backend.migrate()
 
     return {
         manager: storageManager,
