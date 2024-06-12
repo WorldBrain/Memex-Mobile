@@ -131,36 +131,40 @@ export const queryPages = (
     let quotedPhrases = phrases.map((p) => `"${p}"`)
     let matchQuery = [...terms, ...quotedPhrases].join(' ')
 
-    let pages: Pick<Page, 'url'>[] = await connection.query(`
+    try {
+        let pages: Pick<Page, 'url'>[] = await connection.query(`
         SELECT url FROM ${PAGE_FTS_TABLE}
         WHERE ${PAGE_FTS_TABLE}
         MATCH '${matchQuery}';
     `)
-    if (!pages.length) {
-        return []
-    }
-    matchingIds = pages.map((p) => p.url)
-    let pageIdsList = matchingIds.map((id) => `'${id}'`).join(', ')
+        if (!pages.length) {
+            return []
+        }
+        matchingIds = pages.map((p) => p.url)
+        let pageIdsList = matchingIds.map((id) => `'${id}'`).join(', ')
 
-    // Get latest visit/bm for each matched page
-    let trackLatestTimestamp = ({ url, time }: Visit | Bookmark) =>
-        latestTimestampByPageUrl.set(
-            url,
-            Math.max(time, latestTimestampByPageUrl.get(url) ?? 0),
-        )
+        // Get latest visit/bm for each matched page
+        let trackLatestTimestamp = ({ url, time }: Visit | Bookmark) =>
+            latestTimestampByPageUrl.set(
+                url,
+                Math.max(time, latestTimestampByPageUrl.get(url) ?? 0),
+            )
 
-    let [visits, bookmarks]: [Visit[], Bookmark[]] = await Promise.all([
-        connection.query(`
+        let [visits, bookmarks]: [Visit[], Bookmark[]] = await Promise.all([
+            connection.query(`
             SELECT url, time FROM visits
             WHERE url IN (${pageIdsList})
         `),
-        connection.query(`
+            connection.query(`
             SELECT url, time FROM bookmarks
             WHERE url IN (${pageIdsList})
         `),
-    ])
-    visits.forEach(trackLatestTimestamp)
-    bookmarks.forEach(trackLatestTimestamp)
+        ])
+        visits.forEach(trackLatestTimestamp)
+        bookmarks.forEach(trackLatestTimestamp)
+    } catch (err) {
+        return []
+    }
 
     return matchingIds.map((id) => ({
         id,
@@ -179,19 +183,21 @@ export const queryAnnotations = (
     )
     let quotedPhrases = phrases.map((p) => `"${p}"`)
     let matchQuery = [...terms, ...quotedPhrases].join(' ')
+    let annotations: Pick<Annotation, 'url' | 'pageUrl' | 'lastEdited'>[]
 
-    let matches: Pick<Annotation, 'url'>[] = await connection.query(`
+    try {
+        let matches: Pick<Annotation, 'url'>[] = await connection.query(`
         SELECT url FROM ${ANNOT_FTS_TABLE}
         WHERE ${ANNOT_FTS_TABLE}
         MATCH '${matchQuery}';
     `)
-    let annotations: Pick<
-        Annotation,
-        'url' | 'pageUrl' | 'lastEdited'
-    >[] = await connection.query(`
+        annotations = await connection.query(`
         SELECT url, pageUrl, lastEdited FROM annotations
         WHERE url IN (${matches.map((a) => `'${a.url}'`).join(', ')})
     `)
+    } catch (err) {
+        annotations = []
+    }
 
     return annotations
 }
