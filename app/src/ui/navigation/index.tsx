@@ -46,7 +46,14 @@ export const createMainNavigator: NavigationContainerFactory = ({
 
     const protectedRoutes = [
         <MainStack.Screen name="Dashboard" key="Dashboard">
-            {(props) => <Dashboard {...props} {...deps} appState={AppState} />}
+            {(props) => (
+                <Dashboard
+                    {...props}
+                    {...deps}
+                    appState={AppState}
+                    storageManager={deps.storage.manager}
+                />
+            )}
         </MainStack.Screen>,
         <MainStack.Screen name="PageEditor" key="PageEditor">
             {(props) => <PageEditor {...props} {...deps} />}

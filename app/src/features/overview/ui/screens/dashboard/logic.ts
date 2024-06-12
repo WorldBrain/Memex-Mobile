@@ -39,7 +39,12 @@ import { getFeedUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
 import { Copy, Trash } from 'src/ui/components/icons/icons-list'
 import { normalizeUrl } from '@worldbrain/memex-common/lib/url-utils/normalize'
 import { CITATIONS_FEATURE_BUG_FIX_RELEASE } from 'src/services/cloud-sync/constants'
-import { sleepPromise } from '@worldbrain/memex-common/lib/common-ui/utils/promises'
+import {
+    splitQueryIntoTerms,
+    unifiedTermsSearch,
+} from '@worldbrain/memex-common/lib/search/terms-search'
+import { queryPages, queryAnnotations } from 'src/storage/fts'
+import type StorageManager from '@worldbrain/storex'
 
 export interface State {
     syncState: UITaskState
@@ -89,6 +94,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 export interface Props extends MainNavProps<'Dashboard'> {
     appState: AppStateStatic
     storage: UIStorageModules<'metaPicker' | 'overview' | 'pageEditor'>
+    storageManager: StorageManager
     services: UIServices<
         | 'cloudSync'
         | 'localStorage'
@@ -119,8 +125,8 @@ export default class Logic extends UILogic<State, Event> {
     constructor(private props: Props) {
         super()
 
-        this.pageSize = props.pageSize || 15
-        this.getNow = props.getNow || (() => Date.now())
+        this.pageSize = props.pageSize ?? 5
+        this.getNow = props.getNow ?? (() => Date.now())
     }
 
     getInitialState(initListId?: number): State {
@@ -374,36 +380,57 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'loadMoreState',
             async () => {
-                await this.doLoadMore(incoming.previousState)
+                await this.doLoadMore(incoming.previousState, true)
             },
         )
     }
 
-    private async doLoadMore(prevState: State) {
+    private async doLoadMore(prevState: State, shouldPaginate?: boolean) {
         let resultsExhausted = prevState.resultsExhausted
         let isTermsSearch = prevState.searchQuery.trim().length > 0
+        let entries: PageLookupEntry[]
         let pages: UIPage[] = []
 
         if (isTermsSearch) {
             // This is the newer terms search logic, shared with extension
-            await sleepPromise(1000)
-            console.log(
-                'TODO: implement terms search:',
-                prevState.searchQuery.trim(),
-            )
-            resultsExhausted = true
-            this.emitMutation({
-                resultsExhausted: { $set: resultsExhausted },
-                pages: {
-                    $set: initNormalizedState({
-                        getId: (page) => page.url,
-                        seedData: pages,
-                    }),
-                },
+            let queryAnalysis = splitQueryIntoTerms(prevState.searchQuery)
+            let results = await unifiedTermsSearch({
+                storageManager: this.props.storageManager,
+                queryPages: queryPages(this.props.storageManager),
+                queryAnnotations: queryAnnotations(this.props.storageManager),
+                filterByDomains: [],
+                filterByListIds:
+                    prevState.selectedListId !== ALL_SAVED_FILTER_ID
+                        ? [prevState.selectedListId]
+                        : [],
+                matchPageTitleUrl: queryAnalysis.inTitle,
+                matchPageText: queryAnalysis.inContent,
+                matchNotes: queryAnalysis.inComment,
+                matchHighlights: queryAnalysis.inHighlight,
+                phrases: queryAnalysis.phrases,
+                terms: queryAnalysis.terms,
+                matchTermsFuzzyStartsWith:
+                    queryAnalysis.matchTermsFuzzyStartsWith,
+                query: prevState.searchQuery,
+                limit: this.pageSize,
+                skip: shouldPaginate ? prevState.pages.allIds.length : 0,
             })
+
+            entries = [...results.resultDataByPage.entries()].map(
+                ([
+                    pageUrl,
+                    {
+                        latestPageTimestamp,
+                        annotations, // TODO: Keep track of these annotations in state for display
+                    },
+                ]) => ({
+                    url: pageUrl,
+                    date: new Date(latestPageTimestamp),
+                }),
+            )
+            resultsExhausted = results.resultsExhausted
         } else {
             // This is the old blank search logic
-            let entries: PageLookupEntry[]
             const entryLoader = this.choosePageEntryLoader(prevState)
 
             try {
@@ -416,29 +443,28 @@ export default class Logic extends UILogic<State, Event> {
             if (entries.length < this.pageSize) {
                 resultsExhausted = true
             }
-
-            for (const entry of entries) {
-                try {
-                    let page = await this.lookupPageForEntry(entry)
-                    pages.push(page)
-                } catch (err) {
-                    continue
-                }
-            }
-
-            this.emitMutation({
-                resultsExhausted: { $set: resultsExhausted },
-                pages: {
-                    $set: initNormalizedState({
-                        getId: (page) => page.url,
-                        seedData: [
-                            ...normalizedStateToArray(prevState.pages),
-                            ...pages,
-                        ],
-                    }),
-                },
-            })
         }
+
+        for (const entry of entries) {
+            try {
+                let page = await this.lookupPageForEntry(entry)
+                pages.push(page)
+            } catch (err) {
+                continue
+            }
+        }
+
+        this.emitMutation({
+            resultsExhausted: { $set: resultsExhausted },
+            pages: {
+                $set: initNormalizedState({
+                    getId: (page) => page.url,
+                    seedData: shouldPaginate
+                        ? [...normalizedStateToArray(prevState.pages), ...pages]
+                        : pages,
+                }),
+            },
+        })
     }
 
     private search = debounce(
