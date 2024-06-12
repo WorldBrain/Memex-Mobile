@@ -684,8 +684,8 @@ PODS:
   - React-jsinspector (0.64.3)
   - react-native-safe-area-context (3.4.1):
     - React-Core
-  - react-native-sqlite-storage (4.1.0):
-    - React
+  - react-native-sqlite-storage (6.0.1):
+    - React-Core
   - react-native-webview (13.6.3):
     - React-Core
   - React-perflogger (0.64.3)
@@ -1203,7 +1203,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: df6abc9fafbecb8e5b7a5fbc5e6d4bd017d594d5
   React-jsinspector: 34e23860273a23695342f58eed3ffd3ba10c31e0
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
-  react-native-sqlite-storage: f06bfba10f67f989c00b6a699b9c2b80a816edbe
+  react-native-sqlite-storage: f6d515e1c446d1e6d026aa5352908a25d4de3261
   react-native-webview: 88293a0f23eca8465c0433c023ec632930e644d0
   React-perflogger: cc76a4254d19640f1d8ad1c66fdee800414b805c
   React-RCTActionSheet: 7448f049318d8d7e8a9a1ebb742ada721757eea8
