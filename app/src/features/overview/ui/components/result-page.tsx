@@ -14,6 +14,7 @@ export interface Props
         InteractionProps,
         Pick<UIPage, 'isResultPressed' | 'notes' | 'fullUrl'> {
     spacePills?: JSX.Element
+    renderNotesList?: () => JSX.Element
 }
 
 export interface InteractionProps {
@@ -89,6 +90,7 @@ class ResultPage extends React.PureComponent<Props> {
                         </Footer>
                     </ResultItem>
                 </ResultContainer>
+                {this.props.renderNotesList && this.props.renderNotesList()}
             </ResultItemContainer>
         )
     }

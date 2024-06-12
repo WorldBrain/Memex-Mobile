@@ -29,6 +29,7 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 import WebView from 'react-native-webview'
 import Navigation from 'src/features/overview/ui/components/navigation'
 import SuggestInput from 'src/features/meta-picker/ui/components/suggest-input'
+import NotesList from '../../components/notes-list'
 
 export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     static BOTTOM_PAGINATION_TRIGGER_PX = 200
@@ -177,6 +178,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             onListsPress={this.navToPageEditor(item, 'collections')}
             onReaderPress={this.initHandleReaderPress(item)}
             spacePills={item.spacePills}
+            renderNotesList={this.renderNotesForPage}
             {...item}
         />
     )
@@ -233,6 +235,48 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     )}
                 </TopIconsContainer>
             </SpaceTitleContainer>
+        )
+    }
+
+    private renderNotesForPage() {
+        return (
+            <NotesList
+                // actionSheetService={this.props.services.actionSheet}
+                initNoteAddSpaces={(note) => () =>
+                    this.processEvent('setAnnotationToEdit', {
+                        annotationUrl: note.url,
+                    })}
+                initNoteDelete={(n) => () =>
+                    this.processEvent('confirmNoteDelete', { url: n.url })}
+                initNoteEdit={(note) => () =>
+                    this.props.navigation.navigate('NoteEditor', {
+                        spaces: note.listIds.map((id) => ({
+                            id,
+                            name:
+                                this.state.listData[id]?.name ??
+                                'Missing Space',
+                            remoteId: this.state.listData[id]?.remoteId,
+                        })),
+                        privacyLevel: note.privacyLevel,
+                        highlightText: note.noteText,
+                        noteText: note.commentText,
+                        noteUrl: note.url,
+                        mode: 'update',
+                    })}
+                initNotePress={(n) => () =>
+                    this.processEvent('toggleNotePress', { url: n.url })}
+                initNotePrivacyLevelSet={(n) => (level) =>
+                    this.processEvent('setAnnotationPrivacyLevel', {
+                        annotationUrl: n.url,
+                        level,
+                    })}
+                notes={this.state.page.noteIds.map(
+                    (noteId) => this.state.noteData[noteId],
+                )}
+                listData={this.state.listData}
+                pageData={this.state.page}
+                clearBackground
+            />
         )
     }
 
