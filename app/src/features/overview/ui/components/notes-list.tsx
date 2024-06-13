@@ -137,9 +137,8 @@ const SectionCircle = styled.View`
 `
 
 const Container = styled.View`
-    background: ${(props) => props.theme.colors.black};
     width: 100%;
-    margin-top: 10px;
+    margin-top: 5px;
     flex: 1;
     position: relative;
 `

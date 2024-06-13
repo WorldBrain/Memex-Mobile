@@ -230,7 +230,6 @@ const AnnotationContainer = styled.View`
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    background: ${(props) => props.theme.colors.greyScale1};
 `
 
 const VerticalBar = styled.View`
@@ -267,7 +266,10 @@ const ActionBar = styled.View`
 const NoteContainer = styled.View`
     margin: 10px 0px 0 0;
     border-radius: 8px;
-    background: ${(props) => props.theme.colors.greyScale1};
+    background: ${(props) =>
+        props.theme.variant === 'dark'
+            ? props.theme.colors.greyScale1
+            : props.theme.colors.greyScale3}96;
     width: 100%;
 `
 

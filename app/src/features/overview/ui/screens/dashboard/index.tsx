@@ -182,8 +182,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             onListsPress={this.navToPageEditor(item, 'collections')}
             onReaderPress={this.initHandleReaderPress(item)}
             spacePills={item.spacePills}
+            renderNotesList={this.renderNotesForPage(item, item.notes)}
+            showNotes={this.state.showNotes && item.notes.length > 0}
             notesList={this.renderNotesForPage(item)}
-            showNotes={this.state.showNotes}
             {...item}
         />
     )
@@ -364,7 +365,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     keyExtractor={this.listKeyExtracter}
                     onScrollEndDrag={this.handleScrollToEnd}
                     scrollEventThrottle={32}
-                    onEndReachedThreshold={1}
+                    onEndReachedThreshold={2}
                     onEndReached={this.handleListEndReached}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
@@ -511,7 +512,14 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                                 this.processEvent('setSearchQuery', { query })
                             }
                             background="greyScale3"
+                            autoFocus={false}
                         />
+                        {this.state.searchQuery.length > 0 ? (
+                            <FullTextSearchBox>
+                                Title & Notes Search only. Full-Text coming
+                                soon.
+                            </FullTextSearchBox>
+                        ) : null}
                     </SearchBox>
                     {this.renderList()}
                 </ResultsContainer>
@@ -613,6 +621,12 @@ const SearchBox = styled.View`
     justify-content: center;
     align-items: center;
     margin: 15px 10px 0;
+`
+
+const FullTextSearchBox = styled.Text`
+    font-size: 12px;
+    color: ${(props) => props.theme.colors.greyScale5};
+    margin-top: 5px;
 `
 
 const SpaceTitleContainer = styled.View`

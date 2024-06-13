@@ -82,7 +82,7 @@ class ResultPage extends React.PureComponent<Props> {
                         </FooterRightSide>
                     </Footer>
                 </ResultItem>
-                {this.props.showNotes && (
+                {this.props.showNotes && this.props.notesList && (
                     <NotesContainer>{this.props.notesList}</NotesContainer>
                 )}
             </ResultContainer>
