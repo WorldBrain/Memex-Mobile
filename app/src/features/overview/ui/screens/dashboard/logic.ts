@@ -443,6 +443,8 @@ export default class Logic extends UILogic<State, Event> {
     private async fetchAndSetListName(
         listId: number,
         skipSelectedListSet?: boolean,
+        previousState?: State,
+        fetchResults?: boolean,
     ) {
         const { metaPicker } = this.props.storage.modules
 
@@ -478,7 +480,10 @@ export default class Logic extends UILogic<State, Event> {
         )
     }
 
-    async reload({ event }: IncomingUIEvent<State, Event, 'reload'>) {
+    async reload({
+        event,
+        previousState,
+    }: IncomingUIEvent<State, Event, 'reload'>) {
         if (event.triggerSync) {
             this.doSync()
         }
@@ -489,7 +494,12 @@ export default class Logic extends UILogic<State, Event> {
             this,
             'reloadState',
             async () => {
-                await this.doLoadMore(this.getInitialState(event.initListId))
+                const state = this.getInitialState(event.initListId)
+                if (previousState.searchQuery) {
+                    state.searchQuery = previousState.searchQuery
+                }
+
+                await this.doLoadMore(state)
             },
         )
     }
