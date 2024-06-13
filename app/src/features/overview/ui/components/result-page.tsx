@@ -1,20 +1,19 @@
 import React from 'react'
-import { View, Platform, Share, Modal } from 'react-native'
+import { View } from 'react-native'
 
 import Body, { Props as BodyProps } from './result-page-body'
 import type { TouchEventHandler } from 'src/ui/types'
-import type { UINote, UIPage } from '../../types'
+import type { UIPage } from '../../types'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
-import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 
 export interface Props
     extends BodyProps,
         InteractionProps,
         Pick<UIPage, 'isResultPressed' | 'notes' | 'fullUrl'> {
     spacePills?: JSX.Element
-    renderNotesList?: (pageData: UIPage, notes: UINote) => JSX.Element
+    notesList: JSX.Element
     showNotes: boolean
 }
 
@@ -30,7 +29,7 @@ export interface InteractionProps {
 class ResultPage extends React.PureComponent<Props> {
     render() {
         return (
-            <ResultContainer showNotes={this.props.showNotes}>
+            <ResultContainer {...this.props}>
                 <ResultItem>
                     <TopArea onPress={this.props.onReaderPress}>
                         <View>
@@ -83,11 +82,9 @@ class ResultPage extends React.PureComponent<Props> {
                         </FooterRightSide>
                     </Footer>
                 </ResultItem>
-                {this.props.renderNotesList && this.props.showNotes ? (
-                    <NotesContainer>
-                        {this.props.renderNotesList}
-                    </NotesContainer>
-                ) : null}
+                {this.props.showNotes && (
+                    <NotesContainer>{this.props.notesList}</NotesContainer>
+                )}
             </ResultContainer>
         )
     }
@@ -106,9 +103,7 @@ export default ResultPage
 //     bottom: 0px;
 // `
 
-const ResultContainer = styled.View<{
-    showNotes: boolean
-}>`
+const ResultContainer = styled.View<Props>`
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -122,7 +117,8 @@ const ResultContainer = styled.View<{
     border: none;
     position: relative;
     overflow: scroll;
-    margin-bottom: ${(props) => (props.showNotes ? '20px' : '10px')};
+    margin-bottom: ${(props) =>
+        props.showNotes && props.notes.length ? '20px' : '0px'};
 `
 
 const ResultItem = styled.View`

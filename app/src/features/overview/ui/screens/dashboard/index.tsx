@@ -182,7 +182,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             onListsPress={this.navToPageEditor(item, 'collections')}
             onReaderPress={this.initHandleReaderPress(item)}
             spacePills={item.spacePills}
-            renderNotesList={this.renderNotesForPage(item, item.notes)}
+            notesList={this.renderNotesForPage(item)}
             showNotes={this.state.showNotes}
             {...item}
         />
@@ -260,7 +260,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         )
     }
 
-    private renderNotesForPage(pageData: UIPage, notesArray: UINote[]) {
+    private renderNotesForPage(pageData: UIPage) {
         return (
             <NotesList
                 mode="search-results"
@@ -293,7 +293,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         annotationUrl: n.url,
                         level,
                     })}
-                notes={notesArray}
+                notes={pageData.notes}
                 listData={this.state.listData}
                 pageData={pageData}
                 clearBackground
