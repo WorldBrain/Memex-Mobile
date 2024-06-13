@@ -68,9 +68,6 @@ export interface State {
     totalDownloads: number
     downloadProgress: number
     searchQuery: string
-    mode: EditorMode
-    previousMode: EditorMode | null
-    annotationUrlToEdit: string | null
     showNotes: boolean
 }
 
@@ -90,10 +87,13 @@ export type Event = UIEvent<{
     focusFromNavigation: MainNavigatorParamList['Dashboard']
     performRetroSyncToDLMissingChanges: null
     toggleFeed: null
-    setAnnotationToEdit: { annotationUrl: string }
+    setAnnotationToEdit: {
+        pageId: string
+        annotId: string
+        showSpacePicker?: boolean
+    }
     confirmNoteDelete: { pageId: string; annotId: string }
     toggleNotes: null
-    updateNoteComment: { pageId: string; annotId: string; nextComment: string }
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -169,9 +169,6 @@ export default class Logic extends UILogic<State, Event> {
             resultsExhausted: false,
             downloadProgress: 0,
             totalDownloads: 0,
-            mode: 'notes',
-            previousMode: null,
-            annotationUrlToEdit: null,
             showNotes: true,
         }
     }
@@ -281,10 +278,70 @@ export default class Logic extends UILogic<State, Event> {
         event,
         previousState,
     }) => {
+        let page = previousState.pages.byId[event.pageId]
+        if (!page) {
+            throw new Error(
+                `Page not found to edit annotation for: ${event.pageId}`,
+            )
+        }
+        let annot = page.notes.find((n) => n.url === event.annotId)
+        if (!annot) {
+            throw new Error(`Annotation not found to edit: ${event.annotId}`)
+        }
+        let { listData } = previousState
+
+        this.props.navigation.navigate('NoteEditor', {
+            spaces: annot.listIds.map((id) => ({
+                id,
+                name: listData[id]?.name ?? 'Missing Space',
+                remoteId: listData[id]?.remoteId,
+            })),
+            privacyLevel: annot.privacyLevel,
+            highlightText: annot.noteText,
+            noteText: annot.commentText,
+            noteUrl: annot.url,
+            mode: 'update',
+            showSpacePicker: event.showSpacePicker,
+            updateNoteComment: (nextComment) =>
+                this.updateNoteComment(
+                    event.pageId,
+                    event.annotId,
+                    nextComment,
+                ),
+        })
+    }
+
+    private updateNoteComment = (
+        pageId: string,
+        annotId: string,
+        nextComment: string,
+    ) => {
         this.emitMutation({
-            mode: { $set: 'annotation-spaces' },
-            previousMode: { $set: previousState.mode },
-            annotationUrlToEdit: { $set: event.annotationUrl },
+            pages: {
+                byId: {
+                    [pageId]: {
+                        $apply: (page) => {
+                            const idx = page.notes.findIndex(
+                                (n) => n.url === annotId,
+                            )
+                            if (idx === -1) {
+                                return page
+                            }
+                            return {
+                                ...page,
+                                notes: [
+                                    ...page.notes.slice(0, idx),
+                                    {
+                                        ...page.notes[idx],
+                                        commentText: nextComment,
+                                    },
+                                    ...page.notes.slice(idx + 1),
+                                ],
+                            }
+                        },
+                    },
+                },
+            },
         })
     }
 
@@ -802,36 +859,6 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ shouldShowRetroSyncNotif: { $set: false } })
         this.props.navigation.navigate('CloudSync', {
             shouldRetrospectiveSync: true,
-        })
-    }
-
-    updateNoteComment: EventHandler<'updateNoteComment'> = ({ event }) => {
-        this.emitMutation({
-            pages: {
-                byId: {
-                    [event.pageId]: {
-                        $apply: (page) => {
-                            const idx = page.notes.findIndex(
-                                (n) => n.url === event.annotId,
-                            )
-                            if (idx === -1) {
-                                return page
-                            }
-                            return {
-                                ...page,
-                                notes: [
-                                    ...page.notes.slice(0, idx),
-                                    {
-                                        ...page.notes[idx],
-                                        commentText: event.nextComment,
-                                    },
-                                    ...page.notes.slice(idx + 1),
-                                ],
-                            }
-                        },
-                    },
-                },
-            },
         })
     }
 

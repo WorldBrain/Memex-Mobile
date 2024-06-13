@@ -10,7 +10,7 @@ import {
 import Logic, { State, Event, Props } from './logic'
 import { StatefulUIElement } from 'src/ui/types'
 import ResultPage from '../../components/result-page'
-import { UINote, UIPage } from 'src/features/overview/types'
+import type { UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import EmptyResults from '../../components/empty-results'
 import LoadingBalls from 'src/ui/components/loading-balls'
@@ -262,33 +262,19 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                 actionSheetService={this.props.services.actionSheet}
                 initNoteAddSpaces={(note) => () =>
                     this.processEvent('setAnnotationToEdit', {
-                        annotationUrl: note.url,
+                        pageId: pageData.url,
+                        annotId: note.url,
+                        showSpacePicker: true,
+                    })}
+                initNoteEdit={(note) => () =>
+                    this.processEvent('setAnnotationToEdit', {
+                        pageId: pageData.url,
+                        annotId: note.url,
                     })}
                 initNoteDelete={(n) => () =>
                     this.processEvent('confirmNoteDelete', {
                         pageId: pageData.url,
                         annotId: n.url,
-                    })}
-                initNoteEdit={(note) => () =>
-                    this.props.navigation.navigate('NoteEditor', {
-                        spaces: note.listIds.map((id) => ({
-                            id,
-                            name:
-                                this.state.listData[id]?.name ??
-                                'Missing Space',
-                            remoteId: this.state.listData[id]?.remoteId,
-                        })),
-                        privacyLevel: note.privacyLevel,
-                        highlightText: note.noteText,
-                        noteText: note.commentText,
-                        noteUrl: note.url,
-                        mode: 'update',
-                        updateNoteComment: (nextComment) =>
-                            this.processEvent('updateNoteComment', {
-                                pageId: pageData.url,
-                                annotId: note.url,
-                                nextComment,
-                            }),
                     })}
                 notes={pageData.notes}
                 listData={this.state.listData}

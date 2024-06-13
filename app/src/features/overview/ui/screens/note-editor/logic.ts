@@ -96,7 +96,10 @@ export default class Logic extends UILogic<State, Event> {
             privacyLevel: this.initPrivacyLevel,
             spacesToAdd: this.initSpaces,
             noteText: this.initNoteText,
-            isSpacePickerShown: false,
+            isSpacePickerShown:
+                params.mode === 'update'
+                    ? params.showSpacePicker ?? false
+                    : false,
             saveState: 'pristine',
             showAllText: false,
             keyBoardHeight: 0,
