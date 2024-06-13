@@ -6,7 +6,11 @@ import LoadingBalls from 'src/ui/components/loading-balls'
 import { theme } from 'src/ui/components/theme/theme'
 
 const LoadingBox = styled.View`
-    margin-top: 40px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `
 
 export interface Props {

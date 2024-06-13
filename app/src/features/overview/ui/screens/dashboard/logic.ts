@@ -389,13 +389,16 @@ export default class Logic extends UILogic<State, Event> {
             reloadState: { $set: 'running' },
             selectedListId: { $set: undefined },
         })
+
         await this.fetchAndSetListName(event.selectedListId)
+
+        let state = this.getInitialState(event.selectedListId)
+        state.searchQuery = previousState.searchQuery
 
         await executeUITask<State, 'reloadState', void>(
             this,
             'reloadState',
-            async () =>
-                this.doLoadMore(this.getInitialState(event.selectedListId)),
+            async () => this.doLoadMore(state),
         )
     }
 
@@ -601,6 +604,10 @@ export default class Logic extends UILogic<State, Event> {
         event,
         previousState,
     }) => {
+        this.emitMutation({
+            reloadState: { $set: 'running' },
+        })
+
         let mutation: UIMutation<State> = { searchQuery: { $set: event.query } }
         this.emitMutation(mutation)
         let nextState = this.withMutation(previousState, mutation)
