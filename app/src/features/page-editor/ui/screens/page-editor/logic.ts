@@ -24,6 +24,7 @@ import type { MainNavigatorParamList } from 'src/ui/navigation/types'
 import type { List, SpacePickerEntry } from 'src/features/meta-picker/types'
 import type { AnnotationSharingState } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
+import { SPECIAL_LIST_IDS } from '@worldbrain/memex-common/lib/storage/modules/lists/constants'
 
 type Page = Omit<_Page, 'notes'> & { noteIds: string[] }
 
@@ -134,6 +135,7 @@ export default class Logic extends UILogic<State, Event> {
         const pageListIds = await metaPicker.findListIdsByPage({ url })
         const listData = await metaPicker.findListsByIds({
             ids: [...noteListIds, ...pageListIds],
+            filterOutSpecialLists: true,
             includeRemoteIds: true,
         })
 
@@ -160,6 +162,11 @@ export default class Logic extends UILogic<State, Event> {
                             privacyLevel: note.privacyLevel,
                             listIds: getListIdsForSharingState(
                                 annotationSharingStates[note.url],
+                            ).filter(
+                                (id) =>
+                                    !Object.values(SPECIAL_LIST_IDS).includes(
+                                        id,
+                                    ),
                             ),
                             remoteId:
                                 annotationSharingStates[note.url]?.remoteId,

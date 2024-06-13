@@ -45,7 +45,6 @@ import {
 } from '@worldbrain/memex-common/lib/search/terms-search'
 import { queryPages, queryAnnotations } from 'src/storage/fts'
 import type StorageManager from '@worldbrain/storex'
-import type { EditorMode } from 'src/features/page-editor/types'
 import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
 
 export interface State {
@@ -302,11 +301,12 @@ export default class Logic extends UILogic<State, Event> {
             noteUrl: annot.url,
             mode: 'update',
             showSpacePicker: event.showSpacePicker,
-            updateNoteComment: (nextComment) =>
+            updateAnnotation: (nextComment, nextListIds) =>
                 this.updateNoteComment(
                     event.pageId,
                     event.annotId,
                     nextComment,
+                    nextListIds,
                 ),
         })
     }
@@ -315,6 +315,7 @@ export default class Logic extends UILogic<State, Event> {
         pageId: string,
         annotId: string,
         nextComment: string,
+        nextListIds: number[],
     ) => {
         this.emitMutation({
             pages: {
@@ -334,6 +335,7 @@ export default class Logic extends UILogic<State, Event> {
                                     {
                                         ...page.notes[idx],
                                         commentText: nextComment,
+                                        listIds: nextListIds,
                                     },
                                     ...page.notes.slice(idx + 1),
                                 ],
@@ -438,14 +440,10 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    // private async fetchListDescription(listId: number) {
-    //     this.emitMutation({
-    //         selectedListId: { $set: listId },
-    //         listData: { [listId]: { $set: selectedList } },
-    //     })
-    // }
-
-    private async fetchAndSetListName(listId: number) {
+    private async fetchAndSetListName(
+        listId: number,
+        skipSelectedListSet?: boolean,
+    ) {
         const { metaPicker } = this.props.storage.modules
 
         await executeUITask<State, 'listNameLoadState', void>(
@@ -467,11 +465,15 @@ export default class Logic extends UILogic<State, Event> {
                 if (selectedList == null) {
                     throw new Error('Selected list cannot be found')
                 }
-
-                this.emitMutation({
+                let mutation: UIMutation<State> = {
                     selectedListId: { $set: listId },
                     listData: { [listId]: { $set: selectedList } },
-                })
+                }
+                if (skipSelectedListSet) {
+                    delete mutation['selectedListId']
+                }
+
+                this.emitMutation(mutation)
             },
         )
     }
@@ -559,7 +561,7 @@ export default class Logic extends UILogic<State, Event> {
 
         for (const entry of entries) {
             try {
-                let page = await this.lookupPageForEntry(entry)
+                let page = await this.lookupPageForEntry(entry, prevState)
                 pages.push(page)
             } catch (err) {
                 continue
@@ -657,11 +659,10 @@ export default class Logic extends UILogic<State, Event> {
         }))
     }
 
-    private async lookupPageForEntry({
-        url,
-        date,
-        specificAnnotationIds,
-    }: PageLookupEntry): Promise<UIPage> {
+    private async lookupPageForEntry(
+        { url, date, specificAnnotationIds }: PageLookupEntry,
+        { listData }: State,
+    ): Promise<UIPage> {
         const { overview, metaPicker, pageEditor } = this.props.storage.modules
 
         const page = await overview.findPage({ url })
@@ -677,6 +678,27 @@ export default class Logic extends UILogic<State, Event> {
             specificAnnotationIds != null
                 ? await pageEditor.findNotes({ urls: specificAnnotationIds })
                 : await pageEditor.findNotesByPage({ url })
+
+        let listEntriesByNote = await metaPicker.findAnnotListEntriesByAnnots({
+            annotationUrls: notes.map((note) => note.url),
+            filterOutSpecialLists: true,
+        })
+
+        // If any entries come in for lists not yet in state, make sure they're put in state
+        let listsNotYetTracked = [
+            ...new Set(
+                Object.values(listEntriesByNote).flatMap((entries) =>
+                    entries.map((e) => e.listId),
+                ),
+            ),
+        ]
+        listsNotYetTracked = listsNotYetTracked.filter(
+            (listId) =>
+                listData[listId] == null && !lists.find((l) => l.id === listId),
+        )
+        for (let listId of listsNotYetTracked) {
+            await this.fetchAndSetListName(listId, true)
+        }
 
         // Add any new lists data to state
         this.emitMutation({
@@ -718,7 +740,9 @@ export default class Logic extends UILogic<State, Event> {
                 noteText: note.body,
                 isNotePressed: false,
                 tags: [],
-                listIds: [],
+                listIds:
+                    listEntriesByNote[note.url]?.map((entry) => entry.listId) ??
+                    [],
                 isEdited:
                     note.lastEdited?.getTime() !== note.createdWhen!.getTime(),
                 date: timeFromNow(note.lastEdited ?? note.createdWhen!),

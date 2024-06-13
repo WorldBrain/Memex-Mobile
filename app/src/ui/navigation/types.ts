@@ -50,7 +50,10 @@ export type MainNavigatorParamList = {
               noteUrl: string
               spaces: Array<{ id: number; name: string; remoteId?: string }>
               showSpacePicker?: boolean
-              updateNoteComment?: (nextComment: string) => void
+              updateAnnotation?: (
+                  nextComment: string,
+                  nextListIds: number[],
+              ) => void
           }
     )
     Reader: {

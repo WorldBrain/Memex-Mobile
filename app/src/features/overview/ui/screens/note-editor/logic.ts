@@ -66,7 +66,7 @@ export default class Logic extends UILogic<State, Event> {
     pageTitle?: string
     mode: NoteEditMode
     initNoteText: string
-    updateAnnotComment?: (comment: string) => void
+    updateAnnot?: (comment: string, listIds: number[]) => void
     initPrivacyLevel: AnnotationPrivacyLevels
     initSpaces: Array<{ id: number; name: string; remoteId?: string }>
 
@@ -82,8 +82,8 @@ export default class Logic extends UILogic<State, Event> {
         this.initSpaces = params.mode === 'update' ? params.spaces ?? [] : []
         this.initPrivacyLevel =
             params.privacyLevel ?? AnnotationPrivacyLevels.PRIVATE
-        this.updateAnnotComment =
-            params.mode === 'update' ? params.updateNoteComment : undefined
+        this.updateAnnot =
+            params.mode === 'update' ? params.updateAnnotation : undefined
         this.noteUrl = params.mode === 'update' ? params.noteUrl : null
         this.pageUrl = params.mode === 'create' ? params.pageUrl : null
     }
@@ -204,7 +204,10 @@ export default class Logic extends UILogic<State, Event> {
                     })
                 }
 
-                this.updateAnnotComment?.(previousState.noteText)
+                this.updateAnnot?.(
+                    previousState.noteText,
+                    previousState.spacesToAdd.map((s) => s.id),
+                )
                 await pageEditor.updateNoteText({
                     url: this.noteUrl!,
                     text: previousState.noteText,

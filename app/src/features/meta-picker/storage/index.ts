@@ -453,13 +453,20 @@ export class MetaPickerStorage extends StorageModule {
     async findListsByIds({
         ids,
         includeRemoteIds,
+        filterOutSpecialLists,
     }: {
         ids: number[]
         includeRemoteIds?: boolean
+        filterOutSpecialLists?: boolean
     }): Promise<List[]> {
-        const lists: List[] = await this.operation('findListsByIds', {
+        let lists: List[] = await this.operation('findListsByIds', {
             listIds: ids,
         })
+        if (filterOutSpecialLists) {
+            lists = lists.filter(
+                (l) => !Object.values(SPECIAL_LIST_IDS).includes(l.id),
+            )
+        }
         if (!includeRemoteIds) {
             return lists
         }
@@ -482,8 +489,10 @@ export class MetaPickerStorage extends StorageModule {
 
     async findAnnotListEntriesByAnnots({
         annotationUrls,
+        filterOutSpecialLists,
     }: {
         annotationUrls: string[]
+        filterOutSpecialLists?: boolean
     }): Promise<{ [annotationUrl: string]: AnnotListEntry[] }> {
         const result = annotationUrls.reduce<{
             [annotationUrl: string]: AnnotListEntry[]
@@ -495,6 +504,12 @@ export class MetaPickerStorage extends StorageModule {
         )
 
         for (const entry of annotListEntries) {
+            if (
+                filterOutSpecialLists &&
+                Object.values(SPECIAL_LIST_IDS).includes(entry.listId)
+            ) {
+                continue
+            }
             result[entry.url].push(entry)
         }
 
