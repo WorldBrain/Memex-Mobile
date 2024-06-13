@@ -24,7 +24,6 @@ import type { MainNavigatorParamList } from 'src/ui/navigation/types'
 import type { List, SpacePickerEntry } from 'src/features/meta-picker/types'
 import type { AnnotationSharingState } from '@worldbrain/memex-common/lib/content-sharing/service/types'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
-import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
 
 type Page = Omit<_Page, 'notes'> & { noteIds: string[] }
 
@@ -40,14 +39,9 @@ export interface State {
 
 export type Event = UIEvent<{
     setAnnotationToEdit: { annotationUrl: string }
-    toggleNotePress: { url: string }
     unselectEntry: { entry: SpacePickerEntry }
     selectEntry: { entry: SpacePickerEntry }
     confirmNoteDelete: { url: string }
-    setAnnotationPrivacyLevel: {
-        annotationUrl: string
-        level: AnnotationPrivacyLevels
-    }
     focusFromNavigation: MainNavigatorParamList['PageEditor']
     goBack: null
 }>
@@ -201,16 +195,6 @@ export default class Logic extends UILogic<State, Event> {
             previousMode: { $set: previousState.mode },
             annotationUrlToEdit: { $set: event.annotationUrl },
         })
-    }
-
-    toggleNotePress(
-        incoming: IncomingUIEvent<State, Event, 'toggleNotePress'>,
-    ): UIMutation<State> {
-        return {
-            noteData: {
-                [incoming.event.url]: { isNotePressed: (prev) => !prev },
-            },
-        }
     }
 
     unselectEntry: EventHandler<'unselectEntry'> = async ({
@@ -400,45 +384,6 @@ export default class Logic extends UILogic<State, Event> {
                 listId: entry.id,
             })
         }
-    }
-
-    setAnnotationPrivacyLevel: EventHandler<
-        'setAnnotationPrivacyLevel'
-    > = async ({ event, previousState }) => {
-        this.emitMutation({
-            noteData: {
-                [event.annotationUrl]: {
-                    privacyLevel: { $set: event.level },
-                },
-            },
-        })
-
-        const sharingState = await this.props.services.annotationSharing.setAnnotationPrivacyLevel(
-            {
-                annotationUrl: event.annotationUrl,
-                privacyLevel: event.level,
-                keepListsIfUnsharing: true,
-            },
-        )
-        const incomingListIds = [
-            ...sharingState.privateListIds,
-            ...sharingState.sharedListIds,
-        ]
-
-        this.emitMutation({
-            noteData: {
-                [event.annotationUrl]: {
-                    remoteId: { $set: sharingState.remoteId },
-                    listIds: (listIds) =>
-                        !areArrayContentsEqual(
-                            previousState.noteData[event.annotationUrl].listIds,
-                            incomingListIds,
-                        )
-                            ? incomingListIds
-                            : listIds,
-                },
-            },
-        })
     }
 
     async confirmNoteDelete({

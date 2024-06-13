@@ -11,7 +11,6 @@ import Body from './result-page-body'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import SpacePill from 'src/ui/components/space-pill'
 import type { List } from 'src/features/meta-picker/types'
-import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import type { ActionSheetServiceInterface } from 'src/services/action-sheet/types'
 
 export interface Props {
@@ -20,12 +19,8 @@ export interface Props {
     pageData?: Omit<UIPage, 'notes'>
     clearBackground?: boolean
     listData: { [listId: string]: List }
-    initNotePrivacyLevelSet: (
-        note: UINote,
-    ) => (level: AnnotationPrivacyLevels) => void
     initNoteAddSpaces: (note: UINote) => TouchEventHandler
     initNoteDelete: (note: UINote) => TouchEventHandler
-    initNotePress: (note: UINote) => TouchEventHandler
     initNoteEdit: (note: UINote) => TouchEventHandler
     mode?: 'search-results' | 'page-results'
 }
@@ -36,10 +31,8 @@ class NotesList extends React.PureComponent<Props> {
             hideFooter
             actionSheetService={this.props.actionSheetService}
             onEditPress={this.props.initNoteEdit(item)}
-            onNotePress={this.props.initNotePress(item)}
             onDeletePress={this.props.initNoteDelete(item)}
             onAddSpacesPress={this.props.initNoteAddSpaces(item)}
-            onPrivacyLevelSet={this.props.initNotePrivacyLevelSet(item)}
             clearBackground={this.props.clearBackground}
             {...item}
             privacyLevel={item.privacyLevel!}

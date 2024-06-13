@@ -15,11 +15,7 @@ import {
 } from 'react-native'
 import debounce from 'lodash/debounce'
 import { storageKeys } from '../../../../../../app.json'
-import {
-    UIPageWithNotes as UIPage,
-    UINote,
-    Page,
-} from 'src/features/overview/types'
+import { UIPageWithNotes as UIPage, UINote } from 'src/features/overview/types'
 import {
     UITaskState,
     UIStorageModules,
@@ -49,10 +45,8 @@ import {
 } from '@worldbrain/memex-common/lib/search/terms-search'
 import { queryPages, queryAnnotations } from 'src/storage/fts'
 import type StorageManager from '@worldbrain/storex'
-import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
-import { EditorMode, Note } from 'src/features/page-editor/types'
-import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
-import { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
+import type { EditorMode } from 'src/features/page-editor/types'
+import type { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
 
 export interface State {
     currentUser: AuthenticatedUser | null
@@ -74,11 +68,9 @@ export interface State {
     totalDownloads: number
     downloadProgress: number
     searchQuery: string
-    page: Omit<Page, 'notes'> & { noteIds: string[] }
     mode: EditorMode
     previousMode: EditorMode | null
     annotationUrlToEdit: string | null
-    noteData: { [noteId: string]: Note }
     showNotes: boolean
 }
 
@@ -99,13 +91,8 @@ export type Event = UIEvent<{
     performRetroSyncToDLMissingChanges: null
     toggleFeed: null
     setAnnotationToEdit: { annotationUrl: string }
-    toggleNotePress: { url: string }
-    confirmNoteDelete: { url: string }
-    setAnnotationPrivacyLevel: {
-        annotationUrl: string
-        level: AnnotationPrivacyLevels
-    }
-    toggleNotes: boolean
+    confirmNoteDelete: { pageId: string; annotId: string }
+    toggleNotes: null
     updateNoteComment: { pageId: string; annotId: string; nextComment: string }
 }>
 
@@ -182,20 +169,10 @@ export default class Logic extends UILogic<State, Event> {
             resultsExhausted: false,
             downloadProgress: 0,
             totalDownloads: 0,
-            noteData: {},
             mode: 'notes',
             previousMode: null,
             annotationUrlToEdit: null,
             showNotes: true,
-            page: {
-                noteIds: [],
-                domain: '',
-                fullUrl: '',
-                isStarred: false,
-                pageUrl: '',
-                type: 'page',
-                notes: [],
-            },
         }
     }
 
@@ -311,75 +288,31 @@ export default class Logic extends UILogic<State, Event> {
         })
     }
 
-    toggleNotePress(
-        incoming: IncomingUIEvent<State, Event, 'toggleNotePress'>,
-    ): UIMutation<State> {
-        return {
-            noteData: {
-                [incoming.event.url]: { isNotePressed: (prev) => !prev },
-            },
+    confirmNoteDelete: EventHandler<'confirmNoteDelete'> = ({ event }) => {
+        const deleteAnnotation = async () => {
+            this.emitMutation({
+                pages: {
+                    byId: {
+                        [event.pageId]: {
+                            notes: {
+                                $apply: (notes: UINote[]) =>
+                                    notes.filter(
+                                        (note) => note.url !== event.annotId,
+                                    ),
+                            },
+                        },
+                    },
+                },
+            })
+
+            await this.props.storage.modules.pageEditor.deleteNoteByUrl({
+                url: event.annotId,
+            })
         }
-    }
-    setAnnotationPrivacyLevel: EventHandler<
-        'setAnnotationPrivacyLevel'
-    > = async ({ event, previousState }) => {
-        this.emitMutation({
-            noteData: {
-                [event.annotationUrl]: {
-                    privacyLevel: { $set: event.level },
-                },
-            },
-        })
-
-        const sharingState = await this.props.services.annotationSharing.setAnnotationPrivacyLevel(
-            {
-                annotationUrl: event.annotationUrl,
-                privacyLevel: event.level,
-                keepListsIfUnsharing: true,
-            },
-        )
-        const incomingListIds = [
-            ...sharingState.privateListIds,
-            ...sharingState.sharedListIds,
-        ]
-
-        this.emitMutation({
-            noteData: {
-                [event.annotationUrl]: {
-                    remoteId: { $set: sharingState.remoteId },
-                    listIds: (listIds) =>
-                        !areArrayContentsEqual(
-                            previousState.noteData[event.annotationUrl].listIds,
-                            incomingListIds,
-                        )
-                            ? incomingListIds
-                            : listIds,
-                },
-            },
-        })
-    }
-
-    async confirmNoteDelete({
-        event: { url },
-    }: IncomingUIEvent<State, Event, 'confirmNoteDelete'>) {
         Alert.alert('Delete Note?', `You cannot get this back`, [
-            {
-                text: 'Delete',
-                onPress: () => this.deleteNote(url),
-            },
+            { text: 'Delete', onPress: deleteAnnotation },
             { text: 'Cancel' },
         ])
-    }
-
-    private async deleteNote(url: string) {
-        this.emitMutation({
-            noteData: { $unset: [url] },
-            page: { noteIds: (ids) => ids.filter((id) => id !== url) },
-        })
-
-        const { pageEditor } = this.props.storage.modules
-
-        await pageEditor.deleteNoteByUrl({ url })
     }
 
     async focusFromNavigation({
@@ -602,9 +535,6 @@ export default class Logic extends UILogic<State, Event> {
         let mutation: UIMutation<State> = { searchQuery: { $set: event.query } }
         this.emitMutation(mutation)
         let nextState = this.withMutation(previousState, mutation)
-        this.emitMutation({
-            reloadState: { $set: 'running' },
-        })
         await this.search(nextState)
     }
 
@@ -979,9 +909,9 @@ export default class Logic extends UILogic<State, Event> {
         await Linking.openURL(getFeedUrl())
     }
 
-    toggleNotes: EventHandler<'toggleNotes'> = async ({ event }) => {
+    toggleNotes: EventHandler<'toggleNotes'> = async ({ previousState }) => {
         this.emitMutation({
-            showNotes: { $set: event },
+            showNotes: { $set: !previousState.showNotes },
         })
     }
     maybeOpenFeed: EventHandler<'maybeOpenFeed'> = async ({}) => {

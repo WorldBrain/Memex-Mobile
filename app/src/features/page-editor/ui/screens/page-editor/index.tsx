@@ -90,13 +90,6 @@ export default class PageEditorScreen extends StatefulUIElement<
                         noteUrl: note.url,
                         mode: 'update',
                     })}
-                initNotePress={(n) => () =>
-                    this.processEvent('toggleNotePress', { url: n.url })}
-                initNotePrivacyLevelSet={(n) => (level) =>
-                    this.processEvent('setAnnotationPrivacyLevel', {
-                        annotationUrl: n.url,
-                        level,
-                    })}
                 notes={this.state.page.noteIds.map(
                     (noteId) => this.state.noteData[noteId],
                 )}

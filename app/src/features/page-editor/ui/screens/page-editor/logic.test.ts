@@ -149,35 +149,6 @@ describe('page editor UI logic tests', () => {
     //         ]
     //     expect(note.commentText).toEqual(testText)
     // })
-
-    it('should be able to toggle note being pressed', async (context) => {
-        const { logicContainer } = setup(context)
-        const testNoteId = 'test.com/#1234'
-
-        logicContainer.logic.emitMutation({
-            page: { $set: { ...testPage, noteIds: [testNoteId] } as any },
-            noteData: {
-                $set: { [testNoteId]: { isNotePressed: false } as any },
-            },
-        })
-
-        expect(logicContainer.state.noteData[testNoteId].isNotePressed).toBe(
-            false,
-        )
-        await logicContainer.processEvent('toggleNotePress', {
-            url: testNoteId,
-        })
-        expect(logicContainer.state.noteData[testNoteId].isNotePressed).toBe(
-            true,
-        )
-        await logicContainer.processEvent('toggleNotePress', {
-            url: testNoteId,
-        })
-        expect(logicContainer.state.noteData[testNoteId].isNotePressed).toBe(
-            false,
-        )
-    })
-
     it('should be able to add/remove pages to/from a list', async (context) => {
         let createListEntryValue: any
         let deleteListEntryValue: any

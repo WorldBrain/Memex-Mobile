@@ -225,12 +225,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         </SyncingIconContainer>
                     )}
                     <IconContainer
-                        onPress={() =>
-                            this.processEvent(
-                                'toggleNotes',
-                                !this.state.showNotes,
-                            )
-                        }
+                        onPress={() => this.processEvent('toggleNotes', null)}
                     >
                         <Icon
                             icon={
@@ -270,7 +265,10 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         annotationUrl: note.url,
                     })}
                 initNoteDelete={(n) => () =>
-                    this.processEvent('confirmNoteDelete', { url: n.url })}
+                    this.processEvent('confirmNoteDelete', {
+                        pageId: pageData.url,
+                        annotId: n.url,
+                    })}
                 initNoteEdit={(note) => () =>
                     this.props.navigation.navigate('NoteEditor', {
                         spaces: note.listIds.map((id) => ({
@@ -291,13 +289,6 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                                 annotId: note.url,
                                 nextComment,
                             }),
-                    })}
-                initNotePress={(n) => () =>
-                    this.processEvent('toggleNotePress', { url: n.url })}
-                initNotePrivacyLevelSet={(n) => (level) =>
-                    this.processEvent('setAnnotationPrivacyLevel', {
-                        annotationUrl: n.url,
-                        level,
                     })}
                 notes={pageData.notes}
                 listData={this.state.listData}

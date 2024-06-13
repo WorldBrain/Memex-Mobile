@@ -1,5 +1,4 @@
 import React from 'react'
-import { Share, Platform } from 'react-native'
 import type { Props as BodyProps } from './result-note-body'
 import { TouchEventHandler } from 'src/ui/types'
 import * as icons from 'src/ui/components/icons/icons-list'
@@ -7,14 +6,11 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
 import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import SpacePill from 'src/ui/components/space-pill'
-import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import type { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import type { List } from 'src/features/meta-picker/types'
 import type { ActionSheetServiceInterface } from 'src/services/action-sheet/types'
 import type { AutoPk } from '@worldbrain/memex-common/lib/storage/types'
-import { getNoteShareUrl } from '@worldbrain/memex-common/lib/content-sharing/utils'
-import { RenderHTML, RenderHTMLStyles } from 'src/ui/utils/RenderHTML'
-import Markdown from 'react-native-markdown-display'
+import { RenderHTML } from 'src/ui/utils/RenderHTML'
 import { theme } from 'src/ui/components/theme/theme'
 
 export interface Props extends BodyProps, InteractionProps {
@@ -29,19 +25,16 @@ export interface InteractionProps {
     hasSharedLists: boolean
     clearBackground?: boolean
     onEditPress: TouchEventHandler
-    onNotePress: TouchEventHandler
     onDeletePress: TouchEventHandler
     onAddSpacesPress: TouchEventHandler
     privacyLevel: AnnotationPrivacyLevels
     actionSheetService?: ActionSheetServiceInterface
-    onPrivacyLevelSet: (level: AnnotationPrivacyLevels) => void
 }
 
 const ResultNote: React.StatelessComponent<Props> = (props) => {
     return (
         <NoteContainer>
             <TopArea onPress={props.onEditPress}>
-                {/* <TouchableWithoutFeedback onPress={props.onNotePress}> */}
                 <ContentContainer>
                     {props.noteText && (
                         <AnnotationContainer>
@@ -64,7 +57,6 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                         </NoteRenderBox>
                     )}
                 </ContentContainer>
-                {/* </TouchableWithoutFeedback> */}
             </TopArea>
             {props.spaces.length > 0 && (
                 <SpaceList>
