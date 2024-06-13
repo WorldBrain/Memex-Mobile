@@ -81,7 +81,7 @@ export type Event = UIEvent<{
     deletePage: { url: string }
     togglePageStar: { url: string }
     toggleResultPress: { fullUrl: string }
-    setFilteredListId: { id: number }
+    setFilteredListId: { id: number; skipSelectedListSet: boolean }
     shareSelectedList: { remoteListId: string }
     focusFromNavigation: MainNavigatorParamList['Dashboard']
     performRetroSyncToDLMissingChanges: null
@@ -191,13 +191,13 @@ export default class Logic extends UILogic<State, Event> {
         const handleAppStatusChange = (nextState: AppStateStatus) => {
             switch (nextState) {
                 case 'active':
-                    return this.processUIEvent('reload', {
-                        ...incoming,
-                        event: {
-                            initListId: incoming.previousState.selectedListId,
-                            triggerSync: true,
-                        },
-                    })
+                // return this.processUIEvent('reload', {
+                //     ...incoming,
+                //     event: {
+                //         initListId: incoming.previousState.selectedListId,
+                //         triggerSync: true,
+                //     },
+                // })
                 default:
                     return
             }
@@ -434,7 +434,10 @@ export default class Logic extends UILogic<State, Event> {
     async setFilteredListId(
         incoming: IncomingUIEvent<State, Event, 'setFilteredListId'>,
     ): Promise<void> {
-        await this.fetchAndSetListName(incoming.event.id)
+        await this.fetchAndSetListName(
+            incoming.event.id,
+            incoming.event.skipSelectedListSet,
+        )
     }
 
     async toggleFeed(): Promise<void> {

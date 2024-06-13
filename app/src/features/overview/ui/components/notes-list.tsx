@@ -23,6 +23,7 @@ export interface Props {
     initNoteDelete: (note: UINote) => TouchEventHandler
     initNoteEdit: (note: UINote) => TouchEventHandler
     mode?: 'search-results' | 'page-results'
+    contextLocation: 'dashboard' | 'pageEditor'
 }
 
 class NotesList extends React.PureComponent<Props> {
@@ -76,7 +77,7 @@ class NotesList extends React.PureComponent<Props> {
 
     render() {
         return (
-            <Container>
+            <Container contextLocation={this.props.contextLocation}>
                 {this.props.notes.length === 0 &&
                 this.props.mode !== 'search-results' ? (
                     <NoResults>
@@ -108,6 +109,7 @@ class NotesList extends React.PureComponent<Props> {
                                     : null
                             }
                             showsVerticalScrollIndicator={false}
+                            contextLocation={this.props.contextLocation}
                         />
                     </ResultsContainer>
                 )}
@@ -136,7 +138,11 @@ const SectionCircle = styled.View`
     align-items: center;
 `
 
-const Container = styled.View`
+const Container = styled.View<{
+    contextLocation: 'dashboard' | 'pageEditor'
+}>`
+    padding: ${(props) =>
+        props.contextLocation === 'dashboard' ? '0px' : '15px'};
     width: 100%;
     margin-top: 5px;
     flex: 1;
@@ -177,15 +183,18 @@ const NoResults = styled.View`
     padding-top: 50px;
 `
 
-const FlatListContainer = (styled(FlatList)`
+const FlatListContainer = styled(FlatList)<{
+    contextLocation: 'dashboard' | 'pageEditor'
+}>`
     display: flex;
-    padding-left: 15px;
+    padding-left: ${(props) =>
+        props.contextLocation === 'dashboard' ? '15px' : '0px'};
     margin-top: -10px;
     padding-top: 5px;
     width: 100%;
     max-width: 600px;
     flex: 1;
-` as unknown) as typeof FlatList
+`
 
 const PageResultCard = styled.View`
     display: flex;

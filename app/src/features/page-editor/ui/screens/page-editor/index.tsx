@@ -96,6 +96,7 @@ export default class PageEditorScreen extends StatefulUIElement<
                 listData={this.state.listData}
                 pageData={this.state.page}
                 clearBackground
+                contextLocation="pageEditor"
             />
         )
     }

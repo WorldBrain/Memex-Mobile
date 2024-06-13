@@ -281,6 +281,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                 listData={this.state.listData}
                 pageData={pageData}
                 clearBackground
+                contextLocation={'dashboard'}
             />
         )
     }
@@ -426,6 +427,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     leftBtnPress={() => {
                         this.processEvent('setFilteredListId', {
                             id: ALL_SAVED_FILTER_ID,
+                            skipSelectedListSet: false,
                         })
                         this.processEvent('reload', {
                             triggerSync: true,
@@ -528,6 +530,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         onPress={() => {
                             this.processEvent('setFilteredListId', {
                                 id: ALL_SAVED_FILTER_ID,
+                                skipSelectedListSet: false,
                             })
                             this.processEvent('reload', {
                                 initListId: ALL_SAVED_FILTER_ID,
