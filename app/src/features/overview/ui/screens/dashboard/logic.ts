@@ -106,6 +106,7 @@ export type Event = UIEvent<{
         level: AnnotationPrivacyLevels
     }
     toggleNotes: boolean
+    updateNoteComment: { pageId: string; annotId: string; nextComment: string }
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -871,6 +872,36 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({ shouldShowRetroSyncNotif: { $set: false } })
         this.props.navigation.navigate('CloudSync', {
             shouldRetrospectiveSync: true,
+        })
+    }
+
+    updateNoteComment: EventHandler<'updateNoteComment'> = ({ event }) => {
+        this.emitMutation({
+            pages: {
+                byId: {
+                    [event.pageId]: {
+                        $apply: (page) => {
+                            const idx = page.notes.findIndex(
+                                (n) => n.url === event.annotId,
+                            )
+                            if (idx === -1) {
+                                return page
+                            }
+                            return {
+                                ...page,
+                                notes: [
+                                    ...page.notes.slice(0, idx),
+                                    {
+                                        ...page.notes[idx],
+                                        commentText: event.nextComment,
+                                    },
+                                    ...page.notes.slice(idx + 1),
+                                ],
+                            }
+                        },
+                    },
+                },
+            },
         })
     }
 

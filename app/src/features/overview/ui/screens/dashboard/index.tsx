@@ -285,6 +285,12 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         noteText: note.commentText,
                         noteUrl: note.url,
                         mode: 'update',
+                        updateNoteComment: (nextComment) =>
+                            this.processEvent('updateNoteComment', {
+                                pageId: pageData.url,
+                                annotId: note.url,
+                                nextComment,
+                            }),
                     })}
                 initNotePress={(n) => () =>
                     this.processEvent('toggleNotePress', { url: n.url })}

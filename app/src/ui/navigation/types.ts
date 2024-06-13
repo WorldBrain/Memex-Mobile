@@ -49,6 +49,7 @@ export type MainNavigatorParamList = {
               mode: 'update'
               noteUrl: string
               spaces: Array<{ id: number; name: string; remoteId?: string }>
+              updateNoteComment?: (nextComment: string) => void
           }
     )
     Reader: {
