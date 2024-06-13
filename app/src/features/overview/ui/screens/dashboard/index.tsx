@@ -612,7 +612,7 @@ const SearchBox = styled.View`
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 10px;
+    margin: 15px 10px 0;
 `
 
 const SpaceTitleContainer = styled.View`
