@@ -10,7 +10,7 @@ import {
 import Logic, { State, Event, Props } from './logic'
 import { StatefulUIElement } from 'src/ui/types'
 import ResultPage from '../../components/result-page'
-import { UIPage } from 'src/features/overview/types'
+import { UINote, UIPage } from 'src/features/overview/types'
 import { EditorMode } from 'src/features/page-editor/types'
 import EmptyResults from '../../components/empty-results'
 import LoadingBalls from 'src/ui/components/loading-balls'
@@ -142,7 +142,11 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
     private handleScrollToEnd = async ({
         nativeEvent,
     }: NativeSyntheticEvent<NativeScrollEvent>) => {
-        if (scrollHelpers.isAtTop(nativeEvent)) {
+        const threshold = 50 // pixels past the top the user must scroll up
+        if (
+            scrollHelpers.isAtTop(nativeEvent) &&
+            nativeEvent.contentOffset.y < -threshold
+        ) {
             await this.processEvent('reload', {
                 initListId: this.state.selectedListId,
                 triggerSync: true,
@@ -178,7 +182,8 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             onListsPress={this.navToPageEditor(item, 'collections')}
             onReaderPress={this.initHandleReaderPress(item)}
             spacePills={item.spacePills}
-            renderNotesList={this.renderNotesForPage}
+            renderNotesList={this.renderNotesForPage(item, item.notes)}
+            showNotes={this.state.showNotes}
             {...item}
         />
     )
@@ -219,29 +224,47 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                             <LoadingBalls size={16} />
                         </SyncingIconContainer>
                     )}
-                    {allSavedMode && (
-                        <IconContainer
-                            onPress={() =>
-                                this.props.navigation.navigate('SettingsMenu')
+                    <IconContainer
+                        onPress={() =>
+                            this.processEvent(
+                                'toggleNotes',
+                                !this.state.showNotes,
+                            )
+                        }
+                    >
+                        <Icon
+                            icon={
+                                this.state.showNotes
+                                    ? icons.Compress
+                                    : icons.Expand
                             }
-                        >
-                            <Icon
-                                icon={icons.Settings}
-                                heightAndWidth={'22px'}
-                                strokeWidth={'0px'}
-                                fill
-                            />
-                        </IconContainer>
-                    )}
+                            heightAndWidth={'22px'}
+                            strokeWidth={'0px'}
+                            fill
+                        />
+                    </IconContainer>
+                    <IconContainer
+                        onPress={() =>
+                            this.props.navigation.navigate('SettingsMenu')
+                        }
+                    >
+                        <Icon
+                            icon={icons.Settings}
+                            heightAndWidth={'22px'}
+                            strokeWidth={'0px'}
+                            fill
+                        />
+                    </IconContainer>
                 </TopIconsContainer>
             </SpaceTitleContainer>
         )
     }
 
-    private renderNotesForPage() {
+    private renderNotesForPage(pageData: UIPage, notesArray: UINote[]) {
         return (
             <NotesList
-                // actionSheetService={this.props.services.actionSheet}
+                mode="search-results"
+                actionSheetService={this.props.services.actionSheet}
                 initNoteAddSpaces={(note) => () =>
                     this.processEvent('setAnnotationToEdit', {
                         annotationUrl: note.url,
@@ -270,11 +293,9 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         annotationUrl: n.url,
                         level,
                     })}
-                notes={this.state.page.noteIds.map(
-                    (noteId) => this.state.noteData[noteId],
-                )}
+                notes={notesArray}
                 listData={this.state.listData}
-                pageData={this.state.page}
+                pageData={pageData}
                 clearBackground
             />
         )
@@ -360,7 +381,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                     keyExtractor={this.listKeyExtracter}
                     onScrollEndDrag={this.handleScrollToEnd}
                     scrollEventThrottle={32}
-                    onEndReachedThreshold={1.5}
+                    onEndReachedThreshold={1}
                     onEndReached={this.handleListEndReached}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
@@ -499,13 +520,16 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                 {this.renderNavigation()}
                 {this.renderUpdatePill()}
                 <ResultsContainer>
-                    <SuggestInput
-                        placeholder="Search what you saved"
-                        value={this.state.searchQuery}
-                        onChange={(query) =>
-                            this.processEvent('setSearchQuery', { query })
-                        }
-                    />
+                    <SearchBox>
+                        <SuggestInput
+                            placeholder="Search what you saved"
+                            value={this.state.searchQuery}
+                            onChange={(query) =>
+                                this.processEvent('setSearchQuery', { query })
+                            }
+                            background="greyScale3"
+                        />
+                    </SearchBox>
                     {this.renderList()}
                 </ResultsContainer>
                 <FooterActionBar>
@@ -524,10 +548,10 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                             icon={icons.HeartIcon}
                             strokeWidth="0"
                             heightAndWidth="18px"
-                            color="greyScale5"
+                            color="greyScale6"
                             fill
                         />
-                        <FooterActionText>Saved</FooterActionText>
+                        <FooterActionText>All Saved</FooterActionText>
                     </FooterActionBtn>
                     {/* <FooterActionBtn
                         onPress={() => {
@@ -552,17 +576,19 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                         onPress={() => this.handleListsFilterPress()}
                     >
                         <Icon
-                            icon={icons.SpacesEmtpy}
+                            icon={icons.Plus}
                             strokeWidth="0"
                             heightAndWidth="18px"
-                            color="greyScale5"
+                            color="greyScale6"
                             fill
                         />
                         <FooterActionText>Spaces</FooterActionText>
                     </FooterActionBtn>
                     <FooterActionBtn
                         onPress={() =>
-                            Linking.openURL('https://memex.social/feed')
+                            Linking.openURL(
+                                `https://go.crisp.chat/chat/embed/?website_id=05013744-c145-49c2-9c84-bfb682316599&user_email=${this.state.currentUser?.email}`,
+                            )
                         }
                     >
                         <FeedActivityIndicatorBox>
@@ -571,13 +597,13 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
                             />
                         </FeedActivityIndicatorBox>
                         <Icon
-                            icon={icons.Feed}
+                            icon={icons.HelpIcon}
                             strokeWidth="0"
                             heightAndWidth="18px"
                             color="greyScale5"
                             fill
                         />
-                        <FooterActionText>Feed</FooterActionText>
+                        <FooterActionText>Get Support</FooterActionText>
                     </FooterActionBtn>
                     {/* <FooterActionBtn
                         onPress={() =>
@@ -598,6 +624,13 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
         )
     }
 }
+
+const SearchBox = styled.View`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 10px;
+`
 
 const SpaceTitleContainer = styled.View`
     display: flex;
@@ -774,27 +807,30 @@ const FooterActionBtn = styled.TouchableOpacity`
     margin: 10px;
     position: relative;
     align-items: center;
-    width: 48px;
+    flex: 1;
     text-align: center;
 `
 const FooterActionBar = styled.View`
     display: flex;
     flex-direction: row;
-    background: ${(props) => props.theme.colors.greyScale1};
+    background: ${(props) => props.theme.colors.greyScale3};
     border: 1px solid ${(props) => props.theme.colors.greyScale2};
-    border-radius: 10px;
-
+    width: 100%;
+    margin: 0 7%;
+    border-radius: 8px;
     position: absolute;
     bottom: 20px;
-    padding: 0 10px;
+    padding: 0 10%;
+    justify-content: space-between;
 `
 
 const FooterActionText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale4};
+    color: ${(props) => props.theme.colors.white};
     font-size: 12px;
     margin-top: 4px;
     font-weight: 400;
     font-family: 'Satoshi';
+    text-align: center;
 `
 
 const Container = styled.SafeAreaView`
@@ -814,14 +850,19 @@ const ResultsContainer = styled.View`
 
 const ResultListContainer = styled.View`
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: flex-start;
+
     padding: 0 10px;
+    height: 100%;
 `
 
 const ResultsList = (styled(FlatList)`
     background: ${(props) => props.theme.colors.black};
     display: flex;
     padding: 5px;
+    flex-direction: column;
+    width: 100%;
 ` as unknown) as typeof FlatList
 
 const SpacesArea = styled.View`

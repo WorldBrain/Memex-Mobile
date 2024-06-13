@@ -16,7 +16,7 @@ import type { ActionSheetServiceInterface } from 'src/services/action-sheet/type
 
 export interface Props {
     notes: UINote[]
-    actionSheetService: ActionSheetServiceInterface
+    actionSheetService?: ActionSheetServiceInterface
     pageData?: Omit<UIPage, 'notes'>
     clearBackground?: boolean
     listData: { [listId: string]: List }
@@ -27,6 +27,7 @@ export interface Props {
     initNoteDelete: (note: UINote) => TouchEventHandler
     initNotePress: (note: UINote) => TouchEventHandler
     initNoteEdit: (note: UINote) => TouchEventHandler
+    mode?: 'search-results' | 'page-results'
 }
 
 class NotesList extends React.PureComponent<Props> {
@@ -83,7 +84,8 @@ class NotesList extends React.PureComponent<Props> {
     render() {
         return (
             <Container>
-                {this.props.notes.length === 0 ? (
+                {this.props.notes.length === 0 &&
+                this.props.mode !== 'search-results' ? (
                     <NoResults>
                         <SectionCircle>
                             <Icon
@@ -107,7 +109,11 @@ class NotesList extends React.PureComponent<Props> {
                             keyExtractor={(item) => item.url}
                             contentContainerStyle={styles.list}
                             ListFooterComponent={<EmptyItem />}
-                            ListHeaderComponent={this.renderPageItem()}
+                            ListHeaderComponent={
+                                this.props.mode !== 'search-results'
+                                    ? this.renderPageItem()
+                                    : null
+                            }
                             showsVerticalScrollIndicator={false}
                         />
                     </ResultsContainer>
@@ -120,7 +126,7 @@ class NotesList extends React.PureComponent<Props> {
 export default NotesList
 
 const EmptyItem = styled.View`
-    height: 200px;
+    height: 10px;
 `
 
 const SectionCircle = styled.View`
@@ -142,6 +148,7 @@ const Container = styled.View`
     width: 100%;
     margin-top: 10px;
     flex: 1;
+    position: relative;
 `
 
 const NoResultsTitle = styled.Text`
@@ -183,7 +190,6 @@ const FlatListContainer = (styled(FlatList)`
     padding-left: 15px;
     margin-top: -10px;
     padding-top: 5px;
-    padding-right: 15px;
     width: 100%;
     max-width: 600px;
     flex: 1;

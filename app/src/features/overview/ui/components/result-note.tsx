@@ -33,7 +33,7 @@ export interface InteractionProps {
     onDeletePress: TouchEventHandler
     onAddSpacesPress: TouchEventHandler
     privacyLevel: AnnotationPrivacyLevels
-    actionSheetService: ActionSheetServiceInterface
+    actionSheetService?: ActionSheetServiceInterface
     onPrivacyLevelSet: (level: AnnotationPrivacyLevels) => void
 }
 

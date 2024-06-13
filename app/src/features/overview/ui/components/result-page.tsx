@@ -3,7 +3,7 @@ import { View, Platform, Share, Modal } from 'react-native'
 
 import Body, { Props as BodyProps } from './result-page-body'
 import type { TouchEventHandler } from 'src/ui/types'
-import type { UIPage } from '../../types'
+import type { UINote, UIPage } from '../../types'
 import styled from 'styled-components/native'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
@@ -14,7 +14,8 @@ export interface Props
         InteractionProps,
         Pick<UIPage, 'isResultPressed' | 'notes' | 'fullUrl'> {
     spacePills?: JSX.Element
-    renderNotesList?: () => JSX.Element
+    renderNotesList?: (pageData: UIPage, notes: UINote) => JSX.Element
+    showNotes: boolean
 }
 
 export interface InteractionProps {
@@ -29,113 +30,115 @@ export interface InteractionProps {
 class ResultPage extends React.PureComponent<Props> {
     render() {
         return (
-            <ResultItemContainer>
-                <ResultContainer>
-                    <ResultItem>
-                        <TopArea onPress={this.props.onReaderPress}>
-                            <View>
-                                <Body {...this.props} />
-                            </View>
-                            {this.props.spacePills}
-                        </TopArea>
-                        <Footer>
-                            <DateText>{this.props.date}</DateText>
-                            <FooterRightSide>
-                                <IconContainer
-                                    onPress={this.props.onResultPress}
-                                >
-                                    <Icon
-                                        icon={icons.Dots}
-                                        strokeWidth="0"
-                                        heightAndWidth="15px"
-                                        color="greyScale4"
-                                        fill
-                                    />
-                                </IconContainer>
+            <ResultContainer showNotes={this.props.showNotes}>
+                <ResultItem>
+                    <TopArea onPress={this.props.onReaderPress}>
+                        <View>
+                            <Body {...this.props} />
+                        </View>
+                        {this.props.spacePills}
+                    </TopArea>
+                    <Footer>
+                        <DateText>{this.props.date}</DateText>
+                        <FooterRightSide>
+                            <IconContainer onPress={this.props.onResultPress}>
+                                <Icon
+                                    icon={icons.Dots}
+                                    strokeWidth="0"
+                                    heightAndWidth="15px"
+                                    color="greyScale4"
+                                    fill
+                                />
+                            </IconContainer>
 
-                                <IconContainer
-                                    onPress={this.props.onListsPress}
-                                >
+                            <IconContainer onPress={this.props.onListsPress}>
+                                <Icon
+                                    icon={icons.Plus}
+                                    strokeWidth="1"
+                                    heightAndWidth="16px"
+                                    color="prime1"
+                                    fill
+                                />
+                            </IconContainer>
+                            <IconContainer onPress={this.props.onCommentPress}>
+                                {this.props.notes &&
+                                this.props.notes?.length > 0 ? (
                                     <Icon
-                                        icon={icons.Plus}
-                                        strokeWidth="1"
-                                        heightAndWidth="16px"
-                                        color="prime1"
+                                        icon={icons.CommentFull}
+                                        strokeWidth="0"
                                         fill
+                                        heightAndWidth="18px"
+                                        color="prime1"
                                     />
-                                </IconContainer>
-                                <IconContainer
-                                    onPress={this.props.onCommentPress}
-                                >
-                                    {this.props.notes &&
-                                    this.props.notes?.length > 0 ? (
-                                        <Icon
-                                            icon={icons.CommentFull}
-                                            strokeWidth="0"
-                                            fill
-                                            heightAndWidth="18px"
-                                            color="prime1"
-                                        />
-                                    ) : (
-                                        <Icon
-                                            icon={icons.Comment}
-                                            strokeWidth="0.2"
-                                            heightAndWidth="18px"
-                                            fill
-                                            color="prime1"
-                                        />
-                                    )}
-                                </IconContainer>
-                            </FooterRightSide>
-                        </Footer>
-                    </ResultItem>
-                </ResultContainer>
-                {this.props.renderNotesList && this.props.renderNotesList()}
-            </ResultItemContainer>
+                                ) : (
+                                    <Icon
+                                        icon={icons.Comment}
+                                        strokeWidth="0.2"
+                                        heightAndWidth="18px"
+                                        fill
+                                        color="prime1"
+                                    />
+                                )}
+                            </IconContainer>
+                        </FooterRightSide>
+                    </Footer>
+                </ResultItem>
+                {this.props.renderNotesList && this.props.showNotes ? (
+                    <NotesContainer>
+                        {this.props.renderNotesList}
+                    </NotesContainer>
+                ) : null}
+            </ResultContainer>
         )
     }
 }
 
 export default ResultPage
 
-const ResultItemContainer = styled.View`
-    position: relative;
-`
+// const MoreActionTooltip = styled(Modal)`
+//     flex-direction: column;
+//     border-radius: 8px;
+//     background: ${(props) => props.theme.colors.greyScale2};
+//     border: 1px solid ${(props) => props.theme.colors.greyScale3};
+//     z-index: 1;
+//     height: 50px;
+//     width: 50px;
+//     bottom: 0px;
+// `
 
-const MoreActionTooltip = styled(Modal)`
-    flex-direction: column;
-    border-radius: 8px;
-    background: ${(props) => props.theme.colors.greyScale2};
-    border: 1px solid ${(props) => props.theme.colors.greyScale3};
-    z-index: 1;
-    height: 50px;
-    width: 50px;
-    bottom: 0px;
-`
-
-const MoreButtons = styled.View`
-    display: flex;
-    flex-direction: column;
-`
-
-const ResultContainer = styled.View`
-    margin: 5px 0px;
+const ResultContainer = styled.View<{
+    showNotes: boolean
+}>`
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: stretch;
+    align-items: flex-start;
+    margin: 5px 0px;
     border-radius: 8px;
-    background: ${(props) => props.theme.colors.greyScale1};
     width: 600px;
     max-width: 100%;
     border-style: solid;
     border-width: 1px;
     border: none;
+    position: relative;
+    overflow: scroll;
+    margin-bottom: ${(props) => (props.showNotes ? '20px' : '10px')};
 `
 
 const ResultItem = styled.View`
+    background: ${(props) => props.theme.colors.greyScale1};
+    /* flex: 1; */
     max-width: 600px;
     width: 100%;
+    border-radius: 8px;
+    border: none;
+`
+
+const NotesContainer = styled.View`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
 `
 
 const TopArea = styled.TouchableOpacity`
@@ -152,6 +155,7 @@ const Footer = styled.View`
     flex-direction: row;
     justify-content: space-between;
     padding: 0 15px;
+    border-radius: 8px;
 `
 
 const FooterRightSide = styled.View`

@@ -52,8 +52,10 @@ import type StorageManager from '@worldbrain/storex'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import { EditorMode, Note } from 'src/features/page-editor/types'
 import { areArrayContentsEqual } from 'src/utils/are-arrays-the-same'
+import { AuthenticatedUser } from '@worldbrain/memex-common/lib/authentication/types'
 
 export interface State {
+    currentUser: AuthenticatedUser | null
     syncState: UITaskState
     loadState: UITaskState
     reloadState: UITaskState
@@ -77,6 +79,7 @@ export interface State {
     previousMode: EditorMode | null
     annotationUrlToEdit: string | null
     noteData: { [noteId: string]: Note }
+    showNotes: boolean
 }
 
 export type Event = UIEvent<{
@@ -102,6 +105,7 @@ export type Event = UIEvent<{
         annotationUrl: string
         level: AnnotationPrivacyLevels
     }
+    toggleNotes: boolean
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -125,6 +129,7 @@ export interface Props extends MainNavProps<'Dashboard'> {
         | 'activityIndicator'
         | 'keepAwake'
         | 'annotationSharing'
+        | 'auth'
     >
     getNow?: () => number
     pageSize?: number
@@ -147,7 +152,7 @@ export default class Logic extends UILogic<State, Event> {
     constructor(private props: Props) {
         super()
 
-        this.pageSize = props.pageSize ?? 5
+        this.pageSize = props.pageSize ?? 10
         this.getNow = props.getNow ?? (() => Date.now())
     }
 
@@ -158,6 +163,7 @@ export default class Logic extends UILogic<State, Event> {
             initListId ?? params?.selectedListId ?? ALL_SAVED_FILTER_ID
 
         return {
+            currentUser: null,
             syncState: 'pristine',
             loadState: 'pristine',
             reloadState: 'running',
@@ -179,6 +185,7 @@ export default class Logic extends UILogic<State, Event> {
             mode: 'notes',
             previousMode: null,
             annotationUrlToEdit: null,
+            showNotes: true,
             page: {
                 noteIds: [],
                 domain: '',
@@ -282,6 +289,8 @@ export default class Logic extends UILogic<State, Event> {
         )
 
         await this.doSync()
+        const currentUser = await this.props.services.auth.getCurrentUser()
+        this.emitMutation({ currentUser: { $set: currentUser } })
     }
 
     cleanup() {
@@ -592,6 +601,9 @@ export default class Logic extends UILogic<State, Event> {
         let mutation: UIMutation<State> = { searchQuery: { $set: event.query } }
         this.emitMutation(mutation)
         let nextState = this.withMutation(previousState, mutation)
+        this.emitMutation({
+            reloadState: { $set: 'running' },
+        })
         await this.search(nextState)
     }
 
@@ -936,6 +948,11 @@ export default class Logic extends UILogic<State, Event> {
         await Linking.openURL(getFeedUrl())
     }
 
+    toggleNotes: EventHandler<'toggleNotes'> = async ({ event }) => {
+        this.emitMutation({
+            showNotes: { $set: event },
+        })
+    }
     maybeOpenFeed: EventHandler<'maybeOpenFeed'> = async ({}) => {
         if (this.props.route.params?.openFeed != null) {
             await this.openMemexFeed()
