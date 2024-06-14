@@ -36,26 +36,23 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
         <NoteContainer>
             <TopArea onPress={props.onEditPress}>
                 <ContentContainer>
-                    {props.noteText && (
+                    {props.noteText ? (
                         <AnnotationContainer>
                             <VerticalBar />
                             <HTMLRenderBox>
                                 {RenderHTML(props.noteText)}
                             </HTMLRenderBox>
-                            {/* <AnnotationHighlight>
-                                {props.noteText}
-                            </AnnotationHighlight> */}
                         </AnnotationContainer>
-                    )}
-                    {((props.noteText && props.commentText) ||
-                        (props.commentText && !props.noteText)) && (
+                    ) : null}
+                    {(props.noteText && props.commentText) ||
+                    (props.commentText && !props.noteText) ? (
                         <AnnotationSpacing />
-                    )}
-                    {props.commentText && (
+                    ) : null}
+                    {props.commentText ? (
                         <NoteRenderBox>
                             {RenderHTML(props.commentText)}
                         </NoteRenderBox>
-                    )}
+                    ) : null}
                 </ContentContainer>
             </TopArea>
             {props.spaces.length > 0 && (
@@ -208,7 +205,7 @@ const RightSide = styled.View`
 
 const NoteRenderBox = styled.View`
     width: 95%;
-    margin: 0 15px;
+    margin: 5px 15px 0 15px;
     flex: 1;
 `
 

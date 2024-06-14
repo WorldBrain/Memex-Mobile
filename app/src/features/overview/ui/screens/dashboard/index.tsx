@@ -182,7 +182,7 @@ export default class Dashboard extends StatefulUIElement<Props, State, Event> {
             onListsPress={this.navToPageEditor(item, 'collections')}
             onReaderPress={this.initHandleReaderPress(item)}
             spacePills={item.spacePills}
-            renderNotesList={this.renderNotesForPage(item, item.notes)}
+            renderNotesList={this.renderNotesForPage(item)}
             showNotes={this.state.showNotes && item.notes.length > 0}
             notesList={this.renderNotesForPage(item)}
             {...item}

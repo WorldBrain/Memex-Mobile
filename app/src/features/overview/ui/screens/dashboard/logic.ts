@@ -219,17 +219,20 @@ export default class Logic extends UILogic<State, Event> {
 
         await loadInitial<State>(this, async () => {
             await this.doLoadMore(this.getInitialState())
-            const retroSyncProcessedTime =
-                (await services.localStorage.get(
-                    storageKeys.retroSyncLastProcessedTime,
-                )) ?? 0
+
+            // Commented out for reuse but for now we dont need it.
+
+            // const retroSyncProcessedTime =
+            //     (await services.localStorage.get(
+            //         storageKeys.retroSyncLastProcessedTime,
+            //     )) ?? 0
             this.emitMutation({
                 reloadState: { $set: 'pristine' }, // TODO: Why is this being set here?
-                shouldShowRetroSyncNotif: {
-                    $set:
-                        retroSyncProcessedTime <
-                        CITATIONS_FEATURE_BUG_FIX_RELEASE,
-                },
+                // shouldShowRetroSyncNotif: {
+                //     $set:
+                //         retroSyncProcessedTime <
+                //         CITATIONS_FEATURE_BUG_FIX_RELEASE,
+                // },
             })
         })
 
