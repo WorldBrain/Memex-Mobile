@@ -54,18 +54,21 @@ const ResultNote: React.StatelessComponent<Props> = (props) => {
                         </NoteRenderBox>
                     ) : null}
                 </ContentContainer>
+                {props.commentText && props.spaces?.length > 0 ? (
+                    <AnnotationSpacing height={10} />
+                ) : null}
+                {props.spaces?.length > 0 && (
+                    <SpaceList>
+                        {props.spaces.map((space) => (
+                            <SpacePill
+                                key={space.id}
+                                name={space.name}
+                                isShared={space.remoteId != null}
+                            />
+                        ))}
+                    </SpaceList>
+                )}
             </TopArea>
-            {props.spaces.length > 0 && (
-                <SpaceList>
-                    {props.spaces.map((space) => (
-                        <SpacePill
-                            key={space.id}
-                            name={space.name}
-                            isShared={space.remoteId != null}
-                        />
-                    ))}
-                </SpaceList>
-            )}
             <Section>
                 <ActionBar>
                     <LeftSide>
@@ -201,12 +204,16 @@ const RightSide = styled.View`
     align-items: center;
     flex-direction: row;
     justify-content: flex-end;
+    margin-right: -5px;
 `
 
 const NoteRenderBox = styled.View`
     width: 95%;
     margin: 5px 15px 0 15px;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: -20px;
 `
 
 const HTMLRenderBox = styled.View`
@@ -217,6 +224,8 @@ const HTMLRenderBox = styled.View`
 
 const ContentContainer = styled.View`
     padding: 0px 10px 15px 0px;
+    display: flex;
+    flex-direction: column;
 `
 
 const AnnotationContainer = styled.View`
@@ -240,8 +249,8 @@ const VerticalBar = styled.View`
     margin-right: 10px;
 `
 
-const AnnotationSpacing = styled.View`
-    height: 5px;
+const AnnotationSpacing = styled.View<{ height?: number }>`
+    height: ${(props) => props.height ?? 5}px;
 `
 
 const DateBox = styled.Text`
@@ -257,7 +266,6 @@ const ActionBar = styled.View`
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    flex: 1;
 `
 
 const NoteContainer = styled.View`
@@ -268,9 +276,19 @@ const NoteContainer = styled.View`
             ? props.theme.colors.greyScale1
             : props.theme.colors.greyScale3}96;
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
 `
 
-const TopArea = styled.TouchableOpacity``
+const TopArea = styled.TouchableOpacity`
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+`
 
 const IconContainer = styled.TouchableOpacity`
     margin-right: 10px;
@@ -284,7 +302,7 @@ const SpaceList = styled.View`
     align-items: center;
     width: 100%;
     flex-wrap: wrap;
-    padding: 0px 10px 10px 10px;
+    padding: 0px 10px 0px 10px;
 `
 
 const Section = styled.View`
@@ -296,6 +314,7 @@ const Section = styled.View`
     border-top-color: ${(props) => props.theme.colors.greyScale2};
     border-style: solid;
     padding: 5px 0px 5px 5px;
+    height: 40px;
 `
 
 export default ResultNote

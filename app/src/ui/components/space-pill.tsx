@@ -32,7 +32,7 @@ const SpacePillContainer = styled.View`
     display: flex;
     flex-direction: row;
     padding: 4px 8px;
-    background: ${(props) => props.theme.colors.greyScale2};
+    background: ${(props) => props.theme.colors.greyScale3};
     align-items: center;
     display: flex;
     text-align: center;
@@ -46,7 +46,7 @@ const Spacer = styled.View`
 `
 
 const SpacePillText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale6};
+    color: ${(props) => props.theme.colors.greyScale7};
     display: flex;
     text-align: center;
     font-size: 12px;

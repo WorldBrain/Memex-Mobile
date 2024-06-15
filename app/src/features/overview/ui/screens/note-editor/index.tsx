@@ -181,7 +181,10 @@ export default class extends StatefulUIElement<Props, State, Event> {
                         />
                     ) : (
                         <>
-                            {this.renderHighlightText()}
+                            {this.state.highlightText &&
+                            this.state.highlightText?.length > 0
+                                ? this.renderHighlightText()
+                                : null}
                             <NoteInputEditorBox
                                 height={this.editorHeight + 'px'}
                             >
@@ -291,7 +294,6 @@ const NoteInputEditorBox = styled.View<{ height: string }>`
     border-color: ${(props) => props.theme.colors.greyScale3};
     height: ${(props) => props.height};
     max-height: 35%;
-    margin: 0 10px;
     width: 620px;
     overflow: hidden;
     max-width: 100%;
@@ -300,9 +302,6 @@ const NoteInputEditorBox = styled.View<{ height: string }>`
 
 const NoteInputEditor = styled(NoteInput)`
     background: ${(props) => props.theme.colors.greyScale1};
-    margin: 0 20px;
-    flex: 1;
-    height: 100%;
 `
 
 const TopBar = styled.View`

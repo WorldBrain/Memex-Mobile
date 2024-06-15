@@ -184,12 +184,47 @@ export default class Logic extends UILogic<State, Event> {
         const { pageEditor } = this.props.storage.modules
         const { annotationSharing } = this.props.services
 
+        let { noteText } = previousState
+
+        // Regex to find image tags and extract the src attribute
+        const imgRegex = /<p>\s*<img[^>]*src="([^"]+)"[^>]*>\s*<\/p>/gi
+        let processedHtml = noteText
+        let match
+
+        if (processedHtml) {
+            while ((match = imgRegex.exec(processedHtml)) !== null) {
+                const originalTag = match[0]
+                const srcRegex = /src="([^"]+)"/
+                const srcMatch = srcRegex.exec(originalTag)
+                let srcContent = null
+                if (srcMatch) {
+                    srcContent = srcMatch[1]
+                    // Extract the 'id' parameter from the URL
+                    const idMatch = /[\?&]id=([^&#]*)/.exec(srcContent)
+                    const id = idMatch ? idMatch[1] : null
+
+                    // Construct new img tag without style
+                    const newImgTag = `<img src="${id}" remoteid="${id}">`
+
+                    // Replace the original img tag with the new one in the processedHtml string
+                    processedHtml = processedHtml.replace(
+                        originalTag,
+                        newImgTag,
+                    )
+                }
+            }
+            noteText = processedHtml
+        }
+
         await executeUITask<State, 'saveState', void>(
             this,
             'saveState',
             async () => {
                 if (this.mode === 'create') {
-                    await this.handleCreation(previousState)
+                    let state = previousState
+                    previousState.noteText = noteText
+
+                    await this.handleCreation(state)
                     return
                 }
 
@@ -205,12 +240,12 @@ export default class Logic extends UILogic<State, Event> {
                 }
 
                 this.updateAnnot?.(
-                    previousState.noteText,
+                    noteText,
                     previousState.spacesToAdd.map((s) => s.id),
                 )
                 await pageEditor.updateNoteText({
                     url: this.noteUrl!,
-                    text: previousState.noteText,
+                    text: noteText,
                 })
             },
         )

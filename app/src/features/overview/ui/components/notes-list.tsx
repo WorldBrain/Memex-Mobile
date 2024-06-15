@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, ListRenderItem } from 'react-native'
+import { FlatList, ListRenderItem, View } from 'react-native'
 
 import styles from './result-page-with-notes.styles'
 import ResultNote from './result-note'
@@ -110,6 +110,20 @@ class NotesList extends React.PureComponent<Props> {
                             }
                             showsVerticalScrollIndicator={false}
                             contextLocation={this.props.contextLocation}
+                            CellRendererComponent={({
+                                children,
+                                style,
+                                onLayout,
+                                onFocusCapture,
+                            }) => (
+                                <View
+                                    style={[
+                                        style,
+                                        { flex: 1, marginBottom: 10 },
+                                    ]}
+                                    children={children}
+                                />
+                            )}
                         />
                     </ResultsContainer>
                 )}

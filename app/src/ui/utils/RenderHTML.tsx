@@ -1,6 +1,6 @@
 import React from 'react'
 import RenderHtml from 'react-native-render-html'
-import { Dimensions } from 'react-native'
+import { Dimensions, useWindowDimensions } from 'react-native'
 import { theme } from '../components/theme/theme'
 import { ImageSupportBackend } from '@worldbrain/memex-common/lib/image-support/types'
 import { createImageUrlFromId } from '@worldbrain/memex-common/lib/image-support/utils'
@@ -14,23 +14,27 @@ export const getImageUrl: ImageSupportBackend['getImageUrl'] = (params) => {
 }
 
 export const RenderHTML = (html: string) => {
-    const imgRegex = /<img[^>]+src="([^">]+)"/g
+    const imgRegex = /<img([^>]+)src="([^">]+)"/g
     let match
     let processedHtml = html
 
     while ((match = imgRegex.exec(html)) !== null) {
         // Extract the src value
-        const originalSrc = match[1]
+        const originalSrc = match[2]
+        const originalTag = match[0]
         // Assuming the src is an ID or can be converted to an ID for getImageUrl
         const id = originalSrc // Modify this line if the ID needs to be extracted differently
         try {
             const newSrc = getImageUrl({
                 id: id,
-                env: process.env.NODE_ENV ?? 'development',
+                env: process.env.NODE_ENV ?? 'production',
             })
 
-            // Replace the original src with the new one in the processedHtml string
-            processedHtml = processedHtml.replace(originalSrc, newSrc)
+            // Construct new img tag with additional inline styles
+            const newImgTag = `<img${match[1]}src="${newSrc}" onClick="null" style="object-fit: contain; width: 100%; border-radius: 8px; max-height: 200px; align-self: flex-start;"`
+
+            // Replace the original img tag with the new one in the processedHtml string
+            processedHtml = processedHtml.replace(originalTag, newImgTag)
         } catch (error) {
             console.error('Error processing image URL:', error)
         }
@@ -57,7 +61,6 @@ export const RenderHTML = (html: string) => {
                 img: {
                     borderRadius: 8,
                     backgroundColor: '#ffffff',
-                    paddingTop: 15,
                 },
                 h1: {
                     fontSize: '20px',
@@ -107,11 +110,6 @@ export const RenderHTMLStyles = {
     a: {
         color: `${theme.colors.prime1}`,
         textDecorationLine: 'none',
-    },
-    img: {
-        borderRadius: '8px',
-        backgroundColor: '#ffffff',
-        paddingTop: 15,
     },
     h1: {
         fontSize: '20px',
