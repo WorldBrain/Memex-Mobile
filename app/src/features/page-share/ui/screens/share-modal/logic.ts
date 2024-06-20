@@ -149,10 +149,10 @@ export default class Logic extends UILogic<State, Event> {
             return { openInReader: false }
         }
 
-        await loadInitial(this, async () => {
-            await this.storePageInit(state)
-            await this.fetchAndWritePageTitle(state.pageUrl)
-        })
+        // await loadInitial(this, async () => {
+        //     await this.storePageInit(state)
+        //     await this.fetchAndWritePageTitle(state.pageUrl)
+        // })
         this.deps.services.shareExt.openAppLink(
             READER_URL + encodeURIComponent(state.pageUrl),
         )
@@ -175,12 +175,6 @@ export default class Logic extends UILogic<State, Event> {
         const mutation: UIMutation<State> = { pageUrl: { $set: url } }
         const nextState = this.withMutation(previousState, mutation)
         this.emitMutation(mutation)
-
-        const { openInReader } = await this.maybeOpenInReader(nextState)
-        if (openInReader) {
-            await this.deps.services.shareExt.close()
-            return
-        }
 
         this.keyboardShowListener = this.deps.keyboardAPI.addListener(
             'keyboardDidShow',
@@ -359,8 +353,18 @@ export default class Logic extends UILogic<State, Event> {
     setPrivacyLevel: EventHandler<'setPrivacyLevel'> = ({ event }) => {
         this.emitMutation({ privacyLevel: { $set: event.value } })
     }
-    setModalState: EventHandler<'setModalState'> = ({ event }) => {
+    setModalState: EventHandler<'setModalState'> = async ({
+        event,
+        previousState,
+    }) => {
         this.emitMutation({ modalState: { $set: event.state } })
+        if (event.state === 'reader' || event.state === 'AI') {
+            const { openInReader } = await this.maybeOpenInReader(previousState)
+            if (openInReader) {
+                await this.deps.services.shareExt.close()
+                return
+            }
+        }
     }
 
     toggleSpace(
