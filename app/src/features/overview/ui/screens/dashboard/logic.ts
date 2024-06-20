@@ -933,31 +933,31 @@ export default class Logic extends UILogic<State, Event> {
                         })
                     },
                 },
-                {
-                    key: 'delete-page',
-                    title: 'Delete this page',
-                    subtitle: 'And all its associated notes',
-                    icon: Trash,
-                    onPress: async () => {
-                        Alert.alert(
-                            'Delete confirm',
-                            'Do you really want to delete this page?',
-                            [
-                                { text: 'Cancel' },
-                                {
-                                    text: 'Delete',
-                                    onPress: () =>
-                                        this.processUIEvent('deletePage', {
-                                            previousState,
-                                            event: {
-                                                url: url,
-                                            },
-                                        }),
-                                },
-                            ],
-                        )
-                    },
-                },
+                // {
+                //     key: 'delete-page',
+                //     title: 'Delete this page',
+                //     subtitle: 'And all its associated notes',
+                //     icon: Trash,
+                //     onPress: async () => {
+                //         Alert.alert(
+                //             'Delete confirm',
+                //             'Do you really want to delete this page?',
+                //             [
+                //                 { text: 'Cancel' },
+                //                 {
+                //                     text: 'Delete',
+                //                     onPress: () =>
+                //                         this.processUIEvent('deletePage', {
+                //                             previousState,
+                //                             event: {
+                //                                 url: url,
+                //                             },
+                //                         }),
+                //                 },
+                //             ],
+                //         )
+                //     },
+                // },
             ],
         })
 
