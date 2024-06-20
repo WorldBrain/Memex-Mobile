@@ -28,7 +28,6 @@ import { Icon } from 'src/ui/components/icons/icon-mobile'
 import { TouchableOpacity, Text } from 'react-native'
 import Markdown from 'react-native-markdown-display'
 import SplitPane from './splitPane'
-import { getBaseTextHighlightStyles } from '@worldbrain/memex-common/lib/in-page-ui/highlighting/highlight-styles'
 import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
 
 const ActionBarHeight = 60
@@ -246,6 +245,180 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                 showAIResults={this.state.showAIResults}
                 height={this.state.displaySplitHeight}
             >
+                {this.state.showPromptEdit != null ? (
+                    this.renderEditPrompt()
+                ) : (
+                    <AITextFieldArea>
+                        <TextInputContainer
+                            AIQueryTextFieldHeight={
+                                this.state.AIQueryTextFieldHeight ?? 24
+                            }
+                        >
+                            {this.state.prompt &&
+                            this.state.prompt.length > 0 ? (
+                                this.state.AISummaryLoading !== 'pristine' ? (
+                                    <IconActionContainer
+                                        onPress={() => {
+                                            this.processEvent(
+                                                'clearAIquery',
+                                                null,
+                                            )
+                                        }}
+                                    >
+                                        <Icon
+                                            icon={icons.BackArrow}
+                                            heightAndWidth={'22px'}
+                                            strokeWidth={'0px'}
+                                            fill
+                                            height={'50px'}
+                                        />
+                                    </IconActionContainer>
+                                ) : (
+                                    <IconActionContainer
+                                        onPress={() => {
+                                            this.processEvent(
+                                                'onAIQuerySubmit',
+                                                {
+                                                    prompt:
+                                                        this.state.prompt ?? '',
+                                                    fullPageUrl:
+                                                        this.props.pageUrl ||
+                                                        this.state.url,
+                                                },
+                                            )
+                                        }}
+                                    >
+                                        <Icon
+                                            icon={icons.CheckMark}
+                                            heightAndWidth={'22px'}
+                                            strokeWidth={'0px'}
+                                            fill
+                                            color="prime1"
+                                            height={'50px'}
+                                        />
+                                    </IconActionContainer>
+                                )
+                            ) : (
+                                <Icon
+                                    icon={icons.Stars}
+                                    heightAndWidth={'22px'}
+                                    strokeWidth={'0px'}
+                                    fill
+                                    height={'50px'}
+                                />
+                            )}
+                            <AIQueryField
+                                onSubmitEditing={(event) => {
+                                    this.processEvent('onAIQuerySubmit', {
+                                        prompt: event.nativeEvent.text,
+                                        fullPageUrl:
+                                            this.props.pageUrl ||
+                                            this.state.url,
+                                    })
+                                }}
+                                style={{
+                                    textAlignVertical: 'top',
+                                    alignSelf: 'flex-start',
+                                }}
+                                onChange={(event) => {
+                                    this.processEvent('setPrompt', {
+                                        prompt: event.nativeEvent.text,
+                                    })
+                                }}
+                                onPressIn={() => {
+                                    this.processEvent('clearAIquery', null)
+                                }}
+                                onContentSizeChange={(event) => {
+                                    this.processEvent(
+                                        'setAIQueryTextFieldHeight',
+                                        event.nativeEvent.contentSize.height,
+                                    )
+                                }}
+                                // numberOfLines={
+                                //     this.state.AIQueryTextFieldHeight ?? 24 / 24
+                                // }
+                                placeholder={
+                                    this.state.prompt
+                                        ? this.state.prompt
+                                        : 'Ask a question about this page'
+                                }
+                                placeholderTextColor={'#A9A9B1'}
+                                multiline
+                            />
+                        </TextInputContainer>
+                        {this.state.AIsummaryText.length > 0 ? (
+                            <ButtonActionContainer>
+                                <ActionButton
+                                    onPress={() => {
+                                        if (
+                                            this.state.AInoteSaveState ===
+                                            'pristine'
+                                        ) {
+                                            this.processEvent(
+                                                'saveAIoutputAsNote',
+                                                {
+                                                    comment: this.state
+                                                        .AIsummaryText,
+                                                },
+                                            )
+                                        }
+                                    }}
+                                    width={110}
+                                >
+                                    <ActionButtonText>
+                                        {this.state.AInoteSaveState ===
+                                        'pristine'
+                                            ? 'Save as new Note'
+                                            : this.state.AInoteSaveState ===
+                                              'done'
+                                            ? '  '
+                                            : 'Note Saved!'}
+                                    </ActionButtonText>
+                                </ActionButton>
+                            </ButtonActionContainer>
+                        ) : null}
+                        {this.state.AISummaryLoading === 'running' ? (
+                            <LoadingContainer>
+                                <LoadingBalls />
+                            </LoadingContainer>
+                        ) : this.state.AIsummaryText.length > 0 ? (
+                            <DismissKeyboard>
+                                <AIResultsTextContainer keyboardShouldPersistTaps="never">
+                                    <Markdown
+                                        keyboardShouldPersistTaps="never"
+                                        onLinkPress={(url) => {
+                                            if (!this.state.summaryHalfScreen) {
+                                                this.processEvent(
+                                                    'makeSummaryHalfScreen',
+                                                    null,
+                                                )
+                                            }
+                                            return this.runFnInWebView(
+                                                'jumpToTimestamp',
+                                                url,
+                                            )
+                                        }}
+                                        style={markdownStyles}
+                                    >
+                                        {this.state.AIsummaryText}
+                                    </Markdown>
+                                </AIResultsTextContainer>
+                            </DismissKeyboard>
+                        ) : (
+                            this.renderAIquerySuggestions()
+                        )}
+                    </AITextFieldArea>
+                )}
+            </AIResultsContainer>
+        )
+    }
+
+    private renderEditPrompt = () => {
+        if (this.state.showPromptEdit == null) {
+            return null
+        }
+        return (
+            <AITextFieldArea>
                 <TextInputContainer
                     AIQueryTextFieldHeight={
                         this.state.AIQueryTextFieldHeight ?? 24
@@ -260,18 +433,14 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     />
                     <AIQueryField
                         onSubmitEditing={(event) => {
-                            this.processEvent('onAIQuerySubmit', {
-                                prompt: event.nativeEvent.text,
-                                fullPageUrl:
-                                    this.props.pageUrl || this.state.url,
+                            this.processEvent('savePromptEdit', {
+                                promptToChange: event.nativeEvent.text,
+                                index: this.state.showPromptEdit ?? null,
                             })
                         }}
                         style={{
                             textAlignVertical: 'top',
                             alignSelf: 'flex-start',
-                        }}
-                        onPressIn={() => {
-                            this.processEvent('clearAIquery', null)
                         }}
                         onContentSizeChange={(event) => {
                             this.processEvent(
@@ -279,85 +448,106 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                                 event.nativeEvent.contentSize.height,
                             )
                         }}
-                        // numberOfLines={
-                        //     this.state.AIQueryTextFieldHeight ?? 24 / 24
-                        // }
+                        onChange={(event) => {
+                            this.processEvent('changePromptEditState', {
+                                prompt: event.nativeEvent.text,
+                            })
+                        }}
                         placeholder={
                             this.state.prompt
                                 ? this.state.prompt
                                 : 'Ask a question about this page'
                         }
+                        defaultValue={
+                            this.state.querySuggestions[
+                                this.state.showPromptEdit
+                            ]
+                        }
                         placeholderTextColor={'#A9A9B1'}
                         multiline
                     />
                 </TextInputContainer>
-                {this.state.AISummaryLoading === 'running' ? (
-                    <LoadingContainer>
-                        <LoadingBalls />
-                    </LoadingContainer>
-                ) : this.state.AIsummaryText.length > 0 ? (
-                    <DismissKeyboard>
-                        <AIResultsTextContainer keyboardShouldPersistTaps="never">
-                            <Markdown
-                                keyboardShouldPersistTaps="never"
-                                onLinkPress={(url) => {
-                                    if (!this.state.summaryHalfScreen) {
-                                        this.processEvent(
-                                            'makeSummaryHalfScreen',
-                                            null,
-                                        )
-                                    }
-                                    return this.runFnInWebView(
-                                        'jumpToTimestamp',
-                                        url,
-                                    )
-                                }}
-                                style={markdownStyles}
-                            >
-                                {this.state.AIsummaryText}
-                            </Markdown>
-                        </AIResultsTextContainer>
-                    </DismissKeyboard>
-                ) : (
-                    this.renderAIquerySuggestions()
-                )}
-            </AIResultsContainer>
+                <ButtonActionContainer>
+                    <ActionButton
+                        onPress={() => {
+                            this.processEvent('cancelPromptEdit', null)
+                        }}
+                        width={110}
+                    >
+                        <ActionButtonText>Cancel</ActionButtonText>
+                    </ActionButton>
+                    {this.state.promptEditState &&
+                    this.state.promptEditState.length > 0 ? (
+                        <ActionButton
+                            onPress={() => {
+                                if (
+                                    this.state.promptEditState &&
+                                    this.state.promptEditState.length > 0
+                                ) {
+                                    this.processEvent('savePromptEdit', {
+                                        promptToChange: this.state
+                                            .promptEditState,
+                                        index: this.state.showPromptEdit ?? 0,
+                                    })
+                                }
+                            }}
+                            width={110}
+                            backgroundColor={'prime1'}
+                        >
+                            <ActionButtonText color={'greyScale1'}>
+                                Save Prompt
+                            </ActionButtonText>
+                        </ActionButton>
+                    ) : null}
+                </ButtonActionContainer>
+            </AITextFieldArea>
         )
     }
 
     private renderAIquerySuggestions = () => {
-        const querySuggestions = [
-            'Summarize this for me',
-            'Tell me the key takeaways',
-            `Explain this to me in simple terms`,
-            `Translate this into English`,
-        ]
-
         return (
-            <AIquerySuggestionsContainer>
+            <AIquerySuggestionsContainer
+                contentContainerStyle={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    paddingBottom: 50,
+                }}
+            >
                 <AIquerySuggestionsTitle>
-                    Prompt Suggestions
+                    Prompt Templates{' '}
+                    <AIquerySuggestionsSubTitle>
+                        Long Press to edit prompt
+                    </AIquerySuggestionsSubTitle>
                 </AIquerySuggestionsTitle>
-                {querySuggestions.map((query) => (
-                    <AiQuerySuggestionsItem
-                        onPress={() => {
-                            this.processEvent('onAIQuerySubmit', {
-                                prompt: query,
-                                fullPageUrl:
-                                    this.props.pageUrl || this.state.url,
-                            })
-                        }}
-                    >
-                        <AiQuerySuggestionsItemText>
-                            {query}
-                        </AiQuerySuggestionsItemText>
-                    </AiQuerySuggestionsItem>
-                ))}
+                {this.state.querySuggestions.map(
+                    (query: string, index: number) => (
+                        <AiQuerySuggestionsItem
+                            onPress={() => {
+                                this.processEvent('onAIQuerySubmit', {
+                                    prompt: query,
+                                    fullPageUrl:
+                                        this.props.pageUrl || this.state.url,
+                                })
+                            }}
+                            onLongPress={() => {
+                                this.processEvent('editPrompt', {
+                                    index: index,
+                                })
+                            }}
+                        >
+                            <AiQuerySuggestionsItemText>
+                                {query}
+                            </AiQuerySuggestionsItemText>
+                        </AiQuerySuggestionsItem>
+                    ),
+                )}
             </AIquerySuggestionsContainer>
         )
     }
 
     private renderWebView() {
+        if (!this.state.url) return null //
+
         if (this.state.error) {
             return (
                 <ErrorView
@@ -397,7 +587,11 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     }
                     allowsInlineMediaPlayback
                     source={{ uri: urlToRender }}
-                    injectedJavaScript={this.generateInitialJSToInject()}
+                    injectedJavaScript={
+                        this.state.contentScriptSource != null
+                            ? this.generateInitialJSToInject()
+                            : ''
+                    }
                     onNavigationStateChange={this.handleNavStateChange}
                     style={{
                         backgroundColor: 'white',
@@ -479,14 +673,25 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         primary="first"
                         value={Math.floor(this.state.displaySplitHeight || 0)}
                         min={Dimensions.get('window').height * 0.05}
-                        max={this.props.deviceInfo.height - 300}
+                        max={
+                            this.props.deviceInfo
+                                ? this.props.deviceInfo.height - 300
+                                : 1500
+                        }
                         onChange={this.onChangeSliderValue}
                         onFinish={this.onChangeSliderValue}
-                        displayHeight={this.props.deviceInfo.height}
-                    >
-                        {this.renderWebView()}
-                        {this.renderAIResults()}
-                    </SplitPane>
+                        displayHeight={
+                            this.props.deviceInfo
+                                ? this.props.deviceInfo.height
+                                : '100%'
+                        }
+                        children={[
+                            this.renderWebView(),
+                            this.state.showAIResults
+                                ? this.renderAIResults()
+                                : null,
+                        ]}
+                    />
                 </SplitPaneContainer>
                 <ActionBarContainer>
                     {/* {this.props.location === 'shareExt' && (
@@ -577,12 +782,18 @@ const AIquerySuggestionsTitle = styled.Text`
     font-size: 16px;
     padding: 5px 0;
     margin-bottom: 10px;
+    justify-content: space-between;
+    width: 100%;
+`
+const AIquerySuggestionsSubTitle = styled.Text`
+    color: ${(props) => props.theme.colors.greyScale4};
+    font-size: 12px;
+    padding: 5px 0;
+    margin-bottom: 10px;
 `
 
-const AIquerySuggestionsContainer = styled.View`
+const AIquerySuggestionsContainer = styled.ScrollView`
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
     width: 100%;
     padding: 10px 20px 0 20px;
 `
@@ -642,6 +853,10 @@ const TextInputContainer = styled.View<{
     &:focus-within {
         border-color: ${(props) => props.theme.colors.greyScale3};
     }
+`
+const AITextFieldArea = styled.View`
+    width: 100%;
+    height: 100%;
 `
 
 const AIQueryField = styled.TextInput<{
@@ -986,4 +1201,46 @@ const ButtonText = styled.Text`
     font-size: 16px;
     color: white;
     font-family: 'Satoshi';
+`
+
+const IconActionContainer = styled.TouchableOpacity``
+
+const ButtonActionContainer = styled.View`
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 10px;
+`
+
+const ActionButton = styled.TouchableOpacity<{
+    width?: number
+    backgroundColor?: string
+}>`
+    border: 1px solid ${(props) => props.theme.colors.greyScale3};
+    border-radius: 5px;
+    padding: 4px 5px;
+    background-color: ${(props) =>
+        props.backgroundColor
+            ? props.theme.colors[props.backgroundColor]
+            : props.theme.colors.greyScale2};
+    display: flex;
+    align-items: center;
+    min-width: ${(props) => props.width && props.width}px;
+    justify-content: center;
+`
+const ActionButtonText = styled.Text<{
+    color?: string
+}>`
+    font-size: 12px;
+    color: ${(props) =>
+        props.color
+            ? props.theme.colors[props.color]
+            : props.theme.colors.white};
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `

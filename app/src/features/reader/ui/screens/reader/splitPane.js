@@ -2,8 +2,9 @@
  * Created by ombogdan on 2021-08-03.
  */
 
+import { PrimaryAction } from '@worldbrain/memex-common/lib/common-ui/components/PrimaryAction'
 import React, { useState, useEffect } from 'react'
-import { Dimensions, Image, View } from 'react-native'
+import { Dimensions, Image, View, Text } from 'react-native'
 import styled from 'styled-components'
 
 const Pane = ({
@@ -78,6 +79,7 @@ const Separator = ({
                           alignItems: 'center',
                           bottom: 15,
                           zIndex: 2000,
+                          position: 'relative',
                       },
             ]}
             onStartShouldSetResponder={onStartShouldSetResponder}
@@ -85,7 +87,10 @@ const Separator = ({
             onResponderMove={onResponderMove}
             onResponderRelease={onResponderRelease}
         >
-            <Image
+            <SeparatorButton>
+                <SeparatorButtonText>Drag to Resize</SeparatorButtonText>
+            </SeparatorButton>
+            {/* <Image
                 style={[
                     splitStyle
                         ? splitStyle
@@ -97,10 +102,11 @@ const Separator = ({
                               borderTopWidth: 1,
                               width: '100%',
                               backgroundColor: '#24252C',
+                              backgroundColor: 'red',
                           },
                 ]}
                 source={splitSource}
-            />
+            /> */}
         </View>
     )
 }
@@ -175,17 +181,21 @@ export default ({
             <Pane style={paneStyle} flexible={primary !== 'first'}>
                 {children[0]}
             </Pane>
-            <Separator
-                honrizontal={isHorizontal}
-                onDragging={onDragging}
-                startDrag={startDrag}
-                endDrag={endDrag}
-                splitSource={
-                    splitSource ? splitSource : './assets/horizontal-split.png'
-                }
-                splitStyle={splitStyle}
-                splitContainerStyle={splitContainerStyle}
-            />
+            {children[1] != null ? (
+                <Separator
+                    honrizontal={isHorizontal}
+                    onDragging={onDragging}
+                    startDrag={startDrag}
+                    endDrag={endDrag}
+                    splitSource={
+                        splitSource
+                            ? splitSource
+                            : './assets/horizontal-split.png'
+                    }
+                    splitStyle={splitStyle}
+                    splitContainerStyle={splitContainerStyle}
+                />
+            ) : null}
             <Pane
                 flexible={true}
                 onLayout={() => {
@@ -203,4 +213,20 @@ const SplitPaneContainer = styled(View)`
     min-height: 30px;
     flex: 1;
     width: 100%;
+`
+
+const SeparatorButton = styled(View)`
+    border: 1px solid ${(props) => props.theme.colors.greyScale3};
+    border-radius: 5px;
+    padding: 2px 5px;
+    background-color: ${(props) => props.theme.colors.greyScale2};
+    margin: 3px;
+    display: flex;
+    position: absolute;
+    top: -12px;
+    right: 5;
+`
+const SeparatorButtonText = styled(Text)`
+    font-size: 12px;
+    color: ${(props) => props.theme.colors.greyScale6};
 `

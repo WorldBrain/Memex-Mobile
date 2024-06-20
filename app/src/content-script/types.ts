@@ -5,7 +5,7 @@ export interface Descriptor {
 
 export interface Highlight {
     url: string
-    anchor: Anchor
+    anchor?: Anchor | null
 }
 
 export interface Anchor {

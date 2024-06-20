@@ -20,6 +20,8 @@ import { DeviceDetails } from 'src/features/page-share/ui/screens/share-modal/ut
 import { CLOUDFLARE_WORKER_URLS } from '@worldbrain/memex-common/lib/content-sharing/storage/constants'
 import { polyfill as polyfillReadableStream } from 'react-native-polyfill-globals/src/readable-stream'
 import { StatusBar } from 'react-native'
+import showdown from 'showdown'
+import { sleepPromise } from '@worldbrain/memex-common/lib/common-ui/utils/promises'
 
 polyfillReadableStream()
 
@@ -27,9 +29,10 @@ polyfillReadableStream()
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
 interface CreateHighlightArgs {
-    anchor: Anchor
+    anchor?: Anchor | null
     videoTimestamp?: [string, string]
-    renderHighlight: (h: Highlight) => void
+    renderHighlight?: (h: Highlight) => void
+    comment?: string
 }
 
 export interface State {
@@ -54,6 +57,10 @@ export interface State {
     summaryHalfScreen?: boolean
     displaySplitHeight?: number
     prompt?: string | null
+    querySuggestions: string[]
+    showPromptEdit?: number | null
+    AInoteSaveState: UITaskState
+    promptEditState?: string | null
 }
 
 export type Event = UIEvent<{
@@ -62,6 +69,7 @@ export type Event = UIEvent<{
     editHighlight: { highlightUrl: string }
     createHighlight: CreateHighlightArgs
     createAnnotation: CreateHighlightArgs
+    saveAIoutputAsNote: { comment: string }
     createYoutubeTimestamp: any
     setTextSelection: { text?: string }
     navToPageEditor: { mode: EditorMode }
@@ -69,10 +77,15 @@ export type Event = UIEvent<{
     goBack: null
     onAIButtonPress: null
     onAIQuerySubmit: { fullPageUrl: string; prompt: string }
+    savePromptEdit: { promptToChange: string; index: number }
+    editPrompt: { index: number }
+    setPrompt: { prompt: string }
     clearAIquery: null
     setAIQueryTextFieldHeight: number
     makeSummaryHalfScreen: null
     updateDisplaySplitHeight: number
+    changePromptEditState?: { prompt: string }
+    cancelPromptEdit: null
 }>
 
 type EventHandler<EventName extends keyof Event> = UIEventHandler<
@@ -83,7 +96,7 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 
 export interface Props extends MainNavProps<'Reader'> {
     storage: UIStorageModules<
-        'reader' | 'overview' | 'pageEditor' | 'metaPicker'
+        'reader' | 'overview' | 'pageEditor' | 'metaPicker' | 'syncSettings'
     >
     services: UIServices<
         'readability' | 'resourceLoader' | 'errorTracker' | 'annotationSharing'
@@ -147,6 +160,9 @@ export default class Logic extends UILogic<State, Event> {
             summaryHalfScreen: false,
             displaySplitHeight: 0,
             prompt: null,
+            querySuggestions: [],
+            showPromptEdit: null,
+            AInoteSaveState: 'pristine',
         }
     }
 
@@ -161,6 +177,30 @@ export default class Logic extends UILogic<State, Event> {
                     previousState.url,
                     previousState.title,
                 )
+
+                const syncSettings = this.props.storage.modules.syncSettings
+                const storedPromptTemplates = await syncSettings.getSetting({
+                    key: 'openAI.promptSuggestions',
+                })
+
+                let querySuggestions: string[] = []
+
+                if (storedPromptTemplates == null) {
+                    querySuggestions = [
+                        'Summarize this for me',
+                        'Tell me the key takeaways',
+                        `Explain this to me in simple terms`,
+                        `Translate this into English`,
+                    ]
+                } else {
+                    querySuggestions = storedPromptTemplates.map(
+                        (item: any) => item.text,
+                    )
+                }
+
+                this.emitMutation({
+                    querySuggestions: { $set: querySuggestions },
+                })
             } catch (err) {
                 if (err instanceof Error) {
                     this.emitMutation({ error: { $set: err } })
@@ -282,6 +322,70 @@ export default class Logic extends UILogic<State, Event> {
             displaySplitHeight: { $set: Math.floor(event) },
         })
     }
+    savePromptEdit: EventHandler<'savePromptEdit'> = async ({
+        event,
+        previousState,
+    }) => {
+        const { promptToChange, index } = event
+        const syncSettings = this.props.storage.modules.syncSettings
+
+        // Retrieve the current list of prompt suggestions
+        let currentPromptList = previousState.querySuggestions
+
+        // Update the prompt at the specified index
+        if (index >= 0 && index < currentPromptList.length) {
+            currentPromptList[index] = promptToChange
+        }
+
+        // Create the object array for storage
+        const storedPromptTemplates = currentPromptList.map((text) => ({
+            isFocused: false,
+            text: text,
+        }))
+
+        // Store the updated prompt suggestions
+        await syncSettings.setSetting({
+            key: 'openAI.promptSuggestions',
+            value: storedPromptTemplates,
+        })
+
+        this.emitMutation({
+            querySuggestions: { $set: currentPromptList },
+            showPromptEdit: { $set: null },
+        })
+    }
+    setPrompt: EventHandler<'setPrompt'> = async ({ event, previousState }) => {
+        this.emitMutation({
+            prompt: { $set: event.prompt },
+        })
+    }
+    editPrompt: EventHandler<'editPrompt'> = async ({
+        event,
+        previousState,
+    }) => {
+        this.emitMutation({
+            showPromptEdit: { $set: event.index },
+            promptEditState: { $set: null },
+        })
+    }
+    cancelPromptEdit: EventHandler<'cancelPromptEdit'> = async ({
+        event,
+        previousState,
+    }) => {
+        this.emitMutation({
+            showPromptEdit: { $set: null },
+            promptEditState: { $set: null },
+        })
+    }
+    changePromptEditState: EventHandler<'changePromptEditState'> = async ({
+        event,
+    }) => {
+        if (event) {
+            this.emitMutation({
+                promptEditState: { $set: event.prompt },
+            })
+        }
+    }
     onAIButtonPress: EventHandler<'onAIButtonPress'> = async ({
         event,
         previousState,
@@ -360,7 +464,6 @@ export default class Logic extends UILogic<State, Event> {
         }
 
         await fetch(urlToFetchFrom, {
-            reactNative: { textStreaming: true },
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -369,7 +472,6 @@ export default class Logic extends UILogic<State, Event> {
                 originalUrl: event.fullPageUrl,
                 queryPrompt: event.prompt,
             }),
-            stream: true,
         })
             .then((response) => {
                 if (!response.ok) {
@@ -437,18 +539,25 @@ export default class Logic extends UILogic<State, Event> {
         anchor,
         renderHighlight,
         previousState,
+        comment,
     }: { previousState: State } & CreateHighlightArgs): Promise<Highlight> => {
         const { pageEditor } = this.props.storage.modules
 
         const { annotationUrl } = await pageEditor.createAnnotation({
             pageUrl: previousState.url,
             pageTitle: previousState.title ?? '',
-            selector: anchor,
-            body: anchor.quote,
+            selector: anchor ?? null,
+            body: anchor?.quote ?? null,
+            comment: comment ?? null,
         })
 
-        const newHighlight: Highlight = { url: annotationUrl, anchor }
-        renderHighlight(newHighlight)
+        const newHighlight: Highlight = {
+            url: annotationUrl,
+            anchor: anchor ?? null,
+        }
+        if (renderHighlight != null) {
+            renderHighlight(newHighlight)
+        }
 
         this.emitMutation({
             hasNotes: { $set: true },
@@ -493,6 +602,27 @@ export default class Logic extends UILogic<State, Event> {
             })
         }
     }
+    saveAIoutputAsNote: EventHandler<'saveAIoutputAsNote'> = async ({
+        event,
+        previousState,
+    }) => {
+        var converter = new showdown.Converter()
+        const noteAsHTML =
+            '<div>' + converter.makeHtml(event.comment) + '</div>'
+
+        this.emitMutation({
+            AInoteSaveState: { $set: 'running' },
+        })
+
+        await this._createHighlight({
+            previousState,
+            comment: noteAsHTML,
+        })
+
+        this.emitMutation({
+            AInoteSaveState: { $set: 'done' },
+        })
+    }
 
     createAnnotation: EventHandler<'createAnnotation'> = async ({
         event,
@@ -506,8 +636,8 @@ export default class Logic extends UILogic<State, Event> {
 
         this.props.navigation.navigate('NoteEditor', {
             mode: 'update',
-            highlightText: event.anchor.quote,
-            anchor: event.anchor,
+            highlightText: event.anchor?.quote,
+            anchor: event.anchor ?? null,
             noteUrl: highlight.url,
             videoTimestamp: event.videoTimestamp,
             spaces: [],
