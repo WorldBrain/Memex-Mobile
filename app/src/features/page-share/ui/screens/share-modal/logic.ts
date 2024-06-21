@@ -48,6 +48,7 @@ export default class Logic extends UILogic<State, Event> {
     /** If this instance is working with a page that's already indexed, this will be set to the visit time (created in `init`). */
     private existingPageVisitTime: number | null = null
     syncRunning: Promise<void> | null = null
+    syncUploadRunning: Promise<boolean | null> | null = null
     pageTitleFetchRunning: Promise<void> | null = null
     private initValues = { ...initValues }
     private keyboardShowListener!: EmitterSubscription
@@ -113,6 +114,35 @@ export default class Logic extends UILogic<State, Event> {
         this.syncRunning = this._doSync()
         await this.syncRunning
         this.syncRunning = null
+    }
+
+    private async _doSyncOnlyUpload() {
+        const { cloudSync } = this.deps.services
+
+        try {
+            await cloudSync.syncOnlyUpload()
+            this.clearSyncError()
+            return true
+        } catch (err) {
+            this.handleSyncError(err)
+            return false
+        }
+    }
+
+    private async doSyncOnlyUpload() {
+        try {
+            if (this.syncUploadRunning !== null) {
+                await this.syncUploadRunning
+            } else {
+                this.syncUploadRunning = this._doSyncOnlyUpload()
+                await this.syncUploadRunning
+            }
+
+            this.syncUploadRunning = null
+            return true
+        } catch (err) {
+            return false
+        }
     }
 
     private async fetchAndWritePageTitle(url: string): Promise<void> {
@@ -188,8 +218,6 @@ export default class Logic extends UILogic<State, Event> {
             (event) => this.emitMutation({ keyboardHeight: { $set: 0 } }),
         )
 
-        this.doSync()
-
         const existingPage = await storage.modules.overview.findPage({ url })
 
         // No need to do state hydration from DB if this is new page, just index it
@@ -229,6 +257,7 @@ export default class Logic extends UILogic<State, Event> {
             services.errorTracker.track(err)
         }
 
+        await this.doSyncOnlyUpload()
         this.showPageSavedMessage()
         const bookmarkP = executeUITask<State, 'bookmarkState', void>(
             this,
@@ -423,12 +452,15 @@ export default class Logic extends UILogic<State, Event> {
     }: IncomingUIEvent<State, Event, 'save'>) {
         await this.pageTitleFetchRunning
 
-        if (isInputDirty(previousState)) {
+        if (isInputDirty(previousState) || this.syncRunning != null) {
             this.emitMutation({ showSavingPage: { $set: true } })
             await this.storePageFinal(previousState)
 
-            if (await isSyncEnabled(this.deps.services)) {
-                await this.doSync()
+            if (
+                (await isSyncEnabled(this.deps.services)) &&
+                this.syncRunning == null
+            ) {
+                await this.doSyncOnlyUpload()
             }
         }
 

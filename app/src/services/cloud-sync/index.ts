@@ -77,6 +77,12 @@ export class CloudSyncService implements CloudSyncAPI {
         await setSyncLastProcessedTime(lastSeen)
         return { totalChanges: updatesIntegrated }
     }
+    syncOnlyUpload: CloudSyncAPI['syncOnlyUpload'] = async () => {
+        const { storage } = this.props
+        await storage.loadDeviceId()
+        await storage.pushAllQueuedUpdates()
+        return true
+    }
 
     private maybeInterruptSyncStream() {
         if (this.shouldInterruptStream) {

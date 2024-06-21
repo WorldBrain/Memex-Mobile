@@ -3,6 +3,7 @@ import type TypedEventEmitter from 'typed-emitter'
 export interface CloudSyncAPI {
     ____wipeDBForSync: () => Promise<void>
     sync: () => Promise<{ totalChanges: number }>
+    syncOnlyUpload: () => Promise<boolean>
     syncStream: () => Promise<void>
     retrospectiveSync: () => Promise<void>
     interruptSyncStream: () => Promise<void>
