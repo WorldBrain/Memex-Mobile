@@ -97,6 +97,7 @@
         "react-native-stream": "^0.1.9",
         "react-native-svg": "^9.13.6",
         "react-native-unimodules": "^0.7.0",
+        "react-native-url-polyfill": "^2.0.0",
         "react-native-vision-camera": "2.13.0",
         "react-native-webview": "^13.6.3",
         "readability-node": "^0.1.0",
