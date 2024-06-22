@@ -69,19 +69,18 @@ export class CloudSyncService implements CloudSyncAPI {
     sync: CloudSyncAPI['sync'] = async () => {
         const { storage, backend, setSyncLastProcessedTime } = this.props
 
-        await storage.loadDeviceId()
-        await storage.pushAllQueuedUpdates()
+        await this.syncOnlyUpload()
 
         const { batch, lastSeen } = await backend.bulkDownloadUpdates()
         const { updatesIntegrated } = await storage.integrateUpdates(batch)
         await setSyncLastProcessedTime(lastSeen)
         return { totalChanges: updatesIntegrated }
     }
+
     syncOnlyUpload: CloudSyncAPI['syncOnlyUpload'] = async () => {
         const { storage } = this.props
         await storage.loadDeviceId()
         await storage.pushAllQueuedUpdates()
-        return true
     }
 
     private maybeInterruptSyncStream() {
@@ -102,8 +101,7 @@ export class CloudSyncService implements CloudSyncAPI {
     syncStream: CloudSyncAPI['syncStream'] = async () => {
         const { storage, backend, setSyncLastProcessedTime } = this.props
         const { releaseMutex } = await this.syncStreamMutex.lock()
-        await storage.loadDeviceId()
-        await storage.pushAllQueuedUpdates()
+        await this.syncOnlyUpload()
 
         const userId = await storage.loadUserId()
         let totalDownloads = 0
@@ -150,8 +148,7 @@ export class CloudSyncService implements CloudSyncAPI {
             setRetroSyncLastProcessedTime,
         } = this.props
         const { releaseMutex } = await this.syncStreamMutex.lock()
-        await storage.loadDeviceId()
-        await storage.pushAllQueuedUpdates()
+        await this.syncOnlyUpload()
 
         // NOTE these founds are specific to dates when a bug was released and then fixed. They should be changed
         //  before using this for other scenarios

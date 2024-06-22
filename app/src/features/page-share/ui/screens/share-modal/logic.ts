@@ -48,7 +48,7 @@ export default class Logic extends UILogic<State, Event> {
     /** If this instance is working with a page that's already indexed, this will be set to the visit time (created in `init`). */
     private existingPageVisitTime: number | null = null
     syncRunning: Promise<void> | null = null
-    syncUploadRunning: Promise<boolean | null> | null = null
+    syncUploadRunning: Promise<void> | null = null
     pageTitleFetchRunning: Promise<void> | null = null
     private initValues = { ...initValues }
     private keyboardShowListener!: EmitterSubscription
@@ -122,27 +122,17 @@ export default class Logic extends UILogic<State, Event> {
         try {
             await cloudSync.syncOnlyUpload()
             this.clearSyncError()
-            return true
         } catch (err) {
             this.handleSyncError(err)
-            return false
         }
     }
 
     private async doSyncOnlyUpload() {
-        try {
-            if (this.syncUploadRunning !== null) {
-                await this.syncUploadRunning
-            } else {
-                this.syncUploadRunning = this._doSyncOnlyUpload()
-                await this.syncUploadRunning
-            }
-
-            this.syncUploadRunning = null
-            return true
-        } catch (err) {
-            return false
+        if (this.syncUploadRunning == null) {
+            this.syncUploadRunning = this._doSyncOnlyUpload()
         }
+        await this.syncUploadRunning
+        this.syncUploadRunning = null
     }
 
     private async fetchAndWritePageTitle(url: string): Promise<void> {
