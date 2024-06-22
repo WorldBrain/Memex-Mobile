@@ -383,6 +383,9 @@ export default class Logic extends UILogic<State, Event> {
                 await this.deps.services.shareExt.close()
                 return
             }
+            if (event.state === 'reader') {
+                await this.doSync()
+            }
         }
     }
 
