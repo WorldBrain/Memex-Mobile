@@ -38,10 +38,10 @@ export type MainNavigatorParamList = {
     }
     NoteEditor: {
         pageTitle?: string
-        anchor?: Anchor | null
-        noteText?: string | null
+        anchor?: Anchor
+        noteText?: string
         privacyLevel?: AnnotationPrivacyLevels
-        highlightText?: string | null
+        highlightText?: string
         videoTimestamp?: [string, string]
     } & (
         | { mode: 'create'; pageUrl: string }

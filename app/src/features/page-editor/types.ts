@@ -7,9 +7,9 @@ export interface Note {
     pageTitle: string
     pageUrl: string
     /** Represents the highlighted text in a highlight annotation. */
-    body?: string | null
+    body?: string
     /** Represents the user's comment in any type of annotation. */
-    comment?: string | null
+    comment?: string
     selector?: any
     lastEdited?: Date
     createdWhen?: Date

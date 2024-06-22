@@ -2,7 +2,7 @@ import { Keyboard, StyleSheet, TouchableOpacity } from 'react-native'
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import styled, { css } from 'styled-components/native'
 import { StatefulUIElement } from 'src/ui/types'
-import React, { Component } from 'react'
+import React from 'react'
 import Markdown from 'react-native-markdown-display'
 import * as icons from 'src/ui/components/icons/icons-list'
 import LoadingBalls from 'src/ui/components/loading-balls'
@@ -15,29 +15,6 @@ export class AIResultsComponent extends StatefulUIElement<Props, State, Event> {
     }
 
     render() {
-        const markdownStyles = StyleSheet.create({
-            heading1: {
-                fontSize: 32,
-                color: '#CACAD1',
-                minHeight: 40,
-                lineHeight: 40,
-            },
-            heading2: {
-                fontSize: 24,
-                color: '#CACAD1',
-                lineHeight: 35,
-            },
-            body: {
-                fontSize: 16,
-                color: '#CACAD1',
-                lineHeight: 24,
-                paddingBottom: 40,
-            },
-            link: {
-                color: '#6AE394',
-            },
-        })
-
         const DismissKeyboard = ({ children }) => (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 {children}
@@ -136,6 +113,29 @@ export class AIResultsComponent extends StatefulUIElement<Props, State, Event> {
 }
 
 export default AIResultsComponent
+
+const markdownStyles = StyleSheet.create({
+    heading1: {
+        fontSize: 32,
+        color: '#CACAD1',
+        minHeight: 40,
+        lineHeight: 40,
+    },
+    heading2: {
+        fontSize: 24,
+        color: '#CACAD1',
+        lineHeight: 35,
+    },
+    body: {
+        fontSize: 16,
+        color: '#CACAD1',
+        lineHeight: 24,
+        paddingBottom: 40,
+    },
+    link: {
+        color: '#6AE394',
+    },
+})
 
 const LoadingContainer = styled.SafeAreaView<{
     deviceOrientation?: 'portrait' | 'landscape'
