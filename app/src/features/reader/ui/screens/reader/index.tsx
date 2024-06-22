@@ -135,6 +135,9 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
     }
 
     private generateInitialJSToInject() {
+        if (!this.state.contentScriptSource) {
+            return undefined
+        }
         const renderHighlightsCall = this.constructJsRemoteFnCall(
             'renderHighlights',
             this.state.highlights,
@@ -206,29 +209,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
     }
 
     private renderAIResults = () => {
-        const markdownStyles = StyleSheet.create({
-            heading1: {
-                fontSize: 32,
-                color: '#CACAD1', // Replace this with the actual color from your theme
-                minHeight: 40,
-                lineHeight: 40,
-            },
-            heading2: {
-                fontSize: 24,
-                color: '#CACAD1', // Replace this with the actual color from your theme
-                lineHeight: 35,
-            },
-            body: {
-                fontSize: 16,
-                color: '#CACAD1', // Replace this with the actual color from your theme
-                lineHeight: 24,
-                paddingBottom: 40,
-            },
-            link: {
-                color: '#6AE394',
-            },
-        })
-
         const DismissKeyboard = ({ children }) => (
             <TouchableWithoutFeedback
                 onPress={() => {
@@ -346,19 +326,19 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                                 multiline
                             />
                         </TextInputContainer>
-                        {this.state.AIsummaryText.length > 0 ? (
+                        {this.state.AISummaryText.length > 0 ? (
                             <ButtonActionContainer>
                                 <ActionButton
                                     onPress={() => {
                                         if (
-                                            this.state.AInoteSaveState ===
+                                            this.state.AINoteSaveState ===
                                             'pristine'
                                         ) {
                                             this.processEvent(
-                                                'saveAIoutputAsNote',
+                                                'saveAIOutputAsNote',
                                                 {
                                                     comment: this.state
-                                                        .AIsummaryText,
+                                                        .AISummaryText,
                                                 },
                                             )
                                         }
@@ -366,10 +346,10 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                                     width={110}
                                 >
                                     <ActionButtonText>
-                                        {this.state.AInoteSaveState ===
+                                        {this.state.AINoteSaveState ===
                                         'pristine'
                                             ? 'Save as new Note'
-                                            : this.state.AInoteSaveState ===
+                                            : this.state.AINoteSaveState ===
                                               'done'
                                             ? '  '
                                             : 'Note Saved!'}
@@ -381,7 +361,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                             <LoadingContainer>
                                 <LoadingBalls />
                             </LoadingContainer>
-                        ) : this.state.AIsummaryText.length > 0 ? (
+                        ) : this.state.AISummaryText.length > 0 ? (
                             <DismissKeyboard>
                                 <AIResultsTextContainer keyboardShouldPersistTaps="never">
                                     <Markdown
@@ -400,7 +380,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                                         }}
                                         style={markdownStyles}
                                     >
-                                        {this.state.AIsummaryText}
+                                        {this.state.AISummaryText}
                                     </Markdown>
                                 </AIResultsTextContainer>
                             </DismissKeyboard>
@@ -435,7 +415,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                         onSubmitEditing={(event) => {
                             this.processEvent('savePromptEdit', {
                                 promptToChange: event.nativeEvent.text,
-                                index: this.state.showPromptEdit ?? null,
+                                index: this.state.showPromptEdit,
                             })
                         }}
                         style={{
@@ -546,7 +526,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
     }
 
     private renderWebView() {
-        if (!this.state.url) return null //
+        if (!this.state.url) return null
 
         if (this.state.error) {
             return (
@@ -587,11 +567,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     }
                     allowsInlineMediaPlayback
                     source={{ uri: urlToRender }}
-                    injectedJavaScript={
-                        this.state.contentScriptSource != null
-                            ? this.generateInitialJSToInject()
-                            : ''
-                    }
+                    injectedJavaScript={this.generateInitialJSToInject()}
                     onNavigationStateChange={this.handleNavStateChange}
                     style={{
                         backgroundColor: 'white',
@@ -753,6 +729,29 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
         )
     }
 }
+
+const markdownStyles = StyleSheet.create({
+    heading1: {
+        fontSize: 32,
+        color: '#CACAD1', // Replace this with the actual color from your theme
+        minHeight: 40,
+        lineHeight: 40,
+    },
+    heading2: {
+        fontSize: 24,
+        color: '#CACAD1', // Replace this with the actual color from your theme
+        lineHeight: 35,
+    },
+    body: {
+        fontSize: 16,
+        color: '#CACAD1', // Replace this with the actual color from your theme
+        lineHeight: 24,
+        paddingBottom: 40,
+    },
+    link: {
+        color: '#6AE394',
+    },
+})
 
 const SplitPaneContainer = styled.View`
     display: flex;

@@ -69,18 +69,6 @@ const NoteInput: React.StatelessComponent<Props> = (props) => {
         return () => clearTimeout(timer) // cleanup on unmount
     }, [])
 
-    const styles = StyleSheet.create({
-        editor: {
-            // flex: 1,
-            padding: 0,
-            borderColor: 'gray',
-            borderWidth: 1,
-            backgroundColor: 'white',
-            fontSize: 16,
-            overflow: 'visible',
-        },
-    })
-
     return (
         <Container>
             <TextBox>
@@ -133,6 +121,18 @@ const NoteInput: React.StatelessComponent<Props> = (props) => {
         </Container>
     )
 }
+
+const styles = StyleSheet.create({
+    editor: {
+        // flex: 1,
+        padding: 0,
+        borderColor: 'gray',
+        borderWidth: 1,
+        backgroundColor: 'white',
+        fontSize: 16,
+        overflow: 'visible',
+    },
+})
 
 const Container = styled.SafeAreaView`
     flex: 1;

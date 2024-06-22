@@ -148,7 +148,7 @@ export class PageEditorStorage extends StorageModule {
     }
 
     async createAnnotation(
-        annotation: RequiredBy<NoteCreate, 'selector' | 'body' | 'comment'>,
+        annotation: NoteCreate,
         customTimestamp = Date.now(),
         opts?: { skipPrivacyLevelCreation?: boolean },
     ): Promise<{ annotationUrl: string }> {

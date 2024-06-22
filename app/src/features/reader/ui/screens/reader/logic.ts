@@ -21,7 +21,6 @@ import { CLOUDFLARE_WORKER_URLS } from '@worldbrain/memex-common/lib/content-sha
 import { polyfill as polyfillReadableStream } from 'react-native-polyfill-globals/src/readable-stream'
 import { StatusBar } from 'react-native'
 import showdown from 'showdown'
-import { sleepPromise } from '@worldbrain/memex-common/lib/common-ui/utils/promises'
 
 polyfillReadableStream()
 
@@ -29,7 +28,7 @@ polyfillReadableStream()
 // import { inPageCSS } from 'src/features/reader/utils/in-page-css'
 
 interface CreateHighlightArgs {
-    anchor?: Anchor | null
+    anchor?: Anchor
     videoTimestamp?: [string, string]
     renderHighlight?: (h: Highlight) => void
     comment?: string
@@ -49,7 +48,7 @@ export interface State {
     error?: Error
     isErrorReported: boolean
     highlights: Highlight[]
-    AIsummaryText: string
+    AISummaryText: string
     AISummaryLoading: UITaskState
     showAIResults: boolean
     statusBarHeight?: number
@@ -58,9 +57,9 @@ export interface State {
     displaySplitHeight?: number
     prompt?: string | null
     querySuggestions: string[]
-    showPromptEdit?: number | null
-    AInoteSaveState: UITaskState
-    promptEditState?: string | null
+    showPromptEdit: number | null
+    AINoteSaveState: UITaskState
+    promptEditState: string | null
 }
 
 export type Event = UIEvent<{
@@ -69,7 +68,7 @@ export type Event = UIEvent<{
     editHighlight: { highlightUrl: string }
     createHighlight: CreateHighlightArgs
     createAnnotation: CreateHighlightArgs
-    saveAIoutputAsNote: { comment: string }
+    saveAIOutputAsNote: { comment: string }
     createYoutubeTimestamp: any
     setTextSelection: { text?: string }
     navToPageEditor: { mode: EditorMode }
@@ -154,15 +153,16 @@ export default class Logic extends UILogic<State, Event> {
             highlights: [],
             spaces: [],
             showAIResults: false,
-            AIsummaryText: '',
+            AISummaryText: '',
             AISummaryLoading: 'pristine',
             AIQueryTextFieldHeight: 24,
             summaryHalfScreen: false,
             displaySplitHeight: 0,
             prompt: null,
+            promptEditState: null,
             querySuggestions: [],
             showPromptEdit: null,
-            AInoteSaveState: 'pristine',
+            AINoteSaveState: 'pristine',
         }
     }
 
@@ -427,7 +427,7 @@ export default class Logic extends UILogic<State, Event> {
         previousState,
     }) => {
         this.emitMutation({
-            AIsummaryText: { $set: '' },
+            AISummaryText: { $set: '' },
             AISummaryLoading: { $set: 'pristine' },
             prompt: { $set: null },
         })
@@ -488,7 +488,7 @@ export default class Logic extends UILogic<State, Event> {
                     .replace(/\\n/g, '\n')
 
                 this.emitMutation({
-                    AIsummaryText: { $set: summaryText },
+                    AISummaryText: { $set: summaryText },
                     AISummaryLoading: { $set: 'done' },
                 })
             })
@@ -546,14 +546,14 @@ export default class Logic extends UILogic<State, Event> {
         const { annotationUrl } = await pageEditor.createAnnotation({
             pageUrl: previousState.url,
             pageTitle: previousState.title ?? '',
-            selector: anchor ?? null,
-            body: anchor?.quote ?? null,
-            comment: comment ?? null,
+            selector: anchor,
+            body: anchor?.quote,
+            comment,
         })
 
         const newHighlight: Highlight = {
             url: annotationUrl,
-            anchor: anchor ?? null,
+            anchor,
         }
         if (renderHighlight != null) {
             renderHighlight(newHighlight)
@@ -602,16 +602,16 @@ export default class Logic extends UILogic<State, Event> {
             })
         }
     }
-    saveAIoutputAsNote: EventHandler<'saveAIoutputAsNote'> = async ({
+    saveAIOutputAsNote: EventHandler<'saveAIOutputAsNote'> = async ({
         event,
         previousState,
     }) => {
-        var converter = new showdown.Converter()
+        let converter = new showdown.Converter()
         const noteAsHTML =
             '<div>' + converter.makeHtml(event.comment) + '</div>'
 
         this.emitMutation({
-            AInoteSaveState: { $set: 'running' },
+            AINoteSaveState: { $set: 'running' },
         })
 
         await this._createHighlight({
@@ -620,7 +620,7 @@ export default class Logic extends UILogic<State, Event> {
         })
 
         this.emitMutation({
-            AInoteSaveState: { $set: 'done' },
+            AINoteSaveState: { $set: 'done' },
         })
     }
 
@@ -637,7 +637,7 @@ export default class Logic extends UILogic<State, Event> {
         this.props.navigation.navigate('NoteEditor', {
             mode: 'update',
             highlightText: event.anchor?.quote,
-            anchor: event.anchor ?? null,
+            anchor: event.anchor,
             noteUrl: highlight.url,
             videoTimestamp: event.videoTimestamp,
             spaces: [],

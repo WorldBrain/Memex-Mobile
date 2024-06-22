@@ -1,5 +1,6 @@
 import 'react-native-reanimated'
 import 'react-native-gesture-handler'
+import 'react-native-url-polyfill/auto'
 import { Platform } from 'react-native'
 import * as Sentry from '@sentry/react-native'
 import { normalizeUrl } from '@worldbrain/memex-common/lib/url-utils/normalize'
