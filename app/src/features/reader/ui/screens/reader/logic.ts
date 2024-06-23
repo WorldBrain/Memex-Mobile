@@ -98,7 +98,11 @@ export interface Props extends MainNavProps<'Reader'> {
         'reader' | 'overview' | 'pageEditor' | 'metaPicker' | 'syncSettings'
     >
     services: UIServices<
-        'readability' | 'resourceLoader' | 'errorTracker' | 'annotationSharing'
+        | 'readability'
+        | 'resourceLoader'
+        | 'errorTracker'
+        | 'annotationSharing'
+        | 'cloudSync'
     >
     loadContentScript: ContentScriptLoader
     pageUrl?: string
@@ -170,6 +174,9 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             statusBarHeight: { $set: StatusBar.currentHeight },
         })
+
+        this.props.services.cloudSync.sync()
+
         await loadInitial<State>(this, async () => {
             try {
                 await this.loadPageState(previousState.url)
