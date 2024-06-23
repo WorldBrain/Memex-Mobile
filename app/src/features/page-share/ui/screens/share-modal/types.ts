@@ -32,11 +32,9 @@ export type Event = UIEvent<{
     save: { thenGoToApp?: boolean }
     retrySync: null
 
-    undoPageSave: null
     metaPickerEntryPress: { entry: SpacePickerEntry }
     setSpacePickerShown: { isShown: boolean }
     setModalVisible: { shown: boolean }
-    togglePageStar: null
     setNoteText: { value: string }
 
     toggleSpace: { id: number }

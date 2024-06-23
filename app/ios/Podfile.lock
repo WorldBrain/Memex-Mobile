@@ -1153,7 +1153,7 @@ SPEC CHECKSUMS:
   EXKeepAwake: 615c5a6fca5c2afedf611bb6f7f2ca323246de94
   EXPermissions: 9bc08859a675d291e89be9a0870155c27c16ac35
   FBLazyVector: c71c5917ec0ad2de41d5d06a5855f6d5eda06971
-  FBReactNativeSpec: 3b16e1f4ef8bc3a8c6c276e6cfbe4047cf748e88
+  FBReactNativeSpec: 99a164d2a79363a79fe2ca7f9f0cb87443acdf52
   Firebase: 54cdc8bc9c9b3de54f43dab86e62f5a76b47034f
   FirebaseAnalytics: 4751d6a49598a2b58da678cc07df696bcd809ab9
   FirebaseAuth: 8ef169751d795f20921d425f7b0131cc1c70935c

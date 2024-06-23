@@ -531,66 +531,6 @@ describe('share modal UI logic tests', () => {
         )
     })
 
-    it('should be able to undo a page visit (for already indexed page)', async (context) => {
-        const pageUrl = DATA.PAGE_URL_1
-        const url = DATA.PAGE_URL_1_NORM
-        const { element } = await setup({
-            ...context,
-            getSharedUrl: () => pageUrl,
-        })
-
-        await context.storage.modules.overview.createPage({
-            url: pageUrl,
-            fullUrl: pageUrl,
-        } as any)
-
-        expect(
-            await context.storage.manager
-                .collection('pages')
-                .findObject({ url }),
-        ).toBeTruthy()
-
-        await element.init()
-
-        expect(element.state).toEqual(
-            expect.objectContaining({
-                isModalShown: true,
-                showSavingPage: false,
-            }),
-        )
-
-        expect(
-            await context.storage.manager
-                .collection('visits')
-                .findObjects({ url }),
-        ).toEqual([
-            expect.objectContaining({
-                url,
-            }),
-        ])
-
-        await element.processEvent('undoPageSave', null)
-
-        expect(
-            await context.storage.manager
-                .collection('pages')
-                .findObject({ url }),
-        ).toBeTruthy()
-
-        expect(
-            await context.storage.manager
-                .collection('visits')
-                .findObjects({ url }),
-        ).toEqual([])
-
-        expect(element.state).toEqual(
-            expect.objectContaining({
-                isModalShown: false,
-                showSavingPage: true,
-            }),
-        )
-    })
-
     it('should correctly track error in case of a failed visit', async (context) => {
         const pageUrl = DATA.PAGE_URL_1
         const url = DATA.PAGE_URL_1_NORM

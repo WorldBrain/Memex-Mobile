@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Linking, Keyboard, Dimensions, Platform } from 'react-native'
+import { Linking, Keyboard, Platform } from 'react-native'
 
 import { supportEmail } from '../../../../../../app.json'
 import { StatefulUIElement } from 'src/ui/types'
@@ -12,7 +12,6 @@ import NoteInput from '../../components/note-input-segment'
 import UnsupportedApp from '../../components/unsupported-app'
 import SavingUpdates from '../../components/saving-updates'
 import SyncError from '../../components/sync-error'
-import styles from './styles'
 import * as icons from 'src/ui/components/icons/icons-list'
 import { Icon } from 'src/ui/components/icons/icon-mobile'
 import styled from 'styled-components/native'
@@ -20,7 +19,6 @@ import AddToSpacesBtn from 'src/ui/components/add-to-spaces-btn'
 import AnnotationPrivacyBtn from 'src/ui/components/annot-privacy-btn'
 import { AnnotationPrivacyLevels } from '@worldbrain/memex-common/lib/annotations/types'
 import FeedActivityIndicator from 'src/features/activity-indicator'
-import { isInputDirty } from './util'
 import type { State, Event } from './types'
 import Reader from 'src/features/reader/ui/screens/reader'
 import { isUrlYTVideo } from '@worldbrain/memex-common/lib/utils/youtube-url'
@@ -34,8 +32,6 @@ export default class ShareModalScreen extends StatefulUIElement<
     State,
     Event
 > {
-    private metaPicker!: MetaPicker
-
     constructor(props: Props) {
         super(
             props,
@@ -56,27 +52,14 @@ export default class ShareModalScreen extends StatefulUIElement<
         // this.props.services.shareExt.close()
     }
 
-    private handleUndo = () => {
-        return this.processEvent('undoPageSave', null)
-    }
-
     private handleSave = async () => {
         await this.processEvent('save', {})
         // For whatever reason, calling this seems to result in a crash. Though it still closes as expected without calling it...
         // this.props.services.shareExt.close()
     }
 
-    private handleStarPress = () => {
-        this.processEvent('togglePageStar', null)
-    }
-
     private handleMetaPickerEntryPress = async (entry: SpacePickerEntry) => {
         await this.processEvent('metaPickerEntryPress', { entry })
-    }
-
-    private handleReloadPress = async () => {
-        await (this.logic as Logic).syncRunning
-        await this.metaPicker.processEvent('reload', null)
     }
 
     private handleNoteTextChange = (value: string) => {
@@ -101,37 +84,6 @@ export default class ShareModalScreen extends StatefulUIElement<
         )
     }
 
-    private setMetaPickerRef = (metaPicker: MetaPicker) => {
-        this.metaPicker = metaPicker
-    }
-
-    private renderTitle() {
-        if (this.state.isSpacePickerShown) {
-            return (
-                <ReloadButton onPress={this.handleReloadPress}>
-                    <Icon
-                        icon={icons.Reload}
-                        strokeWidth="0"
-                        heightAndWidth="15px"
-                        color="greyScale4"
-                        fill
-                    />
-                    <TitleText>Refresh</TitleText>
-                </ReloadButton>
-            )
-        }
-
-        if (this.state.loadState === 'running') {
-            return null
-        }
-
-        if (isInputDirty(this.state)) {
-            return null
-        }
-
-        return <Text style={styles.titleText}>Saved!</Text>
-    }
-
     private renderMetaPicker() {
         if (this.state.spacesState === 'done') {
             return (
@@ -139,7 +91,6 @@ export default class ShareModalScreen extends StatefulUIElement<
                     <MetaPicker
                         onEntryPress={this.handleMetaPickerEntryPress}
                         initSelectedEntries={this.state.spacesToAdd}
-                        ref={this.setMetaPickerRef}
                         url={this.state.pageUrl}
                         {...this.props}
                     />
@@ -161,26 +112,6 @@ export default class ShareModalScreen extends StatefulUIElement<
                     onChange={this.handleNoteTextChange}
                     value={this.state.noteText}
                 />
-                {/* {this.state.spacesState === 'done' &&
-                    this.state.spacesToAdd.length > 0 && (
-                        <SpaceBar>
-                            <SpacesContainer
-                                horizontal={true}
-                                contentContainerStyle={
-                                    styledScrollView.Container
-                                }
-                            >
-                                {this.state.spacesToAdd
-                                    .map((elements) => (
-                                        <SpacePills>
-                                            <SpacePillsText>
-                                                {elements}
-                                            </SpacePillsText>
-                                        </SpacePills>
-                                    ))}
-                            </SpacesContainer>
-                        </SpaceBar>
-                    )} */}
                 <ActionBarContainer
                     onRightBtnPress={this.handleSave}
                     rightBtnText={
@@ -341,8 +272,6 @@ export default class ShareModalScreen extends StatefulUIElement<
     }
 
     render() {
-        let editorHeight = Dimensions.get('screen').height
-
         return (
             <ShareModal
                 isModalShown={this.state.isModalShown}
@@ -480,26 +409,6 @@ const LoadingScreen = styled.View`
     display: flex;
     justify-content: center;
     align-items: center;
-`
-const LoadingIndicatorBox = styled.View`
-    margin-right: 5px;
-`
-
-const TitleText = styled.Text`
-    color: ${(props) => props.theme.colors.greyScale4};
-    font-size: 14px;
-    font-weight: 300;
-    margin-left: 5px;
-    font-family: 'Satoshi';
-`
-
-const ReloadButton = styled.TouchableOpacity`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 40px;
 `
 
 const YoutubeRedirectNotice = styled.View`

@@ -47,7 +47,6 @@ type EventHandler<EventName extends keyof Event> = UIEventHandler<
 export default class Logic extends UILogic<State, Event> {
     /** If this instance is working with a page that's already indexed, this will be set to the visit time (created in `init`). */
     private existingPageVisitTime: number | null = null
-    syncRunning: Promise<void> | null = null
     syncUploadRunning: Promise<void> | null = null
     pageTitleFetchRunning: Promise<void> | null = null
     private initValues = { ...initValues }
@@ -93,27 +92,6 @@ export default class Logic extends UILogic<State, Event> {
         if (!errorHandled) {
             this.emitMutation({ errorMessage: { $set: error.message } })
         }
-    }
-
-    private async _doSync() {
-        const { cloudSync } = this.deps.services
-
-        try {
-            await cloudSync.sync()
-            this.clearSyncError()
-        } catch (err) {
-            this.handleSyncError(err)
-        }
-    }
-
-    private async doSync() {
-        if (this.syncRunning !== null) {
-            await this.syncRunning
-        }
-
-        this.syncRunning = this._doSync()
-        await this.syncRunning
-        this.syncRunning = null
     }
 
     private async _doSyncOnlyUpload() {
@@ -325,7 +303,7 @@ export default class Logic extends UILogic<State, Event> {
         await executeUITask<State, 'syncRetryState', void>(
             this,
             'syncRetryState',
-            async () => this.doSync(),
+            async () => this.doSyncOnlyUpload(),
         )
     }
 
@@ -402,53 +380,19 @@ export default class Logic extends UILogic<State, Event> {
         }
     }
 
-    togglePageStar(
-        incoming: IncomingUIEvent<State, Event, 'togglePageStar'>,
-    ): UIMutation<State> {
-        return {
-            isStarred: { $set: !incoming.previousState.isStarred },
-        }
-    }
-
-    async undoPageSave(
-        incoming: IncomingUIEvent<State, Event, 'undoPageSave'>,
-    ) {
-        const { overview } = this.deps.storage.modules
-
-        this.emitMutation({ showSavingPage: { $set: true } })
-        await this.pageTitleFetchRunning
-
-        try {
-            // Only delete the visit if this page was indexed prior, else delete the page if newly indexed
-            if (this.existingPageVisitTime) {
-                await overview.deleteVisit({
-                    url: incoming.previousState.pageUrl,
-                    time: this.existingPageVisitTime,
-                })
-            } else {
-                await overview.deletePage({
-                    url: incoming.previousState.pageUrl,
-                })
-            }
-        } catch (err) {
-        } finally {
-            this.emitMutation({ isModalShown: { $set: false } })
-        }
-    }
-
     async save({
         previousState,
         event,
     }: IncomingUIEvent<State, Event, 'save'>) {
         await this.pageTitleFetchRunning
 
-        if (isInputDirty(previousState) || this.syncRunning != null) {
+        if (isInputDirty(previousState) || this.syncUploadRunning != null) {
             this.emitMutation({ showSavingPage: { $set: true } })
             await this.storePageFinal(previousState)
 
             if (
                 (await isSyncEnabled(this.deps.services)) &&
-                this.syncRunning == null
+                this.syncUploadRunning == null
             ) {
                 await this.doSyncOnlyUpload()
             }
