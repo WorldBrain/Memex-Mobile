@@ -257,23 +257,17 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                                     <IconActionContainer
                                         onPress={() => {
                                             this.processEvent(
-                                                'onAIQuerySubmit',
-                                                {
-                                                    prompt:
-                                                        this.state.prompt ?? '',
-                                                    fullPageUrl:
-                                                        this.props.pageUrl ||
-                                                        this.state.url,
-                                                },
+                                                'clearAIquery',
+                                                null,
                                             )
                                         }}
                                     >
                                         <Icon
-                                            icon={icons.CheckMark}
+                                            icon={icons.RemoveX}
                                             heightAndWidth={'22px'}
                                             strokeWidth={'0px'}
                                             fill
-                                            color="prime1"
+                                            color="greyScale5"
                                             height={'50px'}
                                         />
                                     </IconActionContainer>
@@ -282,6 +276,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                                 <Icon
                                     icon={icons.Stars}
                                     heightAndWidth={'22px'}
+                                    dfasdf
                                     strokeWidth={'0px'}
                                     fill
                                     height={'50px'}
@@ -305,9 +300,7 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                                         prompt: event.nativeEvent.text,
                                     })
                                 }}
-                                onPressIn={() => {
-                                    this.processEvent('clearAIquery', null)
-                                }}
+                                value={this.state.prompt ?? ''}
                                 onContentSizeChange={(event) => {
                                     this.processEvent(
                                         'setAIQueryTextFieldHeight',
@@ -317,50 +310,69 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                                 // numberOfLines={
                                 //     this.state.AIQueryTextFieldHeight ?? 24 / 24
                                 // }
-                                placeholder={
-                                    this.state.prompt
-                                        ? this.state.prompt
-                                        : 'Ask a question about this page'
-                                }
+                                placeholder={'Ask a question about this page'}
                                 placeholderTextColor={'#A9A9B1'}
                                 multiline
                             />
+                            {this.state.prompt?.length > 0 ? (
+                                <PromptButton
+                                    onPress={() => {
+                                        this.processEvent('onAIQuerySubmit', {
+                                            prompt: this.state.prompt ?? '',
+                                            fullPageUrl:
+                                                this.props.pageUrl ||
+                                                this.state.url,
+                                        })
+                                    }}
+                                >
+                                    <Icon
+                                        icon={icons.Stars}
+                                        heightAndWidth={'20px'}
+                                        strokeWidth={'0px'}
+                                        fill
+                                        color="greyScale5"
+                                    />
+                                    <PromptButtonText>Ask</PromptButtonText>
+                                </PromptButton>
+                            ) : null}
                         </TextInputContainer>
                         {this.state.AISummaryText.length > 0 ? (
-                            <ButtonActionContainer>
-                                <ActionButton
-                                    onPress={() => {
-                                        if (
-                                            this.state.AINoteSaveState ===
+                            <DismissKeyboard>
+                                <ButtonActionContainer>
+                                    <ActionButton
+                                        onPress={() => {
+                                            if (
+                                                this.state.AINoteSaveState ===
+                                                'pristine'
+                                            ) {
+                                                this.processEvent(
+                                                    'saveAIOutputAsNote',
+                                                    {
+                                                        comment: this.state
+                                                            .AISummaryText,
+                                                    },
+                                                )
+                                            }
+                                        }}
+                                        width={110}
+                                    >
+                                        <ActionButtonText>
+                                            {this.state.AINoteSaveState ===
                                             'pristine'
-                                        ) {
-                                            this.processEvent(
-                                                'saveAIOutputAsNote',
-                                                {
-                                                    comment: this.state
-                                                        .AISummaryText,
-                                                },
-                                            )
-                                        }
-                                    }}
-                                    width={110}
-                                >
-                                    <ActionButtonText>
-                                        {this.state.AINoteSaveState ===
-                                        'pristine'
-                                            ? 'Save as new Note'
-                                            : this.state.AINoteSaveState ===
-                                              'done'
-                                            ? '  '
-                                            : 'Note Saved!'}
-                                    </ActionButtonText>
-                                </ActionButton>
-                            </ButtonActionContainer>
+                                                ? 'Save as new Note'
+                                                : this.state.AINoteSaveState ===
+                                                      'done' && 'Note Saved!'}
+                                        </ActionButtonText>
+                                    </ActionButton>
+                                </ButtonActionContainer>
+                            </DismissKeyboard>
                         ) : null}
                         {this.state.AISummaryLoading === 'running' ? (
-                            <LoadingContainer>
-                                <LoadingBalls />
-                            </LoadingContainer>
+                            <DismissKeyboard>
+                                <LoadingContainer>
+                                    <LoadingBalls />
+                                </LoadingContainer>
+                            </DismissKeyboard>
                         ) : this.state.AISummaryText.length > 0 ? (
                             <DismissKeyboard>
                                 <AIResultsTextContainer keyboardShouldPersistTaps="never">
@@ -641,8 +653,6 @@ export default class Reader extends StatefulUIElement<Props, State, Event> {
                     <SplitPane
                         splitSource={null}
                         splitContainerStyle={{
-                            width: '100%',
-                            alignItems: 'center',
                             zIndex: 2000,
                         }}
                         split="v"
@@ -837,6 +847,7 @@ const TextInputContainer = styled.View<{
     height: ${(props) => props.AIQueryTextFieldHeight}px;
     border-radius: 8px;
     padding: 0 10px;
+    position: relative;
     margin: 10px;
     border-width: 1px;
     border-radius: 8px;
@@ -1034,6 +1045,7 @@ const LoadingContainer = styled.SafeAreaView<{
     align-items: center;
     justify-content: center;
     height: 100px;
+    margin-top: 10px;
     ${(props) =>
         props.isLoading
             ? `
@@ -1044,7 +1056,6 @@ const LoadingContainer = styled.SafeAreaView<{
     height: 100%;
     `
             : ''}
-
     ${(props) =>
         props.os === 'iOS' &&
         css<any>`
@@ -1185,6 +1196,29 @@ const Spacer10 = styled.View`
     height: 20px;
 `
 
+const PromptButton = styled.TouchableOpacity`
+    background: ${(props) => props.theme.colors.prime1};
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 0;
+    bottom: -15;
+    padding: 5px 10px 5px 5px;
+    flex-direction: row;
+    height: 30px;
+    margin-right: 5px;
+`
+
+const PromptButtonText = styled.Text`
+    font-weight: 500;
+    font-size: 14px;
+    color: ${(props) => props.theme.colors.black};
+    font-family: 'Satoshi';
+    margin-left: 5px;
+`
+
 const Button = styled.TouchableOpacity`
     width: 100px;
     height: 40px;
@@ -1202,7 +1236,14 @@ const ButtonText = styled.Text`
     font-family: 'Satoshi';
 `
 
-const IconActionContainer = styled.TouchableOpacity``
+const IconActionContainer = styled.TouchableOpacity<{
+    background: string
+}>`
+    background-color: ${(props) =>
+        props.background
+            ? props.theme.colors[props.background]
+            : 'transparent'};
+`
 
 const ButtonActionContainer = styled.View`
     width: 100%;
@@ -1210,7 +1251,7 @@ const ButtonActionContainer = styled.View`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 2px 10px;
+    padding: 0px 10px 5px 10px;
 `
 
 const ActionButton = styled.TouchableOpacity<{

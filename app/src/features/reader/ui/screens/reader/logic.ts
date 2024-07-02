@@ -455,6 +455,7 @@ export default class Logic extends UILogic<State, Event> {
         this.emitMutation({
             AISummaryLoading: { $set: 'running' },
             prompt: { $set: event.prompt },
+            AINoteSaveState: { $set: 'pristine' },
         })
 
         const urlToFetchFrom =

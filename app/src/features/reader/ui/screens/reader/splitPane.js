@@ -70,25 +70,26 @@ const Separator = ({
     }
 
     return (
-        <View
-            style={[
-                splitContainerStyle
-                    ? splitContainerStyle
-                    : {
-                          width: '100%',
-                          alignItems: 'center',
-                          bottom: 15,
-                          zIndex: 2000,
-                          position: 'relative',
-                      },
-            ]}
-            onStartShouldSetResponder={onStartShouldSetResponder}
+        <View>
+            <SeparatorButton
+                style={[
+                    splitContainerStyle
+                        ? splitContainerStyle
+                        : {
+                              alignItems: 'center',
+                              bottom: 15,
+                              margin: '5px 0',
+                              zIndex: 2000,
+                              position: 'relative',
+                              background: '#ffff',
+                          },
+                ]}
+                onStartShouldSetResponder={onStartShouldSetResponder}
             onResponderGrant={onResponderGrant}
-            onResponderMove={onResponderMove}
-            onResponderRelease={onResponderRelease}
-        >
-            <SeparatorButton>
-                <SeparatorButtonText>Drag to Resize</SeparatorButtonText>
+                onResponderMove={onResponderMove}
+                onResponderRelease={onResponderRelease}
+            >
+                <SeparatorButtonText>Drag to Resizeee</SeparatorButtonText>
             </SeparatorButton>
             {/* <Image
                 style={[
@@ -183,7 +184,7 @@ export default ({
             </Pane>
             {children[1] != null ? (
                 <Separator
-                    honrizontal={isHorizontal}
+                    horizontal={isHorizontal}
                     onDragging={onDragging}
                     startDrag={startDrag}
                     endDrag={endDrag}
