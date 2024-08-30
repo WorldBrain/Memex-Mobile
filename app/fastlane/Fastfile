@@ -28,10 +28,10 @@ AAB_PATH = "./android/app/build/outputs/bundle/productionRelease/app-production-
 AAB_PATH_DEV = "./android/app/build/outputs/bundle/developmentRelease/app.aab"
 
 
-before_all do
-    # ensure_git_status_clean
-    git_pull
-end
+# before_all do
+#     # ensure_git_status_clean
+#     git_pull
+# end
 
 
 platform :ios do
@@ -79,15 +79,15 @@ platform :ios do
 
     desc 'Ship to production or develop TestFlight.'
     private_lane :ship do |options|
-        setup_travis
+        # setup_travis
         build(production: options[:production])
-        reset_pass
-        pilot(
-            username: APPLE_USER_ID,
-            apple_id: options[:production] ? APPLE_APP_ID : APPLE_APP_ID_DEV,
-            app_identifier: options[:production] ? MAIN_APP_ID : MAIN_APP_ID_DEV,
-            skip_waiting_for_build_processing: true
-        )
+        # reset_pass
+        # pilot(
+        #     username: APPLE_USER_ID,
+        #     apple_id: options[:production] ? APPLE_APP_ID : APPLE_APP_ID_DEV,
+        #     app_identifier: options[:production] ? MAIN_APP_ID : MAIN_APP_ID_DEV,
+        #     skip_waiting_for_build_processing: true
+        # )
     end
 
     desc 'Ship to production TestFlight.'
